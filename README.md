@@ -1,46 +1,45 @@
 # localForage #
 
-An IndexedDB + localStorage + WebSQL grab bag library, designed to make web
-app storage fast and simple.
+localForage is a handy library that improves the offline experience of your web
+app by using asynchronous storage (via IndexedDB where available) but with a
+simple, `localStorage`-like API.
 
-## backbone.localstorage ##
+localForage uses IndexedDB primarily, but includes a localStorage-backed
+fallback store for browsers with no IndexedDB storage. A WebSQL driver is in
+the works.
 
-Simple require this library in your Backbone collection like so:
+## Callbacks ##
 
-    // Include the library:
-    BackboneStorage = require('local-forage').BackboneStorage
+Because localForage uses async storage, it has an async API. It's otherwise
+exactly the same as the
+[localStorage API](https://hacks.mozilla.org/2009/06/localstorage/).
 
-    // Tell your collection to use it:
-    var MyCollection = Backbone.Collection.extend({
-        model: MyModel,
+    // In localStorage, we would do:
+    localStorage.setItem('key', JSON.stringify('value'));
+    doSomethingElse();
 
-        localStorage: new BackboneStorage('MyCollection') // Should be unique!
+    // With localForage, we use callbacks:
+    localForage.setItem('key', 'value', doSomethingElse);
 
-        // Rest of collection code goes here...
-    });
+Similarly, please don't expect a return value from calls to
+`localForage.getItem()`. Instead, use a callback:
+    
+    // Synchronous; slower!
+    var value = JSON.parse(localStorage.getItem('key'));
+    alert(value);
 
-## Blob DB ##
+    // Async and sexy!
+    localForage.getItem('key', alert);
 
-A very simple, key/value-based IndexedDB library for storing data in IndexedDB.
-Created for Firefox OS Podcasts app, because it needed to store large binary
-files ( podcast image covers and audio files) but couldn't use Appcache or 
-localStorage. Because most data is manipulated with Backbone.js and stored in
-localStorage, we just used IndexedDB as async blob storage.
+Also of note is that localForage will automatically convert the values you
+get and set to JSON if you happen to be using localStorage as a backend. You
+don't have to pollute your code with `JSON.stringify()` calls!
 
-This library lets a user store arbitrary "big data" in IndexedDB with a
-stupid simple API:
+## Backbone.js
 
-    // Require the library:
-    BlobDB = require('local-forage').BlobDB
+localForage includes a [Backbone.js](http://backbonejs.org/) storage library
+that you can use to store your Backbone collections offline with only a few
+lines of really simple code.
 
-    // Load the DB (only needed once):
-    BlobDB.load('databaseName', 'objectStoreName')
-
-    // To get a blob:
-    BlobDB.get('some-key', callback)
-
-    // To set a key:
-    BlobDB.set('some-key', blobData, callback)
-
-    // And to destroy data:
-    BlobDB.destroy('some-key', callback)
+Of course, Backbone.js is entirely optional and you can use localForage
+without it!
