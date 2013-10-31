@@ -28,7 +28,7 @@ Similarly, please don't expect a return value from calls to
     var value = JSON.parse(localStorage.getItem('key'));
     alert(value);
 
-    // Async and sexy!
+    // Async, fast and non-blocking!
     localForage.getItem('key', alert);
 
 Also of note is that localForage will automatically convert the values you
