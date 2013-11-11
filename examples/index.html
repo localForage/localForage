@@ -5,13 +5,19 @@
     <title>Simple localForage example</title>
   </head>
   <body>
-    <script src="../lib/localforage.js"></script>
+    <script src="../src/asyncStorage.js"></script>
+    <script src="../src/localStorageWrapper.js"></script>
+    <script src="../src/localforage.js"></script>
     <script>
       var key = 'STORE_KEY';
       var value = 'What we save offline';
 
       localForage.setItem(key, value, function() {
-        console.log('Saved!');
+        console.log('Saved: ' + value);
+
+        localForage.getItem(key, function(readValue) {
+          console.log('Read: ', readValue);
+        });
       });
     </script>
   </body>

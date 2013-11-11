@@ -1,3 +1,4 @@
+(function() {
 /* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- /
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 
@@ -44,7 +45,7 @@
  * Unit tests are in apps/gallery/test/unit/asyncStorage_test.js
  */
 
-this.asyncStorage = (function() {
+// this.asyncStorage = (function() {
 
   var DBNAME = 'asyncStorage';
   var DBVERSION = 1;
@@ -175,7 +176,7 @@ this.asyncStorage = (function() {
     });
   }
 
-  return {
+  var asyncStorage = {
     getItem: getItem,
     setItem: setItem,
     removeItem: removeItem,
@@ -183,4 +184,14 @@ this.asyncStorage = (function() {
     length: length,
     key: key
   };
-}());
+
+  if(typeof define === 'function' && define.amd) {
+    define(function() { return asyncStorage; });
+  } else if(typeof module !== 'undefined' && module.exports) {
+    module.exports = asyncStorage;
+  } else {
+    this.asyncStorage = asyncStorage;
+  }
+
+
+}).call(this);
