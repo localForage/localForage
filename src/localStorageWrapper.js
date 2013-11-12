@@ -1,21 +1,11 @@
-'use strict';
+(function() {
 
-// localForage is a library that allows users to create offline Backbone models
-// and use IndexedDB to store large pieces of data.
-define(['async_storage'], function(asyncStorage) {
-    // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
-    var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
-                    window.mozIndexedDB || window.OIndexedDB ||
-                    window.msIndexedDB;
-
-    // Because indexedDB is available, we'll use it to store data.
-    if (indexedDB) {
-        return asyncStorage;
-    }
+    'use strict';
 
     // Initialize localStorage and create a variable to use throughout the code.
     var localStorage = window.localStorage;
 
+    
     // If IndexedDB isn't available, we'll fall back to localStorage.
     // Note that this will have considerable performance and storage
     // side-effects (all data will be serialized on save and only data that
@@ -94,7 +84,8 @@ define(['async_storage'], function(asyncStorage) {
                       request.error.name);
     }
 
-    return {
+
+    var localStorageWrapper = {
         // Default API, from Gaia/localStorage.
         getItem: getItem,
         setItem: setItem,
@@ -109,4 +100,14 @@ define(['async_storage'], function(asyncStorage) {
         remove: removeItem,
         removeAll: clear
     };
-});
+
+
+    if(typeof define === 'function' && define.amd) {
+        define(function() { return localStorageWrapper; });
+    } else if(typeof module !== 'undefined' && module.exports) {
+        module.exports = localStorageWrapper;
+    } else {
+        this.localStorageWrapper = localStorageWrapper;
+    }
+
+}).call(this);
