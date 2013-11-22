@@ -1,8 +1,4 @@
 
-// localForage is a library that allows users to create offline Backbone models
-// and use IndexedDB to store large pieces of data.
-// TODO: update ^^^ to reflect this is not only for Backbone
-
 (function() {
 
     'use strict';
