@@ -5,7 +5,7 @@
 //
 // Inspiration for this file comes from a few backbone.localstorage
 // implementations.
-define(["underscore", "backbone", "localforage"], function (_, Backbone, localForage) {
+define(["underscore", "backbone", "localForage"], function (_, Backbone, localForage) {
     function S4() {
         return ((1 + Math.random()) * 65536 | 0).toString(16).substring(1);
     }
