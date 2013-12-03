@@ -9,6 +9,7 @@
     <script>
       var key = 'STORE_KEY';
       var value = 'What we save offline';
+      var UNKNOWN_KEY = 'unknown_key';
 
       localForage.setItem(key, value, function() {
         console.log('Saved: ' + value);
@@ -17,6 +18,13 @@
           console.log('Read: ', readValue);
         });
       });
+
+      // Since this key hasn't been set yet, we'll get a null value
+      localForage.getItem(UNKNOWN_KEY, function(readValue) {
+        console.log('Result of reading ' + UNKNOWN_KEY, readValue);
+      });
+
+
     </script>
   </body>
 </html>

@@ -33,7 +33,10 @@ Similarly, please don't expect a return value from calls to
 
 Also of note is that localForage will automatically convert the values you
 get and set to JSON if you happen to be using localStorage as a backend. You
-don't have to pollute your code with `JSON.stringify()` calls!
+don't have to pollute your code with `JSON.stringify()` and `JSON.parse` calls!
+
+If you try to read a key that hasn't been stored yet, `null` will be returned
+in the callback.
 
 ## Backbone.js
 
@@ -43,3 +46,5 @@ lines of really simple code.
 
 Of course, Backbone.js is entirely optional and you can use localForage
 without it!
+
+
