@@ -2,8 +2,10 @@
 
     'use strict';
 
-    // Initialize localStorage and create a variable to use throughout the code.
-    var localStorage = window.localStorage;
+    // Initialize localStorage and create a variable to use throughout the code as long it's not running inside a google chrome packaged webapp.
+    var localStorage = undefined;
+    if (typeof(chrome) === "undefined" || typeof(chrome.runtime) === "undefined")
+      localStorage = window.localStorage;
 
     
     // If IndexedDB isn't available, we'll fall back to localStorage.
