@@ -48,7 +48,7 @@ localForage supports that too:
     }
 
     // With localForage, we allow promises:
-    localForage.setItem('key', 'value').done(doSomethingElse);
+    localForage.setItem('key', 'value').then(doSomethingElse);
 
 ## Forcing localStorage ##
 
