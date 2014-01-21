@@ -38,7 +38,27 @@ don't have to pollute your code with `JSON.stringify()` and `JSON.parse` calls!
 If you try to read a key that hasn't been stored yet, `null` will be returned
 in the callback.
 
-## Backbone.js
+## Promises ##
+
+Promises are pretty cool! If you'd rather use promises than callbacks,
+localForage supports that too:
+
+    function doSomethingElse(value) {
+        console.log(value);
+    }
+
+    // With localForage, we allow promises:
+    localForage.setItem('key', 'value').done(doSomethingElse);
+
+## Forcing localStorage ##
+
+For development, it can be easier to use the
+slower--but easier to debug--localStorage backend. Because localStorage can
+easily be inspected from the console, we allow for this with a simple global
+variable assignment: `window._FORCE_LOCALSTORAGE = true;`. If this is set to
+any truthy value, localStorage will be used regardless of backend.
+
+## Backbone.js ##
 
 localForage includes a [Backbone.js](http://backbonejs.org/) storage library
 that you can use to store your Backbone collections offline with only a few
@@ -46,5 +66,3 @@ lines of really simple code.
 
 Of course, Backbone.js is entirely optional and you can use localForage
 without it!
-
-

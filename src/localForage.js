@@ -1,6 +1,4 @@
-
 (function() {
-
     'use strict';
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
@@ -8,23 +6,27 @@
                     window.mozIndexedDB || window.OIndexedDB ||
                     window.msIndexedDB;
 
-
     var storageLibrary;
 
-    if(indexedDB) {
+    // Check to see if IndexedDB is available; it's our preferred backend
+    // library.
+    // TODO: Offer library selection with something other than naughty globals.
+    if (indexedDB && !window._FORCE_LOCALSTORAGE) {
         storageLibrary = 'asyncStorage';
-    } else {
+    } else { // If nothing else is available, we use localStorage.
         storageLibrary = 'localStorageWrapper';
     }
 
-
-    if(typeof define === 'function' && define.amd) {
-        define([storageLibrary], function(lib) { return lib; });
-    } else if(typeof module !== 'undefined' && module.exports) {
+    // We allow localForage to be declared as a module or as a library
+    // available without AMD/require.js.
+    if (typeof define === 'function' && define.amd) {
+        define([storageLibrary], function(lib) {
+            return lib;
+        });
+    } else if (typeof module !== 'undefined' && module.exports) {
         var lib = require('./' + storageLibrary);
         module.exports = lib;
     } else {
         this.localForage = this[storageLibrary];
     }
-
-}).call(this); 
+}).call(this);
