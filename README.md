@@ -50,6 +50,10 @@ localForage supports that too:
     // With localForage, we allow promises:
     localForage.setItem('key', 'value').then(doSomethingElse);
 
+localForage relies on native [ES6 Promises](http://www.promisejs.org/), but
+[ships with an awesome polyfill](https://github.com/jakearchibald/ES6-Promises)
+for browsers that don't yet support ES6 Promises natively.
+
 ## Forcing localStorage ##
 
 For development, it can be easier to use the

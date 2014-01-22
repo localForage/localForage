@@ -1,3 +1,7 @@
+// ES6 Promises Polyfill
+// https://github.com/jakearchibald/ES6-Promises
+// MIT license
+// (https://github.com/jakearchibald/ES6-Promises/blob/master/LICENSE)
 (function() {
 var define, requireModule, require, requirejs;
 
