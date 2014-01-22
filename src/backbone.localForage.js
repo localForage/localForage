@@ -5,7 +5,7 @@
 //
 // Inspiration for this file comes from a few backbone.localstorage
 // implementations.
-define(["underscore", "backbone", "localForage"], function (_, Backbone, localForage) {
+define(["underscore", "zepto", "backbone", "localforage"], function (_, $, Backbone, localForage) {
     function S4() {
         return ((1 + Math.random()) * 65536 | 0).toString(16).substring(1);
     }
@@ -23,15 +23,31 @@ define(["underscore", "backbone", "localForage"], function (_, Backbone, localFo
 
     _.extend(OfflineStore.prototype, {
         save: function (callback) {
-            localForage.setItem(this.name, JSON.stringify(this.data), callback);
+            var d = $.Deferred();
+
+            localForage.setItem(this.name, JSON.stringify(this.data), function(data) {
+                if (callback) {
+                    callback(data);
+                }
+
+                d.resolve(data);
+            });
+
+            return d.promise();
         },
 
-        create: function(model, options) {
+        create: function(model, callbacks) {
+            var d = $.Deferred();
+
             if (this.data) {
                 if (!model.id) model.id = model.attributes.id = guid();
                 this.data[model.id] = model;
                 this.save(function() {
-                    options.success(model);
+                    if (callbacks.success) {
+                        callbacks.success(model);
+                    }
+
+                    d.resolve(model);
                 });
             } else {
                 var self = this;
@@ -42,17 +58,29 @@ define(["underscore", "backbone", "localForage"], function (_, Backbone, localFo
                     if (!model.id) model.id = model.attributes.id = guid();
                     self.data[model.id] = model;
                     self.save(function() {
-                        options.success(model);
+                        if (callbacks.success) {
+                            callbacks.success(model);
+                        }
+
+                        d.resolve(model);
                     });
                 });
             }
+
+            return d.promise();
         },
 
-        update: function(model, options) {
+        update: function(model, callbacks) {
+            var d = $.Deferred();
+
             if (this.data) {
                 this.data[model.id] = model;
                 this.save(function() {
-                    options.success(model);
+                    if (callbacks.success) {
+                        callbacks.success(model);
+                    }
+
+                    d.resolve(model);
                 });
             } else {
                 var self = this;
@@ -62,43 +90,80 @@ define(["underscore", "backbone", "localForage"], function (_, Backbone, localFo
 
                     self.data[model.id] = model;
                     self.save(function() {
-                        options.success(model);
+                        if (callbacks.success) {
+                            callbacks.success(model);
+                        }
+
+                        d.resolve(model);
                     });
                 });
             }
+
+            return d.promise();
         },
 
-        find: function(model, options) {
+        find: function(model, callbacks) {
+            var d = $.Deferred();
+
             if (this.data) {
-                options.success(this.data[model.id]);
+                if (callbacks.success) {
+                    callbacks.success(this.data[model.id]);
+                }
+
+                d.resolve(this.data[model.id]);
             } else {
                 var self = this;
 
                 localForage.getItem(this.name, function(data) {
                     self.data = JSON.parse(data) || {};
-                    options.success(self.data[model.id]);
+
+                    if (callbacks.success) {
+                        callbacks.success(self.data[model.id]);
+                    }
+
+                    d.resolve(self.data[model.id]);
                 });
             }
+
+            return d.promise();
         },
 
-        findAll: function(options) {
+        findAll: function(callbacks) {
+            var d = $.Deferred();
+
             if (this.data) {
-                options.success(_.values(this.data));
+                if (callbacks.success) {
+                    callbacks.success(_.values(this.data));
+                }
+
+                d.resolve(_.values(this.data));
             } else {
                 var self = this;
 
                 localForage.getItem(this.name, function(data) {
                     self.data = JSON.parse(data) || {};
-                    options.success(_.values(self.data));
+                    if (callbacks.success) {
+                        callbacks.success(_.values(self.data));
+                    }
+
+                    d.resolve(_.values(self.data));
                 });
             }
+
+            return d.promise();
         },
 
-        destroy: function(model, options) {
+        destroy: function(model, callbacks) {
+            var d = $.Deferred();
+
             if (this.data) {
                 delete this.data[model.id];
                 this.save(function() {
-                    options.success(model);
+                    if (callbacks.success) {
+                        callbacks.success(model);
+                    }
+
+                    d.resolve(model);
                 });
             } else {
                 var self = this;
@@ -108,34 +173,36 @@ define(["underscore", "backbone", "localForage"], function (_, Backbone, localFo
 
                     delete self.data[model.id];
                     self.save(function() {
-                        options.success(model);
+                        if (callbacks.success) {
+                            callbacks.success(model);
+                        }
+
+                        d.resolve(model);
                     });
                 });
             }
+
+            return d.promise();
         }
     });
 
     // Override Backbone.sync to call our custom offline sync only.
     // TODO: Allow access to original sync?
     Backbone.sync = function(method, model, options) {
-        var store = model.localStorage || model.collection.localStorage;
+        var store = model.offlineStore || model.localStorage || model.collection.offlineStore || model.collection.localStorage;
 
         switch (method) {
             case "read":
-                if (model.id) {
-                    store.find(model, options);
-                } else {
-                    store.findAll(options);
-                }
+                return model.id ? store.find(model, options) : store.findAll(options);
                 break;
             case "create":
-                store.create(model, options);
+                return store.create(model, options);
                 break;
             case "update":
-                store.update(model, options);
+                return store.update(model, options);
                 break;
             case "delete":
-                store.destroy(model, options);
+                return store.destroy(model, options);
                 break;
         }
     };
