@@ -1,12 +1,12 @@
 # localForage #
 
 localForage is a handy library that improves the offline experience of your web
-app by using asynchronous storage (via IndexedDB where available) but with a
-simple, `localStorage`-like API.
+app by using asynchronous storage (via IndexedDB or WebSQL where available) but
+with a simple, `localStorage`-like API.
 
-localForage uses IndexedDB primarily, but includes a localStorage-backed
-fallback store for browsers with no IndexedDB storage. A WebSQL driver is in
-the works.
+localForage includes a localStorage-backed fallback store for browsers with no
+IndexedDB or WebSQL support. This means that asynchronous storage is available
+in Chrome, Firefox, and Safari (including MobileSafari).
 
 ## Callbacks ##
 
