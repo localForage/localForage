@@ -19,8 +19,6 @@
         storageLibrary = 'localStorageWrapper';
     }
 
-    console.log(storageLibrary);
-
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
     if (typeof define === 'function' && define.amd) {
