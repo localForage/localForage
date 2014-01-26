@@ -57,10 +57,10 @@ for browsers that don't yet support ES6 Promises natively.
 ## Forcing localStorage ##
 
 For development, it can be easier to use the
-slower--but easier to debug--localStorage backend. Because localStorage can
+slower--but easier to debug--localStorage driver. Because localStorage can
 easily be inspected from the console, we allow for this with a simple global
 variable assignment: `window._FORCE_LOCALSTORAGE = true;`. If this is set to
-any truthy value, localStorage will be used regardless of backend.
+any truthy value, localStorage will be used regardless of driver.
 
 ## Backbone.js ##
 
