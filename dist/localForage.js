@@ -1200,6 +1200,9 @@ requireModule('promise/polyfill').polyfill();
     var db = window.openDatabase(DB_NAME, DB_VERSION, STORE_NAME, DB_SIZE);
 
     // Create our key/value table if it doesn't exist.
+    // TODO: Technically I can imagine this being as race condition, as I'm not
+    // positive on the WebSQL API enough to be sure that other transactions
+    // won't be run before this? But I assume not.
     db.transaction(function (t) {
         t.executeSql('CREATE TABLE IF NOT EXISTS localforage (id INTEGER PRIMARY KEY, key unique, value)');
     });
@@ -1249,6 +1252,8 @@ requireModule('promise/polyfill').polyfill();
         });
     }
 
+    // Deletes every item in the table with a TRUNCATE call.
+    // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         return new Promise(function(resolve, reject) {
             db.transaction(function (t) {
@@ -1263,9 +1268,12 @@ requireModule('promise/polyfill').polyfill();
         });
     }
 
+    // Does a simple `COUNT(key)` to get the number of items stored in
+    // localForage.
     function length(callback) {
         return new Promise(function(resolve, reject) {
             db.transaction(function (t) {
+                // Ahhh, SQL makes this one soooooo easy.
                 t.executeSql('SELECT COUNT(key) FROM localforage', [], function (t, results) {
                     var result = results.rows.length;
 
@@ -1279,6 +1287,12 @@ requireModule('promise/polyfill').polyfill();
         });
     }
 
+    // Return the value located at key number X; essentially does a
+    // `WHERE id = ?`. This is the most efficient way I can think to implement
+    // this rarely-used (in my experience) part of the API, but it can seem
+    // inconsistent, because we do `INSERT OR REPLACE INTO` on `setItem()`, so
+    // the ID of each key will change every time it's updated. Perhaps a stored
+    // procedure for the `setItem()` SQL would solve this problem?
     function key(n, callback) {
         return new Promise(function(resolve, reject) {
             db.transaction(function (t) {
@@ -1334,8 +1348,6 @@ requireModule('promise/polyfill').polyfill();
     } else { // If nothing else is available, we use localStorage.
         storageLibrary = 'localStorageWrapper';
     }
-
-    console.log(storageLibrary);
 
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
