@@ -62,6 +62,8 @@ easily be inspected from the console, we allow for this with a simple global
 variable assignment: `window._FORCE_LOCALSTORAGE = true;`. If this is set to
 any truthy value, localStorage will be used regardless of driver.
 
+**TODO:** Allow actual driver selection. (Filed as issue #18.)
+
 ## Backbone.js ##
 
 localForage includes a [Backbone.js](http://backbonejs.org/) storage library
