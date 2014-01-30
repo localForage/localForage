@@ -31,22 +31,26 @@ Because localForage uses async storage, it has an async API. It's otherwise
 exactly the same as the
 [localStorage API](https://hacks.mozilla.org/2009/06/localstorage/).
 
+    ```javascript
     // In localStorage, we would do:
     localStorage.setItem('key', JSON.stringify('value'));
     doSomethingElse();
 
     // With localForage, we use callbacks:
     localForage.setItem('key', 'value', doSomethingElse);
+    ```
 
 Similarly, please don't expect a return value from calls to
 `localForage.getItem()`. Instead, use a callback:
-    
+
+    ```javascript
     // Synchronous; slower!
     var value = JSON.parse(localStorage.getItem('key'));
     alert(value);
 
     // Async, fast, and non-blocking!
     localForage.getItem('key', alert);
+    ```
 
 Also of note is that localForage will automatically convert the values you
 get and set to JSON if you happen to be using localStorage as a backend. You
@@ -60,12 +64,14 @@ in the callback.
 Promises are pretty cool! If you'd rather use promises than callbacks,
 localForage supports that too:
 
+    ```javascript
     function doSomethingElse(value) {
         console.log(value);
     }
 
     // With localForage, we allow promises:
     localForage.setItem('key', 'value').then(doSomethingElse);
+    ```
 
 localForage relies on native [ES6 Promises](http://www.promisejs.org/), but
 [ships with an awesome polyfill](https://github.com/jakearchibald/ES6-Promises)
@@ -76,8 +82,14 @@ for browsers that don't yet support ES6 Promises natively.
 For development, it can be easier to use the
 slower--but easier to debug--localStorage driver. Because localStorage can
 easily be inspected from the console, we allow for this with a simple global
-variable assignment: `window._FORCE_LOCALSTORAGE = true;`. If this is set to
-any truthy value, localStorage will be used regardless of driver.
+variable assignment: 
+    
+    ```javascript
+    window._FORCE_LOCALSTORAGE = true;
+    ```
+
+If `window._FORCE_LOCALSTORAGE` is set to any truthy value, localStorage will
+be used regardless of driver.
 
 **TODO:** Allow actual driver selection. (Filed as issue #18.)
 
