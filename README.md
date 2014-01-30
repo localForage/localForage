@@ -52,12 +52,10 @@ alert(value);
 localForage.getItem('key', alert);
 ```
 
-Also of note is that localForage will automatically convert the values you
-get and set to JSON if you happen to be using localStorage as a backend. You
-don't have to pollute your code with `JSON.stringify()` and `JSON.parse` calls!
-
-If you try to read a key that hasn't been stored yet, `null` will be returned
-in the callback.
+You can store any type in localForage; you aren't limited to strings like in
+localStorage. Even if localStorage is your storage backend, localForage
+automatically does `JSON.parse()` and `JSON.stringify()` when getting/setting
+values.
 
 ## Promises ##
 
