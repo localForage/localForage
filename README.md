@@ -91,7 +91,8 @@ window._FORCE_LOCALSTORAGE = true;
 If `window._FORCE_LOCALSTORAGE` is set to any truthy value, localStorage will
 be used regardless of driver.
 
-**TODO:** Allow actual driver selection. (Filed as issue #18.)
+**TODO:** Allow actual driver selection. (Filed as
+[issue #18](https://github.com/mozilla/localForage/issues/18).)
 
 ## Backbone.js ##
 
