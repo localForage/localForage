@@ -13,7 +13,7 @@
     // TODO: Offer library selection with something other than naughty globals.
     if (indexedDB && !window._FORCE_LOCALSTORAGE) {
         storageLibrary = 'asyncStorage';
-    } else if (window.openDatabase) { // WebSQL is available, so we'll use that.
+    } else if (window.openDatabase && !window._FORCE_LOCALSTORAGE) { // WebSQL is available, so we'll use that.
         storageLibrary = 'webSQLStorage';
     } else { // If nothing else is available, we use localStorage.
         storageLibrary = 'localStorageWrapper';
