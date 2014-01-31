@@ -1006,6 +1006,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     var asyncStorage = {
+        driver: 'asyncStorage',
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
@@ -1154,6 +1155,7 @@ requireModule('promise/polyfill').polyfill();
 
 
     var localStorageWrapper = {
+        driver: 'localStorageWrapper',
         // Default API, from Gaia/localStorage.
         getItem: getItem,
         setItem: setItem,
@@ -1310,6 +1312,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     var webSQLStorage = {
+        driver: 'webSQLStorage',
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
@@ -1343,7 +1346,7 @@ requireModule('promise/polyfill').polyfill();
     // TODO: Offer library selection with something other than naughty globals.
     if (indexedDB && !window._FORCE_LOCALSTORAGE) {
         storageLibrary = 'asyncStorage';
-    } else if (window.openDatabase) { // WebSQL is available, so we'll use that.
+    } else if (window.openDatabase && !window._FORCE_LOCALSTORAGE) { // WebSQL is available, so we'll use that.
         storageLibrary = 'webSQLStorage';
     } else { // If nothing else is available, we use localStorage.
         storageLibrary = 'localStorageWrapper';

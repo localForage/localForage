@@ -228,6 +228,7 @@
     }
 
     var asyncStorage = {
+        driver: 'asyncStorage',
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,

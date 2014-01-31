@@ -128,6 +128,7 @@
 
 
     var localStorageWrapper = {
+        driver: 'localStorageWrapper',
         // Default API, from Gaia/localStorage.
         getItem: getItem,
         setItem: setItem,
