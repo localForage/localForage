@@ -1,0 +1,60 @@
+branches:
+  only:
+    - "master"
+
+before_install:
+  - echo "Installing $ENGINE $ENGINE_VERSION from $ENGINE_ARCHIVE_URL"
+  - wget $ENGINE_ARCHIVE_URL --output-document=engine.tar.bz2
+  - mkdir engine && tar --strip-components=1 -xvf engine.tar.bz2 -C engine
+  - if [[ $ENGINE == 'phantomjs' ]]; then
+      ENGINE_EXECUTABLE="engine/bin/phantomjs";
+    elif [[ $ENGINE == 'slimerjs' ]]; then
+      ENGINE_EXECUTABLE="engine/slimerjs";
+    else
+      echo "Unsupported engine $ENGINE";
+    fi
+  - ls -la $ENGINE_EXECUTABLE && $ENGINE_EXECUTABLE --version;
+  - export ENGINE_EXECUTABLE="$ENGINE_EXECUTABLE $ENGINE_FLAGS"
+
+install:
+  - sudo apt-get install -qq mono-devel mono-mcs
+
+before_script:
+  - "npm install -g jshint@2.0.1"
+
+script:
+  - "make $MAKE_TEST_COMMAND"
+
+env:
+  global:
+    - ENGINE_FLAGS="--local-to-remote-url-access=yes --ignore-ssl-errors=yes"
+  matrix:
+    - ENGINE="phantomjs" ENGINE_VERSION="1.8.2" MAKE_TEST_COMMAND="test-dotNET"
+      ENGINE_ARCHIVE_URL="https://phantomjs.googlecode.com/files/phantomjs-1.8.2-linux-x86_64.tar.bz2"
+    - ENGINE="phantomjs" ENGINE_VERSION="1.8.2" MAKE_TEST_COMMAND="test"
+      ENGINE_ARCHIVE_URL="https://phantomjs.googlecode.com/files/phantomjs-1.8.2-linux-x86_64.tar.bz2"
+    - ENGINE="phantomjs" ENGINE_VERSION="1.9.0" MAKE_TEST_COMMAND="test-dotNET"
+      ENGINE_ARCHIVE_URL="https://phantomjs.googlecode.com/files/phantomjs-1.9.0-linux-x86_64.tar.bz2"
+    - ENGINE="phantomjs" ENGINE_VERSION="1.9.0" MAKE_TEST_COMMAND="test"
+      ENGINE_ARCHIVE_URL="https://phantomjs.googlecode.com/files/phantomjs-1.9.0-linux-x86_64.tar.bz2"
+    - ENGINE="phantomjs" ENGINE_VERSION="1.9.1" MAKE_TEST_COMMAND="test-dotNET"
+      ENGINE_ARCHIVE_URL="https://phantomjs.googlecode.com/files/phantomjs-1.9.1-linux-x86_64.tar.bz2"
+    - ENGINE="phantomjs" ENGINE_VERSION="1.9.1" MAKE_TEST_COMMAND="test"
+      ENGINE_ARCHIVE_URL="https://phantomjs.googlecode.com/files/phantomjs-1.9.1-linux-x86_64.tar.bz2"
+    - ENGINE="phantomjs" ENGINE_VERSION="1.9.2" MAKE_TEST_COMMAND="test-dotNET"
+      ENGINE_ARCHIVE_URL="https://phantomjs.googlecode.com/files/phantomjs-1.9.2-linux-x86_64.tar.bz2"
+    - ENGINE="phantomjs" ENGINE_VERSION="1.9.2" MAKE_TEST_COMMAND="test"
+      ENGINE_ARCHIVE_URL="https://phantomjs.googlecode.com/files/phantomjs-1.9.2-linux-x86_64.tar.bz2"
+    - ENGINE="slimerjs" ENGINE_VERSION="0.8.4" MAKE_TEST_COMMAND="test-dotNET"
+      ENGINE_ARCHIVE_URL="http://download.slimerjs.org/v0.8/0.8.4/slimerjs-0.8.4-linux-x86_64.tar.bz2"
+    - ENGINE="slimerjs" ENGINE_VERSION="0.8.4" MAKE_TEST_COMMAND="test"
+      ENGINE_ARCHIVE_URL="http://download.slimerjs.org/v0.8/0.8.4/slimerjs-0.8.4-linux-x86_64.tar.bz2"
+    - ENGINE="slimerjs" ENGINE_VERSION="0.8.5" MAKE_TEST_COMMAND="test-dotNET"
+      ENGINE_ARCHIVE_URL="http://download.slimerjs.org/v0.8/0.8.5/slimerjs-0.8.5-linux-x86_64.tar.bz2"
+    - ENGINE="slimerjs" ENGINE_VERSION="0.8.5" MAKE_TEST_COMMAND="test"
+      ENGINE_ARCHIVE_URL="http://download.slimerjs.org/v0.8/0.8.5/slimerjs-0.8.5-linux-x86_64.tar.bz2"
+
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#casperjs"

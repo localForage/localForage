@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>CasperJS test click</title>
+    </head>
+    <body>
+        <a id="test1" href="javascript:results.test1 = true;">test1</a>
+        <a id="test2" href="#" onclick="results.test2 = true;">test2</a>
+        <a id="test3" href="page1.html" onclick="results.test3 = true; return false">test3</a>
+        <a id="test4" href="http://www.google.com/">test4</a>
+        <a id="test5" href="#">test5</a>
+        <a id="test6" href="#">Label with double "quotes"</a>
+        <a id="test7" href="#">Label with single 'quotes'</a>
+        <script>
+            (function(window) {
+                window.results = {
+                    test1: false,
+                    test2: false,
+                    test3: false,
+                    test4: false,
+                    test5: [],
+	                test6: false,
+	                test7: false,
+                    testdown:        [],
+                    testup:          [],
+                    testmove:        [],
+                    testclick:       [],
+                    testdoubleclick: []
+                };
+                document.querySelector('#test4').onclick = function(event) {
+                    results.test4 = true;
+                    event.preventDefault();
+                };
+                window.onmousedown = function(event) {
+                    results.testdown = [event.clientX, event.clientY];
+                };
+                window.onmouseup = function(event) {
+                    results.testup = [event.clientX, event.clientY];
+                };
+                window.onmousemove = function(event) {
+                    results.testmove = [event.clientX, event.clientY];
+                };
+                window.ondblclick = function(event) {
+                    results.testdoubleclick = [event.clientX, event.clientY];
+                };
+                var test5elem = document.querySelector('#test5');
+                test5elem.addEventListener('mousedown', function(event) {
+                    results.test5.push('mousedown');
+                });
+                test5elem.addEventListener('mouseup', function(event) {
+                    results.test5.push('mouseup');
+                });
+	            document.querySelector('#test6').onclick = function(event) {
+		            results.test6 = true;
+		            event.preventDefault();
+	            };
+	            document.querySelector('#test7').onclick = function(event) {
+		            results.test7 = true;
+		            event.preventDefault();
+	            };
+            })(window);
+        </script>
+    </body>
+</html>

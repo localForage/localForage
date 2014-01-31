@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# A little helper script to build the RPM.
+
+if [ ! -f "../package.json" ]; then
+    echo "Execute rpm build script in rpm directory"
+    exit 1
+fi
+
+name="casperjs"
+name=${name%.spec}
+topdir=$(mktemp -d)
+# Get version from package.json
+version=$(grep '"version"' ../package.json | sed 's/.*"\(.*\)": "\(.*\)".*/\2/' | sed 's/[-]//')
+builddir=${TMPDIR:-/tmp}/${name}-${version}
+sourcedir="${topdir}/SOURCES"
+buildroot="${topdir}/BUILD/${name}-${version}-root"
+
+mkdir -p ${topdir}/{RPMS,SRPMS,SOURCES,BUILD}
+mkdir -p ${buildroot} ${builddir}
+
+echo "=> Copying sources..."
+( cd .. && tar cf - ./[A-Z]* ./package.json ./bin ./samples ./tests ./modules | tar xf - -C ${builddir} )
+
+echo "=> Creating source tarball under ${sourcedir}..."
+( cd ${builddir}/.. && tar zcf ${sourcedir}/${name}-${version}.tar.gz ${name}-${version} )
+
+echo "=> Building RPM..."
+rpm=$(rpmbuild --define "_topdir ${topdir}" --define "_version ${version}" --buildroot ${buildroot} --clean -bb ${name}.spec | awk '/\/RPMS\// { print $2; }')
+
+if [ $? -ne 0 ]; then
+    echo "Failed to build RPM package."
+    exit 1
+fi
+
+echo ${rpm}
+cp ${rpm} ${TMPDIR:-/tmp}/
+rm -fr ${topdir}
+
+echo "RPM package build finished."
+echo ${TMPDIR:-/tmp}/${rpm##*/}

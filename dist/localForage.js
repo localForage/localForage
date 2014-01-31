@@ -1128,6 +1128,9 @@ requireModule('promise/polyfill').polyfill();
     // saved, or something like that.
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
+            // Save the original value to pass to the callback.
+            var originalValue = value;
+
             try {
                 value = JSON.stringify(value);
             } catch (e) {
@@ -1139,10 +1142,10 @@ requireModule('promise/polyfill').polyfill();
             localStorage.setItem(key, value);
 
             if (callback) {
-                callback(value);
+                callback(originalValue);
             }
 
-            resolve(value);
+            resolve(originalValue);
         });
     }
 

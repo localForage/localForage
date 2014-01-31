@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>CasperJS test popup</title>
+    </head>
+    <body>
+        <a href="/tests/site/form.html" target="_blank">new window</a>
+        <a href="#" class="close", onclick="w && w.close();return false">close</a>
+        <script>
+        var w;
+        setTimeout(function() {
+            w = window.open("http://localhost:54321/tests/site/index.html",
+                            "popup", "menubar=no, status=no, scrollbars=no, menubar=no, width=400, height=300");
+        }, 200);
+        </script>
+    </body>
+</html>

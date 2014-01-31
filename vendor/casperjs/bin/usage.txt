@@ -1,0 +1,14 @@
+Usage: casperjs [options] script.[js|coffee] [script argument [script argument ...]]
+       casperjs [options] test [test path [test path ...]]
+       casperjs [options] selftest
+       casperjs [options] __selfcommandtest
+
+Options:
+
+--verbose   Prints log messages to the console
+--log-level Sets logging level
+--help      Prints this help
+--version   Prints out CasperJS version
+--engine=name Use the given engine. Current supported engine: phantomjs and slimerjs
+
+Read the docs http://docs.casperjs.org/

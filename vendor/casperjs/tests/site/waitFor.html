@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>waitFor test</title>
+    </head>
+    <body>
+        <img src="images/phantom.png"/>
+        <ul>
+            <li>one</li>
+            <li>two</li>
+            <li>three</li>
+        </ul>
+        <div id="textChange" >
+            Loading...
+        </div>
+        <div id="encoded">Voil&agrave;</div>
+        <p style="display:none;">I'm hidden.</p>
+        <p>I'm visible.</p>
+        <script>
+        setTimeout(function() {
+            var li = document.createElement('li')
+            li.appendChild(document.createTextNode('four'));
+            document.querySelector('ul').appendChild(li);
+            document.getElementById('textChange').innerHTML = 'Done';
+        }, 500);
+        </script>
+    </body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "name": "casperjs",
+  "description": "A navigation scripting & testing utility for PhantomJS and SlimerJS",
+  "version": "1.1.0-beta3",
+  "keywords": [
+    "phantomjs",
+    "slimerjs",
+    "test",
+    "testing",
+    "scraping"
+  ],
+  "bin": "./bin/casperjs",
+  "author": {
+    "name": "Nicolas Perriault",
+    "email": "nicolas@perriault.net",
+    "web": "https://nicolas.perriault.net/"
+  },
+  "dependencies": {
+    "phantomjs": ">=1.8.2"
+  },
+  "bugs": {
+    "url": "https://github.com/n1k0/casperjs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/n1k0/casperjs.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "homepage": "http://casperjs.org"
+}

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>CasperJS test form</title>
+    </head>
+    <body>
+        <form action="result.html" enctype="multipart/form-data">
+            <input type="text" name="email" placeholder="email" id="email">
+            <input type="password" name="password" placeholder="password">
+            <input type="text" name="language" placeholder="language">
+            <input type="whatever" name="strange">
+            <textarea name="content"></textarea>
+            <select name="topic">
+                <option>foo</option>
+                <option value="bar">baz</option>
+            </select>
+            <input type="checkbox" name="check">
+            <input type="radio" name="choice" value="yes">
+            <input type="radio" name="choice" value="no">
+            <input type="file" name="file">
+            <input type="checkbox" name="checklist[]" value="1">
+            <input type="checkbox" name="checklist[]" value="2">
+            <input type="checkbox" name="checklist[]" value="3">
+            <input type="submit" name="submit" value="submit">
+        </form>
+        <form id="no-type-test-form" action="#" enctype="multipart/form-data">
+            <input name="notype">
+        </form>
+
+        <script>
+            (function () {
+                'use strict';
+
+                // El-cheapo autocomplete
+
+                var choices = [
+                        'dutch',
+                        'danish',
+                        'english',
+                        'french',
+                        'german',
+                        'greek',
+                        'irish',
+                        'italian',
+                        'portuguese',
+                        'spanish'
+                    ],
+
+                    blurAutocomplete = function () {
+                        var el = document.getElementById('autocomplete');
+                        if (el) {
+                            el.parentNode.removeChild(el);
+                        }
+                    },
+
+                    input = document.querySelector('input[name="language"]');
+
+                input.onkeyup = function () {
+                    var that = this,
+                        value = this.value,
+                        html = '',
+                        el,
+                        i;
+
+                    for (i = 0; i < choices.length; i += 1) {
+                        if (choices[i].search(value) >= 0) {
+                            html += '<li>' + choices[i] + '</li>';
+                        }
+                    }
+
+                    el = document.getElementById('autocomplete');
+                    if (!el) {
+                        el = document.createElement('ul');
+                        el.setAttribute('id', 'autocomplete');
+                        el.onclick = function (e) {
+                            that.value = e.target.innerHTML;
+                        };
+
+                        document.getElementsByTagName('body')[0].appendChild(el);
+                    }
+
+                    el.innerHTML = html;
+                };
+
+                input.onblur = function () {
+                    window.setTimeout(blurAutocomplete, 200);
+                };
+
+            }());
+        </script>
+    </body>
+</html>

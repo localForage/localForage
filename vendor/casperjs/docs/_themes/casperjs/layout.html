@@ -1,0 +1,7 @@
+{%- extends "basic/layout.html" %}
+{% block extrahead %}
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Asap:400,700,400italic,700italic&amp;subset=latin,latin-ext">
+    <link rel="stylesheet" title="Dark theme" href="{{ pathto('_static/casperjs-dark.css', 1) }}">
+    <link rel="alternate stylesheet" title="Light theme" href="{{ pathto('_static/casperjs-light.css', 1) }}">
+    <script type="text/javascript" src="{{ pathto('_static/style-switcher.js', 1) }}"></script>
+{% endblock extrahead %}

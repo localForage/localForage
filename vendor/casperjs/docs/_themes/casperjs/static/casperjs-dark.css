@@ -1,0 +1,991 @@
+/**
+ * casper.css
+ * ~~~~~~~~~~~~~~~
+ *
+ * CasperJS stylesheet, based on RTD one:
+ *
+ * Sphinx stylesheet -- sphinxdoc theme. Originally created by
+ * Armin Ronacher for Werkzeug.
+ *
+ * Customized for ReadTheDocs by Eric Pierce & Eric Holscher
+ *
+ * :copyright: Copyright 2007-2010 by the Sphinx team, see AUTHORS.
+ * :license: BSD, see LICENSE for details.
+ *
+ */
+
+@import url("basic.css");
+
+/* PAGE LAYOUT -------------------------------------------------------------- */
+
+body {
+    font: 100%/1.5 Asap, "ff-meta-web-pro-1", "ff-meta-web-pro-2", Arial, "Helvetica Neue", sans-serif;
+    text-align: center;
+    color: #fff;
+    background-color: #222;
+    padding: 0;
+    margin: 0;
+}
+
+img {
+    border: 0;
+    max-width: 100%;
+}
+
+.body > .admonition.note {
+    margin: 0 0 2em 0;
+}
+    .body > .admonition.note .first {
+        display: none;
+    }
+
+div.document {
+    text-align: left;
+    background-color: #333;
+}
+
+div.bodywrapper {
+    background: #111 url(images/bg.png);
+    border-left: 1px solid #333;
+    border-bottom: 1px solid #333;
+    margin: 0 18em 0 0;
+}
+
+div.body {
+    margin: 0;
+    padding: 0.5em 1.3em;
+    min-width: 20em;
+}
+
+div.related {
+    font-size: 1em;
+    background-color: #465158;
+}
+
+div.documentwrapper {
+    float: left;
+    width: 100%;
+    background-color: #333;
+}
+
+
+/* HEADINGS --------------------------------------------------------------- */
+
+h1 {
+    margin: 0;
+    padding: 0 0 0.3em 0;
+    font-size: 2em;
+    line-height: 1.15;
+    color: #fff;
+    clear: both;
+}
+
+h2 {
+    margin: 2em 0 0.2em 0;
+    font-size: 1.35em;
+    padding: 0;
+    color: #fff;
+}
+    .section h2 {
+        border-bottom: 3px solid #777;
+        margin-top: 2.5em
+    }
+
+h3 {
+    margin: 1em 0 -0.3em 0;
+    font-size: 1.2em;
+    color: #fff;
+}
+
+div.body h1 a, div.body h2 a, div.body h3 a, div.body h4 a, div.body h5 a, div.body h6 a {
+    color: #fff;
+}
+
+h1 a.anchor, h2 a.anchor, h3 a.anchor, h4 a.anchor, h5 a.anchor, h6 a.anchor {
+    display: none;
+    margin: 0 0 0 0.3em;
+    padding: 0 0.2em 0 0.2em;
+    color: #333 !important;
+}
+
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor,
+h5:hover a.anchor, h6:hover a.anchor {
+    display: inline;
+}
+
+h1 a.anchor:hover, h2 a.anchor:hover, h3 a.anchor:hover, h4 a.anchor:hover,
+h5 a.anchor:hover, h6 a.anchor:hover {
+    color: #777;
+    background-color: #eee;
+}
+
+
+/* LINKS ------------------------------------------------------------------ */
+
+/* Normal links get a pseudo-underline */
+a {
+    color: #0bc;
+    text-decoration: none;
+}
+a.reference, a.internal {
+    color: #abf;
+}
+
+a.reference em, a.internal em {
+    font-style: normal;
+}
+
+/* Links in sidebar, TOC, index trees and tables have no underline */
+.sphinxsidebar a,
+.toctree-wrapper a,
+.indextable a,
+#indices-and-tables a {
+    color: #0bc;
+    text-decoration: none;
+    border-bottom: none;
+}
+
+/* Most links get an underline-effect when hovered */
+a:hover,
+div.toctree-wrapper a:hover,
+.indextable a:hover,
+#indices-and-tables a:hover {
+    color: #2be;
+    text-decoration: none;
+}
+
+/*toctree dedicated styles*/
+div.toctree-wrapper ul {
+    list-style-type: none;
+    padding-left: 2em;
+}
+
+div.toctree-wrapper ul ul {
+    margin-top: .5em;
+}
+
+div.toctree-wrapper li {
+    margin-bottom: .5em;
+}
+    div.toctree-wrapper a, .toctree-wrapper a:visited {
+        padding: .2em .4em;
+        background-color: #555;
+        color:#fff;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+    }
+    div.toctree-wrapper a:hover {
+        color: #eee;
+        background-color: #777;
+    }
+
+/* Footer links */
+div.footer a {
+    color: #0bc;
+    text-decoration: none;
+    border: none;
+}
+div.footer a:hover {
+    color: #2be;
+    border: none;
+}
+
+/* Permalink anchor (subtle grey with a red hover) */
+div.body a.headerlink {
+    color: #ccc;
+    font-size: 1em;
+    margin-left: 6px;
+    padding: 0 4px 0 4px;
+    text-decoration: none;
+    border: none;
+}
+div.body a.headerlink:hover {
+    color: #fff;
+    border: none;
+}
+
+
+/* NAVIGATION BAR --------------------------------------------------------- */
+
+div.related ul {
+  height: 2.5em;
+  min-height: 2.5em;
+  background-color: #2c2c2c;
+  background-image: -moz-linear-gradient(top, #333333, #222222);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#333333), to(#222222));
+  background-image: -webkit-linear-gradient(top, #333333, #222222);
+  background-image: -o-linear-gradient(top, #333333, #222222);
+  background-image: linear-gradient(to bottom, #333333, #222222);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff333333', endColorstr='#ff222222', GradientType=0);
+  border-bottom: 1px solid #222;
+  -moz-border-radius: 4px;
+  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+  -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+  *zoom: 1;
+}
+
+div.related ul li {
+    margin: 0;
+    padding: 0.65em 0;
+    float: left;
+    display: block;
+    color: white; /* For the >> separators */
+    font-size: 0.8em;
+}
+
+div.related ul li.right {
+    float: right;
+    margin-right: 5px;
+    color: transparent; /* Hide the | separators */
+}
+
+/* "Breadcrumb" links in nav bar */
+div.related ul li a {
+    order: none;
+    background-color: inherit;
+    font-weight: bold;
+    margin: 6px 0 6px 4px;
+    line-height: 1.75em;
+    color: #ffffff;
+    padding: 0.4em 0.8em;
+    border: none;
+    border-radius: 3px;
+}
+/* previous / next / modules / index links look more like buttons */
+div.related ul li.right a {
+    margin: 0.375em 0;
+    background-color: #555;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+/* All navbar links light up as buttons when hovered */
+div.related ul li a:hover {
+    background-color: #777;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+/* Take extra precautions for tt within links */
+a tt,
+div.related ul li a tt {
+    background: inherit !important;
+    color: inherit !important;
+}
+
+.sphinxsidebar a tt span.pre {
+    color: #eee;
+    background-color: #444;
+    padding: 0 .5em;
+    border-radius: 4px;
+}
+
+.sphinxsidebar a:active tt span.pre {
+    color: #f66;
+}
+
+
+/* SIDEBAR ---------------------------------------------------------------- */
+
+div.sphinxsidebarwrapper {
+    padding: 0;
+}
+
+div.sphinxsidebar {
+    margin: 0;
+    margin-left: -100%;
+    float: right;
+    top: 3em;
+    left: 0;
+    padding: 0 1em;
+    width: 18em;
+    font-size: 90%;
+
+}
+
+div.sphinxsidebar img {
+    max-width: 12em;
+}
+
+div.sphinxsidebar input[type="image"] {
+    display: inline;
+    float: none;
+    border: 0;
+}
+
+div.sphinxsidebar h3,
+div.sphinxsidebar h4,
+div.sphinxsidebar p.logo {
+    margin: 1.2em 0 0.3em 0;
+    font-size: 1em;
+    padding: 0;
+    color: #fff;
+    font-family: Asap, Arial, "ff-meta-web-pro-1", "ff-meta-web-pro-2", "Arial", "Helvetica Neue", sans-serif;
+}
+
+div.sphinxsidebar h3 a {
+    color: #fff;
+}
+
+div.sphinxsidebar ul,
+div.sphinxsidebar p {
+    margin-top: 0;
+    padding-left: 0;
+    line-height: 130%;
+
+}
+
+/* No bullets for nested lists, but a little extra indentation */
+div.sphinxsidebar ul ul {
+    list-style-type: none;
+    margin-left: 1.2em;
+    padding: 0;
+}
+
+/* A little top/bottom padding to prevent adjacent links' borders
+ * from overlapping each other */
+div.sphinxsidebar ul li {
+    padding: 0;
+    margin: 2px 0;
+}
+
+/* A little left-padding to make these align with the ULs */
+div.sphinxsidebar p.topless {
+    padding-left: 0 0 0 1em;
+}
+
+/* Make these into hidden one-liners */
+div.sphinxsidebar ul li,
+div.sphinxsidebar p.topless {
+    white-space: nowrap;
+    overflow: hidden;
+    border: 1px solid transparent; /* To prevent things jumping around on hover */
+}
+/* ...which become visible when hovered */
+div.sphinxsidebar ul li:hover,
+div.sphinxsidebar p.topless:hover {
+    background-color: #333;
+    overflow: visible;
+
+
+}
+
+/* Search text box and "Go" button */
+#searchbox {
+    margin-top: 2em;
+    margin-bottom: 1em;
+    background: #666;
+    padding: 0.5em;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    margin-right: 0;
+}
+#searchbox h3 {
+    margin-top: 0;
+}
+
+/* Make search box and button abut and have a border */
+input,
+div.sphinxsidebar input {
+    border: 1px solid #999;
+    float: left;
+}
+
+/* Search textbox */
+input[type="text"] {
+    margin: 0;
+    padding: 0 3px;
+    height: 20px;
+    width: 144px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    -moz-border-radius-topleft: 3px;
+    -moz-border-radius-bottomleft: 3px;
+    -webkit-border-top-left-radius: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+}
+/* Search button */
+input[type="submit"] {
+    margin: 0 0 0 -1px; /* -1px prevents a double-border with textbox */
+    height: 22px;
+    color: #444;
+    background-color: #e8ecef;
+    padding: 1px 4px;
+    font-weight: bold;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    -moz-border-radius-topright: 3px;
+    -moz-border-radius-bottomright: 3px;
+    -webkit-border-top-right-radius: 3px;
+    -webkit-border-bottom-right-radius: 3px;
+}
+input[type="submit"]:hover {
+    color: #000;
+    background-color: #ddd;
+}
+
+div.sphinxsidebar p.searchtip {
+    clear: both;
+    padding: 0.5em 0 0 0;
+    color: #fff;
+    font-size: 0.9em;
+}
+
+/* Sidebar links are unusual */
+div.sphinxsidebar li a,
+div.sphinxsidebar p a {
+    color: #eee;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border: 1px solid transparent; /* To prevent things jumping around on hover */
+    padding: 0 5px 0 5px;
+}
+div.sphinxsidebar li a:hover,
+div.sphinxsidebar p a:hover {
+    color: #fff;
+    background-color: #333;
+}
+div.sphinxsidebar p.logo a {
+    border: 0;
+}
+
+/* Tweak any link appearing in a heading */
+div.sphinxsidebar h3 a {
+}
+
+
+/* OTHER STUFF ------------------------------------------------------------ */
+
+/* labels */
+.versionmodified {
+    font-style: normal;
+}
+
+.bookmarklet, .versionadded, .versionchanged {
+    display: inline-block;
+    padding: 4px 6px;
+    font-size: 13.536px;
+    font-weight: bold;
+    line-height: 14px;
+    color: #ffffff;
+    vertical-align: baseline;
+    white-space: nowrap;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    background-color: #999999;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    text-align: center;
+    font-style: normal;
+}
+    .bookmarklet a, .versionadded a, .versionchanged a {
+        color: #fff;
+    }
+
+.bookmarklet {
+    background-color: #2d6987;
+}
+
+.versionadded {
+    background-color: #468847;
+}
+    div.admonition p.versionadded,
+    div.warning p.versionadded {
+        padding: 4px 6px;
+    }
+
+.versionchanged {
+    background-color: #b04040;
+}
+    div.admonition p.versionchanged,
+    div.warning p.versionchanged {
+        padding: 4px 6px;
+    }
+
+/* Standard tags */
+cite, code, tt {
+    font-family: 'Source Code Pro', 'Consolas', 'Deja Vu Sans Mono',
+                 'Bitstream Vera Sans Mono', monospace;
+    font-size: 0.95em;
+    letter-spacing: 0.01em;
+}
+
+tt {
+    color: #f66;
+    background-color: #444;
+    padding: 0 5px;
+    font-size: 95%;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+h1 tt, h2 tt, h3 tt, h4 tt, h5 tt {
+    padding: 0;
+    background: none;
+}
+
+tt.descname, tt.descclassname, tt.xref {
+    border: 0;
+}
+
+hr {
+    border-top: 1px solid #777;
+    border-bottom: none;
+    margin: 2em auto;
+    width: 50%;
+}
+
+
+pre, #_fontwidthtest {
+    font-family: 'Source Code Pro', 'Consolas', 'Deja Vu Sans Mono',
+                 'Bitstream Vera Sans Mono', monospace;
+    margin: 1em 2em;
+    font-size: 0.95em;
+    letter-spacing: 0.015em;
+    line-height: 120%;
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    background-color: #eee;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+}
+
+pre a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+td.linenos pre {
+    margin: 1em 0em;
+}
+
+td.code pre {
+    margin: 1em 0em;
+}
+
+div.quotebar {
+    background-color: #f8f8f8;
+    max-width: 250px;
+    float: right;
+    padding: 2px 7px;
+    border: 1px solid #ccc;
+}
+
+div.topic {
+    background-color: #333;
+    border: 0;
+    padding-bottom: .5em;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 0 -0.5em 0 -0.5em;
+}
+
+table td, table th {
+    padding: 0.2em 0.5em 0.2em 0.5em;
+}
+
+
+/* ADMONITIONS AND WARNINGS ------------------------------------------------- */
+
+/* Shared by admonitions, warnings and sidebars */
+div.admonition,
+div.warning,
+div.sidebar {
+    font-size: 0.9em;
+    margin: 2em;
+    padding: 0;
+    /*
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    */
+}
+div.admonition p,
+div.warning p,
+div.sidebar p {
+    margin: 0.5em 1em 0.5em 1em;
+    padding: 0;
+}
+div.admonition pre,
+div.warning pre,
+div.sidebar pre {
+    margin: 0.4em 1em 0.4em 1em;
+}
+div.admonition p.admonition-title,
+div.warning p.admonition-title,
+div.sidebar p.sidebar-title {
+    margin: 0;
+    padding: 0.1em 0 0.1em 0.5em;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1em;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.5);
+}
+div.admonition ul, div.admonition ol,
+div.warning ul, div.warning ol,
+div.sidebar ul, div.sidebar ol {
+    margin: 0.1em 0.5em 0.5em 3em;
+    padding: 0;
+}
+
+
+/* Admonitions and sidebars only */
+div.admonition, div.sidebar {
+    border: none;
+    background-color: #555;
+    color: #fff;
+    padding: .5em;
+    margin-bottom: 1em;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+
+}
+div.admonition p.admonition-title,
+div.sidebar p.sidebar-title {
+    padding-bottom: .5em;
+    border-bottom: 1px solid #888;
+}
+
+
+/* Warnings only */
+div.warning {
+    background-color: #333;
+}
+div.warning p.admonition-title {
+    background-color: #b04040;
+    border-bottom: 1px solid #900000;
+    border-radius: 4px;
+}
+
+
+/* Sidebars only */
+div.sidebar {
+  max-width: 30%;
+}
+
+
+
+div.versioninfo {
+    margin: 1em 0 0 0;
+    border: 1px solid #ccc;
+    background-color: #DDEAF0;
+    padding: 8px;
+    line-height: 1.3em;
+    font-size: 0.9em;
+}
+
+.viewcode-back {
+    font-family: Asap, 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva',
+                 'Verdana', sans-serif;
+}
+
+div.viewcode-block:target {
+    background-color: #f4debf;
+    border-top: 1px solid #ac9;
+    border-bottom: 1px solid #ac9;
+}
+
+dl {
+    margin: 1em 0 2.5em 0;
+}
+
+/* Highlight target when you click an internal link */
+dt:target {
+    background: #ffe080;
+}
+/* Don't highlight whole divs */
+div.highlight {
+    background: transparent;
+}
+    div.highlight pre,
+    div.highlight-javascript pre,
+    div.highlight-html pre {
+        background-color: #4b4b4b;
+        background-color: rgba(75, 75, 75, 0.5);
+        color: #eee;
+        font-size: 15px;
+        line-height: 21px;
+        white-space: pre;
+        overflow: auto;
+        border: none;
+    }
+        div.admonition pre {
+            background-color: #333;
+        }
+
+/* But do highlight spans (so search results can be highlighted) */
+span.highlight {
+    background: #111;
+}
+
+div.highlight .c1 {
+    color: #999;
+}
+div.highlight .cp {
+    color: #3aC;
+}
+
+div.highlight .s,
+div.highlight .s1,
+div.highlight .s2 {
+    color: orange;
+}
+
+div.highlight .kc {
+    color: red;
+}
+div.highlight .k,
+div.highlight .kd {
+    color: #3aC;
+}
+
+div.highlight .nb {
+    color: #e88;
+}
+div.highlight .nx {
+    color: #fff;
+}
+
+div.highlight .p {
+    color: #eee;
+}
+
+div.footer {
+    color: #eeeeee;
+    padding: 1em 2em 1em 2em;
+    clear: both;
+    font-size: 0.8em;
+    text-align: center;
+    background-color: #222;
+}
+
+p {
+    margin: 0.8em 0 0.5em 0;
+}
+
+.section p img.math {
+    margin: 0;
+}
+
+
+.section p img {
+    margin: 1em 2em;
+}
+
+
+/* MOBILE LAYOUT -------------------------------------------------------------- */
+
+@media screen and (max-width: 600px) {
+
+    h1, h2, h3, h4, h5 {
+        position: relative;
+    }
+
+    ul {
+        padding-left: 1.25em;
+    }
+
+    div.bodywrapper a.headerlink, #indices-and-tables h1 a {
+        color: #e6e6e6;
+        font-size: 80%;
+        float: right;
+        line-height: 1.8;
+        position: absolute;
+        right: -0.7em;
+        visibility: inherit;
+    }
+
+    div.bodywrapper h1 a.headerlink, #indices-and-tables h1 a {
+        line-height: 1.5;
+    }
+
+    pre {
+        font-size: 0.7em;
+        overflow: auto;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
+
+    div.related ul {
+        height: 2.5em;
+        padding: 0;
+        text-align: left;
+    }
+
+    div.related ul li {
+        clear: both;
+        color: #465158;
+        padding: 0.2em 0;
+    }
+
+    div.related ul li:last-child {
+        border-bottom: 1px dotted #8ca1af;
+        padding-bottom: 0.4em;
+        margin-bottom: 1em;
+        width: 100%;
+    }
+
+    div.related ul li a {
+        color: #fff;
+        padding-right: 0;
+    }
+
+    div.related ul li a:hover {
+        background: inherit;
+        color: inherit;
+    }
+
+    div.related ul li.right {
+        clear: none;
+        padding: 0.65em 0;
+        margin-bottom: 0.5em;
+    }
+
+    div.related ul li.right a {
+        color: #fff;
+        padding-right: 0.8em;
+    }
+
+    div.related ul li.right a:hover {
+        background-color: #8ca1af;
+    }
+
+    div.body {
+        clear: both;
+        min-width: 0;
+        word-wrap: break-word;
+    }
+
+    div.bodywrapper {
+        margin: 0 0 0 0;
+    }
+
+    div.sphinxsidebar {
+        float: none;
+        margin: 0;
+        width: auto;
+    }
+
+    div.sphinxsidebar input[type="text"] {
+        height: 2em;
+        line-height: 2em;
+        width: 70%;
+    }
+
+    div.sphinxsidebar input[type="submit"] {
+        height: 2em;
+        margin-left: 0.5em;
+        width: 20%;
+    }
+
+    div.sphinxsidebar p.searchtip {
+        background: inherit;
+        margin-bottom: 1em;
+    }
+
+    div.sphinxsidebar ul li, div.sphinxsidebar p.topless {
+        white-space: normal;
+    }
+
+    .bodywrapper img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 100%;
+    }
+
+    div.documentwrapper {
+        float: none;
+    }
+
+    div.admonition, div.warning, pre, blockquote {
+        margin-left: 0em;
+        margin-right: 0em;
+    }
+
+    .body p img {
+        margin: 0;
+    }
+
+    #searchbox {
+        background: transparent;
+    }
+
+    .related:not(:first-child) li {
+        display: none;
+    }
+
+    .related:not(:first-child) li.right {
+        display: block;
+    }
+
+    div.footer {
+        padding: 1em;
+    }
+
+    .rtd_doc_footer .rtd-badge {
+        float: none;
+        margin: 1em auto;
+        position: static;
+    }
+
+    .rtd_doc_footer .rtd-badge.revsys-inline {
+        margin-right: auto;
+        margin-bottom: 2em;
+    }
+
+    table.indextable {
+        display: block;
+        width: auto;
+    }
+
+    .indextable tr {
+        display: block;
+    }
+
+    .indextable td {
+        display: block;
+        padding: 0;
+        width: auto !important;
+    }
+
+    .indextable td dt {
+        margin: 1em 0;
+    }
+
+    ul.search {
+        margin-left: 0.25em;
+    }
+
+    ul.search li div.context {
+        font-size: 90%;
+        line-height: 1.1;
+        margin-bottom: 1;
+        margin-left: 0;
+    }
+
+}
+
+.donate {
+    text-align: center;
+}
+
+.donate .flattr {
+    margin-top: 1.5em;
+}
