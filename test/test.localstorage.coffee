@@ -1,8 +1,8 @@
 'use strict'
 
-casper.test.begin "Testing callback API with localStorage driver", 9, (test) ->
+casper.test.begin "Testing localStorage driver", 9, (test) ->
   casper.start "#{casper.TEST_URL}localstorage.html", ->
-    test.info "API matches localStorage API"
+    test.info "Test API using callbacks"
 
     test.assertEval ->
       localForage.driver is 'localStorageWrapper'
@@ -18,7 +18,6 @@ casper.test.begin "Testing callback API with localStorage driver", 9, (test) ->
     , 'localStorage API is available'
 
   casper.then ->
-    test.info "Empty localForage state"
     @evaluate ->
       localForage.length (length) ->
         window._testLength = length
@@ -41,7 +40,6 @@ casper.test.begin "Testing callback API with localStorage driver", 9, (test) ->
       , 'localStorage returns undefined for non-existant key'
 
   casper.then ->
-    test.info "Get and set values"
     @evaluate ->
       localForage.setItem 'officeName', 'Initech', (value) ->
         window._callbackReturnValue = value
