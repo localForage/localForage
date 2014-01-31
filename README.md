@@ -1,6 +1,4 @@
-# localForage #
-
-[![Build Status](https://secure.travis-ci.org/mozilla/localForage.png?branch=master)](http://travis-ci.org/mozilla/localForage)
+# localForage [![Build Status](https://secure.travis-ci.org/mozilla/localForage.png?branch=master)](http://travis-ci.org/mozilla/localForage) #
 
 localForage is a handy library that improves the offline experience of your web
 app by using asynchronous storage (via IndexedDB or WebSQL where available) but
