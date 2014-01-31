@@ -6,6 +6,8 @@
     // a prompt.
     var DB_SIZE = 5 * 1024 * 1024;
     var DB_VERSION = '1.0';
+    var SERIALIZED_MARKER = '__lfsc__:';
+    var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
     var STORE_NAME = 'keyvaluepairs';
     var Promise = window.Promise;
 
@@ -29,15 +31,24 @@
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
             db.transaction(function (t) {
-                t.executeSql('SELECT * FROM localforage LIMIT 1', [], function (t, results) {
-                    // var result = results.rows.length ? results.rows.item(i) : undefined;
-                    var result = results.rows.item(0);
+                t.executeSql('SELECT * FROM localforage WHERE key = ? LIMIT 1', [key], function (t, results) {
+                    var result = results.rows.length ? results.rows.item(0).value : null;
 
-                    if (callback) {
-                        callback(result.value);
+                    // Check to see if this is serialized content we need to
+                    // unpack.
+                    if (result && result.substr(0, SERIALIZED_MARKER_LENGTH) === SERIALIZED_MARKER) {
+                        try {
+                            result = JSON.parse(result.slice(SERIALIZED_MARKER_LENGTH));
+                        } catch (e) {
+                            reject(e);
+                        }
                     }
 
-                    resolve(result.value);
+                    if (callback) {
+                        callback(result);
+                    }
+
+                    resolve(result);
                 }, null);
             });
         });
@@ -45,8 +56,21 @@
 
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
+            var valueToSave;
+            // We need to serialize certain types of objects using WebSQL;
+            // otherwise they'll get stored as strings as be useless when we
+            // use getItem() later.
+            if (typeof(value) === 'array' || typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
+                // Mark the content as "localForage serialized content" so we
+                // know to run JSON.parse() on it when we get it back out from
+                // the database.
+                valueToSave = SERIALIZED_MARKER + JSON.stringify(value);
+            } else {
+                valueToSave = value;
+            }
+
             db.transaction(function (t) {
-                t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, value], function() {
+                t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, valueToSave], function() {
                     if (callback) {
                         callback(value);
                     }
@@ -76,7 +100,7 @@
     function clear(callback) {
         return new Promise(function(resolve, reject) {
             db.transaction(function (t) {
-                t.executeSql('TRUNCATE localforage', [key], function() {
+                t.executeSql('DELETE FROM localforage', [], function(t, results) {
                     if (callback) {
                         callback();
                     }
@@ -94,7 +118,7 @@
             db.transaction(function (t) {
                 // Ahhh, SQL makes this one soooooo easy.
                 t.executeSql('SELECT COUNT(key) FROM localforage', [], function (t, results) {
-                    var result = results.rows.length;
+                    var result = results.rows.item(0)['COUNT(key)'];
 
                     if (callback) {
                         callback(result);

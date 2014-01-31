@@ -1,12 +1,12 @@
 'use strict'
 
-casper.test.begin "Testing localStorage driver", (test) ->
-  casper.start "#{casper.TEST_URL}localstorage.html", ->
+casper.test.begin "Testing WebSQL driver", (test) ->
+  casper.start "#{casper.TEST_URL}websql.html", ->
     test.info "Test API using callbacks"
 
     test.assertEval ->
-      localForage.driver is 'localStorageWrapper'
-    , 'localStorage driver is active (forcing localStorage works)'
+      localForage.driver is 'webSQLStorage'
+    , 'WebSQL driver is active (this test should be run with casperjs)'
 
     test.assertEval ->
       typeof localForage.getItem is 'function' and
@@ -25,17 +25,6 @@ casper.test.begin "Testing localStorage driver", (test) ->
           __utils__.findOne('.status').id = 'start-test'
 
     @waitForSelector '#start-test', ->
-      test.assertEval ->
-        window._testLength is 0
-      , 'Length is zero at start of test'
-
-  casper.then ->
-    @evaluate ->
-      localForage.length (length) ->
-        window._testLength = length
-        __utils__.findOne('.status').id = 'zero-length'
-
-    @waitForSelector '#zero-length', ->
       test.assertEval ->
         window._testLength is 0
       , 'Length is zero at start of test'
