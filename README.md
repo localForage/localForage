@@ -1,5 +1,7 @@
 # localForage #
 
+[![Build Status](https://secure.travis-ci.org/mozilla/localForage.png?branch=master)](http://travis-ci.org/mozilla/localForage)
+
 localForage is a handy library that improves the offline experience of your web
 app by using asynchronous storage (via IndexedDB or WebSQL where available) but
 with a simple, `localStorage`-like API.
@@ -104,3 +106,13 @@ lines of really simple code.
 
 Of course, Backbone.js is entirely optional and you can use localForage
 without it!
+
+# License #
+
+This program is free software; it is distributed under an
+[Apache License](http://github.com/mozilla/localForage/blob/master/LICENSE).
+
+---
+
+Copyright (c) 2013-2014 [Mozilla](https://mozilla.org)
+([Contributors](https://github.com/mozilla/localForage/graphs/contributors)).
