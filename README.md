@@ -23,7 +23,11 @@ storage will be used for:
 * IE Mobile (10+)
 * Opera (15+)
 * Opera Mobile (11+)
+* Phonegap/Apache Cordova (1.2.0+)
 * Safari (3.1+)
+
+Note that, because of WebSQL support, apps packaged with Phonegap will also
+use asynchronous storage. Pretty slick!
 
 ## Callbacks ##
 
