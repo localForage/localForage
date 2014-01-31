@@ -1,3 +1,13 @@
- language: node_js
- node_js:
-   - "0.8"
+env:
+  - SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 PATH=$TRAVIS_BUILD_DIR/slimerjs:$PATH
+addons:
+  firefox: "25.0"
+before_script:
+  - "sh -e /etc/init.d/xvfb start"
+  - "echo 'Installing Slimer'"
+  - "wget http://download.slimerjs.org/v0.9/0.9.0/slimerjs-0.9.0.zip"
+  - "unzip slimerjs-0.9.0.zip"
+  - "mv slimerjs-0.9.0 ./slimerjs"
+language: node_js
+node_js:
+- "0.8"

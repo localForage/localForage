@@ -3,6 +3,3 @@ test: build
 
 build:
 	sh ./build.sh
-
-intern:
-	node node_modules/intern/client.js config=test/intern
