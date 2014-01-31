@@ -1,8 +1,8 @@
 'use strict'
 
-casper.test.begin "Testing localStorage driver", 8, (test) ->
+casper.test.begin "Testing callback API with localStorage driver", 9, (test) ->
   casper.start "#{casper.TEST_URL}localstorage.html", ->
-    test.info 'Testing callback API with localStorage driver'
+    test.info "API matches localStorage API"
 
     test.assertEval ->
       localForage.driver is 'localStorageWrapper'
@@ -18,6 +18,7 @@ casper.test.begin "Testing localStorage driver", 8, (test) ->
     , 'localStorage API is available'
 
   casper.then ->
+    test.info "Empty localForage state"
     @evaluate ->
       localForage.length (length) ->
         window._testLength = length
@@ -40,6 +41,7 @@ casper.test.begin "Testing localStorage driver", 8, (test) ->
       , 'localStorage returns undefined for non-existant key'
 
   casper.then ->
+    test.info "Get and set values"
     @evaluate ->
       localForage.setItem 'officeName', 'Initech', (value) ->
         window._callbackReturnValue = value
@@ -87,7 +89,24 @@ casper.test.begin "Testing localStorage driver", 8, (test) ->
     @waitForSelector '#value-obtained', ->
       test.assertEval ->
         window._testValue is 3 and typeof window._testValue isnt 'string'
-      , 'Store and retrieve a value that is not a string type'
+      , 'Store and retrieve a value that is not of type "String"'
+
+  casper.then ->
+    @evaluate ->
+      localForage.setItem 'namesOfUnhappyEmployees', ['Peter', 'Michael', 'Samir'], ->
+        window._testValue = null
+        __utils__.findOne('.status').id = 'value-set'
+
+    @waitForSelector '#value-set', ->
+      @evaluate ->
+        localForage.getItem 'namesOfUnhappyEmployees', (array) ->
+          window._testValue = array
+          __utils__.findOne('.status').id = 'value-obtained'
+
+    @waitForSelector '#value-obtained', ->
+      test.assertEval ->
+        window._testValue.length is 3 and window._testValue[1] is 'Michael'
+      , 'Store and retrieve an array without modification'
 
   casper.run ->
     test.done()
