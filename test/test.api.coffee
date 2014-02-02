@@ -1,17 +1,12 @@
 'use strict'
 
-# We run the same test suite for multiple drivers.
-DRIVER = casper.cli.get('driver') or 'localStorageWrapper'
-DRIVER_NAME = casper.cli.get('driver-name') or 'localStorage'
-URL = casper.cli.get('url') or 'localstorage'
-
-casper.test.begin "Testing #{DRIVER_NAME} driver", (test) ->
-  casper.start "#{casper.TEST_URL}#{URL}.html", ->
+casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
+  casper.start "#{casper.TEST_URL}#{casper.URL}.html", ->
     test.info "Test API using callbacks"
 
     test.assertEvalEquals ->
       localForage.driver
-    , DRIVER, "#{DRIVER} driver is active for #{DRIVER_NAME} test."
+    , casper.DRIVER, "#{casper.DRIVER} driver is active for #{casper.DRIVER_NAME} test."
 
     test.assertEval ->
       typeof localForage.getItem is 'function' and
