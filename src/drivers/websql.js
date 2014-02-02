@@ -117,8 +117,8 @@
         return new Promise(function(resolve, reject) {
             db.transaction(function (t) {
                 // Ahhh, SQL makes this one soooooo easy.
-                t.executeSql('SELECT COUNT(key) FROM localforage', [], function (t, results) {
-                    var result = results.rows.item(0)['COUNT(key)'];
+                t.executeSql('SELECT COUNT(key) as c FROM localforage', [], function (t, results) {
+                    var result = results.rows.item(0).c;
 
                     if (callback) {
                         callback(result);
