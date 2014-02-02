@@ -105,6 +105,29 @@ lines of really simple code.
 Of course, Backbone.js is entirely optional and you can use localForage
 without it!
 
+# Running Tests #
+
+localForage is designed to run in the browser, so the tests explicitly require
+a browser environment instead of any JavaScript environment (i.e. node.js).
+The tests are run on both a headless WebKit (using
+[PhantomJS](http://phantomjs.org)) and "headless" Gecko (using
+[SlimerJS](http://slimerjs.org/)). The tests are written using
+[CasperJS's tester module](http://docs.casperjs.org/en/latest/modules/tester.html).
+We run tests against Gecko and WebKit to ensure that IndexedDB and WebSQL
+support is functioning as-expected.
+
+On OS X, you'll need to install both PhantomJS and SlimerJS like so:
+
+```shell
+brew install phantomjs slimerjs
+```
+
+Generally you'll need a version of Firefox or XULRunner installed for SlimerJS
+to run your tests. Once everything is installed you can simply type `make test`
+to make sure the code is working as expected.
+
+TODO: Provide Windows/Linux instructions; check into XULRunner setup.
+
 # License #
 
 This program is free software; it is distributed under an
