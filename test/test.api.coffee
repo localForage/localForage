@@ -6,7 +6,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
     test.assertEvalEquals ->
       localForage.driver
-    , casper.DRIVER, "#{casper.DRIVER} driver is active for #{casper.DRIVER_NAME} test."
+    , casper.DRIVER, "#{casper.DRIVER} driver is active"
 
     test.assertEval ->
       typeof localForage.getItem is 'function' and
@@ -15,14 +15,13 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
       typeof localForage.length is 'function' and
       typeof localForage.removeItem is 'function' and
       typeof localForage.key is 'function'
-    , 'localStorage API is available'
+    , "localStorage API is available using #{casper.DRIVER}"
 
   casper.then ->
     @evaluate ->
-      localForage.clear ->
-        localForage.length (length) ->
-          window._testLength = length
-          __utils__.findOne('.status').id = 'start-test'
+      localForage.length (length) ->
+        window._testLength = length
+        __utils__.findOne('.status').id = 'start-test'
 
     @waitForSelector '#start-test', ->
       test.assertEval ->
@@ -31,14 +30,15 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.length (length) ->
-        window._testLength = length
-        __utils__.findOne('.status').id = 'zero-length'
+      localForage.clear ->
+        localForage.length (length) ->
+          window._testLength = length
+          __utils__.findOne('.status').id = 'clear-callback'
 
-    @waitForSelector '#zero-length', ->
+    @waitForSelector '#clear-callback', ->
       test.assertEval ->
         window._testLength is 0
-      , 'Length is zero at start of test'
+      , 'clear() runs callback after completed'
 
   casper.then ->
     @evaluate ->
