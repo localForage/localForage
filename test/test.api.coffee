@@ -1,12 +1,17 @@
 'use strict'
 
-casper.test.begin "Testing IndexedDB driver", (test) ->
-  casper.start "#{casper.TEST_URL}indexeddb.html", ->
+# We run the same test suite for multiple drivers.
+DRIVER = casper.cli.get('driver') or 'localStorageWrapper'
+DRIVER_NAME = casper.cli.get('driver-name') or 'localStorage'
+URL = casper.cli.get('url') or 'localstorage'
+
+casper.test.begin "Testing #{DRIVER_NAME} driver", (test) ->
+  casper.start "#{casper.TEST_URL}#{URL}.html", ->
     test.info "Test API using callbacks"
 
-    test.assertEval ->
-      localForage.driver is 'asyncStorage'
-    , 'asyncStorage driver is active (this test should be run with slimerjs)'
+    test.assertEvalEquals ->
+      localForage.driver
+    , DRIVER, "#{DRIVER} driver is active for #{DRIVER_NAME} test."
 
     test.assertEval ->
       typeof localForage.getItem is 'function' and
@@ -25,6 +30,17 @@ casper.test.begin "Testing IndexedDB driver", (test) ->
           __utils__.findOne('.status').id = 'start-test'
 
     @waitForSelector '#start-test', ->
+      test.assertEval ->
+        window._testLength is 0
+      , 'Length is zero at start of test'
+
+  casper.then ->
+    @evaluate ->
+      localForage.length (length) ->
+        window._testLength = length
+        __utils__.findOne('.status').id = 'zero-length'
+
+    @waitForSelector '#zero-length', ->
       test.assertEval ->
         window._testLength is 0
       , 'Length is zero at start of test'
