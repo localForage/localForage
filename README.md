@@ -110,7 +110,8 @@ without it!
 localForage is designed to run in the browser, so the tests explicitly require
 a browser environment instead of any JavaScript environment (i.e. node.js).
 The tests are run on both a headless WebKit (using
-[PhantomJS](http://phantomjs.org)) and "headless" Gecko (using
+[PhantomJS](http://phantomjs.org)) and
+["headless" Gecko](http://slimerjs.org/faq.html) (using
 [SlimerJS](http://slimerjs.org/)). The tests are written using
 [CasperJS's tester module](http://docs.casperjs.org/en/latest/modules/tester.html).
 We run tests against Gecko and WebKit to ensure that IndexedDB and WebSQL

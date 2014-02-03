@@ -1,8 +1,31 @@
 'use strict'
 
+# These tests are run for each possible browser/driver combo. Current, that's:
+#
+#  * Gecko with IndexedDB
+#  * Gecko with localStorage
+#  * WebKit with localStorage
+#  * WebKit with WebSQL
+#
+# Because of CasperJS's lack of (to my knowledge) async testing utilies, we do
+# some weird stuff with `waitForSelector()` to wait for callbacks/promises to
+# be fulfilled. The `__utils__` class seen inside the `assertEval()` and
+# `evaluate()` calls is a helper class injected into the test DOM by CasperJS.
+# You can read more about it here:
+# http://docs.casperjs.org/en/latest/faq.html#what-s-this-mysterious-utils-object
 casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
   casper.start "#{casper.TEST_URL}#{casper.URL}.html", ->
     test.info "Test API using callbacks"
+
+    test.assertEval ->
+      typeof localForage.driver is 'string' and
+      typeof localForage.getItem is 'function' and
+      typeof localForage.setItem is 'function' and
+      typeof localForage.clear is 'function' and
+      typeof localForage.length is 'function' and
+      typeof localForage.removeItem is 'function' and
+      typeof localForage.key is 'function'
+    , "localForage API is consistent between drivers"
 
     test.assertEvalEquals ->
       localForage.driver
