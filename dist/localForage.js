@@ -1,3 +1,9 @@
+/*!
+ localForage
+ (c) 2013-2014 Mozilla
+ License: Apache License
+ */
+
 // ES6 Promises Polyfill
 // https://github.com/jakearchibald/ES6-Promises
 // MIT license
