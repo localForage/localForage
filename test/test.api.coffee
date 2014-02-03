@@ -63,6 +63,15 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
         window._testLength is 0
       , 'clear() runs callback after completed'
 
+  # https://github.com/mozilla/localForage/pull/24#discussion-diff-9389662R158
+  # localStorage's method API (`localStorage.getItem('foo')`) returns "null"
+  # for undefined keys, even though its getter/setter API (`localStorage.foo`)
+  # returns `undefined` for the same key. Gaia's asyncStorage API, which is
+  # based on localStorage and upon which localForage is based, ALSO returns
+  # `null`. BLARG! So for now, we just return null, because there's no way to
+  # know from localStorage if the key is ACTUALLY `null` or undefined but
+  # returning `null`. And returning `undefined` here would break compatibility
+  # with localStorage fallback. Maybe in the future we won't care...
   casper.then ->
     @evaluate ->
       localForage.getItem 'non-existant', (value) ->
@@ -72,7 +81,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
     @waitForSelector '#no-key-found-test', ->
       test.assertEval ->
         window._testValue is null
-      , 'localStorage returns undefined for non-existant key'
+      , 'localStorage returns null for non-existant key'
 
   casper.then ->
     @evaluate ->
