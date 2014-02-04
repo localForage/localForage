@@ -1,0 +1,18 @@
+{
+  "name": "localForage",
+  "author": "Mozilla",
+  "description": "Offline storage, improved.",
+  "version": "0.0.1",
+  "homepage": "https://github.com/mozilla/localForage",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mozilla/localForage.git"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "dependencies": {
+    "coffee-script": "1.7.1",
+    "express": "3.4.8"
+  }
+}
