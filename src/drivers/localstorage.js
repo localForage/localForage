@@ -138,18 +138,13 @@
         removeItem: removeItem,
         clear: clear,
         length: length,
-        key: key,
-
-        // Pretty, less-verbose API.
-        get: getItem,
-        set: setItem,
-        remove: removeItem,
-        removeAll: clear
+        key: key
     };
 
-
     if (typeof define === 'function' && define.amd) {
-        define(function() { return localStorageWrapper; });
+        define('localStorageWrapper', function() {
+            return asyncStorage;
+        });
     } else if (typeof module !== 'undefined' && module.exports) {
         module.exports = localStorageWrapper;
     } else {
