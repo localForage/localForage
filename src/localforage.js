@@ -1,6 +1,9 @@
 (function() {
     'use strict';
 
+    // Promises!
+    var Promise = window.Promise;
+
     // Avoid those magic constants!
     var MODULE_TYPE_DEFINE = 1;
     var MODULE_TYPE_EXPORT = 2;
@@ -28,35 +31,48 @@
     var _this = this;
     var localForage = {
         setDriver: function(driverName, callback) {
-            if ((!indexedDB && driverName === 'asyncStorage') ||
-                (!window.openDatabase && driverName === 'webSQLStorage')) {
-                callback(localForage);
-                return;
-            }
+            return new Promise(function(resolve, reject) {
+                if ((!indexedDB && driverName === 'asyncStorage') ||
+                    (!window.openDatabase && driverName === 'webSQLStorage')) {
+                    if (callback) {
+                        callback(localForage);
+                    }
 
-            // We allow localForage to be declared as a module or as a library
-            // available without AMD/require.js.
-            if (moduleType === MODULE_TYPE_DEFINE) {
-                require([driverName], function(lib) {
-                    localForage._extend(lib);
+                    reject(localForage);
+
+                    return;
+                }
+
+                // We allow localForage to be declared as a module or as a library
+                // available without AMD/require.js.
+                if (moduleType === MODULE_TYPE_DEFINE) {
+                    require([driverName], function(lib) {
+                        localForage._extend(lib);
+
+                        if (callback) {
+                            callback(localForage);
+                        }
+
+                        resolve(localForage);
+                    });
+                } else if (moduleType === MODULE_TYPE_EXPORT) {
+                    localForage._extend(require('./' + driverName));
 
                     if (callback) {
                         callback(localForage);
                     }
-                });
-            } else if (moduleType === MODULE_TYPE_EXPORT) {
-                localForage._extend(require('./' + driverName));
 
-                if (callback) {
-                    callback(localForage);
-                }
-            } else {
-                this._extend(_this[driverName]);
+                    resolve(localForage);
+                } else {
+                    localForage._extend(_this[driverName]);
 
-                if (callback) {
-                    callback(localForage);
+                    if (callback) {
+                        callback(localForage);
+                    }
+
+                    resolve(localForage);
                 }
-            }
+            });
         },
 
         _extend: function(libraryMethodsAndProperties) {
@@ -71,9 +87,9 @@
     var storageLibrary;
     // Check to see if IndexedDB is available; it's our preferred backend
     // library.
-    if (indexedDB && !window._FORCE_LOCALSTORAGE) {
+    if (indexedDB) {
         storageLibrary = 'asyncStorage';
-    } else if (window.openDatabase && !window._FORCE_LOCALSTORAGE) { // WebSQL is available, so we'll use that.
+    } else if (window.openDatabase) { // WebSQL is available, so we'll use that.
         storageLibrary = 'webSQLStorage';
     } else { // If nothing else is available, we use localStorage.
         storageLibrary = 'localStorageWrapper';

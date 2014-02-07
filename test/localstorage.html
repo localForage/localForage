@@ -7,7 +7,7 @@
   <body>
     <div class="status"></div>
 
-    <script>window._FORCE_LOCALSTORAGE = true;</script>
     <script src="/localforage.js"></script>
+    <script>window.localforage.setDriver('localStorageWrapper');</script>
   </body>
 </html>

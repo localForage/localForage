@@ -27,6 +27,8 @@ casper.test.begin "Testing localforage driver selection", (test) ->
       window.localforage is undefined
     , 'localforage should not be available in the global context'
 
+  casper.wait 1000 # This fixes a Travis CI bug. I hate it, but c'est la vie.
+
   casper.then ->
     @evaluate ->
       require ['localforage'], (localforage) ->

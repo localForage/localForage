@@ -41,11 +41,11 @@ localStorage.setItem('key', JSON.stringify('value'));
 doSomethingElse();
 
 // With localForage, we use callbacks:
-localForage.setItem('key', 'value', doSomethingElse);
+localforage.setItem('key', 'value', doSomethingElse);
 ```
 
 Similarly, please don't expect a return value from calls to
-`localForage.getItem()`. Instead, use a callback:
+`localforage.getItem()`. Instead, use a callback:
 
 ```javascript
 // Synchronous; slower!
@@ -53,7 +53,7 @@ var value = JSON.parse(localStorage.getItem('key'));
 alert(value);
 
 // Async, fast, and non-blocking!
-localForage.getItem('key', alert);
+localforage.getItem('key', alert);
 ```
 
 You can store any type in localForage; you aren't limited to strings like in
@@ -72,7 +72,7 @@ function doSomethingElse(value) {
 }
 
 // With localForage, we allow promises:
-localForage.setItem('key', 'value').then(doSomethingElse);
+localforage.setItem('key', 'value').then(doSomethingElse);
 ```
 
 localForage relies on native [ES6 Promises](http://www.promisejs.org/), but
@@ -82,19 +82,21 @@ for browsers that don't yet support ES6 Promises natively.
 ## Forcing localStorage ##
 
 For development, it can be easier to use the
-slower--but easier to debug--localStorage driver. Because localStorage can
-easily be inspected from the console, we allow for this with a simple global
-variable assignment: 
+slower--but easier to debug--localStorage driver (mostly because localStorage
+can easily be inspected from the console). You can use the `setDriver()` method
+to change the driver localForage is using at any time.
     
 ```javascript
-window._FORCE_LOCALSTORAGE = true;
+localforage.setDriver('localStorageWrapper');
 ```
 
-If `window._FORCE_LOCALSTORAGE` is set to any truthy value, localStorage will
-be used regardless of driver.
+You can actually force any available driver with this method, but given that
+the best driver will be selected automatically when the library is loaded, this
+method is mostly useful in forcing localStorage.
 
-**TODO:** Allow actual driver selection. (Filed as
-[issue #18](https://github.com/mozilla/localForage/issues/18).)
+Note that trying to load a driver unavailable on the current browser (like
+trying to load WebSQL in Gecko) will fail and the previously loaded "best
+choice" will continue to be used.
 
 ## Backbone.js ##
 
