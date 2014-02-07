@@ -1443,8 +1443,8 @@ requireModule('promise/polyfill').polyfill();
             return localForage;
         });
     } else if (moduleType === MODULE_TYPE_EXPORT) {
-        module.exports = localForage;
+        module.exports = localforage;
     } else {
-        this.localForage = localForage;
+        this.localforage = localForage;
     }
 }).call(this);

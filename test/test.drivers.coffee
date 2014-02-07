@@ -1,21 +1,21 @@
 'use strict'
 
-casper.test.begin "Testing localForage driver selection", (test) ->
+casper.test.begin "Testing localforage driver selection", (test) ->
   casper.start "#{casper.TEST_URL}test.html", ->
-    test.info "Testing using global scope (window.localForage)"
+    test.info "Testing using global scope (window.localforage)"
 
     test.assertEval ->
-      typeof localForage.setDriver is 'function'
-    , "localForage API includes option to set a driver explicitly"
+      typeof localforage.setDriver is 'function'
+    , "localforage API includes option to set a driver explicitly"
 
     test.assertEval ->
-      localForage.driver is "webSQLStorage"
+      localforage.driver is "webSQLStorage"
     , "webSQLStorage should be loaded by default"
 
     test.assertEval ->
-      localForage.setDriver "localStorageWrapper"
+      localforage.setDriver "localStorageWrapper"
 
-      localForage.driver is "localStorageWrapper"
+      localforage.driver is "localStorageWrapper"
     , "localStorageWrapper should be loaded after calling setDriver()"
 
   casper.thenOpen "#{casper.TEST_URL}test.require.html"
@@ -24,43 +24,47 @@ casper.test.begin "Testing localForage driver selection", (test) ->
     test.info "Testing using require.js"
 
     test.assertEval ->
-      window.localForage is undefined
-    , 'localForage should not be available in the global context'
+      window.localforage is undefined
+    , 'localforage should not be available in the global context'
 
+  casper.then ->
     @evaluate ->
-      __utils__.echo require
-      require ['localforage'], (localForage) ->
-        __utils__.echo localForage
-        window._localForageDriver = localForage.driver
+      require ['localforage'], (localforage) ->
+        # More hate
+
+  casper.then ->
+    @evaluate ->
+      require ['localforage'], (localforage) ->
+        window._localforageDriver = localforage.driver
         __utils__.findOne('.status').id = 'driver-found'
 
     @waitForSelector '#driver-found', ->
       test.assertEval ->
-        window._localForageDriver is "webSQLStorage"
+        window._localforageDriver is "webSQLStorage"
       , 'webSQLStorage should be loaded by default'
 
   casper.then ->
     @evaluate ->
-      require ['localforage'], (localForage) ->
-        localForage.setDriver 'localStorageWrapper', (localForage) ->
-          window._localForageDriver = localForage.driver
+      require ['localforage'], (localforage) ->
+        localforage.setDriver 'localStorageWrapper', (localforage) ->
+          window._localforageDriver = localforage.driver
           __utils__.findOne('.status').id = 'driver-set'
 
     @waitForSelector '#driver-set', ->
       test.assertEval ->
-        window._localForageDriver is "localStorageWrapper"
+        window._localforageDriver is "localStorageWrapper"
       , "localStorage driver should be loaded after it's set"
 
   casper.then ->
     @evaluate ->
-      require ['localforage'], (localForage) ->
-        localForage.setDriver 'asyncStorage', (localForage) ->
-          window._localForageDriver = localForage.driver
+      require ['localforage'], (localforage) ->
+        localforage.setDriver 'asyncStorage', (localforage) ->
+          window._localforageDriver = localforage.driver
           __utils__.findOne('.status').id = 'driver-attempt'
 
     @waitForSelector '#driver-attempt', ->
       test.assertEval ->
-        window._localForageDriver isnt "asyncStorage"
+        window._localforageDriver isnt "asyncStorage"
       , "asyncStorage should not be loaded in WebKit"
 
   casper.run ->
