@@ -238,8 +238,8 @@
     };
 
     if (typeof define === 'function' && define.amd) {
-        define(function() {
-          return asyncStorage;
+        define('asyncStorage', function() {
+            return asyncStorage;
         });
     } else if (typeof module !== 'undefined' && module.exports) {
         module.exports = asyncStorage;

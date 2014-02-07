@@ -1016,8 +1016,8 @@ requireModule('promise/polyfill').polyfill();
     };
 
     if (typeof define === 'function' && define.amd) {
-        define(function() {
-          return asyncStorage;
+        define('asyncStorage', function() {
+            return asyncStorage;
         });
     } else if (typeof module !== 'undefined' && module.exports) {
         module.exports = asyncStorage;
@@ -1165,24 +1165,18 @@ requireModule('promise/polyfill').polyfill();
         removeItem: removeItem,
         clear: clear,
         length: length,
-        key: key,
-
-        // Pretty, less-verbose API.
-        get: getItem,
-        set: setItem,
-        remove: removeItem,
-        removeAll: clear
+        key: key
     };
 
-
     if (typeof define === 'function' && define.amd) {
-        define(function() { return localStorageWrapper; });
+        define('localStorageWrapper', function() {
+            return localStorageWrapper;
+        });
     } else if (typeof module !== 'undefined' && module.exports) {
         module.exports = localStorageWrapper;
     } else {
         this.localStorageWrapper = localStorageWrapper;
     }
-
 }).call(this);
 (function() {
     'use strict';
@@ -1349,8 +1343,8 @@ requireModule('promise/polyfill').polyfill();
     };
 
     if (typeof define === 'function' && define.amd) {
-        define(function() {
-          return webSQLStorage;
+        define('webSQLStorage', function() {
+            return webSQLStorage;
         });
     } else if (typeof module !== 'undefined' && module.exports) {
         module.exports = webSQLStorage;
@@ -1361,16 +1355,70 @@ requireModule('promise/polyfill').polyfill();
 (function() {
     'use strict';
 
+    // Avoid those magic constants!
+    var MODULE_TYPE_DEFINE = 1;
+    var MODULE_TYPE_EXPORT = 2;
+    var MODULE_TYPE_WINDOW = 3;
+
+    // Attaching to window (i.e. no module loader) is the assumed,
+    // simple default.
+    var moduleType = MODULE_TYPE_WINDOW;
+
+    // Find out what kind of module setup we have; if none, we'll just attach
+    // localForage to the main window.
+    if (typeof define === 'function' && define.amd) {
+        moduleType = MODULE_TYPE_DEFINE;
+    } else if (typeof module !== 'undefined' && module.exports) {
+        moduleType = MODULE_TYPE_EXPORT;
+    }
+
+    // The actual localForage object that we expose as a module or via a global.
+    // It's extended by pulling in one of our other libraries.
+    var _this = this;
+    var localForage = {
+        setDriver: function(driverName, successCallback) {
+            // We allow localForage to be declared as a module or as a library
+            // available without AMD/require.js.
+            if (moduleType === MODULE_TYPE_DEFINE) {
+                require([driverName], function(lib) {
+                    localForage._extend(lib);
+
+                    if (successCallback) {
+                        successCallback(localForage);
+                    }
+                });
+            } else if (moduleType === MODULE_TYPE_EXPORT) {
+                localForage._extend(require('./' + driverName));
+
+                if (successCallback) {
+                    successCallback(localForage);
+                }
+            } else {
+                this._extend(_this[driverName]);
+
+                if (successCallback) {
+                    successCallback(localForage);
+                }
+            }
+        },
+
+        _extend: function(libraryMethodsAndProperties) {
+            for (var i in libraryMethodsAndProperties) {
+                if (libraryMethodsAndProperties.hasOwnProperty(i)) {
+                    this[i] = libraryMethodsAndProperties[i];
+                }
+            }
+        }
+    };
+
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
     var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
                     window.mozIndexedDB || window.OIndexedDB ||
                     window.msIndexedDB;
 
     var storageLibrary;
-
     // Check to see if IndexedDB is available; it's our preferred backend
     // library.
-    // TODO: Offer library selection with something other than naughty globals.
     if (indexedDB && !window._FORCE_LOCALSTORAGE) {
         storageLibrary = 'asyncStorage';
     } else if (window.openDatabase && !window._FORCE_LOCALSTORAGE) { // WebSQL is available, so we'll use that.
@@ -1379,16 +1427,18 @@ requireModule('promise/polyfill').polyfill();
         storageLibrary = 'localStorageWrapper';
     }
 
+    // Set the (default) driver.
+    localForage.setDriver(storageLibrary);
+
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
-    if (typeof define === 'function' && define.amd) {
-        define([storageLibrary], function(lib) {
-            return lib;
+    if (moduleType === MODULE_TYPE_DEFINE) {
+        define('localforage', function() {
+            return localForage;
         });
-    } else if (typeof module !== 'undefined' && module.exports) {
-        var lib = require('./' + storageLibrary);
-        module.exports = lib;
+    } else if (moduleType === MODULE_TYPE_EXPORT) {
+        module.exports = localForage;
     } else {
-        this.localForage = this[storageLibrary];
+        this.localForage = localForage;
     }
 }).call(this);

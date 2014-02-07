@@ -143,12 +143,11 @@
 
     if (typeof define === 'function' && define.amd) {
         define('localStorageWrapper', function() {
-            return asyncStorage;
+            return localStorageWrapper;
         });
     } else if (typeof module !== 'undefined' && module.exports) {
         module.exports = localStorageWrapper;
     } else {
         this.localStorageWrapper = localStorageWrapper;
     }
-
 }).call(this);
