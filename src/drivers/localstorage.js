@@ -7,14 +7,14 @@
 
     var Promise = window.Promise;
 
-    // Initialize localStorage and create a variable to use throughout the code.
-    var localStorage;
-
     // If the app is running inside a Google Chrome packaged webapp, we don't
     // use localStorage.
-    if (!window.chrome || !window.chrome.runtime) {
-        localStorage = window.localStorage;
+    if (window.chrome && window.chrome.runtime) {
+        return;
     }
+
+    // Initialize localStorage and create a variable to use throughout the code.
+    var localStorage = window.localStorage;
 
     // Remove all keys from the datastore, effectively destroying all data in
     // the app's key/value store!

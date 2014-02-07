@@ -130,7 +130,7 @@
         });
     }
 
-    // Return the value located at key number X; essentially does a
+    // Return the value name of key located at key number X; essentially does a
     // `WHERE id = ?`. This is the most efficient way I can think to implement
     // this rarely-used (in my experience) part of the API, but it can seem
     // inconsistent, because we do `INSERT OR REPLACE INTO` on `setItem()`, so
@@ -139,8 +139,8 @@
     function key(n, callback) {
         return new Promise(function(resolve, reject) {
             db.transaction(function (t) {
-                t.executeSql('SELECT * FROM localforage WHERE id = ? LIMIT 1', [n], function (t, results) {
-                    var result = results.rows.length ? results.rows.item(0).value : undefined;
+                t.executeSql('SELECT * FROM localforage WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                    var result = results.rows.length ? results.rows.item(0).key : undefined;
 
                     if (callback) {
                         callback(result);
