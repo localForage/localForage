@@ -28,7 +28,9 @@ casper.test.begin "Testing localForage driver selection", (test) ->
     , 'localForage should not be available in the global context'
 
     @evaluate ->
+      __utils__.echo require
       require ['localforage'], (localForage) ->
+        __utils__.echo localForage
         window._localForageDriver = localForage.driver
         __utils__.findOne('.status').id = 'driver-found'
 
@@ -48,6 +50,18 @@ casper.test.begin "Testing localForage driver selection", (test) ->
       test.assertEval ->
         window._localForageDriver is "localStorageWrapper"
       , "localStorage driver should be loaded after it's set"
+
+  casper.then ->
+    @evaluate ->
+      require ['localforage'], (localForage) ->
+        localForage.setDriver 'asyncStorage', (localForage) ->
+          window._localForageDriver = localForage.driver
+          __utils__.findOne('.status').id = 'driver-attempt'
+
+    @waitForSelector '#driver-attempt', ->
+      test.assertEval ->
+        window._localForageDriver isnt "asyncStorage"
+      , "asyncStorage should not be loaded in WebKit"
 
   casper.run ->
     test.done()

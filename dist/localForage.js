@@ -1372,32 +1372,43 @@ requireModule('promise/polyfill').polyfill();
         moduleType = MODULE_TYPE_EXPORT;
     }
 
+    // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
+    var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
+                    window.mozIndexedDB || window.OIndexedDB ||
+                    window.msIndexedDB;
+
     // The actual localForage object that we expose as a module or via a global.
     // It's extended by pulling in one of our other libraries.
     var _this = this;
     var localForage = {
-        setDriver: function(driverName, successCallback) {
+        setDriver: function(driverName, callback) {
+            if ((!indexedDB && driverName === 'asyncStorage') ||
+                (!window.openDatabase && driverName === 'webSQLStorage')) {
+                callback(localForage);
+                return;
+            }
+
             // We allow localForage to be declared as a module or as a library
             // available without AMD/require.js.
             if (moduleType === MODULE_TYPE_DEFINE) {
                 require([driverName], function(lib) {
                     localForage._extend(lib);
 
-                    if (successCallback) {
-                        successCallback(localForage);
+                    if (callback) {
+                        callback(localForage);
                     }
                 });
             } else if (moduleType === MODULE_TYPE_EXPORT) {
                 localForage._extend(require('./' + driverName));
 
-                if (successCallback) {
-                    successCallback(localForage);
+                if (callback) {
+                    callback(localForage);
                 }
             } else {
                 this._extend(_this[driverName]);
 
-                if (successCallback) {
-                    successCallback(localForage);
+                if (callback) {
+                    callback(localForage);
                 }
             }
         },
@@ -1410,11 +1421,6 @@ requireModule('promise/polyfill').polyfill();
             }
         }
     };
-
-    // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
-    var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
-                    window.mozIndexedDB || window.OIndexedDB ||
-                    window.msIndexedDB;
 
     var storageLibrary;
     // Check to see if IndexedDB is available; it's our preferred backend
