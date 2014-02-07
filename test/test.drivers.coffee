@@ -30,11 +30,6 @@ casper.test.begin "Testing localforage driver selection", (test) ->
   casper.then ->
     @evaluate ->
       require ['localforage'], (localforage) ->
-        # More hate
-
-  casper.then ->
-    @evaluate ->
-      require ['localforage'], (localforage) ->
         window._localforageDriver = localforage.driver
         __utils__.findOne('.status').id = 'driver-found'
 
