@@ -122,14 +122,6 @@
         });
     }
 
-    // Standard error handler for all IndexedDB transactions. Simply logs the
-    // error to the console.
-    function _errorHandler(request, errorText) {
-        console.error((errorText || 'storage error') + ': ',
-                      request.error.name);
-    }
-
-
     var localStorageWrapper = {
         driver: 'localStorageWrapper',
         // Default API, from Gaia/localStorage.
