@@ -87,7 +87,23 @@ can easily be inspected from the console). You can use the `setDriver()` method
 to change the driver localForage is using at any time.
     
 ```javascript
+// If you aren't using JS modules, things are loaded synchronously.
 localforage.setDriver('localStorageWrapper');
+alert(localforage.driver);
+  => 'localStorageWrapper'
+
+// If you're using modules, things load asynchronously, so you should use
+// callbacks or promises to ensure things have loaded.
+localforage.setDriver('localStorageWrapper', function() {
+    alert(localforage.driver);
+});
+  => 'localStorageWrapper'
+
+// The promises version:
+localforage.setDriver('localStorageWrapper').then(function() {
+    alert(localforage.driver);
+});
+  => 'localStorageWrapper'
 ```
 
 You can actually force any available driver with this method, but given that
