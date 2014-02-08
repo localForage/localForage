@@ -163,8 +163,8 @@
     };
 
     if (typeof define === 'function' && define.amd) {
-        define(function() {
-          return webSQLStorage;
+        define('webSQLStorage', function() {
+            return webSQLStorage;
         });
     } else if (typeof module !== 'undefined' && module.exports) {
         module.exports = webSQLStorage;
