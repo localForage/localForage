@@ -1,4 +1,4 @@
-# localForage [![Build Status](https://secure.travis-ci.org/mozilla/localForage.png?branch=master)](http://travis-ci.org/mozilla/localForage) #
+# localForage [![Build Status](https://secure.travis-ci.org/mozilla/localForage.png?branch=master)](http://travis-ci.org/mozilla/localForage)
 
 localForage is a handy library that improves the offline experience of your web
 app by using asynchronous storage (via IndexedDB or WebSQL where available) but
@@ -8,7 +8,7 @@ localForage includes a localStorage-backed fallback store for browsers with no
 IndexedDB or WebSQL support. This means that asynchronous storage is available
 in Chrome, Firefox, and Safari (including Safari Mobile).
 
-## Browser Support ##
+## Browser Support
 
 All of 'em. Worst-case localStorage fallback will be used, but asynchronous
 storage will be used for:
@@ -29,7 +29,17 @@ storage will be used for:
 Note that, because of WebSQL support, apps packaged with Phonegap will also
 use asynchronous storage. Pretty slick!
 
-## Callbacks ##
+## Support
+
+Lost? Need help? This README has some simple guides and the code has decent
+documentation, but I'm working on a real API guide. In the meantime, if you're
+stuck using the library, running the tests, or want to contribute, you can
+visit [irc.mozilla.org](https://wiki.mozilla.org/IRC) and head to the `#apps`
+channel to ask questions about localForage.
+
+# How to use localForage
+
+## Callbacks
 
 Because localForage uses async storage, it has an async API. It's otherwise
 exactly the same as the
@@ -61,7 +71,7 @@ localStorage. Even if localStorage is your storage backend, localForage
 automatically does `JSON.parse()` and `JSON.stringify()` when getting/setting
 values.
 
-## Promises ##
+## Promises
 
 Promises are pretty cool! If you'd rather use promises than callbacks,
 localForage supports that too:
@@ -79,7 +89,7 @@ localForage relies on native [ES6 Promises](http://www.promisejs.org/), but
 [ships with an awesome polyfill](https://github.com/jakearchibald/ES6-Promises)
 for browsers that don't yet support ES6 Promises natively.
 
-## Forcing localStorage ##
+## Driver Selection (i.e. forcing localStorage)
 
 For development, it can be easier to use the
 slower--but easier to debug--localStorage driver (mostly because localStorage
@@ -114,7 +124,7 @@ Note that trying to load a driver unavailable on the current browser (like
 trying to load WebSQL in Gecko) will fail and the previously loaded "best
 choice" will continue to be used.
 
-## Backbone.js ##
+## Backbone.js
 
 localForage includes a [Backbone.js](http://backbonejs.org/) storage library
 that you can use to store your Backbone collections offline with only a few
@@ -123,7 +133,7 @@ lines of really simple code.
 Of course, Backbone.js is entirely optional and you can use localForage
 without it!
 
-# Running Tests #
+# Running Tests
 
 localForage is designed to run in the browser, so the tests explicitly require
 a browser environment instead of any JavaScript environment (i.e. node.js).
@@ -147,7 +157,7 @@ to make sure the code is working as expected.
 
 TODO: Provide Windows/Linux instructions; check into XULRunner setup.
 
-# License #
+# License
 
 This program is free software; it is distributed under an
 [Apache License](http://github.com/mozilla/localForage/blob/master/LICENSE).
