@@ -267,5 +267,18 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
         window._clearedLength is 0
       , 'clear() erases all values'
 
+  casper.thenOpen "#{casper.TEST_URL}test.min.html", ->
+    test.info "Test minified version"
+
+    test.assertEval ->
+      typeof localforage.driver is 'string' and
+      typeof localforage.getItem is 'function' and
+      typeof localforage.setItem is 'function' and
+      typeof localforage.clear is 'function' and
+      typeof localforage.length is 'function' and
+      typeof localforage.removeItem is 'function' and
+      typeof localforage.key is 'function'
+    , "Minified version has localforage API intact"
+
   casper.run ->
     test.done()
