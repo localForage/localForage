@@ -1310,12 +1310,13 @@ requireModule('promise/polyfill').polyfill();
         });
     }
 
-    // Return the value name of key located at key number X; essentially does a
+    // Return the key located at key index X; essentially gets the key from a
     // `WHERE id = ?`. This is the most efficient way I can think to implement
     // this rarely-used (in my experience) part of the API, but it can seem
     // inconsistent, because we do `INSERT OR REPLACE INTO` on `setItem()`, so
     // the ID of each key will change every time it's updated. Perhaps a stored
     // procedure for the `setItem()` SQL would solve this problem?
+    // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
         return new Promise(function(resolve, reject) {
             db.transaction(function (t) {
