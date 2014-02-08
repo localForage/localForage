@@ -139,8 +139,8 @@
     function key(n, callback) {
         return new Promise(function(resolve, reject) {
             db.transaction(function (t) {
-                t.executeSql('SELECT * FROM localforage WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
-                    var result = results.rows.length ? results.rows.item(0).key : undefined;
+                t.executeSql('SELECT key FROM localforage WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                    var result = results.rows.length ? results.rows.item(0).key : null;
 
                     if (callback) {
                         callback(result);

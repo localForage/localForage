@@ -81,7 +81,18 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
     @waitForSelector '#no-key-found-test', ->
       test.assertEval ->
         window._testValue is null
-      , 'localStorage returns null for non-existant key'
+      , 'getItem() returns null for non-existant key'
+
+  casper.then ->
+    @evaluate ->
+      localforage.key 0, (value) ->
+        window._testKey = value
+        __utils__.findOne('.status').id = 'check-for-key-return'
+
+    @waitForSelector '#check-for-key-return', ->
+      test.assertEval ->
+        window._testKey is null
+      , "key() returns null when when key index doesn't exist"
 
   casper.then ->
     @evaluate ->
@@ -104,6 +115,17 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
       test.assertEval ->
         window._testValue is "Initech"
       , 'Get a previously set value'
+
+  casper.then ->
+    @evaluate ->
+      localforage.key 0, (value) ->
+        window._testKey = value
+        __utils__.findOne('.status').id = 'check-for-set-key'
+
+    @waitForSelector '#check-for-set-key', ->
+      test.assertEval ->
+        window._testKey is 'officeName'
+      , "key() returns name of key after one is saved"
 
   casper.then ->
     @evaluate ->
