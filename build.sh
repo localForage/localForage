@@ -5,4 +5,4 @@ echo '/*!
 */
 ' > ./dist/localForage.js
 cat ./vendor/promise.js ./src/drivers/*.js ./src/localforage.js > ./dist/localforage.js
-node ./node_modules/uglifyjs/index.js ./dist/localforage.js > ./dist/localforage.min.js
+./node_modules/.bin/uglifyjs ./dist/localforage.js > ./dist/localforage.min.js

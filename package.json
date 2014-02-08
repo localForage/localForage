@@ -14,6 +14,6 @@
   "dependencies": {
     "coffee-script": "1.7.1",
     "express": "3.4.8",
-    "uglifyjs": "2.x.x"
+    "uglify-js": "2.3.x"
   }
 }
