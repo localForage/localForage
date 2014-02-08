@@ -26,5 +26,21 @@ casper.test.begin "Testing Backbone data adapter", (test) ->
         results[0].get('job') is "Singer"
       , "Backbone adapter should persist data after a reload"
 
+  casper.then ->
+    @waitForSelector '#ready', ->
+      @evaluate ->
+        results = Models.where({name: 'Michael Bolton'})
+
+        results[0].destroy()
+        Models.reset()
+
+  casper.wait 300
+
+  casper.then ->
+    test.assertEval ->
+      results = Models.where({name: 'Michael Bolton'})
+      results.length is 0
+    , "Backbone adapter should delete data after model is removed"
+
   casper.run ->
     test.done()
