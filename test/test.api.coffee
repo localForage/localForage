@@ -18,31 +18,31 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
     test.info "Test API using callbacks"
 
     test.assertEval ->
-      typeof localForage.driver is 'string' and
-      typeof localForage.getItem is 'function' and
-      typeof localForage.setItem is 'function' and
-      typeof localForage.clear is 'function' and
-      typeof localForage.length is 'function' and
-      typeof localForage.removeItem is 'function' and
-      typeof localForage.key is 'function'
-    , "localForage API is consistent between drivers"
+      typeof localforage.driver is 'string' and
+      typeof localforage.getItem is 'function' and
+      typeof localforage.setItem is 'function' and
+      typeof localforage.clear is 'function' and
+      typeof localforage.length is 'function' and
+      typeof localforage.removeItem is 'function' and
+      typeof localforage.key is 'function'
+    , "localforage API is consistent between drivers"
 
     test.assertEvalEquals ->
-      localForage.driver
+      localforage.driver
     , casper.DRIVER, "#{casper.DRIVER} driver is active"
 
     test.assertEval ->
-      typeof localForage.getItem is 'function' and
-      typeof localForage.setItem is 'function' and
-      typeof localForage.clear is 'function' and
-      typeof localForage.length is 'function' and
-      typeof localForage.removeItem is 'function' and
-      typeof localForage.key is 'function'
+      typeof localforage.getItem is 'function' and
+      typeof localforage.setItem is 'function' and
+      typeof localforage.clear is 'function' and
+      typeof localforage.length is 'function' and
+      typeof localforage.removeItem is 'function' and
+      typeof localforage.key is 'function'
     , "localStorage API is available using #{casper.DRIVER}"
 
   casper.then ->
     @evaluate ->
-      localForage.length (length) ->
+      localforage.length (length) ->
         window._testLength = length
         __utils__.findOne('.status').id = 'start-test'
 
@@ -53,8 +53,8 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.clear ->
-        localForage.length (length) ->
+      localforage.clear ->
+        localforage.length (length) ->
           window._testLength = length
           __utils__.findOne('.status').id = 'clear-callback'
 
@@ -63,18 +63,18 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
         window._testLength is 0
       , 'clear() runs callback after completed'
 
-  # https://github.com/mozilla/localForage/pull/24#discussion-diff-9389662R158
+  # https://github.com/mozilla/localforage/pull/24#discussion-diff-9389662R158
   # localStorage's method API (`localStorage.getItem('foo')`) returns "null"
   # for undefined keys, even though its getter/setter API (`localStorage.foo`)
   # returns `undefined` for the same key. Gaia's asyncStorage API, which is
-  # based on localStorage and upon which localForage is based, ALSO returns
+  # based on localStorage and upon which localforage is based, ALSO returns
   # `null`. BLARG! So for now, we just return null, because there's no way to
   # know from localStorage if the key is ACTUALLY `null` or undefined but
   # returning `null`. And returning `undefined` here would break compatibility
   # with localStorage fallback. Maybe in the future we won't care...
   casper.then ->
     @evaluate ->
-      localForage.getItem 'non-existant', (value) ->
+      localforage.getItem 'non-existant', (value) ->
         window._testValue = value
         __utils__.findOne('.status').id = 'no-key-found-test'
 
@@ -85,7 +85,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.setItem 'officeName', 'Initech', (value) ->
+      localforage.setItem 'officeName', 'Initech', (value) ->
         window._callbackReturnValue = value
         __utils__.findOne('.status').id = 'value-set'
 
@@ -96,7 +96,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.getItem 'officeName', (value) ->
+      localforage.getItem 'officeName', (value) ->
         window._testValue = value
         __utils__.findOne('.status').id = 'value-obtained'
 
@@ -107,13 +107,13 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.setItem 'numberOfUnhappyEmployees', 3, ->
+      localforage.setItem 'numberOfUnhappyEmployees', 3, ->
         window._testValue = null
         __utils__.findOne('.status').id = 'value-set'
 
     @waitForSelector '#value-set', ->
       @evaluate ->
-        localForage.getItem 'numberOfUnhappyEmployees', (number) ->
+        localforage.getItem 'numberOfUnhappyEmployees', (number) ->
           window._testValue = number
           __utils__.findOne('.status').id = 'value-obtained'
 
@@ -124,13 +124,13 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.setItem 'namesOfUnhappyEmployees', ['Peter', 'Michael', 'Samir'], ->
+      localforage.setItem 'namesOfUnhappyEmployees', ['Peter', 'Michael', 'Samir'], ->
         window._testValue = null
         __utils__.findOne('.status').id = 'value-set'
 
     @waitForSelector '#value-set', ->
       @evaluate ->
-        localForage.getItem 'namesOfUnhappyEmployees', (array) ->
+        localforage.getItem 'namesOfUnhappyEmployees', (array) ->
           window._testValue = array
           __utils__.findOne('.status').id = 'value-obtained'
 
@@ -141,7 +141,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.length (length) ->
+      localforage.length (length) ->
         window._testLength = length
         __utils__.findOne('.status').id = 'non-zero-length'
 
@@ -152,8 +152,8 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.clear ->
-        localForage.length (length) ->
+      localforage.clear ->
+        localforage.length (length) ->
           window._clearedLength = length
           __utils__.findOne('.status').id = 'cleared'
 
@@ -168,8 +168,8 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.clear ->
-        localForage.length (length) ->
+      localforage.clear ->
+        localforage.length (length) ->
           window._testLength = length
           __utils__.findOne('.status').id = 'start-test'
 
@@ -180,7 +180,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.getItem('non-existant').then (value) ->
+      localforage.getItem('non-existant').then (value) ->
         window._testValue = value
         __utils__.findOne('.status').id = 'no-key-found-test'
 
@@ -191,7 +191,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.setItem( 'officeName', 'Initech').then (value) ->
+      localforage.setItem( 'officeName', 'Initech').then (value) ->
         window._callbackReturnValue = value
         __utils__.findOne('.status').id = 'value-set'
 
@@ -202,7 +202,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.getItem('officeName').then (value) ->
+      localforage.getItem('officeName').then (value) ->
         window._testValue = value
         __utils__.findOne('.status').id = 'value-obtained'
 
@@ -213,13 +213,13 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.setItem('numberOfUnhappyEmployees', 3).then ->
+      localforage.setItem('numberOfUnhappyEmployees', 3).then ->
         window._testValue = null
         __utils__.findOne('.status').id = 'value-set'
 
     @waitForSelector '#value-set', ->
       @evaluate ->
-        localForage.getItem('numberOfUnhappyEmployees').then (number) ->
+        localforage.getItem('numberOfUnhappyEmployees').then (number) ->
           window._testValue = number
           __utils__.findOne('.status').id = 'value-obtained'
 
@@ -230,13 +230,13 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.setItem('namesOfUnhappyEmployees', ['Peter', 'Michael', 'Samir']).then ->
+      localforage.setItem('namesOfUnhappyEmployees', ['Peter', 'Michael', 'Samir']).then ->
         window._testValue = null
         __utils__.findOne('.status').id = 'value-set'
 
     @waitForSelector '#value-set', ->
       @evaluate ->
-        localForage.getItem('namesOfUnhappyEmployees').then (array) ->
+        localforage.getItem('namesOfUnhappyEmployees').then (array) ->
           window._testValue = array
           __utils__.findOne('.status').id = 'value-obtained'
 
@@ -247,7 +247,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.length().then (length) ->
+      localforage.length().then (length) ->
         window._testLength = length
         __utils__.findOne('.status').id = 'non-zero-length'
 
@@ -258,7 +258,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
-      localForage.clear().then localForage.length().then (length) ->
+      localforage.clear().then localforage.length().then (length) ->
         window._clearedLength = length
         __utils__.findOne('.status').id = 'cleared'
 
@@ -266,6 +266,19 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
       test.assertEval ->
         window._clearedLength is 0
       , 'clear() erases all values'
+
+  casper.thenOpen "#{casper.TEST_URL}test.min.html", ->
+    test.info "Test minified version"
+
+    test.assertEval ->
+      typeof localforage.driver is 'string' and
+      typeof localforage.getItem is 'function' and
+      typeof localforage.setItem is 'function' and
+      typeof localforage.clear is 'function' and
+      typeof localforage.length is 'function' and
+      typeof localforage.removeItem is 'function' and
+      typeof localforage.key is 'function'
+    , "Minified version has localforage API intact"
 
   casper.run ->
     test.done()
