@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Backbone Adapter Test</title>
+  </head>
+  <body>
+    <div class="status"></div>
+
+    <script src="/underscore.js"></script>
+    <script src="/backbone.js"></script>
+    <script src="/localforage.js"></script>
+    <script src="/backbone.localforage.js"></script>
+
+    <script>
+        localforage.setDriver('localStorageWrapper');
+
+        var Model = Backbone.Model.extend();
+
+        var ModelCollection = Backbone.Collection.extend({
+            model: Model,
+            offlineStore: new Backbone.localforage('Models')
+        });
+
+        var Models = new ModelCollection();
+        Models.fetch({
+            success: function() {
+                document.querySelectorAll('.status')[0].setAttribute('id', 'ready');
+            }
+        });
+    </script>
+  </body>
+</html>
