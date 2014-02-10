@@ -60,7 +60,7 @@
             // We need to serialize certain types of objects using WebSQL;
             // otherwise they'll get stored as strings as be useless when we
             // use getItem() later.
-            if (typeof(value) === 'array' || typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
+            if (typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
                 // Mark the content as "localForage serialized content" so we
                 // know to run JSON.parse() on it when we get it back out from
                 // the database.

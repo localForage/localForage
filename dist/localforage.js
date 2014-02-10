@@ -1238,7 +1238,7 @@ requireModule('promise/polyfill').polyfill();
             // We need to serialize certain types of objects using WebSQL;
             // otherwise they'll get stored as strings as be useless when we
             // use getItem() later.
-            if (typeof(value) === 'array' || typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
+            if (typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
                 // Mark the content as "localForage serialized content" so we
                 // know to run JSON.parse() on it when we get it back out from
                 // the database.
@@ -1383,6 +1383,13 @@ requireModule('promise/polyfill').polyfill();
     // It's extended by pulling in one of our other libraries.
     var _this = this;
     var localForage = {
+
+         LOCAL_STORAGE_WRAPPER_DRIVER : "localStorageWrapper",
+
+         WEBSQL_STORAGE_DRIVER : "webSQLStorage",
+
+         ASYNC_STORAGE_DRIVER : "asyncStorage",
+
         setDriver: function(driverName, callback) {
             return new Promise(function(resolve, reject) {
                 if ((!indexedDB && driverName === 'asyncStorage') ||
