@@ -30,6 +30,13 @@
     // It's extended by pulling in one of our other libraries.
     var _this = this;
     var localForage = {
+
+         LOCAL_STORAGE_WRAPPER_DRIVER : "localStorageWrapper",
+
+         WEBSQL_STORAGE_DRIVER : "webSQLStorage",
+
+         ASYNC_STORAGE_DRIVER : "asyncStorage",
+
         setDriver: function(driverName, callback) {
             return new Promise(function(resolve, reject) {
                 if ((!indexedDB && driverName === 'asyncStorage') ||
@@ -105,7 +112,7 @@
             return localForage;
         });
     } else if (moduleType === MODULE_TYPE_EXPORT) {
-        module.exports = localforage;
+        module.exports = localForage;
     } else {
         this.localforage = localForage;
     }
