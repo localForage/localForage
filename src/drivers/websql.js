@@ -56,11 +56,18 @@
 
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
-            var valueToSave;
+            // The localStorage API doesn't return undefined values in an
+            // "expected" way, so undefined is always cast to null in all
+            // drivers. See: https://github.com/mozilla/localForage/pull/42
+            if (value === undefined) {
+                value = null;
+            }
+
             // We need to serialize certain types of objects using WebSQL;
             // otherwise they'll get stored as strings as be useless when we
             // use getItem() later.
-            if (typeof(value) === 'array' || typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
+            var valueToSave;
+            if (typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
                 // Mark the content as "localForage serialized content" so we
                 // know to run JSON.parse() on it when we get it back out from
                 // the database.

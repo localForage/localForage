@@ -101,6 +101,12 @@
     // saved, or something like that.
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
+            // Convert undefined values to null.
+            // https://github.com/mozilla/localForage/pull/42
+            if (value === undefined) {
+                value = null;
+            }
+
             // Save the original value to pass to the callback.
             var originalValue = value;
 

@@ -30,10 +30,14 @@
     // It's extended by pulling in one of our other libraries.
     var _this = this;
     var localForage = {
+        INDEXEDDB: 'asyncStorage',
+        LOCALSTORAGE: 'localStorageWrapper',
+        WEBSQL: 'webSQLStorage',
+
         setDriver: function(driverName, callback) {
             return new Promise(function(resolve, reject) {
-                if ((!indexedDB && driverName === 'asyncStorage') ||
-                    (!window.openDatabase && driverName === 'webSQLStorage')) {
+                if ((!indexedDB && driverName === localForage.INDEXEDDB) ||
+                    (!window.openDatabase && driverName === localForage.WEBSQL)) {
                     if (callback) {
                         callback(localForage);
                     }
@@ -88,11 +92,11 @@
     // Check to see if IndexedDB is available; it's our preferred backend
     // library.
     if (indexedDB) {
-        storageLibrary = 'asyncStorage';
+        storageLibrary = localForage.INDEXEDDB;
     } else if (window.openDatabase) { // WebSQL is available, so we'll use that.
-        storageLibrary = 'webSQLStorage';
+        storageLibrary = localForage.WEBSQL;
     } else { // If nothing else is available, we use localStorage.
-        storageLibrary = 'localStorageWrapper';
+        storageLibrary = localForage.LOCALSTORAGE;
     }
 
     // Set the (default) driver.

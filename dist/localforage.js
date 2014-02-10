@@ -885,6 +885,15 @@ requireModule('promise/polyfill').polyfill();
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
             withStore('readwrite', function setItemBody(store) {
+                // Cast to undefined so the value passed to callback/promise is
+                // the same as what one would get out of `getItem()` later.
+                // This leads to some weirdness (setItem('foo', undefined) will
+                // return "null"), but it's not my fault localStorage is our
+                // baseline and that it's weird.
+                if (value === undefined) {
+                    value = null;
+                }
+
                 var req = store.put(value, key);
                 req.onsuccess = function setItemOnSuccess() {
                     if (callback) {
@@ -1134,6 +1143,12 @@ requireModule('promise/polyfill').polyfill();
     // saved, or something like that.
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
+            // Convert undefined values to null.
+            // https://github.com/mozilla/localForage/pull/42
+            if (value === undefined) {
+                value = null;
+            }
+
             // Save the original value to pass to the callback.
             var originalValue = value;
 
@@ -1234,11 +1249,18 @@ requireModule('promise/polyfill').polyfill();
 
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
-            var valueToSave;
+            // The localStorage API doesn't return undefined values in an
+            // "expected" way, so undefined is always cast to null in all
+            // drivers. See: https://github.com/mozilla/localForage/pull/42
+            if (value === undefined) {
+                value = null;
+            }
+
             // We need to serialize certain types of objects using WebSQL;
             // otherwise they'll get stored as strings as be useless when we
             // use getItem() later.
-            if (typeof(value) === 'array' || typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
+            var valueToSave;
+            if (typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
                 // Mark the content as "localForage serialized content" so we
                 // know to run JSON.parse() on it when we get it back out from
                 // the database.
@@ -1383,10 +1405,14 @@ requireModule('promise/polyfill').polyfill();
     // It's extended by pulling in one of our other libraries.
     var _this = this;
     var localForage = {
+        INDEXEDDB: 'asyncStorage',
+        LOCALSTORAGE: 'localStorageWrapper',
+        WEBSQL: 'webSQLStorage',
+
         setDriver: function(driverName, callback) {
             return new Promise(function(resolve, reject) {
-                if ((!indexedDB && driverName === 'asyncStorage') ||
-                    (!window.openDatabase && driverName === 'webSQLStorage')) {
+                if ((!indexedDB && driverName === localForage.INDEXEDDB) ||
+                    (!window.openDatabase && driverName === localForage.WEBSQL)) {
                     if (callback) {
                         callback(localForage);
                     }
@@ -1441,11 +1467,11 @@ requireModule('promise/polyfill').polyfill();
     // Check to see if IndexedDB is available; it's our preferred backend
     // library.
     if (indexedDB) {
-        storageLibrary = 'asyncStorage';
+        storageLibrary = localForage.INDEXEDDB;
     } else if (window.openDatabase) { // WebSQL is available, so we'll use that.
-        storageLibrary = 'webSQLStorage';
+        storageLibrary = localForage.WEBSQL;
     } else { // If nothing else is available, we use localStorage.
-        storageLibrary = 'localStorageWrapper';
+        storageLibrary = localForage.LOCALSTORAGE;
     }
 
     // Set the (default) driver.

@@ -101,6 +101,15 @@
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
             withStore('readwrite', function setItemBody(store) {
+                // Cast to undefined so the value passed to callback/promise is
+                // the same as what one would get out of `getItem()` later.
+                // This leads to some weirdness (setItem('foo', undefined) will
+                // return "null"), but it's not my fault localStorage is our
+                // baseline and that it's weird.
+                if (value === undefined) {
+                    value = null;
+                }
+
                 var req = store.put(value, key);
                 req.onsuccess = function setItemOnSuccess() {
                     if (callback) {

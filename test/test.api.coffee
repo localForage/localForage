@@ -42,6 +42,12 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
+      localforage.clear()
+
+  casper.wait 300
+
+  casper.then ->
+    @evaluate ->
       localforage.length (length) ->
         window._testLength = length
         __utils__.findOne('.status').id = 'start-test'
@@ -184,9 +190,29 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
         window._clearedLength is 0
       , 'clear() erases all values'
 
+  # https://github.com/mozilla/localForage/pull/42
+  # Because of limitations of localStorage, we don't allow `undefined` to be
+  # saved or returned.
+  casper.then ->
+    @evaluate ->
+      localforage.setItem 'undefined', undefined, (value) ->
+        window._testValue = value
+        __utils__.findOne('.status').id = 'undefined-test'
+
+    @waitForSelector '#undefined-test', ->
+      test.assertEval ->
+        window._testValue is null and
+        window._testValue isnt undefined
+      , 'setItem() returns null for undefined'
+
   # Start the Promises testing!
   casper.then ->
     test.info "Test API using Promises"
+
+    @evaluate ->
+      localforage.clear()
+
+  casper.wait 300
 
   casper.then ->
     @evaluate ->
@@ -288,6 +314,21 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
       test.assertEval ->
         window._clearedLength is 0
       , 'clear() erases all values'
+
+  # https://github.com/mozilla/localForage/pull/42
+  # Because of limitations of localStorage, we don't allow `undefined` to be
+  # saved or returned.
+  casper.then ->
+    @evaluate ->
+      localforage.setItem('undefined', undefined).then (value) ->
+        window._testValue = value
+        __utils__.findOne('.status').id = 'undefined-test'
+
+    @waitForSelector '#undefined-test', ->
+      test.assertEval ->
+        window._testValue is null and
+        window._testValue isnt undefined
+      , 'setItem() returns null for undefined'
 
   casper.thenOpen "#{casper.TEST_URL}test.min.html", ->
     test.info "Test minified version"
