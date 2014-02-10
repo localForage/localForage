@@ -112,7 +112,7 @@
             return localForage;
         });
     } else if (moduleType === MODULE_TYPE_EXPORT) {
-        module.exports = localforage;
+        module.exports = localForage;
     } else {
         this.localforage = localForage;
     }
