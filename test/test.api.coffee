@@ -214,9 +214,9 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
     @evaluate ->
       localforage.setItem 'undefined', undefined, (value) ->
         window._testValue = value
-        __utils__.findOne('.status').id = 'undefined-test'
+        __utils__.findOne('.status').id = 'undefined-test-callback'
 
-    @waitForSelector '#undefined-test', ->
+    @waitForSelector '#undefined-test-callback', ->
       test.assertEval ->
         window._testValue is null and
         window._testValue isnt undefined
@@ -346,6 +346,47 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
         window._testValue is null and
         window._testValue isnt undefined
       , 'setItem() returns null for undefined'
+
+  # Test for binary data support.
+  casper.then ->
+    @evaluate ->
+      arr = new Uint8Array(8)
+      arr[0] = 65
+      arr[4] = 0
+      localforage.setItem('Uint8Array', arr).then (writeValue) ->
+        localforage.getItem('Uint8Array').then (readValue) ->
+          window._testValue = readValue
+          __utils__.findOne('.status').id = 'Uint8Array-test'
+
+    @waitForSelector '#Uint8Array-test', ->
+      test.assertEval ->
+        window._testValue.toString() is '[object Uint8Array]'
+      , 'setItem() and getItem() for Uint8Array returns value of type Uint8Array'
+
+      test.assertEval ->
+        window._testValue[0] is 65 and
+        window._testValue[4] is 0
+      , 'setItem() and getItem() for Uint8Array returns same values again'
+
+  casper.then ->
+    @evaluate ->
+      arr = new Uint8Array(8)
+      arr[0] = 65
+      arr[4] = 0
+      localforage.setItem 'Uint8Array', arr, (writeValue) ->
+        localforage.getItem 'Uint8Array', (readValue) ->
+          window._testValue = readValue
+          __utils__.findOne('.status').id = 'Uint8Array-test-callback'
+
+    @waitForSelector '#Uint8Array-test-callback', ->
+      test.assertEval ->
+        window._testValue.toString() is '[object Uint8Array]'
+      , 'setItem() and getItem() for Uint8Array returns value of type Uint8Array'
+
+      test.assertEval ->
+        window._testValue[0] is 65 and
+        window._testValue[4] is 0
+      , 'setItem() and getItem() for Uint8Array returns same values again'
 
   casper.thenOpen "#{casper.TEST_URL}test.min.html", ->
     test.info "Test minified version"
