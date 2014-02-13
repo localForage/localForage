@@ -37,6 +37,7 @@
         if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
             return JSON.parse(value);
         }
+
         var type = value.substring(SERIALIZED_MARKER_LENGTH,
             SERIALIZED_MARKER_LENGTH + 4);
 
@@ -45,7 +46,7 @@
         // Fill the string into a ArrayBuffer.
         var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
         var bufView = new Uint16Array(buf);
-        for (var i = str.length - 1; i != 0; i--) {
+        for (var i = str.length - 1; i >= 0; i--) {
             bufView[i] = str.charCodeAt(i);
         }
 
@@ -142,8 +143,9 @@
     }
 
     function serializeValue(value, callback) {
-        if (value && (value.buffer instanceof ArrayBuffer /* TypedArray check */ ||
-            value instanceof ArrayBuffer))
+        // if (value && (value.buffer instanceof ArrayBuffer  TypedArray check  ||
+        //     value instanceof ArrayBuffer))
+        if (value && value.toString() === '[object Uint8Array]')
         {
             // Convert binary arrays to a string and prefix the string with
             // a special marker.
@@ -156,7 +158,8 @@
                 buf = value.buffer;
                 if (value instanceof Int8Array) {
                     marker += 'si08:';
-                } else if (value instanceof Uint8Array) {
+                // } else if (value instanceof Uint8Array) {
+                } else if (value.toString() === '[object Uint8Array]') {
                     marker += 'ui08:';
                 } else if (value instanceof Uint8ClampedArray) {
                     marker += 'uic8:';
@@ -175,12 +178,8 @@
                 }
             }
 
-            b = new ArrayBuffer(4);
-            a = new Uint16Array(b);
-            a[0] = 512;
-            console.log(String.fromCharCode.apply(null, b))
-
-            callback(null, marker + String.fromCharCode.apply(null, new Uint16Array(buf)));
+            var out =  marker + String.fromCharCode.apply(null, new Uint16Array(buf));
+            callback(null, out);
         } else if (value instanceof Blob) {
             // Conver the blob to a binaryArray and then to a string.
             var fileReader = new FileReader();
@@ -206,9 +205,6 @@
     // in case you want to operate on that value only after you're sure it
     // saved, or something like that.
     function setItem(key, value, callback) {
-        __utils__.echo("Instanceof Test in setItem");
-        __utils__.echo(value instanceof Uint8Array);
-
         return new Promise(function(resolve, reject) {
             // Convert undefined values to null.
             // https://github.com/mozilla/localForage/pull/42
