@@ -1186,7 +1186,9 @@ requireModule('promise/polyfill').polyfill();
 
     function serializeValue(value, callback) {
         var valueString = '';
-        if (value) valueString = value.toString()
+        if (value) valueString = value.toString();
+        // Cannot use `value instanceof ArrayBuffer` or such here, as these
+        // checks fail when running the tests using casper.js...
         if (value &&
             (value.toString() === '[object ArrayBuffer]' ||
                 value.buffer && value.buffer.toString() === '[object ArrayBuffer]'))
@@ -1223,8 +1225,18 @@ requireModule('promise/polyfill').polyfill();
                 }
             }
 
-            var out =  marker + String.fromCharCode.apply(null, new Uint16Array(buf));
-            callback(null, out);
+            var str = '';
+            var uint16Array = new Uint16Array(buf);
+            try {
+                str = String.fromCharCode.apply(null, uint16Array);
+            } catch (e) {
+                // This is a fallback implementation in case the first one does
+                // not work. This is required to get the phantomjs passing...
+                for (var i = 0; i < uint16Array.length; i++) {
+                    str += String.fromCharCode(uint16Array[i]);
+                }
+            }
+            callback(null, marker + str);
         } else if (valueString == "[object Blob]") {
             // Conver the blob to a binaryArray and then to a string.
             var fileReader = new FileReader();

@@ -7,6 +7,7 @@
   <body>
     <script src="../dist/localForage.js"></script>
     <script>
+      // Forcing localstorage here. Feel free to switch to other drivers :)
       localforage.setDriver(localforage.LOCALSTORAGE).then(function() {
         var key = 'STORE_KEY';
         // var value = 'What we save offline';
