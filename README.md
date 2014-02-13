@@ -151,8 +151,18 @@ On OS X, you'll need to install both PhantomJS and SlimerJS like so:
 brew install phantomjs slimerjs
 ```
 
+Also, you need to initialize the git submodule under `vendor/casperjs`:
+
+```shell
+git submodule init
+git submodule update --recursive
+```
+
 Generally you'll need a version of Firefox or XULRunner installed for SlimerJS
-to run your tests. Once everything is installed you can simply type `make test`
+to run your tests. The exact steps how to install and setup SlimerJS are
+described on the [project homepage](http://slimerjs.org/install.html#install-firefox).
+
+Once everything is installed you can simply type `make test`
 to make sure the code is working as expected.
 
 TODO: Provide Windows/Linux instructions; check into XULRunner setup.
