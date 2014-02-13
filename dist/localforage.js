@@ -1248,7 +1248,8 @@ requireModule('promise/polyfill').polyfill();
     // in case you want to operate on that value only after you're sure it
     // saved, or something like that.
     function setItem(key, value, callback) {
-        __utils__.echo(arr instanceof Uint8Array);
+        __utils__.echo("Instanceof Test in setItem");
+        __utils__.echo(value instanceof Uint8Array);
 
         return new Promise(function(resolve, reject) {
             // Convert undefined values to null.
