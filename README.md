@@ -16,13 +16,13 @@ localStorage in parentheses.
 
 * **Android Browser 2.1** 
 * **Blackberry 7**
-* **Chrome 23** (Chrome 4.0 for localStorage)
+* **Chrome 23** (Chrome 4.0 with localStorage)
 * **Chrome for Android 32**
-* **Firefox 10** (Firefox 3.5 for localStorage)
+* **Firefox 10** (Firefox 3.5 with localStorage)
 * **Firefox for Android 25**
-* **IE 10** (IE 8 for localStorage)
+* **IE 10** (IE 8 with localStorage)
 * **IE Mobile 10**
-* **Opera 15** (Opera 10.5 for localStorage)
+* **Opera 15** (Opera 10.5 with localStorage)
 * **Opera Mobile 11**
 * **Phonegap/Apache Cordova 1.2.0**
 * **Safari 3.1**
