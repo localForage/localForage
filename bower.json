@@ -6,12 +6,12 @@
         "dist/backbone.localforage.min.js"
     ],
     "ignore": [
-        ".travis.yml"
+        ".travis.yml",
         "build.sh",
         "CONTRIBUTING.md",
         "LICENSE",
         "Makefile",
-        "test*"
+        "test*",
         "vendor/*"
     ],
     "dependencies": {},
