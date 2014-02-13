@@ -1,5 +1,10 @@
 'use strict'
 
+# var casper = require('casper').create({
+#     verbose: true,
+#     logLevel: "debug"
+# });
+
 # We run the same test suite for multiple drivers, so we'll set them here.
 casper.DRIVER = casper.cli.get('driver') or 'localStorageWrapper'
 casper.DRIVER_NAME = casper.cli.get('driver-name') or 'localStorage'

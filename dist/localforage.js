@@ -1080,8 +1080,6 @@ requireModule('promise/polyfill').polyfill();
             return JSON.parse(value);
         }
 
-        __utils__.echo(value)
-
         var type = value.substring(SERIALIZED_MARKER_LENGTH,
             SERIALIZED_MARKER_LENGTH + 4);
 
@@ -1187,15 +1185,11 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function serializeValue(value, callback) {
-        // var b = new ArrayBuffer(4);
-        // var a = new Uint16Array(b);
-        // a[0] = 65;
-        // var str = String.fromCharCode.apply(null, a);
-        // __utils__.echo(str)
-
-        // if (value && (value.buffer instanceof ArrayBuffer  TypedArray check  ||
-        //     value instanceof ArrayBuffer))
-        if (value && value.toString() === '[object Uint8Array]')
+        var valueString = '';
+        if (value) valueString = value.toString()
+        if (value &&
+            (value.toString() === '[object ArrayBuffer]' ||
+                value.buffer && value.buffer.toString() === '[object ArrayBuffer]'))
         {
             // Convert binary arrays to a string and prefix the string with
             // a special marker.
@@ -1206,31 +1200,32 @@ requireModule('promise/polyfill').polyfill();
                 marker += 'arbf:'
             } else {
                 buf = value.buffer;
-                if (value instanceof Int8Array) {
+                if (valueString === '[object Int8Array]') {
                     marker += 'si08:';
-                // } else if (value instanceof Uint8Array) {
-                } else if (value.toString() === '[object Uint8Array]') {
+                } else if (valueString === '[object Uint8Array]') {
                     marker += 'ui08:';
-                } else if (value instanceof Uint8ClampedArray) {
+                } else if (valueString ===  '[object Uint8ClampedArray]') {
                     marker += 'uic8:';
-                } else if (value instanceof Int16Array) {
+                } else if (valueString ===  '[object Int16Array]') {
                     marker += 'si16:';
-                } else if (value instanceof Uint16Array) {
+                } else if (valueString ===  '[object Uint16Array]') {
                     marker += 'ur16:';
-                } else if (value instanceof Int32Array) {
+                } else if (valueString ===  '[object Int32Array]') {
                     marker += 'si32:';
-                } else if (value instanceof Uint32Array) {
+                } else if (valueString ===  '[object Uint32Array]') {
                     marker += 'ui32:';
-                } else if (value instanceof Float32Array) {
+                } else if (valueString ===  '[object Float32Array]') {
                     marker += 'fl32:';
-                } else if (value instanceof Float64Array) {
+                } else if (valueString ===  '[object Float64Array]') {
                     marker += 'fl64:';
+                } else {
+                    callback(new Error("Failed to get type for BinaryArray"));
                 }
             }
 
             var out =  marker + String.fromCharCode.apply(null, new Uint16Array(buf));
             callback(null, out);
-        } else if (value instanceof Blob) {
+        } else if (valueString == "[object Blob]") {
             // Conver the blob to a binaryArray and then to a string.
             var fileReader = new FileReader();
             fileReader.onload = function() {
@@ -1255,9 +1250,6 @@ requireModule('promise/polyfill').polyfill();
     // in case you want to operate on that value only after you're sure it
     // saved, or something like that.
     function setItem(key, value, callback) {
-        __utils__.echo("Instanceof Test in setItem");
-        __utils__.echo(value instanceof Uint8Array);
-
         return new Promise(function(resolve, reject) {
             // Convert undefined values to null.
             // https://github.com/mozilla/localForage/pull/42

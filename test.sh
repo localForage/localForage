@@ -3,11 +3,11 @@ SISYPHUS_PID=$!
 # Run localStorage tests with WebKit, along with the rest of the tests, using
 # WebKit (localStorage will be the default option selected by test.api.coffee
 # in this case)
-# vendor/casperjs/bin/casperjs test --engine=phantomjs ./test/init.coffee ./test/test.*.coffee
-# r1=$?
+vendor/casperjs/bin/casperjs test --engine=phantomjs ./test/init.coffee ./test/test.*.coffee
+r1=$?
 # # Run WebSQL tests using WebKit
-# vendor/casperjs/bin/casperjs test --engine=phantomjs --driver=webSQLStorage --driver-name=WebSQL --url=websql ./test/init.coffee ./test/test.api.coffee
-# r2=$?
+vendor/casperjs/bin/casperjs test --engine=phantomjs --driver=webSQLStorage --driver-name=WebSQL --url=websql ./test/init.coffee ./test/test.api.coffee
+r2=$?
 # Run localStorage tests using Gecko
 vendor/casperjs/bin/casperjs test --engine=slimerjs --driver=localStorageWrapper --driver-name=localStorage --url=localstorage ./test/init.coffee ./test/test.api.coffee
 r3=$?
