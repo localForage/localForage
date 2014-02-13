@@ -1,14 +1,19 @@
 {
-	"name":"localForage",
-	"version":"0.0.1",
-	"main": ["dist/localforage.min.js", "dist/backbone.localforage.min.js"],
-	"ignore": [
-		"build.sh",
-		"CONTRIBUTING.md",
-		"LICENSE",
-		"Makefile",
-		"test*"
-	],
-	"dependencies":{},
-	"devDependencies": {}
+    "name": "localForage",
+    "version": "0.0.1",
+    "main": [
+        "dist/localforage.min.js",
+        "dist/backbone.localforage.min.js"
+    ],
+    "ignore": [
+        ".travis.yml"
+        "build.sh",
+        "CONTRIBUTING.md",
+        "LICENSE",
+        "Makefile",
+        "test*"
+        "vendor/*"
+    ],
+    "dependencies": {},
+    "devDependencies": {}
 }
