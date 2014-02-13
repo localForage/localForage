@@ -46,6 +46,30 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.wait 300
 
+  # Test for binary data support.
+  casper.then ->
+    @evaluate ->
+      arr = new Uint8Array(8)
+      dump(true)
+      dump(arr instanceof Uint8Array)
+      arr[0] = 1
+      arr[4] = 42
+      localforage.setItem('Uint8Array', arr).then (writeValue) ->
+        localforage.getItem('Uint8Array').then (readValue) ->
+          dump([readValue[0], readValue[4]])
+          window._testValue = readValue
+          __utils__.findOne('.status').id = 'Uint8Array-test'
+
+    @waitForSelector '#Uint8Array-test', ->
+      test.assertEval ->
+        window._testValue instanceof Uint8Array
+      , 'setItem() and getItem() for Uint8Array returns value of type Uint8Array'
+
+      test.assertEval ->
+        window._testValue[0] is 1 and
+        window._testValue[4] is 42
+      , 'setItem() and getItem() for Uint8Array returns same values again'
+
   casper.then ->
     @evaluate ->
       localforage.length (length) ->
@@ -197,9 +221,9 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
     @evaluate ->
       localforage.setItem 'undefined', undefined, (value) ->
         window._testValue = value
-        __utils__.findOne('.status').id = 'undefined-test'
+        __utils__.findOne('.status').id = 'undefined-test-callback'
 
-    @waitForSelector '#undefined-test', ->
+    @waitForSelector '#undefined-test-callback', ->
       test.assertEval ->
         window._testValue is null and
         window._testValue isnt undefined
@@ -329,6 +353,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
         window._testValue is null and
         window._testValue isnt undefined
       , 'setItem() returns null for undefined'
+
 
   casper.thenOpen "#{casper.TEST_URL}test.min.html", ->
     test.info "Test minified version"

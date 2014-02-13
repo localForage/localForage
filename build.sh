@@ -5,7 +5,7 @@ echo '/*!
 */
 ' > ./dist/localforage.js
 cat ./vendor/promise.js ./src/drivers/*.js ./src/localforage.js >> ./dist/localforage.js
-./node_modules/.bin/uglifyjs ./dist/localforage.js > ./dist/localforage.min.js
+./node_modules/.bin/uglifyjs -v ./dist/localforage.js > ./dist/localforage.min.js
 
 # Build adapters
 cp ./src/adapters/backbone.js ./dist/backbone.localforage.js

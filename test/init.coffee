@@ -9,6 +9,8 @@ casper.URL = casper.cli.get('url') or 'localstorage'
 # test HTML pages.
 casper.TEST_URL = 'http://localhost:8181/'
 
+casper.dump = require('utils').dump
+
 casper.test.begin "Test setup", 1, (test) ->
   casper.start casper.TEST_URL, ->
     # Test that localStorage is empty to prevent any weird existing state bugs.

@@ -7,22 +7,28 @@
   <body>
     <script src="../dist/localForage.js"></script>
     <script>
-      var key = 'STORE_KEY';
-      var value = 'What we save offline';
-      var UNKNOWN_KEY = 'unknown_key';
+      localforage.setDriver(localforage.LOCALSTORAGE).then(function() {
+        var key = 'STORE_KEY';
+        // var value = 'What we save offline';
+        var value = new Uint8Array(8);
+        // var value = undefined;
+        var UNKNOWN_KEY = 'unknown_key';
 
-      localForage.setItem(key, value, function() {
-        console.log('Saved: ' + value);
+        localforage.setItem(key, value, function() {
+          console.log('Saved: ' + value);
 
-        localForage.getItem(key, function(readValue) {
-          console.log('Read: ', readValue);
+          localforage.getItem(key, function(readValue) {
+            console.log('Read: ', readValue);
+          });
         });
-      });
 
-      // Since this key hasn't been set yet, we'll get a null value
-      localForage.getItem(UNKNOWN_KEY, function(readValue) {
-        console.log('Result of reading ' + UNKNOWN_KEY, readValue);
-      });
+        // Since this key hasn't been set yet, we'll get a null value
+        localforage.getItem(UNKNOWN_KEY, function(readValue) {
+          console.log('Result of reading ' + UNKNOWN_KEY, readValue);
+        });
+      })
+
+
     </script>
   </body>
 </html>
