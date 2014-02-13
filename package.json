@@ -15,5 +15,6 @@
     "coffee-script": "1.7.1",
     "express": "3.4.8",
     "uglify-js": "2.3.x"
-  }
+  },
+  "browser": "dist/localforage.js"
 }
