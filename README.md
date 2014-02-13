@@ -10,21 +10,22 @@ in Chrome, Firefox, and Safari (including Safari Mobile).
 
 ## Browser Support
 
-All of 'em. Worst-case localStorage fallback will be used, but asynchronous
-storage will be used for:
+Basically all modern browsers (IE 8 and above). _Asynchronous storage_ is
+available in all browsers **in bold**, with their version that supports
+localStorage in parentheses.
 
-* Android Browser (2.1+)
-* Blackberry (7+)
-* Chrome (23+)
-* Chrome for Android (32+)
-* Firefox (10+)
-* Firefox for Android (25+)
-* IE (10+)
-* IE Mobile (10+)
-* Opera (15+)
-* Opera Mobile (11+)
-* Phonegap/Apache Cordova (1.2.0+)
-* Safari (3.1+)
+* **Android Browser 2.1** 
+* **Blackberry 7**
+* **Chrome 23** (Chrome 4.0 for localStorage)
+* **Chrome for Android 32**
+* **Firefox 10** (Firefox 3.5 for localStorage)
+* **Firefox for Android 25**
+* **IE 10** (IE 8 for localStorage)
+* **IE Mobile 10**
+* **Opera 15** (Opera 10.5 for localStorage)
+* **Opera Mobile 11**
+* **Phonegap/Apache Cordova 1.2.0**
+* **Safari 3.1**
 
 Note that, because of WebSQL support, apps packaged with Phonegap will also
 use asynchronous storage. Pretty slick!
