@@ -1,5 +1,5 @@
 {
-  "name": "localForage",
+  "name": "localforage",
   "author": "Mozilla",
   "description": "Offline storage, improved.",
   "version": "0.0.1",
