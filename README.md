@@ -177,6 +177,12 @@ _really_ obscure (Apple Newton), I'm going to say "no". If it's for a new
 browser technology or a platform-specific driver like Chrome Web Apps or
 Firefox OS, then "yes" is probably the answer.
 
+### Will you add (or accept) support for storage in X framework?
+
+**Yes**. If you have an adapter for EmberJS, Angular, whatever, please add it,
+along with tests, and submit a pull request. The more frameworks this library
+can support, the better.
+
 ### Will you add support for node.js?
 
 No. This is a library focused on offline storage inside a web browser. Node.js
