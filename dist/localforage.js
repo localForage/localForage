@@ -1049,6 +1049,9 @@ requireModule('promise/polyfill').polyfill();
 
     var Promise = window.Promise;
 
+    var SERIALIZED_MARKER = '__lfsc__';
+    var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
+
     // If the app is running inside a Google Chrome packaged webapp, we don't
     // use localStorage.
     if (window.chrome && window.chrome.runtime) {
@@ -1072,6 +1075,49 @@ requireModule('promise/polyfill').polyfill();
         });
     }
 
+    function deserializeValue(value) {
+        if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
+            return JSON.parse(value);
+        }
+
+        var type = value.substring(SERIALIZED_MARKER_LENGTH,
+            SERIALIZED_MARKER_LENGTH + 4);
+
+        var str = value.substring(SERIALIZED_MARKER_LENGTH + 5 /* type + colon */);
+
+        // Fill the string into a ArrayBuffer.
+        var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
+        var bufView = new Uint16Array(buf);
+        for (var i = str.length - 1; i >= 0; i--) {
+            bufView[i] = str.charCodeAt(i);
+        }
+
+        switch (type) {
+            case 'arbf':
+                return buf;
+            case 'blob':
+                return new Blob([buf]);
+            case 'si08':
+                return new Int8Array(buf);
+            case 'ui08':
+                return new Uint8Array(buf);
+            case 'uic8':
+                return new Uint8ClampedArray(buf);
+            case 'si16':
+                return new Int16Array(buf);
+            case 'ur16':
+                return new Uint16Array(buf);
+            case 'ui32':
+                return new Uint32Array(buf);
+            case 'fl32':
+                return new Float32Array(buf);
+            case 'flt64':
+                return new Float64Array(buf);
+            default:
+                throw new Error('Unkown type: ' + type);
+        }
+    }
+
     // Retrieve an item from the store. Unlike the original async_storage
     // library in Gaia, we don't modify return values at all. If a key's value
     // is `undefined`, we pass that value to the callback function.
@@ -1080,11 +1126,12 @@ requireModule('promise/polyfill').polyfill();
             try {
                 var result = localStorage.getItem(key);
 
-                // If a result was found, parse it from serialized JSON into a
-                // JS object. If result isn't truthy, the key is likely
-                // undefined and we'll pass it straight to the callback.
+                // If a result was found, parse it from the serialized string
+                // to the corresponding JS object. If result isn't truthy, the
+                // key is likely undefined and we'll pass it straight to the
+                // callback.
                 if (result) {
-                    result = JSON.parse(result);
+                    result = deserializeValue(result);
                 }
 
                 if (callback) {
@@ -1137,6 +1184,79 @@ requireModule('promise/polyfill').polyfill();
         });
     }
 
+    function serializeValue(value, callback) {
+        var valueString = '';
+        if (value) valueString = value.toString();
+        // Cannot use `value instanceof ArrayBuffer` or such here, as these
+        // checks fail when running the tests using casper.js...
+        if (value &&
+            (value.toString() === '[object ArrayBuffer]' ||
+                value.buffer && value.buffer.toString() === '[object ArrayBuffer]'))
+        {
+            // Convert binary arrays to a string and prefix the string with
+            // a special marker.
+            var buf;
+            var marker = SERIALIZED_MARKER;
+            if (value instanceof ArrayBuffer) {
+                buf = value;
+                marker += 'arbf:'
+            } else {
+                buf = value.buffer;
+                if (valueString === '[object Int8Array]') {
+                    marker += 'si08:';
+                } else if (valueString === '[object Uint8Array]') {
+                    marker += 'ui08:';
+                } else if (valueString ===  '[object Uint8ClampedArray]') {
+                    marker += 'uic8:';
+                } else if (valueString ===  '[object Int16Array]') {
+                    marker += 'si16:';
+                } else if (valueString ===  '[object Uint16Array]') {
+                    marker += 'ur16:';
+                } else if (valueString ===  '[object Int32Array]') {
+                    marker += 'si32:';
+                } else if (valueString ===  '[object Uint32Array]') {
+                    marker += 'ui32:';
+                } else if (valueString ===  '[object Float32Array]') {
+                    marker += 'fl32:';
+                } else if (valueString ===  '[object Float64Array]') {
+                    marker += 'fl64:';
+                } else {
+                    callback(new Error("Failed to get type for BinaryArray"));
+                }
+            }
+
+            var str = '';
+            var uint16Array = new Uint16Array(buf);
+            try {
+                str = String.fromCharCode.apply(null, uint16Array);
+            } catch (e) {
+                // This is a fallback implementation in case the first one does
+                // not work. This is required to get the phantomjs passing...
+                for (var i = 0; i < uint16Array.length; i++) {
+                    str += String.fromCharCode(uint16Array[i]);
+                }
+            }
+            callback(null, marker + str);
+        } else if (valueString == "[object Blob]") {
+            // Conver the blob to a binaryArray and then to a string.
+            var fileReader = new FileReader();
+            fileReader.onload = function() {
+                var resializedString = String.fromCharCode.apply(
+                    null, new Uint16Array(this.result));
+                callback(null, SERIALIZED_MARKER + 'blob:' + resializedString);
+            };
+            fileReader.readAsArrayBuffer(value);
+        } else {
+            try {
+                callback(null, JSON.stringify(value));
+            } catch (e) {
+                console.error("Couldn't convert value into a JSON string: ",
+                              value);
+                callback(e);
+            }
+        }
+    }
+
     // Set a key's value and run an optional callback once the value is set.
     // Unlike Gaia's implementation, the callback function is passed the value,
     // in case you want to operate on that value only after you're sure it
@@ -1152,21 +1272,19 @@ requireModule('promise/polyfill').polyfill();
             // Save the original value to pass to the callback.
             var originalValue = value;
 
-            try {
-                value = JSON.stringify(value);
-            } catch (e) {
-                console.error("Couldn't convert value into a JSON string: ",
-                              value);
-                reject(e);
-            }
+            serializeValue(value, function setItemserializeValueCallback(error, value) {
+                if (error) {
+                    reject(e);
+                } else {
+                    localStorage.setItem(key, value);
 
-            localStorage.setItem(key, value);
+                    if (callback) {
+                        callback(originalValue);
+                    }
 
-            if (callback) {
-                callback(originalValue);
-            }
-
-            resolve(originalValue);
+                    resolve(originalValue);
+                }
+            });
         });
     }
 
@@ -1199,7 +1317,7 @@ requireModule('promise/polyfill').polyfill();
     // a prompt.
     var DB_SIZE = 5 * 1024 * 1024;
     var DB_VERSION = '1.0';
-    var SERIALIZED_MARKER = '__lfsc__:';
+    var SERIALIZED_MARKER = '__lfsc__';
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
     var STORE_NAME = 'keyvaluepairs';
     var Promise = window.Promise;

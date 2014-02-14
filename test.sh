@@ -5,7 +5,7 @@ SISYPHUS_PID=$!
 # in this case)
 vendor/casperjs/bin/casperjs test --engine=phantomjs ./test/init.coffee ./test/test.*.coffee
 r1=$?
-# Run WebSQL tests using WebKit
+# # Run WebSQL tests using WebKit
 vendor/casperjs/bin/casperjs test --engine=phantomjs --driver=webSQLStorage --driver-name=WebSQL --url=websql ./test/init.coffee ./test/test.api.coffee
 r2=$?
 # Run localStorage tests using Gecko
