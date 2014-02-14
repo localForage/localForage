@@ -1,4 +1,12 @@
-# Contributing to localForage #
+# Filing issues
+
+Please make sure your issue hasn't been addressed already and it is not in the
+list of likely-to-be-rejected features below. If you have a bug to report,
+please file it. If you'd like to see a feature implemented, you can file an
+issue, but know that pull requests for small things like adding a line in a
+config file will get more attention than an issue asking someone else to do it.
+
+# Contributing to localForage
 
 First off: thanks! Open source software (and thus all software) exists because
 of people like you. <3
@@ -15,3 +23,19 @@ ask you to fix any errors or merge the code into master. Here are a few tips:
 If you have any questions, need some help, or anything else, don't feel shy!
 The team behind this library is often available on IRC
 ([irc.mozilla.org](https://wiki.mozilla.org/IRC) on the `#apps` channel).
+
+## Features localForage will reject
+
+### node.js support
+
+localForage is a browser library with a specific focus on client-side,
+offline storage. It is not a general-purpose storage library and is not meant
+to allow for the same API on the client and the server. Implementing the
+localForage API wouldn't be hard (it's just localStorage with callbacks and
+ES6 promises), but it's a job for another library.
+
+### Legacy browser support
+
+Basically this means anything before IE 8. I know there are hacky ways to
+support storage with cookies or IE Userdata or whatever, but anything worse
+than localStorage isn't worth investing into.
