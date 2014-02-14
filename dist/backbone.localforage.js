@@ -194,6 +194,7 @@
                     break;
             }
         }
+
         return superSync.apply(this, arguments);
     };
 
