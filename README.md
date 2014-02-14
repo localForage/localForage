@@ -168,6 +168,23 @@ to make sure the code is working as expected.
 
 TODO: Provide Windows/Linux instructions; check into XULRunner setup.
 
+# Frequently Asked Questions
+
+### Will you add (or accept) support for X storage?
+
+Maybe. If it's legacy storage (< IE 8), for a dead platform (WebOS), or
+_really_ obscure (Apple Newton), I'm going to say "no". If it's for a new
+browser technology or a platform-specific driver like Chrome Web Apps or
+Firefox OS, then "yes" is probably the answer.
+
+### Will you add support for node.js?
+
+No. This is a library focused on offline storage inside a web browser. Node.js
+already has lots of storage solutions. The problem this library aims to solve
+is that web browsers differ greatly in their support for a common API for
+dealing with the same kind of data. Node.js doesn't have that problem; if you
+want to use an API, you just add a library to your `package.json`.
+
 # License
 
 This program is free software; it is distributed under an
