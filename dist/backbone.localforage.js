@@ -172,25 +172,30 @@
         }
     });
 
-    // Override Backbone.sync to call our custom offline sync only.
-    // TODO: Allow access to original sync?
+    // Override Backbone.sync to call our custom offline sync only. Delegates to
+    // the original Backbone.sync if offlineStore isn't defined.
+    var superSync = Backbone.sync;
     Backbone.sync = function(method, model, options) {
-        var store = model.offlineStore || model.collection.offlineStore;
+        var store = model.offlineStore || (model.collection && model.collection.offlineStore);
 
-        switch (method) {
-            case "read":
-                return model.id ? store.find(model, options) : store.findAll(options);
-                break;
-            case "create":
-                return store.create(model, options);
-                break;
-            case "update":
-                return store.update(model, options);
-                break;
-            case "delete":
-                return store.destroy(model, options);
-                break;
+        if (store) {
+            switch (method) {
+                case "read":
+                    return model.id ? store.find(model, options) : store.findAll(options);
+                    break;
+                case "create":
+                    return store.create(model, options);
+                    break;
+                case "update":
+                    return store.update(model, options);
+                    break;
+                case "delete":
+                    return store.destroy(model, options);
+                    break;
+            }
         }
+
+        return superSync.apply(this, arguments);
     };
 
     // For now, we aren't complicated: just set a property off Backbone to

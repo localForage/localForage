@@ -17,6 +17,15 @@ casper.test.begin "Testing Backbone data adapter", (test) ->
       Models.add michael
       michael.save()
 
+    test.assertRaises ->
+      OnlineModel = Backbone.Model.extend()
+
+      OnlineModelCollection = Backbone.Collection.extend
+        model: OnlineModel
+
+      bob = new OnlineModel()
+    , [], 'Backbone.Sync throws an error when no offlineStore or URL is specified'
+
   casper.reload()
 
   casper.then ->
