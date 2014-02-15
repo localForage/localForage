@@ -64,5 +64,27 @@ casper.test.begin "Testing localforage driver selection", (test) ->
         window._localforageDriver isnt "asyncStorage"
       , "asyncStorage should not be loaded in WebKit"
 
+  casper.thenOpen "#{casper.TEST_URL}test.requiremin.html"
+
+  casper.wait 1000
+
+  casper.then ->
+    @evaluate ->
+      require ['localforage.min'], (localforage) ->
+        window._lf = localforage
+
+  casper.wait 300
+
+  casper.then ->
+    test.assertEval ->
+      typeof window._lf.driver is 'string' and
+      typeof window._lf.getItem is 'function' and
+      typeof window._lf.setItem is 'function' and
+      typeof window._lf.clear is 'function' and
+      typeof window._lf.length is 'function' and
+      typeof window._lf.removeItem is 'function' and
+      typeof window._lf.key is 'function'
+    , "localforage API is available in localforage.min"
+
   casper.run ->
     test.done()
