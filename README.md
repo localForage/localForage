@@ -148,13 +148,13 @@ support is functioning as-expected.
 
 On OS X, you'll need to install both PhantomJS and SlimerJS like so:
 
-```shell
+```
 brew install phantomjs slimerjs
 ```
 
 Also, you need to initialize the git submodule under `vendor/casperjs`:
 
-```shell
+```
 git submodule init
 git submodule update --recursive
 ```
