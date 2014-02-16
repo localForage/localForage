@@ -2,9 +2,11 @@
     'use strict';
 
     var DB_NAME = 'localforage';
-    // Default DB size is 5MB, as it's the highest size we can use without
-    // a prompt.
-    var DB_SIZE = 5 * 1024 * 1024;
+    // Default DB size is _JUST UNDER_ 5MB, as it's the highest size we can use
+    // without a prompt.
+    //
+    // TODO: Add a way to increase this size programmatically?
+    var DB_SIZE = 4980736;
     var DB_VERSION = '1.0';
     var SERIALIZED_MARKER = '__lfsc__:';
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
