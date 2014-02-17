@@ -912,7 +912,7 @@ requireModule('promise/polyfill').polyfill();
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
             withStore('readwrite', function removeItemBody(store) {
-                var req = store.delete(key);
+                var req = store['delete'](key);
                 req.onsuccess = function removeItemOnSuccess() {
                     if (callback) {
                         callback();
