@@ -128,6 +128,15 @@
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
             withStore('readwrite', function removeItemBody(store) {
+                // We use `['delete']` instead of `.delete` because IE 8 will
+                // throw a fit if it sees the reserved word "delete" in this
+                // scenario. See: https://github.com/mozilla/localForage/pull/67
+                //
+                // This can be removed once we no longer care about IE 8, for
+                // what that's worth.
+                // TODO: Write a test against this? Maybe IE in general? Also,
+                // make sure the minify step doesn't optimise this to `.delete`,
+                // though it currently doesn't.
                 var req = store['delete'](key);
                 req.onsuccess = function removeItemOnSuccess() {
                     if (callback) {
