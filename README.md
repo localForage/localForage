@@ -146,11 +146,16 @@ The tests are run on both a headless WebKit (using
 We run tests against Gecko and WebKit to ensure that IndexedDB and WebSQL
 support is functioning as-expected.
 
-On OS X, you'll need to install both PhantomJS and SlimerJS like so:
+On Mac OS X, you'll need to install both PhantomJS and SlimerJS like so:
 
 ```
 brew install phantomjs slimerjs
 ```
+
+If you're using Windows or Linux, you can get
+[get PhantomJS](http://phantomjs.org/download) and
+[get SlimerJS](http://slimerjs.org/download) from their websites. I haven't
+tried it myself, but it seems easy enough.
 
 Also, you need to initialize the git submodule under `vendor/casperjs`:
 
@@ -161,7 +166,8 @@ git submodule update --recursive
 
 Generally you'll need a version of Firefox or XULRunner installed for SlimerJS
 to run your tests. The exact steps how to install and setup SlimerJS are
-described on the [project homepage](http://slimerjs.org/install.html#install-firefox).
+described on the
+[project homepage](http://slimerjs.org/install.html#install-firefox).
 
 Once everything is installed you can simply type `make test`
 to make sure the code is working as expected.
