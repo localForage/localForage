@@ -5,7 +5,9 @@
 */
 
 // ES6 Promises Polyfill
+// Version 0.1.1
 // https://github.com/jakearchibald/ES6-Promises
+// http://s3.amazonaws.com/es6-promises/promise-0.1.1.js
 // MIT license
 // (https://github.com/jakearchibald/ES6-Promises/blob/master/LICENSE)
 (function() {
