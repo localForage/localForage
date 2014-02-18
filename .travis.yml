@@ -1,7 +1,7 @@
 env:
   - SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 PATH=$TRAVIS_BUILD_DIR/slimerjs:$PATH
 addons:
-  firefox: "25.0"
+  firefox: "27.0"
 before_script:
   - "sh -e /etc/init.d/xvfb start"
   - "echo 'Installing Slimer'"
