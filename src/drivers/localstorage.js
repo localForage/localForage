@@ -7,14 +7,18 @@
 
     var Promise = window.Promise;
 
-    // If the app is running inside a Google Chrome packaged webapp, we don't
-    // use localStorage.
-    if (window.chrome && window.chrome.runtime) {
+    // If the app is running inside a Google Chrome packaged webapp, or some
+    // other context where localStorage isn't available, we don't use
+    // localStorage. This feature detection is preferred over the old
+    // `if (window.chrome && window.chrome.runtime)` code.
+    // See: https://github.com/mozilla/localForage/issues/68
+    try {
+        // Initialize localStorage and create a variable to use throughout
+        // the code.
+        var localStorage = window.localStorage;
+    } catch (e) {
         return;
     }
-
-    // Initialize localStorage and create a variable to use throughout the code.
-    var localStorage = window.localStorage;
 
     // Remove all keys from the datastore, effectively destroying all data in
     // the app's key/value store!
