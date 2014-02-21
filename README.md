@@ -5,12 +5,13 @@ app by using asynchronous storage (via IndexedDB or WebSQL where available) but
 with a simple, `localStorage`-like API.
 
 localForage includes a localStorage-backed fallback store for browsers with no
-IndexedDB or WebSQL support. This means that asynchronous storage is available
-in Chrome, Firefox, and Safari (including Safari Mobile).
+IndexedDB or WebSQL support. Asynchronous storage is available in the current
+versions of all major browsers: Chrome, Firefox, IE, and Safari
+(including Safari Mobile). See below for detailed compatibility info.
 
 ## Supported Browsers/Platforms
 
-localForage is usable in all modern browsers (IE 8 and above).
+localForage works in all modern browsers (IE 8 and above).
 _Asynchronous storage_ is available in all browsers **in bold**, with their
 version that supports localStorage in parentheses.
 
@@ -26,7 +27,7 @@ version that supports localStorage in parentheses.
 * **Opera 15** (Opera 10.5 with localStorage)
 * **Opera Mobile 11**
 * **Phonegap/Apache Cordova 1.2.0**
-* **Safari 3.1**
+* **Safari 3.1** (includes Mobile Safari)
 
 Note that, because of WebSQL support, apps packaged with Phonegap will also
 use asynchronous storage. Pretty slick!
