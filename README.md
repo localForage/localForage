@@ -21,7 +21,7 @@ version that supports localStorage in parentheses.
 * **Chrome for Android 32**
 * **Firefox 10** (Firefox 3.5 with localStorage)
 * **Firefox for Android 25**
-* **Firefox OS 1.0
+* **Firefox OS 1.0**
 * **IE 10** (IE 8 with localStorage)
 * **IE Mobile 10**
 * **Opera 15** (Opera 10.5 with localStorage)
