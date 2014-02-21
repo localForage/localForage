@@ -8,11 +8,11 @@ localForage includes a localStorage-backed fallback store for browsers with no
 IndexedDB or WebSQL support. This means that asynchronous storage is available
 in Chrome, Firefox, and Safari (including Safari Mobile).
 
-## Browser Support
+## Supported Browsers/Platforms
 
-Basically all modern browsers (IE 8 and above). _Asynchronous storage_ is
-available in all browsers **in bold**, with their version that supports
-localStorage in parentheses.
+localForage is usable in all modern browsers (IE 8 and above).
+_Asynchronous storage_ is available in all browsers **in bold**, with their
+version that supports localStorage in parentheses.
 
 * **Android Browser 2.1** 
 * **Blackberry 7**
