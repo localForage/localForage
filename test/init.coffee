@@ -8,6 +8,7 @@
 # We run the same test suite for multiple drivers, so we'll set them here.
 casper.DRIVER = casper.cli.get('driver') or 'localStorageWrapper'
 casper.DRIVER_NAME = casper.cli.get('driver-name') or 'localStorage'
+casper.ENGINE = casper.cli.get('engine') or 'casperjs'
 casper.URL = casper.cli.get('url') or 'localstorage'
 
 # Oh boy, this is naughty:

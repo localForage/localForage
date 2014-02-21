@@ -1074,8 +1074,22 @@ requireModule('promise/polyfill').polyfill();
         return Promise.resolve();
     }
 
-    var SERIALIZED_MARKER = '__lfsc__';
+    var SERIALIZED_MARKER = '__lfsc__:';
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
+
+    // OMG the serializations!
+    var TYPE_ARRAYBUFFER = 'arbf';
+    var TYPE_BLOB = 'blob';
+    var TYPE_INT8ARRAY = 'si08';
+    var TYPE_UINT8ARRAY = 'ui08';
+    var TYPE_UINT8CLAMPEDARRAY = 'uic8';
+    var TYPE_INT16ARRAY = 'si16';
+    var TYPE_INT32ARRAY = 'si32';
+    var TYPE_UINT16ARRAY = 'ur16';
+    var TYPE_UINT32ARRAY = 'ui32';
+    var TYPE_FLOAT32ARRAY = 'fl32';
+    var TYPE_FLOAT64ARRAY = 'fl64';
+    var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
 
     // Remove all keys from the datastore, effectively destroying all data in
     // the app's key/value store!
@@ -1094,49 +1108,6 @@ requireModule('promise/polyfill').polyfill();
         });
     }
 
-    function deserializeValue(value) {
-        if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
-            return JSON.parse(value);
-        }
-
-        var type = value.substring(SERIALIZED_MARKER_LENGTH,
-            SERIALIZED_MARKER_LENGTH + 4);
-
-        var str = value.substring(SERIALIZED_MARKER_LENGTH + 5 /* type + colon */);
-
-        // Fill the string into a ArrayBuffer.
-        var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-        var bufView = new Uint16Array(buf);
-        for (var i = str.length - 1; i >= 0; i--) {
-            bufView[i] = str.charCodeAt(i);
-        }
-
-        switch (type) {
-            case 'arbf':
-                return buf;
-            case 'blob':
-                return new Blob([buf]);
-            case 'si08':
-                return new Int8Array(buf);
-            case 'ui08':
-                return new Uint8Array(buf);
-            case 'uic8':
-                return new Uint8ClampedArray(buf);
-            case 'si16':
-                return new Int16Array(buf);
-            case 'ur16':
-                return new Uint16Array(buf);
-            case 'ui32':
-                return new Uint32Array(buf);
-            case 'fl32':
-                return new Float32Array(buf);
-            case 'flt64':
-                return new Float64Array(buf);
-            default:
-                throw new Error('Unkown type: ' + type);
-        }
-    }
-
     // Retrieve an item from the store. Unlike the original async_storage
     // library in Gaia, we don't modify return values at all. If a key's value
     // is `undefined`, we pass that value to the callback function.
@@ -1152,11 +1123,7 @@ requireModule('promise/polyfill').polyfill();
                     // is likely undefined and we'll pass it straight to the
                     // callback.
                     if (result) {
-                        result = deserializeValue(result);
-                    }
-
-                    if (callback) {
-                        callback(result);
+                        result = _deserialize(result);
                     }
 
                     resolve(result);
@@ -1219,51 +1186,117 @@ requireModule('promise/polyfill').polyfill();
         });
     }
 
-    function serializeValue(value, callback) {
+    // Deserialize data we've inserted into a value column/field. We place
+    // special markers into our strings to mark them as encoded; this isn't
+    // as nice as a meta field, but it's the only sane thing we can do whilst
+    // keeping localStorage support intact.
+    //
+    // Oftentimes this will just deserialize JSON content, but if we have a
+    // special marker (SERIALIZED_MARKER, defined above), we will extract
+    // some kind of arraybuffer/binary data/typed array out of the string.
+    function _deserialize(value) {
+        // If we haven't marked this string as being specially serialized (i.e.
+        // something other than serialized JSON), we can just return it and be
+        // done with it.
+        if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
+            return JSON.parse(value);
+        }
+
+        // The following code deals with deserializing some kind of Blob or
+        // TypedArray. First we separate out the type of data we're dealing
+        // with from the data itself.
+        var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);
+        var type = value.substring(SERIALIZED_MARKER_LENGTH, TYPE_SERIALIZED_MARKER_LENGTH);
+
+        // Fill the string into a ArrayBuffer.
+        var buffer = new ArrayBuffer(serializedString.length * 2); // 2 bytes for each char
+        var bufferView = new Uint16Array(buffer);
+        for (var i = serializedString.length - 1; i >= 0; i--) {
+            bufferView[i] = serializedString.charCodeAt(i);
+        }
+
+        // Return the right type based on the code/type set during
+        // serialization.
+        switch (type) {
+            case TYPE_ARRAYBUFFER:
+                return buffer;
+            case TYPE_BLOB:
+                return new Blob([buffer]);
+            case TYPE_INT8ARRAY:
+                return new Int8Array(buffer);
+            case TYPE_UINT8ARRAY:
+                return new Uint8Array(buffer);
+            case TYPE_UINT8CLAMPEDARRAY:
+                return new Uint8ClampedArray(buffer);
+            case TYPE_INT16ARRAY:
+                return new Int16Array(buffer);
+            case TYPE_UINT16ARRAY:
+                return new Uint16Array(buffer);
+            case TYPE_INT32ARRAY:
+                return new Int32Array(buffer);
+            case TYPE_UINT32ARRAY:
+                return new Uint32Array(buffer);
+            case TYPE_FLOAT32ARRAY:
+                return new Float32Array(buffer);
+            case TYPE_FLOAT64ARRAY:
+                return new Float64Array(buffer);
+            default:
+                throw new Error('Unkown type: ' + type);
+        }
+    }
+
+    // Serialize a value, afterwards executing a callback (which usually
+    // instructs the `setItem()` callback/promise to be executed). This is how
+    // we store binary data with localStorage.
+    function _serialize(value, callback) {
         var valueString = '';
         if (value) {
             valueString = value.toString();
         }
+
         // Cannot use `value instanceof ArrayBuffer` or such here, as these
         // checks fail when running the tests using casper.js...
-        if (value &&
-            (value.toString() === '[object ArrayBuffer]' ||
-                value.buffer && value.buffer.toString() === '[object ArrayBuffer]'))
-        {
+        //
+        // TODO: See why those tests fail and use a better solution.
+        if (value && (value.toString() === '[object ArrayBuffer]' ||
+                      value.buffer && value.buffer.toString() === '[object ArrayBuffer]')) {
             // Convert binary arrays to a string and prefix the string with
             // a special marker.
-            var buf;
+            var buffer;
             var marker = SERIALIZED_MARKER;
+
             if (value instanceof ArrayBuffer) {
-                buf = value;
-                marker += 'arbf:';
+                buffer = value;
+                marker += TYPE_ARRAYBUFFER;
             } else {
-                buf = value.buffer;
+                buffer = value.buffer;
+
                 if (valueString === '[object Int8Array]') {
-                    marker += 'si08:';
+                    marker += TYPE_INT8ARRAY;
                 } else if (valueString === '[object Uint8Array]') {
-                    marker += 'ui08:';
-                } else if (valueString ===  '[object Uint8ClampedArray]') {
-                    marker += 'uic8:';
-                } else if (valueString ===  '[object Int16Array]') {
-                    marker += 'si16:';
-                } else if (valueString ===  '[object Uint16Array]') {
-                    marker += 'ur16:';
-                } else if (valueString ===  '[object Int32Array]') {
-                    marker += 'si32:';
-                } else if (valueString ===  '[object Uint32Array]') {
-                    marker += 'ui32:';
-                } else if (valueString ===  '[object Float32Array]') {
-                    marker += 'fl32:';
-                } else if (valueString ===  '[object Float64Array]') {
-                    marker += 'fl64:';
+                    marker += TYPE_UINT8ARRAY;
+                } else if (valueString === '[object Uint8ClampedArray]') {
+                    marker += TYPE_UINT8CLAMPEDARRAY;
+                } else if (valueString === '[object Int16Array]') {
+                    marker += TYPE_INT16ARRAY;
+                } else if (valueString === '[object Uint16Array]') {
+                    marker += TYPE_UINT16ARRAY;
+                } else if (valueString === '[object Int32Array]') {
+                    marker += TYPE_INT32ARRAY;
+                } else if (valueString === '[object Uint32Array]') {
+                    marker += TYPE_UINT32ARRAY;
+                } else if (valueString === '[object Float32Array]') {
+                    marker += TYPE_FLOAT32ARRAY;
+                } else if (valueString === '[object Float64Array]') {
+                    marker += TYPE_FLOAT64ARRAY;
                 } else {
                     callback(new Error("Failed to get type for BinaryArray"));
                 }
             }
 
             var str = '';
-            var uint16Array = new Uint16Array(buf);
+            var uint16Array = new Uint16Array(buffer);
+
             try {
                 str = String.fromCharCode.apply(null, uint16Array);
             } catch (e) {
@@ -1273,15 +1306,29 @@ requireModule('promise/polyfill').polyfill();
                     str += String.fromCharCode(uint16Array[i]);
                 }
             }
+
             callback(null, marker + str);
         } else if (valueString === "[object Blob]") {
             // Conver the blob to a binaryArray and then to a string.
             var fileReader = new FileReader();
+
             fileReader.onload = function() {
-                var resializedString = String.fromCharCode.apply(
-                    null, new Uint16Array(this.result));
-                callback(null, SERIALIZED_MARKER + 'blob:' + resializedString);
+                var str = '';
+                var uint16Array = new Uint16Array(this.result);
+
+                try {
+                    str = String.fromCharCode.apply(null, uint16Array);
+                } catch (e) {
+                    // This is a fallback implementation in case the first one does
+                    // not work. This is required to get the phantomjs passing...
+                    for (var i = 0; i < uint16Array.length; i++) {
+                        str += String.fromCharCode(uint16Array[i]);
+                    }
+                }
+
+                callback(null, SERIALIZED_MARKER + TYPE_BLOB + str);
             };
+
             fileReader.readAsArrayBuffer(value);
         } else {
             try {
@@ -1311,7 +1358,7 @@ requireModule('promise/polyfill').polyfill();
                 // Save the original value to pass to the callback.
                 var originalValue = value;
 
-                serializeValue(value, function setSerialized(error, value) {
+                _serialize(value, function setSerialized(error, value) {
                     if (error) {
                         reject(error);
                     } else {
@@ -1350,16 +1397,29 @@ requireModule('promise/polyfill').polyfill();
         this.localStorageWrapper = localStorageWrapper;
     }
 }).call(this);
+/*
+ * Includes code from:
+ *
+ * base64-arraybuffer
+ * https://github.com/niklasvh/base64-arraybuffer
+ *
+ * Copyright (c) 2012 Niklas von Hertzen
+ * Licensed under the MIT license.
+ */
 (function() {
     'use strict';
+
+    // Sadly, the best way to save binary data in WebSQL is Base64 serializing
+    // it, so this is how we store it to prevent very strange errors with less
+    // verbose ways of binary <-> string data storage.
+    var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
     // Default DB size is _JUST UNDER_ 5MB, as it's the highest size we can use
     // without a prompt.
     //
     // TODO: Add a way to increase this size programmatically?
     var DB_SIZE = 4980736;
-    var SERIALIZED_MARKER = '__lfsc__:';
-    var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
+
     var Promise = window.Promise;
     var db = null;
     var dbInfo = {
@@ -1368,6 +1428,23 @@ requireModule('promise/polyfill').polyfill();
         storeName: 'keyvaluepairs',
         version: '1.0'
     };
+
+    var SERIALIZED_MARKER = '__lfsc__:';
+    var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
+
+    // OMG the serializations!
+    var TYPE_ARRAYBUFFER = 'arbf';
+    var TYPE_BLOB = 'blob';
+    var TYPE_INT8ARRAY = 'si08';
+    var TYPE_UINT8ARRAY = 'ui08';
+    var TYPE_UINT8CLAMPEDARRAY = 'uic8';
+    var TYPE_INT16ARRAY = 'si16';
+    var TYPE_INT32ARRAY = 'si32';
+    var TYPE_UINT16ARRAY = 'ur16';
+    var TYPE_UINT32ARRAY = 'ui32';
+    var TYPE_FLOAT32ARRAY = 'fl32';
+    var TYPE_FLOAT64ARRAY = 'fl64';
+    var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
 
     // If WebSQL methods aren't available, we can stop now.
     if (!window.openDatabase) {
@@ -1410,12 +1487,8 @@ requireModule('promise/polyfill').polyfill();
 
                         // Check to see if this is serialized content we need to
                         // unpack.
-                        if (result && result.substr(0, SERIALIZED_MARKER_LENGTH) === SERIALIZED_MARKER) {
-                            try {
-                                result = JSON.parse(result.slice(SERIALIZED_MARKER_LENGTH));
-                            } catch (e) {
-                                reject(e);
-                            }
+                        if (result) {
+                            result = _deserialize(result);
                         }
 
                         if (callback) {
@@ -1440,27 +1513,23 @@ requireModule('promise/polyfill').polyfill();
                     value = null;
                 }
 
-                // We need to serialize certain types of objects using WebSQL;
-                // otherwise they'll get stored as strings as be useless when we
-                // use getItem() later.
-                var valueToSave;
-                if (typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
-                    // Mark the content as "localForage serialized content" so we
-                    // know to run JSON.parse() on it when we get it back out from
-                    // the database.
-                    valueToSave = SERIALIZED_MARKER + JSON.stringify(value);
-                } else {
-                    valueToSave = value;
-                }
+                // Save the original value to pass to the callback.
+                var originalValue = value;
 
-                db.transaction(function (t) {
-                    t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName + ' (key, value) VALUES (?, ?)', [key, valueToSave], function() {
-                        if (callback) {
-                            callback(value);
-                        }
+                _serialize(value, function setItemserializeValueCallback(error, value) {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        db.transaction(function (t) {
+                            t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, value], function() {
+                                if (callback) {
+                                    callback(originalValue);
+                                }
 
-                        resolve(value);
-                    }, null);
+                                resolve(originalValue);
+                            }, null);
+                        });
+                    }
                 });
             });
         });
@@ -1548,6 +1617,192 @@ requireModule('promise/polyfill').polyfill();
                 });
             });
         });
+    }
+
+    // Deserialize data we've inserted into a value column/field. We place
+    // special markers into our strings to mark them as encoded; this isn't
+    // as nice as a meta field, but it's the only sane thing we can do whilst
+    // keeping localStorage support intact.
+    //
+    // Oftentimes this will just deserialize JSON content, but if we have a
+    // special marker (SERIALIZED_MARKER, defined above), we will extract
+    // some kind of arraybuffer/binary data/typed array out of the string.
+    function _deserialize(value) {
+        // If we haven't marked this string as being specially serialized (i.e.
+        // something other than serialized JSON), we can just return it and be
+        // done with it.
+        if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
+            return JSON.parse(value);
+        }
+
+        // The following code deals with deserializing some kind of Blob or
+        // TypedArray. First we separate out the type of data we're dealing
+        // with from the data itself.
+        var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);
+        var type = value.substring(SERIALIZED_MARKER_LENGTH, TYPE_SERIALIZED_MARKER_LENGTH);
+
+        // Fill the string into a ArrayBuffer.
+        var bufferLength = serializedString.length * 0.75;
+        var len = serializedString.length;
+        var i;
+        var p = 0;
+        var encoded1, encoded2, encoded3, encoded4;
+
+        if (serializedString[serializedString.length - 1] === "=") {
+            bufferLength--;
+            if (serializedString[serializedString.length - 2] === "=") {
+                bufferLength--;
+            }
+        }
+
+        var buffer = new ArrayBuffer(bufferLength);
+        var bytes = new Uint8Array(buffer);
+
+        for (i = 0; i < len; i+=4) {
+            encoded1 = BASE_CHARS.indexOf(serializedString[i]);
+            encoded2 = BASE_CHARS.indexOf(serializedString[i+1]);
+            encoded3 = BASE_CHARS.indexOf(serializedString[i+2]);
+            encoded4 = BASE_CHARS.indexOf(serializedString[i+3]);
+
+            bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+            bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+            bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+        }
+
+        // Return the right type based on the code/type set during
+        // serialization.
+        switch (type) {
+            case TYPE_ARRAYBUFFER:
+                return buffer;
+            case TYPE_BLOB:
+                return new Blob([buffer]);
+            case TYPE_INT8ARRAY:
+                return new Int8Array(buffer);
+            case TYPE_UINT8ARRAY:
+                return new Uint8Array(buffer);
+            case TYPE_UINT8CLAMPEDARRAY:
+                return new Uint8ClampedArray(buffer);
+            case TYPE_INT16ARRAY:
+                return new Int16Array(buffer);
+            case TYPE_UINT16ARRAY:
+                return new Uint16Array(buffer);
+            case TYPE_INT32ARRAY:
+                return new Int32Array(buffer);
+            case TYPE_UINT32ARRAY:
+                return new Uint32Array(buffer);
+            case TYPE_FLOAT32ARRAY:
+                return new Float32Array(buffer);
+            case TYPE_FLOAT64ARRAY:
+                return new Float64Array(buffer);
+            default:
+                throw new Error('Unkown type: ' + type);
+        }
+    }
+
+    // Serialize a value, afterwards executing a callback (which usually
+    // instructs the `setItem()` callback/promise to be executed). This is how
+    // we store binary data with localStorage.
+    function _serialize(value, callback) {
+        var valueString = '';
+        if (value) {
+            valueString = value.toString();
+        }
+
+        // Cannot use `value instanceof ArrayBuffer` or such here, as these
+        // checks fail when running the tests using casper.js...
+        //
+        // TODO: See why those tests fail and use a better solution.
+        if (value && (value.toString() === '[object ArrayBuffer]' ||
+                      value.buffer && value.buffer.toString() === '[object ArrayBuffer]')) {
+            // Convert binary arrays to a string and prefix the string with
+            // a special marker.
+            var buffer;
+            var marker = SERIALIZED_MARKER;
+
+            if (value instanceof ArrayBuffer) {
+                buffer = value;
+                marker += TYPE_ARRAYBUFFER;
+            } else {
+                buffer = value.buffer;
+
+                if (valueString === '[object Int8Array]') {
+                    marker += TYPE_INT8ARRAY;
+                } else if (valueString === '[object Uint8Array]') {
+                    marker += TYPE_UINT8ARRAY;
+                } else if (valueString === '[object Uint8ClampedArray]') {
+                    marker += TYPE_UINT8CLAMPEDARRAY;
+                } else if (valueString === '[object Int16Array]') {
+                    marker += TYPE_INT16ARRAY;
+                } else if (valueString === '[object Uint16Array]') {
+                    marker += TYPE_UINT16ARRAY;
+                } else if (valueString === '[object Int32Array]') {
+                    marker += TYPE_INT32ARRAY;
+                } else if (valueString === '[object Uint32Array]') {
+                    marker += TYPE_UINT32ARRAY;
+                } else if (valueString === '[object Float32Array]') {
+                    marker += TYPE_FLOAT32ARRAY;
+                } else if (valueString === '[object Float64Array]') {
+                    marker += TYPE_FLOAT64ARRAY;
+                } else {
+                    callback(new Error("Failed to get type for BinaryArray"));
+                }
+            }
+
+            // base64-arraybuffer
+            var bytes = new Uint8Array(buffer);
+            var i;
+            var base64String = '';
+
+            for (i = 0; i < bytes.length; i += 3) {
+                base64String += BASE_CHARS[bytes[i] >> 2];
+                base64String += BASE_CHARS[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+                base64String += BASE_CHARS[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+                base64String += BASE_CHARS[bytes[i + 2] & 63];
+            }
+
+            if ((bytes.length % 3) === 2) {
+                base64String = base64String.substring(0, base64String.length - 1) + "=";
+            } else if (bytes.length % 3 === 1) {
+                base64String = base64String.substring(0, base64String.length - 2) + "==";
+            }
+
+            callback(null, marker + base64String);
+        } else if (valueString === "[object Blob]") {
+            // Conver the blob to a binaryArray and then to a string.
+            var fileReader = new FileReader();
+
+            fileReader.onload = function() {
+                // base64-arraybuffer
+                var bytes = new Uint8Array(this.result);
+                var i;
+                var base64String = '';
+
+                for (i = 0; i < bytes.length; i += 3) {
+                    base64String += BASE_CHARS[bytes[i] >> 2];
+                    base64String += BASE_CHARS[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+                    base64String += BASE_CHARS[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+                    base64String += BASE_CHARS[bytes[i + 2] & 63];
+                }
+
+                if ((bytes.length % 3) === 2) {
+                    base64String = base64String.substring(0, base64String.length - 1) + "=";
+                } else if (bytes.length % 3 === 1) {
+                    base64String = base64String.substring(0, base64String.length - 2) + "==";
+                }
+
+                callback(null, SERIALIZED_MARKER + TYPE_BLOB + base64String);
+            };
+
+            fileReader.readAsArrayBuffer(value);
+        } else {
+            try {
+                callback(null, JSON.stringify(value));
+            } catch (e) {
+                console.error("Couldn't convert value into a JSON string: ",
+                              value);
+                callback(e);
+            }
+        }
     }
 
     var webSQLStorage = {
