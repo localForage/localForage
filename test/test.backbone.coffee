@@ -8,6 +8,10 @@ casper.test.begin "Testing Backbone data adapter", (test) ->
       typeof Backbone.localforage is 'object'
     , "localforage storage adapter is attached to Backbone.localforage"
 
+    test.assertEval ->
+      typeof Backbone.localforage.sync is 'function'
+    , "localforage sync function is attached to Backbone.localforage"
+
   casper.then ->
     @evaluate ->
       michael = new Model
