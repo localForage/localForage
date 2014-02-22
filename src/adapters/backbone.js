@@ -172,35 +172,57 @@
         }
     });
 
-    // Override Backbone.sync to call our custom offline sync only. Delegates to
-    // the original Backbone.sync if offlineStore isn't defined.
-    var superSync = Backbone.sync;
-    Backbone.sync = function(method, model, options) {
-        var store = model.offlineStore || (model.collection && model.collection.offlineStore);
-
-        if (store) {
-            switch (method) {
-                case "read":
-                    return model.id ? store.find(model, options) : store.findAll(options);
-                    break;
-                case "create":
-                    return store.create(model, options);
-                    break;
-                case "update":
-                    return store.update(model, options);
-                    break;
-                case "delete":
-                    return store.destroy(model, options);
-                    break;
-            }
+    function localforageSync(store, method, model, options) {
+        switch (method) {
+            case "read":
+                return model.id ? store.find(model, options) : store.findAll(options);
+                break;
+            case "create":
+                return store.create(model, options);
+                break;
+            case "update":
+                return store.update(model, options);
+                break;
+            case "delete":
+                return store.destroy(model, options);
+                break;
         }
-
-        return superSync.apply(this, arguments);
     };
 
     // For now, we aren't complicated: just set a property off Backbone to
     // serve as our export point.
-    Backbone.localforage = OfflineStore;
+    Backbone.localforage = {
+
+        OfflineStore: OfflineStore,
+
+        sync: function(name) {
+            var sync, offlineStore;
+
+            // If a name's given we create a store for the model or collection;
+            // otherwise we assume it's a model and try to use its collection's store
+            if (name){
+                offlineStore = new OfflineStore(name);
+                sync = function(method, model, options) {
+                    return localforageSync.apply(null, [offlineStore].concat([].slice.call(arguments, 0)));
+                }
+                sync.offlineStore = offlineStore;
+            } else {
+                sync = function(method, model, options) {
+                    var offlineStore = model.collection && model.collection.sync.offlineStore;
+                    if (offlineStore){
+                        return localforageSync.apply(null, [offlineStore].concat([].slice.call(arguments, 0)));
+                    }
+                    // It relies on Backbone.sync if the model isn't in a collection or
+                    // the collection doesn't have a store
+                    return Backbone.sync.apply(this, arguments);
+                };
+            }
+
+            return sync;
+        }
+
+    };
 
     return OfflineStore;
+    
 }).call(this);
