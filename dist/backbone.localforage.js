@@ -1,7 +1,26 @@
 // backbone.localforage allows users of Backbone.js to store their collections
-// entirely offline with no communication to a REST server. It uses IndexedDB
-// or localStorage (depending on availability) to store the data. This allows
-// apps on Chrome and Firefox to use async, offline storage, which is cool.
+// entirely offline with no communication to a REST server. It uses whatever
+// driver localForage is set to use to store the data (IndexedDB, WebSQL, or
+// localStorage, depending on availability). This allows apps on Chrome,
+// Firefox, IE, and Safari to use async, offline storage, which is cool.
+//
+// The basics of how to use this library is that it lets you override the
+// `sync` method on your collections and models to use localForage. So
+//
+//     var MyModel = Backbone.Collection.extend({})
+//     var MyCollection = Backbone.Collection.extend({\
+//         model: MyModel
+//     });
+//
+// becomes
+//
+//     var MyModel = Backbone.Collection.extend({
+//         sync: Backbone.localforage.sync()
+//     });
+//     var MyCollection = Backbone.Collection.extend({
+//         model: MyModel,
+//         sync: Backbone.localforage.sync('MyCollection')
+//     });
 //
 // Inspiration for this file comes from a few backbone.localstorage
 // implementations.

@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf8" />
     <title>Simple Backbone.localForage example</title>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.0/backbone-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="../vendor/underscore.js"></script>
+    <script src="../vendor/backbone.js"></script>
     <script src="../dist/backbone.localforage.js"></script> 
     <script src="../dist/localforage.js"></script>
   </head>
@@ -19,13 +19,11 @@
     <script>
       (function (Backbone, _) {
         'use strict';
-        // Set driver
+        // Set driver (optional)
         localforage.setDriver('localStorageWrapper');
-        // Grab or create our offline store
-        var myOfflineStore = new Backbone.localforage('MyOfflineStore');
         // For the time being backbone.localforage works well better when operating with collections
         var MyCollection = Backbone.Collection.extend({
-          offlineStore: myOfflineStore
+          sync: Backbone.localforage.sync('MyOfflineStore')
         });
         // A view with a form and the collection contents
         var MyFormView = Backbone.View.extend({
