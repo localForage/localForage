@@ -5,7 +5,7 @@ casper.test.begin "Testing Backbone data adapter", (test) ->
     test.info "Testing using global scope (no require.js)"
 
     test.assertEval ->
-      typeof Backbone.localforage is 'function'
+      typeof Backbone.localforage is 'object'
     , "localforage storage adapter is attached to Backbone.localforage"
 
   casper.then ->
@@ -16,15 +16,6 @@ casper.test.begin "Testing Backbone data adapter", (test) ->
 
       Models.add michael
       michael.save()
-
-    test.assertRaises ->
-      OnlineModel = Backbone.Model.extend()
-
-      OnlineModelCollection = Backbone.Collection.extend
-        model: OnlineModel
-
-      bob = new OnlineModel()
-    , [], 'Backbone.Sync throws an error when no offlineStore or URL is specified'
 
   casper.reload()
 
