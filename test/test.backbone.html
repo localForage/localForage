@@ -15,11 +15,13 @@
     <script>
         localforage.setDriver('localStorageWrapper');
 
-        var Model = Backbone.Model.extend();
+        var Model = Backbone.Model.extend({
+            sync: Backbone.localforage.sync()
+        });
 
         var ModelCollection = Backbone.Collection.extend({
             model: Model,
-            offlineStore: new Backbone.localforage('Models')
+            sync: Backbone.localforage.sync('Models')
         });
 
         var Models = new ModelCollection();
