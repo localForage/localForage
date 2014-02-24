@@ -53,28 +53,58 @@
                     require([driverName], function(lib) {
                         localForage._extend(lib);
 
+                        if(localForage.initStorage) {
+                            localForage.initStorage().then(function(val) {
+                                if (callback) {
+                                    callback(localForage);
+                                }
+
+                                resolve(localForage);
+                            });
+                        } else {
+                            if (callback) {
+                                callback(localForage);
+                            }
+
+                            resolve(localForage);
+                        }
+                    });
+                } else if (moduleType === MODULE_TYPE_EXPORT) {
+                    localForage._extend(require('./' + driverName));
+
+                    if(localForage.initStorage) {
+                        localForage.initStorage().then(function(val) {
+                            if (callback) {
+                                callback(localForage);
+                            }
+
+                            resolve(localForage);
+                        });
+                    } else {
                         if (callback) {
                             callback(localForage);
                         }
 
                         resolve(localForage);
-                    });
-                } else if (moduleType === MODULE_TYPE_EXPORT) {
-                    localForage._extend(require('./' + driverName));
-
-                    if (callback) {
-                        callback(localForage);
                     }
-
-                    resolve(localForage);
                 } else {
                     localForage._extend(_this[driverName]);
 
-                    if (callback) {
-                        callback(localForage);
-                    }
+                    if(localForage.initStorage) {
+                        localForage.initStorage().then(function(val) {
+                            if (callback) {
+                                callback(localForage);
+                            }
 
-                    resolve(localForage);
+                            resolve(localForage);
+                        });
+                    } else {
+                        if (callback) {
+                            callback(localForage);
+                        }
+
+                        resolve(localForage);
+                    }
                 }
             });
         },
