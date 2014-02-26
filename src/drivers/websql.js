@@ -104,7 +104,7 @@
         });
     }
 
-    // Deletes every item in the table with a TRUNCATE call.
+    // Deletes every item in the table.
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         return new Promise(function(resolve, reject) {
