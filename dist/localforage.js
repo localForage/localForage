@@ -842,13 +842,14 @@ requireModule('promise/polyfill').polyfill();
         return;
     }
 
-    function withStore(type, f) {
+    function withStore(type, f, reject) {
         if (db) {
             f(db.transaction(STORENAME, type).objectStore(STORENAME));
         } else {
             var openreq = indexedDB.open(DBNAME, DBVERSION);
             openreq.onerror = function withStoreOnError() {
                 console.error("asyncStorage: can't open database:", openreq.error.name);
+                reject(openreq.error.name);
             };
             openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
                 // First time setup: create an empty object store
@@ -879,8 +880,9 @@ requireModule('promise/polyfill').polyfill();
                 };
                 req.onerror = function getItemOnError() {
                     console.error('Error in asyncStorage.getItem(): ', req.error.name);
+                    reject(req.error.name);
                 };
-            });
+            }, reject);
         });
     }
 
@@ -906,8 +908,9 @@ requireModule('promise/polyfill').polyfill();
                 };
                 req.onerror = function setItemOnError() {
                     console.error('Error in asyncStorage.setItem(): ', req.error.name);
+                    reject(req.error.name);
                 };
-            });
+            }, reject);
         });
     }
 
@@ -933,6 +936,7 @@ requireModule('promise/polyfill').polyfill();
                 };
                 req.onerror = function removeItemOnError() {
                     console.error('Error in asyncStorage.removeItem(): ', req.error.name);
+                    reject(req.error.name);
                 };
             });
         });
@@ -952,7 +956,7 @@ requireModule('promise/polyfill').polyfill();
                 req.onerror = function clearOnError() {
                     console.error('Error in asyncStorage.clear(): ', req.error.name);
                 };
-            });
+            }, reject);
         });
     }
 
@@ -969,6 +973,7 @@ requireModule('promise/polyfill').polyfill();
                 };
                 req.onerror = function lengthOnError() {
                     console.error('Error in asyncStorage.length(): ', req.error.name);
+                    reject(req.error.name);
                 };
             });
         });
@@ -1026,8 +1031,9 @@ requireModule('promise/polyfill').polyfill();
 
                 req.onerror = function keyOnError() {
                     console.error('Error in asyncStorage.key(): ', req.error.name);
+                    reject(req.error.name);
                 };
-            });
+            }, reject);
         });
     }
 
