@@ -61,6 +61,10 @@ casper.test.begin "Testing Backbone data adapter", (test) ->
         $('.saved-data').length is 1
       , "Backbone example saves a piece of data between page loads"
 
+      test.assertEval ->
+        $('.saved-data').text() is 'testing'
+      , "Data saved in Backbone is retrieved properly"
+
     @evaluate ->
       localforage.clear()
 
