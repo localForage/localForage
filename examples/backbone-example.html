@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <title>Simple Backbone.localForage example</title>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="../vendor/underscore.js"></script>
+    <script src="../vendor/backbone.js"></script>
+    <script src="../dist/localforage.js"></script>
+    <script src="../dist/backbone.localforage.js"></script> 
+  </head>
+  <body>
+    <script type="template/form" id="formtpl">
+      <form>
+        <input type="text" name="content" />
+        <input type="submit" value="Create" />
+      </form>
+    </script>
+    <script>
+      (function (Backbone, _) {
+        'use strict';
+        // Set driver (optional)
+        localforage.setDriver('localStorageWrapper');
+        // For the time being backbone.localforage works well better when operating with collections
+        var MyCollection = Backbone.Collection.extend({
+          sync: Backbone.localforage.sync('MyOfflineStore'),
+          model: Backbone.Model.extend({
+            sync: Backbone.localforage.sync()
+          })
+        });
+        // A view with a form and the collection contents
+        var MyFormView = Backbone.View.extend({
+          events: {
+            'submit form': 'handleSaveModel'
+          },
+          initialize: function (options) {
+            // For the sake of the example, this is very bad performance wise :)
+            this.listenTo(this.collection, 'add remove change sync', this.render);
+          },
+          createModel: function (model) {
+            return $("<div>", {
+              className: 'saved-data',
+              text: model.get('content')
+            });
+          },
+          handleSaveModel: function (event) {
+            event.preventDefault();
+            // It'll write on the localforage offline store
+            this.collection.create({content: this.$('[name="content"]').val()});
+          },
+          render: function () {
+            // Render the form template on this.$el and append the collection content
+            this.$el
+              .html(_.template($('#formtpl').html()))
+              .append(this.collection.map(this.createModel));
+          }
+        });
+        // Instancing the collection and the view
+        var myCollection = new MyCollection();
+        var myFormView = new MyFormView({
+          el: $('<div>', {className: 'content'}).appendTo(document.body),
+          collection: myCollection
+        });
+        myFormView.render();
+        myCollection.fetch();
+      }(this.Backbone, this._));
+    </script>
+  </body>
+</html>
