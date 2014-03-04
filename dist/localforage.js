@@ -787,46 +787,9 @@ requireModule('promise/polyfill').polyfill();
 (function() {
     'use strict';
 
-    /**
-     * This file defines an asynchronous version of the localStorage API, backed by
-     * an IndexedDB database. It creates a global asyncStorage object that has
-     * methods like the localStorage object.
-     *
-     * To store a value use setItem:
-     *
-     *     asyncStorage.setItem('key', 'value');
-     *
-     * If you want confirmation that the value has been stored, pass a callback
-     * function as the third argument:
-     *
-     *    asyncStorage.setItem('key', 'newvalue', function() {
-     *        console.log('new value stored');
-     *    });
-     *
-     * To read a value, call getItem(), but note that you must supply a callback
-     * function that the value will be passed to asynchronously:
-     *
-     *    asyncStorage.getItem('key', function(value) {
-     *        console.log('The value of key is:', value);
-     *    });
-     *
-     * Note that unlike localStorage, asyncStorage does not allow you to store and
-     * retrieve values by setting and querying properties directly. You cannot just
-     * write asyncStorage.key; you have to explicitly call setItem() or getItem().
-     *
-     * removeItem(), clear(), length(), and key() are like the same-named methods of
-     * localStorage, but, like getItem() and setItem() they take a callback
-     * argument.
-     *
-     * The asynchronous nature of getItem() makes it tricky to retrieve multiple
-     * values. But unlike localStorage, asyncStorage does not require the values you
-     * store to be strings.    So if you need to save multiple values and want to
-     * retrieve them together, in a single asynchronous operation, just group the
-     * values into a single object. The properties of this object may not include
-     * DOM elements, but they may include things like Blobs and typed arrays.
-     */
+    // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
 
-    var DBNAME = 'asyncStorage';
+    var DBNAME = 'localForage';
     var DBVERSION = 1;
     var STORENAME = 'keyvaluepairs';
     var Promise = window.Promise;
