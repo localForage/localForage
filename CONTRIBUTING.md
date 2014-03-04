@@ -28,6 +28,34 @@ If you have any questions, need some help, or anything else, don't feel shy!
 The team behind this library is often available on IRC
 ([irc.mozilla.org](https://wiki.mozilla.org/IRC) on the `#apps` channel).
 
+## Coding Style
+
+JavaScript should be indented with four spaces.
+
+Always use curly braces, with spaces around them:
+
+```javascript
+// Bad.
+if (something)
+    foo();
+if (something) foo();
+if (something){
+    foo()
+};
+
+// Good.
+if (something) {
+    foo();
+}
+```
+
+Comment your code and try to wrap lines at 80 characters, but don't make it
+less readable in doing so.
+
+CoffeeScript should be intended with two spaces.
+
+Always include semicolons (avoid ASI).
+
 ## Features localForage will reject
 
 ### node.js support
