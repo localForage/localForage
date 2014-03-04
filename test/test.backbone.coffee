@@ -65,6 +65,21 @@ casper.test.begin "Testing Backbone data adapter", (test) ->
         $('.saved-data').text() is 'testing'
       , "Data saved in Backbone is retrieved properly"
 
+  casper.then ->
+    # See: https://github.com/mozilla/localForage/pull/90
+    casper.fill '.content form', {content: 'test 2'}, true
+    casper.fill '.content form', {content: 'test 3'}, true
+
+  casper.then ->
+    test.assertEval ->
+      $('.saved-data').length is 3
+    , "Extra data is saved properly"
+
+    test.assertEval ->
+      $('.saved-data').eq(2).text() is 'test 3'
+    , "Data saved in Backbone is retrieved properly"
+
+  casper.then ->
     @evaluate ->
       localforage.clear()
 
