@@ -61,26 +61,26 @@
             return new Promise(function(resolve, reject) {
                 if (_this.data) {
                     if (!model.id) model.id = model.attributes.id = guid();
-                    _this.data[model.id] = model;
+                    _this.data[model.id] = model.toJSON();
                     _this.save(function() {
                         if (callbacks.success) {
-                            callbacks.success(model);
+                            callbacks.success(_this.data[model.id]);
                         }
 
-                        resolve(model);
+                        resolve(_this.data[model.id]);
                     });
                 } else {
                     localforage.getItem(_this.name, function(data) {
                         _this.data = JSON.parse(data) || {};
 
                         if (!model.id) model.id = model.attributes.id = guid();
-                        _this.data[model.id] = model;
+                        _this.data[model.id] = model.toJSON();
                         _this.save(function() {
                             if (callbacks.success) {
-                                callbacks.success(model);
+                                callbacks.success(_this.data[model.id]);
                             }
 
-                            resolve(model);
+                            resolve(_this.data[model.id]);
                         });
                     });
                 }
@@ -91,25 +91,25 @@
             var _this = this;
             return new Promise(function(resolve, reject) {
                 if (_this.data) {
-                    _this.data[model.id] = model;
+                    _this.data[model.id] = model.toJSON();
                     _this.save(function() {
                         if (callbacks.success) {
-                            callbacks.success(model);
+                            callbacks.success(_this.data[model.id]);
                         }
 
-                        resolve(model);
+                        resolve(_this.data[model.id]);
                     });
                 } else {
                     localforage.getItem(_this.name, function(data) {
                         _this.data = JSON.parse(data) || {};
 
-                        _this.data[model.id] = model;
+                        _this.data[model.id] = model.toJSON();
                         _this.save(function() {
                             if (callbacks.success) {
-                                callbacks.success(model);
+                                callbacks.success(_this.data[model.id]);
                             }
 
-                            resolve(model);
+                            resolve(_this.data[model.id]);
                         });
                     });
                 }
