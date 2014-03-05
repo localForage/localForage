@@ -8,7 +8,6 @@
   "esnext": false,
   "immed": true,
   "latedef": true,
-  "maxlen": 80,
   "newcap": true,
   "noarg": true,
   "nonew": true,
