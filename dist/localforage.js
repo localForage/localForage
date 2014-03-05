@@ -784,6 +784,7 @@ define("promise/utils",
   });
 requireModule('promise/polyfill').polyfill();
 }());
+/*global define:true, module:true */
 (function() {
     'use strict';
 
@@ -811,7 +812,6 @@ requireModule('promise/polyfill').polyfill();
         } else {
             var openreq = indexedDB.open(DBNAME, DBVERSION);
             openreq.onerror = function withStoreOnError() {
-                console.error("asyncStorage: can't open database:", openreq.error.name);
                 reject(openreq.error.name);
             };
             openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
@@ -842,7 +842,6 @@ requireModule('promise/polyfill').polyfill();
                     resolve(value);
                 };
                 req.onerror = function getItemOnError() {
-                    console.error('Error in asyncStorage.getItem(): ', req.error.name);
                     reject(req.error.name);
                 };
             }, reject);
@@ -870,7 +869,6 @@ requireModule('promise/polyfill').polyfill();
                     resolve(value);
                 };
                 req.onerror = function setItemOnError() {
-                    console.error('Error in asyncStorage.setItem(): ', req.error.name);
                     reject(req.error.name);
                 };
             }, reject);
@@ -898,7 +896,6 @@ requireModule('promise/polyfill').polyfill();
                     resolve();
                 };
                 req.onerror = function removeItemOnError() {
-                    console.error('Error in asyncStorage.removeItem(): ', req.error.name);
                     reject(req.error.name);
                 };
             });
@@ -917,7 +914,7 @@ requireModule('promise/polyfill').polyfill();
                     resolve();
                 };
                 req.onerror = function clearOnError() {
-                    console.error('Error in asyncStorage.clear(): ', req.error.name);
+                    reject(req.error.name);
                 };
             }, reject);
         });
@@ -935,7 +932,6 @@ requireModule('promise/polyfill').polyfill();
                     resolve(req.result);
                 };
                 req.onerror = function lengthOnError() {
-                    console.error('Error in asyncStorage.length(): ', req.error.name);
                     reject(req.error.name);
                 };
             });
@@ -993,7 +989,6 @@ requireModule('promise/polyfill').polyfill();
                 };
 
                 req.onerror = function keyOnError() {
-                    console.error('Error in asyncStorage.key(): ', req.error.name);
                     reject(req.error.name);
                 };
             }, reject);
@@ -1020,6 +1015,7 @@ requireModule('promise/polyfill').polyfill();
         this.asyncStorage = asyncStorage;
     }
 }).call(this);
+/*global define:true, module:true */
 // If IndexedDB isn't available, we'll fall back to localStorage.
 // Note that this will have considerable performance and storage
 // side-effects (all data will be serialized on save and only data that
@@ -1027,6 +1023,7 @@ requireModule('promise/polyfill').polyfill();
 (function() {
     'use strict';
 
+    var localStorage;
     var Promise = window.Promise;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
@@ -1037,7 +1034,7 @@ requireModule('promise/polyfill').polyfill();
     try {
         // Initialize localStorage and create a variable to use throughout
         // the code.
-        var localStorage = window.localStorage;
+        localStorage = window.localStorage;
     } catch (e) {
         return;
     }
@@ -1139,8 +1136,6 @@ requireModule('promise/polyfill').polyfill();
             try {
                 value = JSON.stringify(value);
             } catch (e) {
-                console.error("Couldn't convert value into a JSON string: ",
-                              value);
                 reject(e);
             }
 
@@ -1175,6 +1170,7 @@ requireModule('promise/polyfill').polyfill();
         this.localStorageWrapper = localStorageWrapper;
     }
 }).call(this);
+/*global define:true, module:true */
 (function() {
     'use strict';
 

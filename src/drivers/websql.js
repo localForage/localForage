@@ -1,3 +1,4 @@
+/*global define:true, module:true */
 (function() {
     'use strict';
 
