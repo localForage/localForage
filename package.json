@@ -15,16 +15,17 @@
         "url": "git://github.com/mozilla/localForage.git"
     },
     "scripts": {
-        "test": "grunt build && sh test.sh",
-        "prepublish": "grunt build"
+        "prepublish": "grunt build",
+        "test": "grunt build && sh test.sh"
     },
     "devDependencies": {
         "coffee-script": "^1.7.1",
         "express": "^3.4.8",
-        "uglify-js": "^2.3.x",
         "grunt": "^0.4.2",
+        "grunt-contrib-concat": "^0.3.0",
         "grunt-contrib-uglify": "^0.4.0",
-        "grunt-contrib-concat": "^0.3.0"
+        "grunt-contrib-watch": "^0.5.0",
+        "uglify-js": "^2.3.x"
     },
     "browser": "dist/localforage.js",
     "main": "dist/localforage.js",

@@ -40,12 +40,24 @@ module.exports = exports = function(grunt) {
                     'dist/backbone.localforage.min.js': ['dist/backbone.localforage.js']
                 }
             }
+        },
+        watch: {
+            concat: {
+                files: ['src/*.js', 'src/**/*.js'],
+                tasks: ['concat']
+            },
+            grunt: {
+                files: [
+                    'Gruntfile.js'
+                ]
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['build']);
+    grunt.registerTask('default', ['build', 'watch']);
     grunt.registerTask('build', ['concat', 'uglify']);
 };
