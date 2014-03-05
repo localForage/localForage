@@ -1,4 +1,4 @@
-/*global exports:true, module:true */
+/*global exports:true */
 module.exports = exports = function(grunt) {
     'use strict';
     grunt.initConfig({
