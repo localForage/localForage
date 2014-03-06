@@ -2,9 +2,8 @@
 
 express = require 'express'
 app = express()
-port = 8181
 
-app_folder = process.env.PWD
+app_folder = process.cwd()
 
 # Configuration.
 app.configure ->
@@ -27,15 +26,11 @@ app.configure ->
     dumpExceptions: true
     showStack: true
 
-app.listen port
-
 console.log ''
-console.log "Listening on port #{port}"
 console.log 'Serving folders: '
 console.log " * #{app_folder}/dist"
 console.log " * #{app_folder}/examples"
 console.log " * #{app_folder}/test"
 console.log " * #{app_folder}/vendor"
-console.log ''
 
-exports.app = app
+module.exports = app

@@ -1,35 +1,37 @@
 {
-    "name": "localforage",
-    "author": "Mozilla",
-    "description": "Offline storage, improved.",
-    "keywords": [
-        "indexeddb",
-        "localstorage",
-        "storage",
-        "websql"
-    ],
-    "version": "0.0.1",
-    "homepage": "https://github.com/mozilla/localForage",
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/mozilla/localForage.git"
-    },
-    "scripts": {
-        "test": "grunt build && sh test.sh",
-        "prepublish": "grunt build"
-    },
-    "devDependencies": {
-        "coffee-script": "^1.7.1",
-        "express": "^3.4.8",
-        "uglify-js": "^2.3.x",
-        "grunt": "^0.4.2",
-        "grunt-contrib-uglify": "^0.4.0",
-        "grunt-contrib-concat": "^0.3.0"
-    },
-    "browser": "dist/localforage.js",
-    "main": "dist/localforage.js",
-    "licence": "Apache-2.0",
-    "bugs": {
-        "url": "http://github.com/mozilla/localForage/issues"
-    }
+  "name": "localforage",
+  "author": "Mozilla",
+  "description": "Offline storage, improved.",
+  "keywords": [
+    "indexeddb",
+    "localstorage",
+    "storage",
+    "websql"
+  ],
+  "version": "0.0.1",
+  "homepage": "https://github.com/mozilla/localForage",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mozilla/localForage.git"
+  },
+  "scripts": {
+    "prepublish": "grunt build",
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.7.1",
+    "express": "^3.4.8",
+    "grunt": "^0.4.2",
+    "grunt-casper": "^0.3.3",
+    "grunt-contrib-concat": "^0.3.0",
+    "grunt-contrib-uglify": "^0.4.0",
+    "grunt-contrib-watch": "^0.5.0",
+    "uglify-js": "^2.3.x"
+  },
+  "browser": "dist/localforage.js",
+  "main": "dist/localforage.js",
+  "licence": "Apache-2.0",
+  "bugs": {
+    "url": "http://github.com/mozilla/localForage/issues"
+  }
 }

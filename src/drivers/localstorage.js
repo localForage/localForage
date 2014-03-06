@@ -1,4 +1,3 @@
-/*global define:true, module:true */
 // If IndexedDB isn't available, we'll fall back to localStorage.
 // Note that this will have considerable performance and storage
 // side-effects (all data will be serialized on save and only data that

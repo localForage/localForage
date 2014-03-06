@@ -15,5 +15,10 @@
   "undef": true,
   "unused": true,
   "strict": false,
-  "trailing": false
+  "trailing": false,
+
+  "globals": {
+    "define": true,
+    "module": true
+  }
 }

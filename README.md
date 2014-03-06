@@ -139,6 +139,9 @@ without it.
 
 # Running Tests
 
+*tl;dr:* You need PhantomJS and SlimerJS installed to run tests. Then, just
+run `npm test` (or, directly, `grunt test`).
+
 localForage is designed to run in the browser, so the tests explicitly require
 a browser environment instead of any JavaScript environment (i.e. node.js).
 The tests are run on both a headless WebKit (using
@@ -160,19 +163,12 @@ If you're using Windows or Linux, you can get
 [get SlimerJS](http://slimerjs.org/download) from their websites. I haven't
 tried it myself, but it seems easy enough.
 
-Also, you need to initialize the git submodule under `vendor/casperjs`:
-
-```
-git submodule init
-git submodule update --recursive
-```
-
 Generally you'll need a version of Firefox or XULRunner installed for SlimerJS
 to run your tests. The exact steps how to install and setup SlimerJS are
 described on the
 [project homepage](http://slimerjs.org/install.html#install-firefox).
 
-Once everything is installed you can simply type `make test`
+Once everything is installed you can simply type `grunt test`
 to make sure the code is working as expected.
 
 TODO: Provide Windows/Linux instructions; check into XULRunner setup.

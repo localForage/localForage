@@ -783,7 +783,6 @@ define("promise/utils",
   });
 requireModule('promise/polyfill').polyfill();
 }());
-/*global define:true, module:true */
 (function() {
     'use strict';
 
@@ -1014,7 +1013,6 @@ requireModule('promise/polyfill').polyfill();
         this.asyncStorage = asyncStorage;
     }
 }).call(this);
-/*global define:true, module:true */
 // If IndexedDB isn't available, we'll fall back to localStorage.
 // Note that this will have considerable performance and storage
 // side-effects (all data will be serialized on save and only data that
@@ -1169,7 +1167,6 @@ requireModule('promise/polyfill').polyfill();
         this.localStorageWrapper = localStorageWrapper;
     }
 }).call(this);
-/*global define:true, module:true */
 (function() {
     'use strict';
 
