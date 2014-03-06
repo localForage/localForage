@@ -3,7 +3,7 @@
 express = require 'express'
 app = express()
 
-app_folder = process.env.PWD
+app_folder = process.cwd()
 
 # Configuration.
 app.configure ->
