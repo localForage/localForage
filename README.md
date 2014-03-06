@@ -160,13 +160,6 @@ If you're using Windows or Linux, you can get
 [get SlimerJS](http://slimerjs.org/download) from their websites. I haven't
 tried it myself, but it seems easy enough.
 
-Also, you need to initialize the git submodule under `vendor/casperjs`:
-
-```
-git submodule init
-git submodule update --recursive
-```
-
 Generally you'll need a version of Firefox or XULRunner installed for SlimerJS
 to run your tests. The exact steps how to install and setup SlimerJS are
 described on the
