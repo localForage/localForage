@@ -139,8 +139,12 @@ without it.
 
 # Running Tests
 
-*tl;dr:* You need PhantomJS and SlimerJS installed to run tests. Then, just
+**tl;dr:** You need PhantomJS and SlimerJS installed to run tests. Then, just
 run `npm test` (or, directly, `grunt test`).
+
+_Note for Windows users:_ SlimerJS doesn't seem to work on Windows for our
+tests, so run the tests with `grunt test --force`. The SlimerJS versions will
+be run on Travis when you submit a pull request.
 
 localForage is designed to run in the browser, so the tests explicitly require
 a browser environment instead of any JavaScript environment (i.e. node.js).
