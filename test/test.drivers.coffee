@@ -37,17 +37,6 @@ casper.test.begin "Testing localforage driver selection", (test) ->
     casper.then ->
       @evaluate ->
         require ['localforage'], (localforage) ->
-          window._localforageDriver = localforage.driver
-          __utils__.findOne('.status').id = 'driver-found'
-
-      @waitForSelector '#driver-found', ->
-        test.assertEvalEquals ->
-          window._localforageDriver
-        , casper.DRIVER, "#{casper.DRIVER} should be loaded by default"
-
-    casper.then ->
-      @evaluate ->
-        require ['localforage'], (localforage) ->
           localforage.setDriver 'localStorageWrapper', (localforage) ->
             window._localforageDriver = localforage.driver
             __utils__.findOne('.status').id = 'driver-set'
