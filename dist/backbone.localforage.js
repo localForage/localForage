@@ -24,7 +24,17 @@
 //
 // Inspiration for this file comes from a few backbone.localstorage
 // implementations.
-(function() {
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd)
+    define(['localforage', 'backbone', 'underscore'], factory);
+  else if (typeof module !== 'undefined' && module.exports) {
+    var localforage = require('localforage');
+    var Backbone = require('backbone');
+    var _ = require('underscore');
+    module.exports = factory(localforage, Backbone, _);
+  } else
+    factory(root.localforage, root.Backbone, root._);
+}(this, function (localforage, Backbone, _) {
     var Promise = window.Promise;
 
     function S4() {
@@ -242,5 +252,5 @@
         }
     };
 
-    return OfflineStore;
-}).call(this);
+    return Backbone.localforage;
+}));

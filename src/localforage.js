@@ -60,7 +60,19 @@
                         resolve(localForage);
                     });
                 } else if (moduleType === MODULE_TYPE_EXPORT) {
-                    localForage._extend(require('./' + driverName));
+                    // Making it browserify friendly
+                    var driver;
+                    switch (driverName) {
+                        case localForage.INDEXEDDB:
+                            driver = require('localforage/src/drivers/indexeddb');
+                            break;
+                        case localForage.LOCALSTORAGE:
+                            driver = require('localforage/src/drivers/localstorage');
+                            break;
+                        case localForage.WEBSQL:
+                            driver = require('localforage/src/drivers/websql');
+                    }
+                    localForage._extend(driver);
 
                     if (callback) {
                         callback(localForage);
