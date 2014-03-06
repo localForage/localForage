@@ -131,7 +131,7 @@ choice" will continue to be used.
 
 localForage includes a [Backbone.js](http://backbonejs.org/) storage library
 that you can use to store your Backbone collections offline with only a few
-lines of really simple code. The is a [Backbone example](https://github.com/mozilla/localForage/blob/master/examples/backbone.html) available if you're
+lines of really simple code. The is a [Backbone example](https://github.com/mozilla/localForage/blob/master/examples/backbone-example.html) available if you're
 interested in using Backbone and localForage together.
 
 Of course, Backbone.js is entirely optional and you can use localForage
