@@ -1,7 +1,63 @@
-/*global exports:true */
+/*global config:true, exports:true, require:true */
 module.exports = exports = function(grunt) {
     'use strict';
     grunt.initConfig({
+        casper: {
+            options: {
+                pre: './test/init.coffee',
+                test: true
+            },
+
+            indexedDB: {
+                options: {
+                    args: [
+                        '--driver=asyncStorage',
+                        '--driver-name=IndexedDB',
+                        '--url=indexeddb'
+                    ],
+                    engine: 'slimerjs'
+                },
+                src: [
+                    './test/test.*.coffee'
+                ]
+            },
+
+            localstorageGecko: {
+                options: {
+                    args: [
+                        '--driver=localStorageWrapper',
+                        '--driver-name=localStorage',
+                        '--url=localstorage'
+                    ],
+                    engine: 'slimerjs'
+                },
+                src: [
+                    './test/test.*.coffee'
+                ]
+            },
+
+            localstorageWebKit: {
+                options: {
+                    engine: 'phantomjs'
+                },
+                src: [
+                    './test/test.*.coffee'
+                ]
+            },
+
+            websql: {
+                options: {
+                    args: [
+                        '--driver=webSQLStorage',
+                        '--driver-name=WebSQL',
+                        '--url=websql'
+                    ]
+                },
+                src: [
+                    './test/test.*.coffee'
+                ]
+            }
+        },
         concat: {
             options: {
                 separator: '',
@@ -54,11 +110,19 @@ module.exports = exports = function(grunt) {
         }
     });
 
+    grunt.loadNpmTasks('grunt-casper');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-karma');
 
     grunt.registerTask('default', ['build', 'watch']);
     grunt.registerTask('build', ['concat', 'uglify']);
+
+    grunt.registerTask('server', function() {
+        grunt.log.writeln('Starting web server at test/server.coffee');
+
+        require('./test/server.coffee').listen(8181);
+    });
+
+    grunt.registerTask('test', ['build', 'server', 'casper']);
 };

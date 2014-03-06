@@ -172,7 +172,7 @@ to run your tests. The exact steps how to install and setup SlimerJS are
 described on the
 [project homepage](http://slimerjs.org/install.html#install-firefox).
 
-Once everything is installed you can simply type `make test`
+Once everything is installed you can simply type `grunt test`
 to make sure the code is working as expected.
 
 TODO: Provide Windows/Linux instructions; check into XULRunner setup.
