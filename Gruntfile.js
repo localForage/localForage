@@ -18,7 +18,7 @@ module.exports = exports = function(grunt) {
                     engine: 'slimerjs'
                 },
                 src: [
-                    './test/test.*.coffee'
+                    'test/test.*.coffee'
                 ]
             },
 
@@ -32,13 +32,13 @@ module.exports = exports = function(grunt) {
                     engine: 'slimerjs'
                 },
                 src: [
-                    './test/test.*.coffee'
+                    'test/test.*.coffee'
                 ]
             },
 
             localstorageWebKit: {
                 src: [
-                    './test/test.*.coffee'
+                    'test/test.*.coffee'
                 ]
             },
 
@@ -51,7 +51,7 @@ module.exports = exports = function(grunt) {
                     ]
                 },
                 src: [
-                    './test/test.*.coffee'
+                    'test/test.*.coffee'
                 ]
             }
         },
