@@ -139,6 +139,9 @@ without it.
 
 # Running Tests
 
+*tl;dr:* You need PhantomJS and SlimerJS installed to run tests. Then, just
+run `npm test` (or, directly, `grunt test`).
+
 localForage is designed to run in the browser, so the tests explicitly require
 a browser environment instead of any JavaScript environment (i.e. node.js).
 The tests are run on both a headless WebKit (using
