@@ -3,7 +3,7 @@ env:
 addons:
   firefox: "27.0"
 before_install:
-  - npm install -g grunt-cli karma
+  - npm install -g grunt-cli
 before_script:
   - "sh -e /etc/init.d/xvfb start"
   - "echo 'Installing Slimer'"
