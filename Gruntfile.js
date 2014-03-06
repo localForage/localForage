@@ -1,4 +1,4 @@
-/*global config:true, exports:true, require:true */
+/*global exports:true, require:true */
 module.exports = exports = function(grunt) {
     'use strict';
     grunt.initConfig({
@@ -37,9 +37,6 @@ module.exports = exports = function(grunt) {
             },
 
             localstorageWebKit: {
-                options: {
-                    engine: 'phantomjs'
-                },
                 src: [
                     './test/test.*.coffee'
                 ]
@@ -106,6 +103,10 @@ module.exports = exports = function(grunt) {
                 files: [
                     'Gruntfile.js'
                 ]
+            },
+            test: {
+                files: ['src/*.js', 'src/**/*.js'],
+                tasks: ['test']
             }
         }
     });
