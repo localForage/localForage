@@ -1,0 +1,25 @@
+{
+  "asi": false,
+  "bitwise": true,
+  "browser": true,
+  "curly": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "esnext": false,
+  "immed": true,
+  "latedef": true,
+  "newcap": true,
+  "noarg": true,
+  "nonew": true,
+  "quotmark": false,
+  "undef": true,
+  "unused": true,
+  "strict": false,
+  "trailing": false,
+
+  "globals": {
+    "define": true,
+    "module": true,
+    "require": true
+  }
+}

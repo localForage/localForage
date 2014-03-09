@@ -1,9 +1,8 @@
 /*!
-  localForage -- Offline Storage, Improved
-  http://mozilla.github.io/localForage
-  (c) 2013-2014 Mozilla, Apache License 2.0
+    localForage -- Offline Storage, Improved
+    http://mozilla.github.io/localForage
+    (c) 2013-2014 Mozilla, Apache License 2.0
 */
-
 // ES6 Promises Polyfill
 // Version 0.1.1
 // https://github.com/jakearchibald/ES6-Promises
@@ -787,46 +786,9 @@ requireModule('promise/polyfill').polyfill();
 (function() {
     'use strict';
 
-    /**
-     * This file defines an asynchronous version of the localStorage API, backed by
-     * an IndexedDB database. It creates a global asyncStorage object that has
-     * methods like the localStorage object.
-     *
-     * To store a value use setItem:
-     *
-     *     asyncStorage.setItem('key', 'value');
-     *
-     * If you want confirmation that the value has been stored, pass a callback
-     * function as the third argument:
-     *
-     *    asyncStorage.setItem('key', 'newvalue', function() {
-     *        console.log('new value stored');
-     *    });
-     *
-     * To read a value, call getItem(), but note that you must supply a callback
-     * function that the value will be passed to asynchronously:
-     *
-     *    asyncStorage.getItem('key', function(value) {
-     *        console.log('The value of key is:', value);
-     *    });
-     *
-     * Note that unlike localStorage, asyncStorage does not allow you to store and
-     * retrieve values by setting and querying properties directly. You cannot just
-     * write asyncStorage.key; you have to explicitly call setItem() or getItem().
-     *
-     * removeItem(), clear(), length(), and key() are like the same-named methods of
-     * localStorage, but, like getItem() and setItem() they take a callback
-     * argument.
-     *
-     * The asynchronous nature of getItem() makes it tricky to retrieve multiple
-     * values. But unlike localStorage, asyncStorage does not require the values you
-     * store to be strings.    So if you need to save multiple values and want to
-     * retrieve them together, in a single asynchronous operation, just group the
-     * values into a single object. The properties of this object may not include
-     * DOM elements, but they may include things like Blobs and typed arrays.
-     */
+    // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
 
-    var DBNAME = 'asyncStorage';
+    var DBNAME = 'localforage';
     var DBVERSION = 1;
     var STORENAME = 'keyvaluepairs';
     var Promise = window.Promise;
@@ -842,13 +804,13 @@ requireModule('promise/polyfill').polyfill();
         return;
     }
 
-    function withStore(type, f) {
+    function withStore(type, f, reject) {
         if (db) {
             f(db.transaction(STORENAME, type).objectStore(STORENAME));
         } else {
             var openreq = indexedDB.open(DBNAME, DBVERSION);
             openreq.onerror = function withStoreOnError() {
-                console.error("asyncStorage: can't open database:", openreq.error.name);
+                reject(openreq.error.name);
             };
             openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
                 // First time setup: create an empty object store
@@ -878,9 +840,9 @@ requireModule('promise/polyfill').polyfill();
                     resolve(value);
                 };
                 req.onerror = function getItemOnError() {
-                    console.error('Error in asyncStorage.getItem(): ', req.error.name);
+                    reject(req.error.name);
                 };
-            });
+            }, reject);
         });
     }
 
@@ -905,9 +867,9 @@ requireModule('promise/polyfill').polyfill();
                     resolve(value);
                 };
                 req.onerror = function setItemOnError() {
-                    console.error('Error in asyncStorage.setItem(): ', req.error.name);
+                    reject(req.error.name);
                 };
-            });
+            }, reject);
         });
     }
 
@@ -932,7 +894,7 @@ requireModule('promise/polyfill').polyfill();
                     resolve();
                 };
                 req.onerror = function removeItemOnError() {
-                    console.error('Error in asyncStorage.removeItem(): ', req.error.name);
+                    reject(req.error.name);
                 };
             });
         });
@@ -950,9 +912,9 @@ requireModule('promise/polyfill').polyfill();
                     resolve();
                 };
                 req.onerror = function clearOnError() {
-                    console.error('Error in asyncStorage.clear(): ', req.error.name);
+                    reject(req.error.name);
                 };
-            });
+            }, reject);
         });
     }
 
@@ -968,7 +930,7 @@ requireModule('promise/polyfill').polyfill();
                     resolve(req.result);
                 };
                 req.onerror = function lengthOnError() {
-                    console.error('Error in asyncStorage.length(): ', req.error.name);
+                    reject(req.error.name);
                 };
             });
         });
@@ -1025,9 +987,9 @@ requireModule('promise/polyfill').polyfill();
                 };
 
                 req.onerror = function keyOnError() {
-                    console.error('Error in asyncStorage.key(): ', req.error.name);
+                    reject(req.error.name);
                 };
-            });
+            }, reject);
         });
     }
 
@@ -1058,6 +1020,7 @@ requireModule('promise/polyfill').polyfill();
 (function() {
     'use strict';
 
+    var localStorage;
     var Promise = window.Promise;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
@@ -1068,7 +1031,7 @@ requireModule('promise/polyfill').polyfill();
     try {
         // Initialize localStorage and create a variable to use throughout
         // the code.
-        var localStorage = window.localStorage;
+        localStorage = window.localStorage;
     } catch (e) {
         return;
     }
@@ -1170,8 +1133,6 @@ requireModule('promise/polyfill').polyfill();
             try {
                 value = JSON.stringify(value);
             } catch (e) {
-                console.error("Couldn't convert value into a JSON string: ",
-                              value);
                 reject(e);
             }
 
@@ -1301,7 +1262,7 @@ requireModule('promise/polyfill').polyfill();
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
             db.transaction(function (t) {
-                t.executeSql('DELETE FROM localforage WHERE key = ? LIMIT 1', [key], function() {
+                t.executeSql('DELETE FROM localforage WHERE key = ?', [key], function() {
                     if (callback) {
                         callback();
                     }
@@ -1312,7 +1273,7 @@ requireModule('promise/polyfill').polyfill();
         });
     }
 
-    // Deletes every item in the table with a TRUNCATE call.
+    // Deletes every item in the table.
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         return new Promise(function(resolve, reject) {
@@ -1452,7 +1413,19 @@ requireModule('promise/polyfill').polyfill();
                         resolve(localForage);
                     });
                 } else if (moduleType === MODULE_TYPE_EXPORT) {
-                    localForage._extend(require('./' + driverName));
+                    // Making it browserify friendly
+                    var driver;
+                    switch (driverName) {
+                        case localForage.INDEXEDDB:
+                            driver = require('localforage/src/drivers/indexeddb');
+                            break;
+                        case localForage.LOCALSTORAGE:
+                            driver = require('localforage/src/drivers/localstorage');
+                            break;
+                        case localForage.WEBSQL:
+                            driver = require('localforage/src/drivers/websql');
+                    }
+                    localForage._extend(driver);
 
                     if (callback) {
                         callback(localForage);

@@ -46,5 +46,52 @@ casper.test.begin "Testing Backbone data adapter", (test) ->
       results.length is 0
     , "Backbone adapter should delete data after model is removed"
 
+  casper.thenOpen "#{casper.TEST_URL}backbone-example.html", ->
+    test.info "Test the Backbone example (examples/backbone-example.html)"
+
+    @waitForSelector '.content', ->
+      # Fill the content form and test it saves the content without error.
+      casper.fill '.content form', {content: 'testing'}, true
+
+  casper.reload()
+
+  casper.then ->
+    @waitForSelector '.content .saved-data', ->
+      test.assertEval ->
+        $('.saved-data').length is 1
+      , "Backbone example saves a piece of data between page loads"
+
+      test.assertEval ->
+        $('.saved-data').text() is 'testing'
+      , "Data saved in Backbone is retrieved properly"
+
+  casper.then ->
+    # See: https://github.com/mozilla/localForage/pull/90
+    casper.fill '.content form', {content: 'test 2'}, true
+    casper.fill '.content form', {content: 'test 3'}, true
+
+  casper.then ->
+    test.assertEval ->
+      $('.saved-data').length is 3
+    , "Extra data is saved properly"
+
+    test.assertEval ->
+      $('.saved-data').eq(2).text() is 'test 3'
+    , "Data saved in Backbone is retrieved properly"
+
+  casper.then ->
+    @evaluate ->
+      localforage.clear()
+
+  casper.wait 200
+
+  casper.reload()
+
+  casper.then ->
+    @waitForSelector '.content', ->
+      test.assertEval ->
+        $('.saved-data').length is 0
+      , "After running clear() on localforage, no saved-data divs exist"
+
   casper.run ->
     test.done()

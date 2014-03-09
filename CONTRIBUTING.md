@@ -15,6 +15,7 @@ If you'd like to contribute to localForage, it's as simple as opening a pull
 request on GitHub. After that someone will code review your work and either
 ask you to fix any errors or merge the code into master. Here are a few tips:
 
+* **all drivers must have the same public API**: refer to [the API tests](https://github.com/mozilla/localForage/blob/master/test/test.api.coffee) for how we ensure this, but simply put: all drivers should share the _exact same_ outward-facing API
 * **do your work on a feature branch**: this keeps things clean and easy
 * **try to rebase master into your branch**: this keeps the commit history clean and avoids merge commits inside feature branches
 * **write tests**: if you're adding new features, _please_ write tests; likewise, if you're fixing a bug that wasn't previously caught by a test, please add one
@@ -26,6 +27,34 @@ Please commit changes inside the `dist/` folder along with your changes in the
 If you have any questions, need some help, or anything else, don't feel shy!
 The team behind this library is often available on IRC
 ([irc.mozilla.org](https://wiki.mozilla.org/IRC) on the `#apps` channel).
+
+## Coding Style
+
+JavaScript should be indented with four spaces.
+
+Always use curly braces, with spaces around them:
+
+```javascript
+// Bad.
+if (something)
+    foo();
+if (something) foo();
+if (something){
+    foo()
+};
+
+// Good.
+if (something) {
+    foo();
+}
+```
+
+Comment your code and try to wrap lines at 80 characters, but don't make it
+less readable in doing so.
+
+CoffeeScript should be intended with two spaces.
+
+Always include semicolons (avoid ASI).
 
 ## Features localForage will reject
 

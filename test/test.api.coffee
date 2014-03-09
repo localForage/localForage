@@ -135,6 +135,22 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
   casper.then ->
     @evaluate ->
+      localforage.removeItem 'officeName', ->
+        __utils__.findOne('.status').id = 'value-removed'
+
+    @waitForSelector '#value-removed', ->
+      @evaluate ->
+        localforage.getItem 'officeName', (value) ->
+          window._testValue = value
+          __utils__.findOne('.status').id = 'removed-value-obtained'
+
+    @waitForSelector '#removed-value-obtained', ->
+      test.assertEval ->
+        window._testValue is null
+      , 'removeItem() removes a key and its value'
+
+  casper.then ->
+    @evaluate ->
       localforage.setItem 'numberOfUnhappyEmployees', 3, ->
         window._testValue = null
         __utils__.findOne('.status').id = 'value-set'

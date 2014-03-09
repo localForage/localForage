@@ -5,6 +5,15 @@ casper.DRIVER = casper.cli.get('driver') or 'localStorageWrapper'
 casper.DRIVER_NAME = casper.cli.get('driver-name') or 'localStorage'
 casper.URL = casper.cli.get('url') or 'localstorage'
 
+# Oh boy, this is naughty:
+casper.ENGINE = (->
+  try
+    slimer
+    'slimerjs'
+  catch e
+    'phantomjs'
+)()
+
 # Assign our test URL; it should be running a simple express server with our
 # test HTML pages.
 casper.TEST_URL = 'http://localhost:8181/'

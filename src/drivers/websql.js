@@ -104,7 +104,7 @@
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
             db.transaction(function (t) {
-                t.executeSql('DELETE FROM localforage WHERE key = ? LIMIT 1', [key], function() {
+                t.executeSql('DELETE FROM localforage WHERE key = ?', [key], function() {
                     if (callback) {
                         callback();
                     }
@@ -115,7 +115,7 @@
         });
     }
 
-    // Deletes every item in the table with a TRUNCATE call.
+    // Deletes every item in the table.
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         return new Promise(function(resolve, reject) {

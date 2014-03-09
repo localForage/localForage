@@ -131,13 +131,20 @@ choice" will continue to be used.
 
 localForage includes a [Backbone.js](http://backbonejs.org/) storage library
 that you can use to store your Backbone collections offline with only a few
-lines of really simple code. The is a [Backbone example](https://github.com/mozilla/localForage/blob/master/examples/backbone.html) available if you're
+lines of really simple code. The is a [Backbone example](https://github.com/mozilla/localForage/blob/master/examples/backbone-example.html) available if you're
 interested in using Backbone and localForage together.
 
 Of course, Backbone.js is entirely optional and you can use localForage
 without it.
 
 # Running Tests
+
+**tl;dr:** You need PhantomJS and SlimerJS installed to run tests. Then, just
+run `npm test` (or, directly, `grunt test`).
+
+_Note for Windows users:_ SlimerJS doesn't seem to work on Windows for our
+tests, so run the tests with `grunt test --force`. The SlimerJS versions will
+be run on Travis when you submit a pull request.
 
 localForage is designed to run in the browser, so the tests explicitly require
 a browser environment instead of any JavaScript environment (i.e. node.js).
@@ -160,19 +167,12 @@ If you're using Windows or Linux, you can get
 [get SlimerJS](http://slimerjs.org/download) from their websites. I haven't
 tried it myself, but it seems easy enough.
 
-Also, you need to initialize the git submodule under `vendor/casperjs`:
-
-```
-git submodule init
-git submodule update --recursive
-```
-
 Generally you'll need a version of Firefox or XULRunner installed for SlimerJS
 to run your tests. The exact steps how to install and setup SlimerJS are
 described on the
 [project homepage](http://slimerjs.org/install.html#install-firefox).
 
-Once everything is installed you can simply type `make test`
+Once everything is installed you can simply type `grunt test`
 to make sure the code is working as expected.
 
 TODO: Provide Windows/Linux instructions; check into XULRunner setup.

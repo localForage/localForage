@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <title>Simple localForage example</title>
+  </head>
+  <body>
+    <img id="image">
+    <script src="/localforage.js"></script>
+    <script>
+      var request = new XMLHttpRequest();
+
+      // Let's get the first user's photo.
+      request.open('GET', "/photo.jpg", true);
+      request.responseType = 'arraybuffer';
+
+      // When the AJAX state changes, save the photo locally.
+      request.addEventListener('readystatechange', function() {
+          if (request.readyState === 4) { // readyState DONE
+              // console.log(request);
+              // We store the binary data as-is; this wouldn't work with localStorage.
+              localforage.setItem('user_1_photo', request.response, function(value) {
+                  // Photo has been saved, do whatever happens next!
+                  // var blob = new Blob([value]);
+                  // console.log(window.URL.createObjectURL(blob), value, typeof(value), blob);
+                  // document.getElementById('image').src = window.URL.createObjectURL(blob);
+
+                  doEeet();
+              });
+          }
+      });
+
+      localforage.setDriver('webSQLStorage').then(function() {
+        request.send(null);
+      });
+
+      // var array = new Uint8ClampedArray(3)
+      // array[0] = -17
+      // array[1] = 93
+      // array[2] = 350
+
+      // localforage.setDriver('localStorageWrapper')
+      // doEeet();
+
+      function doEeet() {
+        localforage.getItem('user_1_photo', function(value) {
+            console.log('message');
+            // Photo has been saved, do whatever happens next!
+            var blob_ = new Blob([value], {type: 'image/jpeg'});
+            console.log(window.URL.createObjectURL(blob_), value, typeof(value), blob_);
+            document.getElementById('image').src = window.URL.createObjectURL(blob_);
+        });
+      }
+
+      // localforage.setDriver('webSQLStorage').then(function() {
+      //   console.log('message');
+      //   // doEeet()
+      // });
+    </script>
+  </body>
+</html>

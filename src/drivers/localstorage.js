@@ -5,6 +5,7 @@
 (function() {
     'use strict';
 
+    var localStorage;
     var Promise = window.Promise;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
@@ -15,7 +16,7 @@
     try {
         // Initialize localStorage and create a variable to use throughout
         // the code.
-        var localStorage = window.localStorage;
+        localStorage = window.localStorage;
     } catch (e) {
         return;
     }
@@ -117,8 +118,6 @@
             try {
                 value = JSON.stringify(value);
             } catch (e) {
-                console.error("Couldn't convert value into a JSON string: ",
-                              value);
                 reject(e);
             }
 
