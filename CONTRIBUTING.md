@@ -1,10 +1,15 @@
 # Filing issues
 
-Please make sure your issue hasn't been addressed already and it is not in the
-list of likely-to-be-rejected features below. If you have a bug to report,
-please file it. If you'd like to see a feature implemented, you can file an
-issue, but know that pull requests for small things like adding a line in a
-config file will get more attention than an issue asking someone else to do it.
+Please
+[check the existing issues](https://github.com/mozilla/localForage/issues) to
+make sure your issue hasn't already been filed.
+
+If you have a bug to report, please file it. If you'd like to see a feature
+implemented, you can file an issue, but know that pull requests for small
+things like adding a line in a config file will get more attention than an
+issue asking someone else to do it.
+
+Also see: [issues that have been discussed and will be rejected](#features-localforage-will-reject).
 
 # Contributing to localForage
 
