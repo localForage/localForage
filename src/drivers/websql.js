@@ -12,23 +12,34 @@
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
     var STORE_NAME = 'keyvaluepairs';
     var Promise = window.Promise;
+    var db = null;
 
     // If WebSQL methods aren't available, we can stop now.
     if (!window.openDatabase) {
         return;
     }
 
-    // Open the database; the openDatabase API will automatically create it for
-    // us if it doesn't exist.
-    var db = window.openDatabase(DB_NAME, DB_VERSION, STORE_NAME, DB_SIZE);
+    function initStorage(callback) {
+        return new Promise(function(resolve, reject) {
+            // Open the database; the openDatabase API will automatically create it for
+            // us if it doesn't exist.
+            db = window.openDatabase(DB_NAME, DB_VERSION, STORE_NAME, DB_SIZE);
 
-    // Create our key/value table if it doesn't exist.
-    // TODO: Technically I can imagine this being as race condition, as I'm not
-    // positive on the WebSQL API enough to be sure that other transactions
-    // won't be run before this? But I assume not.
-    db.transaction(function (t) {
-        t.executeSql('CREATE TABLE IF NOT EXISTS localforage (id INTEGER PRIMARY KEY, key unique, value)');
-    });
+            // Create our key/value table if it doesn't exist.
+            // TODO: Technically I can imagine this being as race condition, as I'm not
+            // positive on the WebSQL API enough to be sure that other transactions
+            // won't be run before this? But I assume not.
+            db.transaction(function (t) {
+                t.executeSql('CREATE TABLE IF NOT EXISTS localforage (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
+                    if (callback) {
+                        callback();
+                    }
+
+                    resolve();
+                }, null);
+            });
+        });
+    }
 
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
@@ -164,6 +175,7 @@
 
     var webSQLStorage = {
         driver: 'webSQLStorage',
+        initStorage: initStorage,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
