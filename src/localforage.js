@@ -53,21 +53,13 @@
                     require([driverName], function(lib) {
                         localForage._extend(lib);
 
-                        if(localForage.initStorage) {
-                            localForage.initStorage().then(function(val) {
-                                if (callback) {
-                                    callback(localForage);
-                                }
-
-                                resolve(localForage);
-                            });
-                        } else {
+                        localForage.initStorage().then(function(val) {
                             if (callback) {
                                 callback(localForage);
                             }
 
                             resolve(localForage);
-                        }
+                        });
                     });
                 } else if (moduleType === MODULE_TYPE_EXPORT) {
                     // Making it browserify friendly
@@ -84,39 +76,23 @@
                     }
                     localForage._extend(driver);
 
-                    if(localForage.initStorage) {
-                        localForage.initStorage().then(function(val) {
-                            if (callback) {
-                                callback(localForage);
-                            }
-
-                            resolve(localForage);
-                        });
-                    } else {
+                    localForage.initStorage().then(function(val) {
                         if (callback) {
                             callback(localForage);
                         }
 
                         resolve(localForage);
-                    }
+                    });
                 } else {
                     localForage._extend(_this[driverName]);
 
-                    if(localForage.initStorage) {
-                        localForage.initStorage().then(function(val) {
-                            if (callback) {
-                                callback(localForage);
-                            }
-
-                            resolve(localForage);
-                        });
-                    } else {
+                    localForage.initStorage().then(function(val) {
                         if (callback) {
                             callback(localForage);
                         }
 
                         resolve(localForage);
-                    }
+                    });
                 }
             });
         },

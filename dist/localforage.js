@@ -804,10 +804,8 @@ requireModule('promise/polyfill').polyfill();
         return;
     }
 
-    function withStore(type, f, reject) {
-        if (db) {
-            f(db.transaction(STORENAME, type).objectStore(STORENAME));
-        } else {
+    function initStorage(callback) {
+        return new Promise(function(resolve, reject) {
             var openreq = indexedDB.open(DBNAME, DBVERSION);
             openreq.onerror = function withStoreOnError() {
                 reject(openreq.error.name);
@@ -818,121 +816,121 @@ requireModule('promise/polyfill').polyfill();
             };
             openreq.onsuccess = function withStoreOnSuccess() {
                 db = openreq.result;
-                f(db.transaction(STORENAME, type).objectStore(STORENAME));
+                resolve();
             };
-        }
+        });
     }
 
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            withStore('readonly', function getItemBody(store) {
-                var req = store.get(key);
-                req.onsuccess = function getItemOnSuccess() {
-                    var value = req.result;
-                    if (value === undefined) {
-                        value = null;
-                    }
+            var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
 
-                    if (callback) {
-                        callback(value);
-                    }
+            var req = store.get(key);
+            req.onsuccess = function getItemOnSuccess() {
+                var value = req.result;
+                if (value === undefined) {
+                    value = null;
+                }
 
-                    resolve(value);
-                };
-                req.onerror = function getItemOnError() {
-                    reject(req.error.name);
-                };
-            }, reject);
+                if (callback) {
+                    callback(value);
+                }
+
+                resolve(value);
+            };
+            req.onerror = function getItemOnError() {
+                reject(req.error.name);
+            };
         });
     }
 
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
-            withStore('readwrite', function setItemBody(store) {
-                // Cast to undefined so the value passed to callback/promise is
-                // the same as what one would get out of `getItem()` later.
-                // This leads to some weirdness (setItem('foo', undefined) will
-                // return "null"), but it's not my fault localStorage is our
-                // baseline and that it's weird.
-                if (value === undefined) {
-                    value = null;
+            var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
+
+            // Cast to undefined so the value passed to callback/promise is
+            // the same as what one would get out of `getItem()` later.
+            // This leads to some weirdness (setItem('foo', undefined) will
+            // return "null"), but it's not my fault localStorage is our
+            // baseline and that it's weird.
+            if (value === undefined) {
+                value = null;
+            }
+
+            var req = store.put(value, key);
+            req.onsuccess = function setItemOnSuccess() {
+                if (callback) {
+                    callback(value);
                 }
 
-                var req = store.put(value, key);
-                req.onsuccess = function setItemOnSuccess() {
-                    if (callback) {
-                        callback(value);
-                    }
-
-                    resolve(value);
-                };
-                req.onerror = function setItemOnError() {
-                    reject(req.error.name);
-                };
-            }, reject);
+                resolve(value);
+            };
+            req.onerror = function setItemOnError() {
+                reject(req.error.name);
+            };
         });
     }
 
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            withStore('readwrite', function removeItemBody(store) {
-                // We use `['delete']` instead of `.delete` because IE 8 will
-                // throw a fit if it sees the reserved word "delete" in this
-                // scenario. See: https://github.com/mozilla/localForage/pull/67
-                //
-                // This can be removed once we no longer care about IE 8, for
-                // what that's worth.
-                // TODO: Write a test against this? Maybe IE in general? Also,
-                // make sure the minify step doesn't optimise this to `.delete`,
-                // though it currently doesn't.
-                var req = store['delete'](key);
-                req.onsuccess = function removeItemOnSuccess() {
-                    if (callback) {
-                        callback();
-                    }
+            var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
 
-                    resolve();
-                };
-                req.onerror = function removeItemOnError() {
-                    reject(req.error.name);
-                };
-            });
+            // We use `['delete']` instead of `.delete` because IE 8 will
+            // throw a fit if it sees the reserved word "delete" in this
+            // scenario. See: https://github.com/mozilla/localForage/pull/67
+            //
+            // This can be removed once we no longer care about IE 8, for
+            // what that's worth.
+            // TODO: Write a test against this? Maybe IE in general? Also,
+            // make sure the minify step doesn't optimise this to `.delete`,
+            // though it currently doesn't.
+            var req = store['delete'](key);
+            req.onsuccess = function removeItemOnSuccess() {
+                if (callback) {
+                    callback();
+                }
+
+                resolve();
+            };
+            req.onerror = function removeItemOnError() {
+                reject(req.error.name);
+            };
         });
     }
 
     function clear(callback) {
         return new Promise(function(resolve, reject) {
-            withStore('readwrite', function clearBody(store) {
-                var req = store.clear();
-                req.onsuccess = function clearOnSuccess() {
-                    if (callback) {
-                        callback();
-                    }
+            var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
 
-                    resolve();
-                };
-                req.onerror = function clearOnError() {
-                    reject(req.error.name);
-                };
-            }, reject);
+            var req = store.clear();
+            req.onsuccess = function clearOnSuccess() {
+                if (callback) {
+                    callback();
+                }
+
+                resolve();
+            };
+            req.onerror = function clearOnError() {
+                reject(req.error.name);
+            };
         });
     }
 
     function length(callback) {
         return new Promise(function(resolve, reject) {
-            withStore('readonly', function lengthBody(store) {
-                var req = store.count();
-                req.onsuccess = function lengthOnSuccess() {
-                    if (callback) {
-                        callback(req.result);
-                    }
+            var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
 
-                    resolve(req.result);
-                };
-                req.onerror = function lengthOnError() {
-                    reject(req.error.name);
-                };
-            });
+            var req = store.count();
+            req.onsuccess = function lengthOnSuccess() {
+                if (callback) {
+                    callback(req.result);
+                }
+
+                resolve(req.result);
+            };
+            req.onerror = function lengthOnError() {
+                reject(req.error.name);
+            };
         });
     }
 
@@ -948,53 +946,54 @@ requireModule('promise/polyfill').polyfill();
                 return;
             }
 
-            withStore('readonly', function keyBody(store) {
-                var advanced = false;
-                var req = store.openCursor();
-                req.onsuccess = function keyOnSuccess() {
-                    var cursor = req.result;
-                    if (!cursor) {
-                        // this means there weren't enough keys
-                        if (callback) {
-                            callback(null);
-                        }
+            var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
 
-                        resolve(null);
-
-                        return;
+            var advanced = false;
+            var req = store.openCursor();
+            req.onsuccess = function keyOnSuccess() {
+                var cursor = req.result;
+                if (!cursor) {
+                    // this means there weren't enough keys
+                    if (callback) {
+                        callback(null);
                     }
-                    if (n === 0) {
-                        // We have the first key, return it if that's what they wanted
+
+                    resolve(null);
+
+                    return;
+                }
+                if (n === 0) {
+                    // We have the first key, return it if that's what they wanted
+                    if (callback) {
+                        callback(cursor.key);
+                    }
+
+                    resolve(cursor.key);
+                } else {
+                    if (!advanced) {
+                        // Otherwise, ask the cursor to skip ahead n records
+                        advanced = true;
+                        cursor.advance(n);
+                    } else {
+                        // When we get here, we've got the nth key.
                         if (callback) {
                             callback(cursor.key);
                         }
 
                         resolve(cursor.key);
-                    } else {
-                        if (!advanced) {
-                            // Otherwise, ask the cursor to skip ahead n records
-                            advanced = true;
-                            cursor.advance(n);
-                        } else {
-                            // When we get here, we've got the nth key.
-                            if (callback) {
-                                callback(cursor.key);
-                            }
-
-                            resolve(cursor.key);
-                        }
                     }
-                };
+                }
+            };
 
-                req.onerror = function keyOnError() {
-                    reject(req.error.name);
-                };
-            }, reject);
+            req.onerror = function keyOnError() {
+                reject(req.error.name);
+            };
         });
     }
 
     var asyncStorage = {
         driver: 'asyncStorage',
+        initStorage: initStorage,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
@@ -1022,6 +1021,7 @@ requireModule('promise/polyfill').polyfill();
 
     var localStorage;
     var Promise = window.Promise;
+    var localStorage = null;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
     // other context where localStorage isn't available, we don't use
@@ -1034,6 +1034,10 @@ requireModule('promise/polyfill').polyfill();
         localStorage = window.localStorage;
     } catch (e) {
         return;
+    }
+
+    function initStorage(callback) {
+        return Promise.resolve();
     }
 
     // Remove all keys from the datastore, effectively destroying all data in
@@ -1148,6 +1152,7 @@ requireModule('promise/polyfill').polyfill();
 
     var localStorageWrapper = {
         driver: 'localStorageWrapper',
+        initStorage: initStorage,
         // Default API, from Gaia/localStorage.
         getItem: getItem,
         setItem: setItem,
@@ -1181,23 +1186,34 @@ requireModule('promise/polyfill').polyfill();
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
     var STORE_NAME = 'keyvaluepairs';
     var Promise = window.Promise;
+    var db = null;
 
     // If WebSQL methods aren't available, we can stop now.
     if (!window.openDatabase) {
         return;
     }
 
-    // Open the database; the openDatabase API will automatically create it for
-    // us if it doesn't exist.
-    var db = window.openDatabase(DB_NAME, DB_VERSION, STORE_NAME, DB_SIZE);
+    function initStorage(callback) {
+        return new Promise(function(resolve, reject) {
+            // Open the database; the openDatabase API will automatically create it for
+            // us if it doesn't exist.
+            db = window.openDatabase(DB_NAME, DB_VERSION, STORE_NAME, DB_SIZE);
 
-    // Create our key/value table if it doesn't exist.
-    // TODO: Technically I can imagine this being as race condition, as I'm not
-    // positive on the WebSQL API enough to be sure that other transactions
-    // won't be run before this? But I assume not.
-    db.transaction(function (t) {
-        t.executeSql('CREATE TABLE IF NOT EXISTS localforage (id INTEGER PRIMARY KEY, key unique, value)');
-    });
+            // Create our key/value table if it doesn't exist.
+            // TODO: Technically I can imagine this being as race condition, as I'm not
+            // positive on the WebSQL API enough to be sure that other transactions
+            // won't be run before this? But I assume not.
+            db.transaction(function (t) {
+                t.executeSql('CREATE TABLE IF NOT EXISTS localforage (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
+                    if (callback) {
+                        callback();
+                    }
+
+                    resolve();
+                }, null);
+            });
+        });
+    }
 
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
@@ -1333,6 +1349,7 @@ requireModule('promise/polyfill').polyfill();
 
     var webSQLStorage = {
         driver: 'webSQLStorage',
+        initStorage: initStorage,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
@@ -1406,11 +1423,13 @@ requireModule('promise/polyfill').polyfill();
                     require([driverName], function(lib) {
                         localForage._extend(lib);
 
-                        if (callback) {
-                            callback(localForage);
-                        }
+                        localForage.initStorage().then(function(val) {
+                            if (callback) {
+                                callback(localForage);
+                            }
 
-                        resolve(localForage);
+                            resolve(localForage);
+                        });
                     });
                 } else if (moduleType === MODULE_TYPE_EXPORT) {
                     // Making it browserify friendly
@@ -1427,19 +1446,23 @@ requireModule('promise/polyfill').polyfill();
                     }
                     localForage._extend(driver);
 
-                    if (callback) {
-                        callback(localForage);
-                    }
+                    localForage.initStorage().then(function(val) {
+                        if (callback) {
+                            callback(localForage);
+                        }
 
-                    resolve(localForage);
+                        resolve(localForage);
+                    });
                 } else {
                     localForage._extend(_this[driverName]);
 
-                    if (callback) {
-                        callback(localForage);
-                    }
+                    localForage.initStorage().then(function(val) {
+                        if (callback) {
+                            callback(localForage);
+                        }
 
-                    resolve(localForage);
+                        resolve(localForage);
+                    });
                 }
             });
         },

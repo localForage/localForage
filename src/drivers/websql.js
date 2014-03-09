@@ -12,13 +12,13 @@
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
     var STORE_NAME = 'keyvaluepairs';
     var Promise = window.Promise;
+    var db = null;
 
     // If WebSQL methods aren't available, we can stop now.
     if (!window.openDatabase) {
         return;
     }
 
-    var db
     function initStorage(callback) {
         return new Promise(function(resolve, reject) {
             // Open the database; the openDatabase API will automatically create it for
