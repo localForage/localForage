@@ -13,6 +13,8 @@
     var STORE_NAME = 'keyvaluepairs';
     var Promise = window.Promise;
     var db = null;
+    var defaultInfos = { dbName: DB_NAME, storeName: STORE_NAME, dbVersion: DB_VERSION };
+    var DESCRIPTION = ''
 
     // If WebSQL methods aren't available, we can stop now.
     if (!window.openDatabase) {
@@ -34,6 +36,25 @@
                     resolve();
                 }, null);
             });
+        });
+    }
+    function setDbInfos(infos) {
+        if (infos === undefined)
+            return;
+
+        for (var prop in defaultInfos) {
+            if (infos[prop] === undefined)
+                infos[prop] = defaultInfos[prop]
+        }
+
+        DB_NAME    = infos.dbName;
+        STORE_NAME = infos.storeName;
+        DB_VERSION = infos.dbVersion;
+
+        db = window.openDatabase(DB_NAME, DB_VERSION, DESCRIPTION, DB_SIZE);
+        window.db = db;
+        db.transaction(function (t) {
+            t.executeSql('CREATE TABLE IF NOT EXISTS '+STORE_NAME+' (id INTEGER PRIMARY KEY, key unique, value)');
         });
     }
 
@@ -127,7 +148,6 @@
                         if (callback) {
                             callback();
                         }
-
                         resolve();
                     }, null);
                 });
@@ -148,7 +168,6 @@
                         if (callback) {
                             callback(result);
                         }
-
                         resolve(result);
                     }, null);
                 });

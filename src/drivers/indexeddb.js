@@ -3,11 +3,14 @@
 
     // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
 
-    var DBNAME = 'localforage';
-    var DBVERSION = 1;
-    var STORENAME = 'keyvaluepairs';
+    var DB_NAME = 'localforage';
+    var DB_VERSION = 1;
+    var STORE_NAME = 'keyvaluepairs';
     var Promise = window.Promise;
     var db = null;
+    var defaultInfos = { dbName: DB_NAME, storeName: STORE_NAME, dbVersion: DB_VERSION };
+
+    window.db = db;
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
     var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
@@ -27,11 +30,10 @@
             };
             openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
                 // First time setup: create an empty object store
-                openreq.result.createObjectStore(STORENAME);
+                openreq.result.createObjectStore(STORE_NAME);
             };
             openreq.onsuccess = function withStoreOnSuccess() {
                 db = openreq.result;
-
                 resolve();
             };
         });

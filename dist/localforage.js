@@ -789,11 +789,14 @@ requireModule('promise/polyfill').polyfill();
 
     // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
 
-    var DBNAME = 'localforage';
-    var DBVERSION = 1;
-    var STORENAME = 'keyvaluepairs';
+    var DB_NAME = 'localforage';
+    var DB_VERSION = 1;
+    var STORE_NAME = 'keyvaluepairs';
     var Promise = window.Promise;
     var db = null;
+    var defaultInfos = { dbName: DB_NAME, storeName: STORE_NAME, dbVersion: DB_VERSION };
+
+    window.db = db;
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
     var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
@@ -805,20 +808,48 @@ requireModule('promise/polyfill').polyfill();
         return;
     }
 
+<<<<<<< HEAD
     function _initStorage() {
         return new Promise(function(resolve, reject) {
             var openreq = indexedDB.open(DBNAME, DBVERSION);
+=======
+    function setDbInfos(infos) {
+        if (infos === undefined)
+            return
+
+        for (var prop in defaultInfos) {
+            if (infos[prop] === undefined)
+                infos[prop] = defaultInfos[prop]
+        }
+
+        DB_NAME    = infos.dbName;
+        STORE_NAME = infos.storeName;
+        DB_VERSION = infos.dbVersion;
+
+        db = null;
+    }
+
+    function withStore(type, f, reject) {
+        if (db) {
+            f(db.transaction(STORE_NAME, type).objectStore(STORE_NAME));
+        } else {
+            var openreq = indexedDB.open(DB_NAME, DB_VERSION);
+>>>>>>> 7542c67... Add setDbInfos function to allow users to change the name, version, and store values
             openreq.onerror = function withStoreOnError() {
                 reject(openreq.error.name);
             };
             openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
                 // First time setup: create an empty object store
-                openreq.result.createObjectStore(STORENAME);
+                openreq.result.createObjectStore(STORE_NAME);
             };
             openreq.onsuccess = function withStoreOnSuccess() {
                 db = openreq.result;
+<<<<<<< HEAD
 
                 resolve();
+=======
+                f(db.transaction(STORE_NAME, type).objectStore(STORE_NAME));
+>>>>>>> 7542c67... Add setDbInfos function to allow users to change the name, version, and store values
             };
         });
     }
@@ -1006,8 +1037,16 @@ requireModule('promise/polyfill').polyfill();
     }
 
     var asyncStorage = {
+<<<<<<< HEAD
         _driver: 'asyncStorage',
+=======
+        driver: 'asyncStorage',
+<<<<<<< HEAD
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
         _initStorage: _initStorage,
+=======
+        setDbInfos: setDbInfos,
+>>>>>>> 7542c67... Add setDbInfos function to allow users to change the name, version, and store values
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
@@ -1032,6 +1071,12 @@ requireModule('promise/polyfill').polyfill();
 // can be converted to a string via `JSON.stringify()` will be saved).
 (function() {
     'use strict';
+    var DB_NAME = 'localforage';
+    var DB_VERSION = '1.0';
+    var STORE_NAME = 'keyvaluepairs';
+    var dbInfos = { dbName: DB_NAME, storeName: STORE_NAME, dbVersion: DB_VERSION };
+    var keyPrefix =  ''
+
 
     var Promise = window.Promise;
     var localStorage = null;
@@ -1049,10 +1094,33 @@ requireModule('promise/polyfill').polyfill();
         return;
     }
 
+<<<<<<< HEAD
     function _initStorage() {
         return Promise.resolve();
     }
 
+=======
+
+    function setDbInfos(infos) {
+        if (infos === undefined)
+          return
+
+        for (var prop in defaultInfos) {
+            if (infos[prop] === undefined)
+                infos[prop] = defaultInfos[prop]
+        }
+
+        DB_NAME    = infos.dbName;
+        STORE_NAME = infos.storeName;
+        DB_VERSION = infos.dbVersion;
+
+        keyPrefix = DB_NAME + DB_VERSION + '-' + STORE_NAME + '-';
+
+
+    }
+
+
+>>>>>>> 7542c67... Add setDbInfos function to allow users to change the name, version, and store values
     // Remove all keys from the datastore, effectively destroying all data in
     // the app's key/value store!
     function clear(callback) {
@@ -1074,6 +1142,7 @@ requireModule('promise/polyfill').polyfill();
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
+<<<<<<< HEAD
             localforage.ready().then(function() {
                 try {
                     var result = localStorage.getItem(key);
@@ -1084,6 +1153,17 @@ requireModule('promise/polyfill').polyfill();
                     if (result) {
                         result = JSON.parse(result);
                     }
+=======
+            try {
+                var result = localStorage.getItem(keyPrefix+key);
+
+                // If a result was found, parse it from serialized JSON into a
+                // JS object. If result isn't truthy, the key is likely
+                // undefined and we'll pass it straight to the callback.
+                if (result) {
+                    result = JSON.parse(result);
+                }
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                     if (callback) {
                         callback(result);
@@ -1103,9 +1183,19 @@ requireModule('promise/polyfill').polyfill();
             localforage.ready().then(function() {
                 var result = localStorage.key(n);
 
+<<<<<<< HEAD
                 if (callback) {
                     callback(result);
                 }
+=======
+            // Remove the prefix if exists
+            var regexp = new RegExp("^" + keyPrefix + "(.*)");
+            result = result.replace(regexp, "$1");
+
+            if (callback) {
+                callback(result);
+            }
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                 resolve(result);
             });
@@ -1130,8 +1220,12 @@ requireModule('promise/polyfill').polyfill();
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
+<<<<<<< HEAD
             localforage.ready().then(function() {
                 localStorage.removeItem(key);
+=======
+            localStorage.removeItem(keyPrefix+key);
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                 if (callback) {
                     callback();
@@ -1164,7 +1258,11 @@ requireModule('promise/polyfill').polyfill();
                     reject(e);
                 }
 
+<<<<<<< HEAD
                 localStorage.setItem(key, value);
+=======
+            localStorage.setItem(keyPrefix+key, value);
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                 if (callback) {
                     callback(originalValue);
@@ -1179,6 +1277,7 @@ requireModule('promise/polyfill').polyfill();
         _driver: 'localStorageWrapper',
         _initStorage: _initStorage,
         // Default API, from Gaia/localStorage.
+        setDbInfos: setDbInfos,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
@@ -1211,13 +1310,20 @@ requireModule('promise/polyfill').polyfill();
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
     var STORE_NAME = 'keyvaluepairs';
     var Promise = window.Promise;
+<<<<<<< HEAD
     var db = null;
+=======
+    var defaultInfos = { dbName: DB_NAME, storeName: STORE_NAME, dbVersion: DB_VERSION };
+
+    var DESCRIPTION = ''
+>>>>>>> 7542c67... Add setDbInfos function to allow users to change the name, version, and store values
 
     // If WebSQL methods aren't available, we can stop now.
     if (!window.openDatabase) {
         return;
     }
 
+<<<<<<< HEAD
     function _initStorage() {
         return new Promise(function(resolve, reject) {
             // Open the database; the openDatabase API will automatically create it for
@@ -1235,9 +1341,44 @@ requireModule('promise/polyfill').polyfill();
             });
         });
     }
+=======
+    // Open the database; the openDatabase API will automatically create it for
+    // us if it doesn't exist.
+    var db = window.openDatabase(DB_NAME, DB_VERSION, DESCRIPTION, DB_SIZE);
+
+    // Create our key/value table if it doesn't exist.
+    // TODO: Technically I can imagine this being as race condition, as I'm not
+    // positive on the WebSQL API enough to be sure that other transactions
+    // won't be run before this? But I assume not.
+    db.transaction(function (t) {
+        t.executeSql('CREATE TABLE IF NOT EXISTS '+STORE_NAME+' (id INTEGER PRIMARY KEY, key unique, value)');
+    });
+>>>>>>> 7542c67... Add setDbInfos function to allow users to change the name, version, and store values
+
+
+    function setDbInfos(infos) {
+        if (infos === undefined)
+            return;
+
+        for (var prop in defaultInfos) {
+            if (infos[prop] === undefined)
+                infos[prop] = defaultInfos[prop]
+        }
+
+        DB_NAME    = infos.dbName;
+        STORE_NAME = infos.storeName;
+        DB_VERSION = infos.dbVersion;
+
+        db = window.openDatabase(DB_NAME, DB_VERSION, DESCRIPTION, DB_SIZE);
+        window.db = db;
+        db.transaction(function (t) {
+            t.executeSql('CREATE TABLE IF NOT EXISTS '+STORE_NAME+' (id INTEGER PRIMARY KEY, key unique, value)');
+        });
+    }
 
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
+<<<<<<< HEAD
             localforage.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('SELECT * FROM localforage WHERE key = ? LIMIT 1', [key], function (t, results) {
@@ -1251,6 +1392,19 @@ requireModule('promise/polyfill').polyfill();
                             } catch (e) {
                                 reject(e);
                             }
+=======
+            db.transaction(function (t) {
+                t.executeSql('SELECT * FROM '+STORE_NAME+' WHERE key = ? LIMIT 1', [key], function (t, results) {
+                    var result = results.rows.length ? results.rows.item(0).value : null;
+
+                    // Check to see if this is serialized content we need to
+                    // unpack.
+                    if (result && result.substr(0, SERIALIZED_MARKER_LENGTH) === SERIALIZED_MARKER) {
+                        try {
+                            result = JSON.parse(result.slice(SERIALIZED_MARKER_LENGTH));
+                        } catch (e) {
+                            reject(e);
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
                         }
 
                         if (callback) {
@@ -1287,11 +1441,19 @@ requireModule('promise/polyfill').polyfill();
                     valueToSave = value;
                 }
 
+<<<<<<< HEAD
                 db.transaction(function (t) {
                     t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, valueToSave], function() {
                         if (callback) {
                             callback(value);
                         }
+=======
+            db.transaction(function (t) {
+                t.executeSql('INSERT OR REPLACE INTO '+STORE_NAME+' (key, value) VALUES (?, ?)', [key, valueToSave], function() {
+                    if (callback) {
+                        callback(value);
+                    }
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                         resolve(value);
                     }, null);
@@ -1302,12 +1464,20 @@ requireModule('promise/polyfill').polyfill();
 
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
+<<<<<<< HEAD
             localforage.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('DELETE FROM localforage WHERE key = ?', [key], function() {
                         if (callback) {
                             callback();
                         }
+=======
+            db.transaction(function (t) {
+                t.executeSql('DELETE FROM '+STORE_NAME+' WHERE key = ?', [key], function() {
+                    if (callback) {
+                        callback();
+                    }
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                         resolve();
                     }, null);
@@ -1320,12 +1490,20 @@ requireModule('promise/polyfill').polyfill();
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         return new Promise(function(resolve, reject) {
+<<<<<<< HEAD
             localforage.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('DELETE FROM localforage', [], function(t, results) {
                         if (callback) {
                             callback();
                         }
+=======
+            db.transaction(function (t) {
+                t.executeSql('DELETE FROM '+STORE_NAME+'', [], function(t, results) {
+                    if (callback) {
+                        callback();
+                    }
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                         resolve();
                     }, null);
@@ -1338,11 +1516,18 @@ requireModule('promise/polyfill').polyfill();
     // localForage.
     function length(callback) {
         return new Promise(function(resolve, reject) {
+<<<<<<< HEAD
             localforage.ready().then(function() {
                 db.transaction(function (t) {
                     // Ahhh, SQL makes this one soooooo easy.
                     t.executeSql('SELECT COUNT(key) as c FROM localforage', [], function (t, results) {
                         var result = results.rows.item(0).c;
+=======
+            db.transaction(function (t) {
+                // Ahhh, SQL makes this one soooooo easy.
+                t.executeSql('SELECT COUNT(key) as c FROM '+STORE_NAME+'', [], function (t, results) {
+                    var result = results.rows.item(0).c;
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                         if (callback) {
                             callback(result);
@@ -1364,10 +1549,16 @@ requireModule('promise/polyfill').polyfill();
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
         return new Promise(function(resolve, reject) {
+<<<<<<< HEAD
             localforage.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('SELECT key FROM localforage WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;
+=======
+            db.transaction(function (t) {
+                t.executeSql('SELECT key FROM '+STORE_NAME+' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                    var result = results.rows.length ? results.rows.item(0).key : null;
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                         if (callback) {
                             callback(result);
@@ -1381,8 +1572,16 @@ requireModule('promise/polyfill').polyfill();
     }
 
     var webSQLStorage = {
+<<<<<<< HEAD
         _driver: 'webSQLStorage',
+=======
+        driver: 'webSQLStorage',
+<<<<<<< HEAD
+>>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
         _initStorage: _initStorage,
+=======
+        setDbInfos: setDbInfos,
+>>>>>>> 7542c67... Add setDbInfos function to allow users to change the name, version, and store values
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,

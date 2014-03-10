@@ -4,6 +4,12 @@
 // can be converted to a string via `JSON.stringify()` will be saved).
 (function() {
     'use strict';
+    var DB_NAME = 'localforage';
+    var DB_VERSION = '1.0';
+    var STORE_NAME = 'keyvaluepairs';
+    var dbInfos = { dbName: DB_NAME, storeName: STORE_NAME, dbVersion: DB_VERSION };
+    var keyPrefix =  ''
+
 
     var Promise = window.Promise;
     var localStorage = null;
@@ -74,11 +80,9 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 var result = localStorage.key(n);
-
                 if (callback) {
                     callback(result);
                 }
-
                 resolve(result);
             });
         });
