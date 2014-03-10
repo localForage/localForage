@@ -9,7 +9,7 @@ implemented, you can file an issue, but know that pull requests for small
 things like adding a line in a config file will get more attention than an
 issue asking someone else to do it.
 
-Also see: [issues that have been discussed and will be rejected](#features-localforage-will-reject).
+See below for [issues that have been discussed and will be rejected](#features-localforage-will-reject).
 
 # Contributing to localForage
 
