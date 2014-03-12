@@ -5,8 +5,8 @@
 (function() {
     'use strict';
 
-    var localStorage;
     var Promise = window.Promise;
+    var localStorage = null;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
     // other context where localStorage isn't available, we don't use
@@ -19,6 +19,10 @@
         localStorage = window.localStorage;
     } catch (e) {
         return;
+    }
+
+    function _initStorage() {
+        return Promise.resolve();
     }
 
     // Remove all keys from the datastore, effectively destroying all data in
@@ -133,6 +137,7 @@
 
     var localStorageWrapper = {
         driver: 'localStorageWrapper',
+        _initStorage: _initStorage,
         // Default API, from Gaia/localStorage.
         getItem: getItem,
         setItem: setItem,

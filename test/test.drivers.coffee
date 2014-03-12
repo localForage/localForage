@@ -72,6 +72,7 @@ casper.test.begin "Testing localforage driver selection", (test) ->
     casper.then ->
       test.assertEval ->
         typeof window._lf.driver is 'string' and
+        typeof window._lf._initStorage is 'function' and
         typeof window._lf.getItem is 'function' and
         typeof window._lf.setItem is 'function' and
         typeof window._lf.clear is 'function' and

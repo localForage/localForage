@@ -53,11 +53,13 @@
                     require([driverName], function(lib) {
                         localForage._extend(lib);
 
-                        if (callback) {
-                            callback(localForage);
-                        }
+                        localForage._initStorage().then(function(val) {
+                            if (callback) {
+                                callback(localForage);
+                            }
 
-                        resolve(localForage);
+                            resolve(localForage);
+                        });
                     });
                 } else if (moduleType === MODULE_TYPE_EXPORT) {
                     // Making it browserify friendly
@@ -74,19 +76,23 @@
                     }
                     localForage._extend(driver);
 
-                    if (callback) {
-                        callback(localForage);
-                    }
+                    localForage._initStorage().then(function(val) {
+                        if (callback) {
+                            callback(localForage);
+                        }
 
-                    resolve(localForage);
+                        resolve(localForage);
+                    });
                 } else {
                     localForage._extend(_this[driverName]);
 
-                    if (callback) {
-                        callback(localForage);
-                    }
+                    localForage._initStorage().then(function(val) {
+                        if (callback) {
+                            callback(localForage);
+                        }
 
-                    resolve(localForage);
+                        resolve(localForage);
+                    });
                 }
             });
         },
