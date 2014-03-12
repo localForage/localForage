@@ -19,7 +19,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
     test.assertEval ->
       typeof localforage.driver is 'string' and
-      typeof localforage.initStorage is 'function' and
+      typeof localforage._initStorage is 'function' and
       typeof localforage.getItem is 'function' and
       typeof localforage.setItem is 'function' and
       typeof localforage.clear is 'function' and
@@ -352,7 +352,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
 
     test.assertEval ->
       typeof localforage.driver is 'string' and
-      typeof localforage.initStorage is 'function' and
+      typeof localforage._initStorage is 'function' and
       typeof localforage.getItem is 'function' and
       typeof localforage.setItem is 'function' and
       typeof localforage.clear is 'function' and

@@ -19,7 +19,7 @@
         return;
     }
 
-    function initStorage(callback) {
+    function _initStorage() {
         return new Promise(function(resolve, reject) {
             // Open the database; the openDatabase API will automatically create it for
             // us if it doesn't exist.
@@ -31,10 +31,6 @@
             // won't be run before this? But I assume not.
             db.transaction(function (t) {
                 t.executeSql('CREATE TABLE IF NOT EXISTS localforage (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
-                    if (callback) {
-                        callback();
-                    }
-
                     resolve();
                 }, null);
             });
@@ -175,7 +171,7 @@
 
     var webSQLStorage = {
         driver: 'webSQLStorage',
-        initStorage: initStorage,
+        _initStorage: _initStorage,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,

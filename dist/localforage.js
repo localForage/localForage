@@ -804,7 +804,7 @@ requireModule('promise/polyfill').polyfill();
         return;
     }
 
-    function initStorage(callback) {
+    function _initStorage() {
         return new Promise(function(resolve, reject) {
             var openreq = indexedDB.open(DBNAME, DBVERSION);
             openreq.onerror = function withStoreOnError() {
@@ -816,6 +816,7 @@ requireModule('promise/polyfill').polyfill();
             };
             openreq.onsuccess = function withStoreOnSuccess() {
                 db = openreq.result;
+
                 resolve();
             };
         });
@@ -993,7 +994,7 @@ requireModule('promise/polyfill').polyfill();
 
     var asyncStorage = {
         driver: 'asyncStorage',
-        initStorage: initStorage,
+        _initStorage: _initStorage,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
@@ -1019,7 +1020,6 @@ requireModule('promise/polyfill').polyfill();
 (function() {
     'use strict';
 
-    var localStorage;
     var Promise = window.Promise;
     var localStorage = null;
 
@@ -1036,7 +1036,7 @@ requireModule('promise/polyfill').polyfill();
         return;
     }
 
-    function initStorage(callback) {
+    function _initStorage() {
         return Promise.resolve();
     }
 
@@ -1152,7 +1152,7 @@ requireModule('promise/polyfill').polyfill();
 
     var localStorageWrapper = {
         driver: 'localStorageWrapper',
-        initStorage: initStorage,
+        _initStorage: _initStorage,
         // Default API, from Gaia/localStorage.
         getItem: getItem,
         setItem: setItem,
@@ -1193,7 +1193,7 @@ requireModule('promise/polyfill').polyfill();
         return;
     }
 
-    function initStorage(callback) {
+    function _initStorage() {
         return new Promise(function(resolve, reject) {
             // Open the database; the openDatabase API will automatically create it for
             // us if it doesn't exist.
@@ -1205,10 +1205,6 @@ requireModule('promise/polyfill').polyfill();
             // won't be run before this? But I assume not.
             db.transaction(function (t) {
                 t.executeSql('CREATE TABLE IF NOT EXISTS localforage (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
-                    if (callback) {
-                        callback();
-                    }
-
                     resolve();
                 }, null);
             });
@@ -1349,7 +1345,7 @@ requireModule('promise/polyfill').polyfill();
 
     var webSQLStorage = {
         driver: 'webSQLStorage',
-        initStorage: initStorage,
+        _initStorage: _initStorage,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
@@ -1423,7 +1419,7 @@ requireModule('promise/polyfill').polyfill();
                     require([driverName], function(lib) {
                         localForage._extend(lib);
 
-                        localForage.initStorage().then(function(val) {
+                        localForage._initStorage().then(function(val) {
                             if (callback) {
                                 callback(localForage);
                             }
@@ -1446,7 +1442,7 @@ requireModule('promise/polyfill').polyfill();
                     }
                     localForage._extend(driver);
 
-                    localForage.initStorage().then(function(val) {
+                    localForage._initStorage().then(function(val) {
                         if (callback) {
                             callback(localForage);
                         }
@@ -1456,7 +1452,7 @@ requireModule('promise/polyfill').polyfill();
                 } else {
                     localForage._extend(_this[driverName]);
 
-                    localForage.initStorage().then(function(val) {
+                    localForage._initStorage().then(function(val) {
                         if (callback) {
                             callback(localForage);
                         }

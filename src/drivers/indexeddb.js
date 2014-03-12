@@ -19,7 +19,7 @@
         return;
     }
 
-    function initStorage(callback) {
+    function _initStorage() {
         return new Promise(function(resolve, reject) {
             var openreq = indexedDB.open(DBNAME, DBVERSION);
             openreq.onerror = function withStoreOnError() {
@@ -31,6 +31,7 @@
             };
             openreq.onsuccess = function withStoreOnSuccess() {
                 db = openreq.result;
+
                 resolve();
             };
         });
@@ -208,7 +209,7 @@
 
     var asyncStorage = {
         driver: 'asyncStorage',
-        initStorage: initStorage,
+        _initStorage: _initStorage,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,

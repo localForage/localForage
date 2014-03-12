@@ -53,7 +53,7 @@
                     require([driverName], function(lib) {
                         localForage._extend(lib);
 
-                        localForage.initStorage().then(function(val) {
+                        localForage._initStorage().then(function(val) {
                             if (callback) {
                                 callback(localForage);
                             }
@@ -76,7 +76,7 @@
                     }
                     localForage._extend(driver);
 
-                    localForage.initStorage().then(function(val) {
+                    localForage._initStorage().then(function(val) {
                         if (callback) {
                             callback(localForage);
                         }
@@ -86,7 +86,7 @@
                 } else {
                     localForage._extend(_this[driverName]);
 
-                    localForage.initStorage().then(function(val) {
+                    localForage._initStorage().then(function(val) {
                         if (callback) {
                             callback(localForage);
                         }

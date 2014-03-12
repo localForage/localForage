@@ -5,7 +5,6 @@
 (function() {
     'use strict';
 
-    var localStorage;
     var Promise = window.Promise;
     var localStorage = null;
 
@@ -22,7 +21,7 @@
         return;
     }
 
-    function initStorage(callback) {
+    function _initStorage() {
         return Promise.resolve();
     }
 
@@ -138,7 +137,7 @@
 
     var localStorageWrapper = {
         driver: 'localStorageWrapper',
-        initStorage: initStorage,
+        _initStorage: _initStorage,
         // Default API, from Gaia/localStorage.
         getItem: getItem,
         setItem: setItem,
