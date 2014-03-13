@@ -824,114 +824,124 @@ requireModule('promise/polyfill').polyfill();
 
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
+            localforage._ready.then(function() {
+                var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
 
-            var req = store.get(key);
-            req.onsuccess = function getItemOnSuccess() {
-                var value = req.result;
-                if (value === undefined) {
-                    value = null;
-                }
+                var req = store.get(key);
+                req.onsuccess = function getItemOnSuccess() {
+                    var value = req.result;
+                    if (value === undefined) {
+                        value = null;
+                    }
 
-                if (callback) {
-                    callback(value);
-                }
+                    if (callback) {
+                        callback(value);
+                    }
 
-                resolve(value);
-            };
-            req.onerror = function getItemOnError() {
-                reject(req.error.name);
-            };
+                    resolve(value);
+                };
+                req.onerror = function getItemOnError() {
+                    reject(req.error.name);
+                };
+            });
         });
     }
 
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
-            var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
+            localforage._ready.then(function() {
+                var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
 
-            // Cast to undefined so the value passed to callback/promise is
-            // the same as what one would get out of `getItem()` later.
-            // This leads to some weirdness (setItem('foo', undefined) will
-            // return "null"), but it's not my fault localStorage is our
-            // baseline and that it's weird.
-            if (value === undefined) {
-                value = null;
-            }
-
-            var req = store.put(value, key);
-            req.onsuccess = function setItemOnSuccess() {
-                if (callback) {
-                    callback(value);
+                // Cast to undefined so the value passed to callback/promise is
+                // the same as what one would get out of `getItem()` later.
+                // This leads to some weirdness (setItem('foo', undefined) will
+                // return "null"), but it's not my fault localStorage is our
+                // baseline and that it's weird.
+                if (value === undefined) {
+                    value = null;
                 }
 
-                resolve(value);
-            };
-            req.onerror = function setItemOnError() {
-                reject(req.error.name);
-            };
+                var req = store.put(value, key);
+                req.onsuccess = function setItemOnSuccess() {
+                    if (callback) {
+                        callback(value);
+                    }
+
+                    resolve(value);
+                };
+                req.onerror = function setItemOnError() {
+                    reject(req.error.name);
+                };
+            });
         });
     }
 
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
+            localforage._ready.then(function() {
+                var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
 
-            // We use `['delete']` instead of `.delete` because IE 8 will
-            // throw a fit if it sees the reserved word "delete" in this
-            // scenario. See: https://github.com/mozilla/localForage/pull/67
-            //
-            // This can be removed once we no longer care about IE 8, for
-            // what that's worth.
-            // TODO: Write a test against this? Maybe IE in general? Also,
-            // make sure the minify step doesn't optimise this to `.delete`,
-            // though it currently doesn't.
-            var req = store['delete'](key);
-            req.onsuccess = function removeItemOnSuccess() {
-                if (callback) {
-                    callback();
-                }
+                // We use `['delete']` instead of `.delete` because IE 8 will
+                // throw a fit if it sees the reserved word "delete" in this
+                // scenario. See: https://github.com/mozilla/localForage/pull/67
+                //
+                // This can be removed once we no longer care about IE 8, for
+                // what that's worth.
+                // TODO: Write a test against this? Maybe IE in general? Also,
+                // make sure the minify step doesn't optimise this to `.delete`,
+                // though it currently doesn't.
+                var req = store['delete'](key);
+                req.onsuccess = function removeItemOnSuccess() {
+                    if (callback) {
+                        callback();
+                    }
 
-                resolve();
-            };
-            req.onerror = function removeItemOnError() {
-                reject(req.error.name);
-            };
+                    resolve();
+                };
+                req.onerror = function removeItemOnError() {
+                    reject(req.error.name);
+                };
+            });
         });
     }
 
     function clear(callback) {
         return new Promise(function(resolve, reject) {
-            var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
+            localforage._ready.then(function() {
+                var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
 
-            var req = store.clear();
-            req.onsuccess = function clearOnSuccess() {
-                if (callback) {
-                    callback();
-                }
+                var req = store.clear();
+                req.onsuccess = function clearOnSuccess() {
+                    if (callback) {
+                        callback();
+                    }
 
-                resolve();
-            };
-            req.onerror = function clearOnError() {
-                reject(req.error.name);
-            };
+                    resolve();
+                };
+                req.onerror = function clearOnError() {
+                    reject(req.error.name);
+                };
+            });
         });
     }
 
     function length(callback) {
         return new Promise(function(resolve, reject) {
-            var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
+            localforage._ready.then(function() {
+                var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
 
-            var req = store.count();
-            req.onsuccess = function lengthOnSuccess() {
-                if (callback) {
-                    callback(req.result);
-                }
+                var req = store.count();
+                req.onsuccess = function lengthOnSuccess() {
+                    if (callback) {
+                        callback(req.result);
+                    }
 
-                resolve(req.result);
-            };
-            req.onerror = function lengthOnError() {
-                reject(req.error.name);
-            };
+                    resolve(req.result);
+                };
+                req.onerror = function lengthOnError() {
+                    reject(req.error.name);
+                };
+            });
         });
     }
 
@@ -947,48 +957,50 @@ requireModule('promise/polyfill').polyfill();
                 return;
             }
 
-            var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
+            localforage._ready.then(function() {
+                var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
 
-            var advanced = false;
-            var req = store.openCursor();
-            req.onsuccess = function keyOnSuccess() {
-                var cursor = req.result;
-                if (!cursor) {
-                    // this means there weren't enough keys
-                    if (callback) {
-                        callback(null);
+                var advanced = false;
+                var req = store.openCursor();
+                req.onsuccess = function keyOnSuccess() {
+                    var cursor = req.result;
+                    if (!cursor) {
+                        // this means there weren't enough keys
+                        if (callback) {
+                            callback(null);
+                        }
+
+                        resolve(null);
+
+                        return;
                     }
-
-                    resolve(null);
-
-                    return;
-                }
-                if (n === 0) {
-                    // We have the first key, return it if that's what they wanted
-                    if (callback) {
-                        callback(cursor.key);
-                    }
-
-                    resolve(cursor.key);
-                } else {
-                    if (!advanced) {
-                        // Otherwise, ask the cursor to skip ahead n records
-                        advanced = true;
-                        cursor.advance(n);
-                    } else {
-                        // When we get here, we've got the nth key.
+                    if (n === 0) {
+                        // We have the first key, return it if that's what they wanted
                         if (callback) {
                             callback(cursor.key);
                         }
 
                         resolve(cursor.key);
-                    }
-                }
-            };
+                    } else {
+                        if (!advanced) {
+                            // Otherwise, ask the cursor to skip ahead n records
+                            advanced = true;
+                            cursor.advance(n);
+                        } else {
+                            // When we get here, we've got the nth key.
+                            if (callback) {
+                                callback(cursor.key);
+                            }
 
-            req.onerror = function keyOnError() {
-                reject(req.error.name);
-            };
+                            resolve(cursor.key);
+                        }
+                    }
+                };
+
+                req.onerror = function keyOnError() {
+                    reject(req.error.name);
+                };
+            });
         });
     }
 
@@ -1044,13 +1056,15 @@ requireModule('promise/polyfill').polyfill();
     // the app's key/value store!
     function clear(callback) {
         return new Promise(function(resolve, reject) {
-            localStorage.clear();
+            localforage._ready.then(function() {
+                localStorage.clear();
 
-            if (callback) {
-                callback();
-            }
+                if (callback) {
+                    callback();
+                }
 
-            resolve();
+                resolve();
+            });
         });
     }
 
@@ -1059,63 +1073,71 @@ requireModule('promise/polyfill').polyfill();
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            try {
-                var result = localStorage.getItem(key);
+            localforage._ready.then(function() {
+                try {
+                    var result = localStorage.getItem(key);
 
-                // If a result was found, parse it from serialized JSON into a
-                // JS object. If result isn't truthy, the key is likely
-                // undefined and we'll pass it straight to the callback.
-                if (result) {
-                    result = JSON.parse(result);
+                    // If a result was found, parse it from serialized JSON into a
+                    // JS object. If result isn't truthy, the key is likely
+                    // undefined and we'll pass it straight to the callback.
+                    if (result) {
+                        result = JSON.parse(result);
+                    }
+
+                    if (callback) {
+                        callback(result);
+                    }
+
+                    resolve(result);
+                } catch (e) {
+                    reject(e);
                 }
-
-                if (callback) {
-                    callback(result);
-                }
-
-                resolve(result);
-            } catch (e) {
-                reject(e);
-            }
+            });
         });
     }
 
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
         return new Promise(function(resolve, reject) {
-            var result = localStorage.key(n);
+            localforage._ready.then(function() {
+                var result = localStorage.key(n);
 
-            if (callback) {
-                callback(result);
-            }
+                if (callback) {
+                    callback(result);
+                }
 
-            resolve(result);
+                resolve(result);
+            });
         });
     }
 
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
         return new Promise(function(resolve, reject) {
-            var result = localStorage.length;
+            localforage._ready.then(function() {
+                var result = localStorage.length;
 
-            if (callback) {
-                callback(result);
-            }
+                if (callback) {
+                    callback(result);
+                }
 
-            resolve(result);
+                resolve(result);
+            });
         });
     }
 
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            localStorage.removeItem(key);
+            localforage._ready.then(function() {
+                localStorage.removeItem(key);
 
-            if (callback) {
-                callback();
-            }
+                if (callback) {
+                    callback();
+                }
 
-            resolve();
+                resolve();
+            });
         });
     }
 
@@ -1125,28 +1147,30 @@ requireModule('promise/polyfill').polyfill();
     // saved, or something like that.
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
-            // Convert undefined values to null.
-            // https://github.com/mozilla/localForage/pull/42
-            if (value === undefined) {
-                value = null;
-            }
+            localforage._ready.then(function() {
+                // Convert undefined values to null.
+                // https://github.com/mozilla/localForage/pull/42
+                if (value === undefined) {
+                    value = null;
+                }
 
-            // Save the original value to pass to the callback.
-            var originalValue = value;
+                // Save the original value to pass to the callback.
+                var originalValue = value;
 
-            try {
-                value = JSON.stringify(value);
-            } catch (e) {
-                reject(e);
-            }
+                try {
+                    value = JSON.stringify(value);
+                } catch (e) {
+                    reject(e);
+                }
 
-            localStorage.setItem(key, value);
+                localStorage.setItem(key, value);
 
-            if (callback) {
-                callback(originalValue);
-            }
+                if (callback) {
+                    callback(originalValue);
+                }
 
-            resolve(originalValue);
+                resolve(originalValue);
+            });
         });
     }
 
@@ -1213,74 +1237,80 @@ requireModule('promise/polyfill').polyfill();
 
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            db.transaction(function (t) {
-                t.executeSql('SELECT * FROM localforage WHERE key = ? LIMIT 1', [key], function (t, results) {
-                    var result = results.rows.length ? results.rows.item(0).value : null;
+            localforage._ready.then(function() {
+                db.transaction(function (t) {
+                    t.executeSql('SELECT * FROM localforage WHERE key = ? LIMIT 1', [key], function (t, results) {
+                        var result = results.rows.length ? results.rows.item(0).value : null;
 
-                    // Check to see if this is serialized content we need to
-                    // unpack.
-                    if (result && result.substr(0, SERIALIZED_MARKER_LENGTH) === SERIALIZED_MARKER) {
-                        try {
-                            result = JSON.parse(result.slice(SERIALIZED_MARKER_LENGTH));
-                        } catch (e) {
-                            reject(e);
+                        // Check to see if this is serialized content we need to
+                        // unpack.
+                        if (result && result.substr(0, SERIALIZED_MARKER_LENGTH) === SERIALIZED_MARKER) {
+                            try {
+                                result = JSON.parse(result.slice(SERIALIZED_MARKER_LENGTH));
+                            } catch (e) {
+                                reject(e);
+                            }
                         }
-                    }
 
-                    if (callback) {
-                        callback(result);
-                    }
+                        if (callback) {
+                            callback(result);
+                        }
 
-                    resolve(result);
-                }, null);
+                        resolve(result);
+                    }, null);
+                });
             });
         });
     }
 
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
-            // The localStorage API doesn't return undefined values in an
-            // "expected" way, so undefined is always cast to null in all
-            // drivers. See: https://github.com/mozilla/localForage/pull/42
-            if (value === undefined) {
-                value = null;
-            }
+            localforage._ready.then(function() {
+                // The localStorage API doesn't return undefined values in an
+                // "expected" way, so undefined is always cast to null in all
+                // drivers. See: https://github.com/mozilla/localForage/pull/42
+                if (value === undefined) {
+                    value = null;
+                }
 
-            // We need to serialize certain types of objects using WebSQL;
-            // otherwise they'll get stored as strings as be useless when we
-            // use getItem() later.
-            var valueToSave;
-            if (typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
-                // Mark the content as "localForage serialized content" so we
-                // know to run JSON.parse() on it when we get it back out from
-                // the database.
-                valueToSave = SERIALIZED_MARKER + JSON.stringify(value);
-            } else {
-                valueToSave = value;
-            }
+                // We need to serialize certain types of objects using WebSQL;
+                // otherwise they'll get stored as strings as be useless when we
+                // use getItem() later.
+                var valueToSave;
+                if (typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
+                    // Mark the content as "localForage serialized content" so we
+                    // know to run JSON.parse() on it when we get it back out from
+                    // the database.
+                    valueToSave = SERIALIZED_MARKER + JSON.stringify(value);
+                } else {
+                    valueToSave = value;
+                }
 
-            db.transaction(function (t) {
-                t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, valueToSave], function() {
-                    if (callback) {
-                        callback(value);
-                    }
+                db.transaction(function (t) {
+                    t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, valueToSave], function() {
+                        if (callback) {
+                            callback(value);
+                        }
 
-                    resolve(value);
-                }, null);
+                        resolve(value);
+                    }, null);
+                });
             });
         });
     }
 
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            db.transaction(function (t) {
-                t.executeSql('DELETE FROM localforage WHERE key = ?', [key], function() {
-                    if (callback) {
-                        callback();
-                    }
+            localforage._ready.then(function() {
+                db.transaction(function (t) {
+                    t.executeSql('DELETE FROM localforage WHERE key = ?', [key], function() {
+                        if (callback) {
+                            callback();
+                        }
 
-                    resolve();
-                }, null);
+                        resolve();
+                    }, null);
+                });
             });
         });
     }
@@ -1289,14 +1319,16 @@ requireModule('promise/polyfill').polyfill();
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         return new Promise(function(resolve, reject) {
-            db.transaction(function (t) {
-                t.executeSql('DELETE FROM localforage', [], function(t, results) {
-                    if (callback) {
-                        callback();
-                    }
+            localforage._ready.then(function() {
+                db.transaction(function (t) {
+                    t.executeSql('DELETE FROM localforage', [], function(t, results) {
+                        if (callback) {
+                            callback();
+                        }
 
-                    resolve();
-                }, null);
+                        resolve();
+                    }, null);
+                });
             });
         });
     }
@@ -1305,17 +1337,19 @@ requireModule('promise/polyfill').polyfill();
     // localForage.
     function length(callback) {
         return new Promise(function(resolve, reject) {
-            db.transaction(function (t) {
-                // Ahhh, SQL makes this one soooooo easy.
-                t.executeSql('SELECT COUNT(key) as c FROM localforage', [], function (t, results) {
-                    var result = results.rows.item(0).c;
+            localforage._ready.then(function() {
+                db.transaction(function (t) {
+                    // Ahhh, SQL makes this one soooooo easy.
+                    t.executeSql('SELECT COUNT(key) as c FROM localforage', [], function (t, results) {
+                        var result = results.rows.item(0).c;
 
-                    if (callback) {
-                        callback(result);
-                    }
+                        if (callback) {
+                            callback(result);
+                        }
 
-                    resolve(result);
-                }, null);
+                        resolve(result);
+                    }, null);
+                });
             });
         });
     }
@@ -1329,16 +1363,18 @@ requireModule('promise/polyfill').polyfill();
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
         return new Promise(function(resolve, reject) {
-            db.transaction(function (t) {
-                t.executeSql('SELECT key FROM localforage WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
-                    var result = results.rows.length ? results.rows.item(0).key : null;
+            localforage._ready.then(function() {
+                db.transaction(function (t) {
+                    t.executeSql('SELECT key FROM localforage WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                        var result = results.rows.length ? results.rows.item(0).key : null;
 
-                    if (callback) {
-                        callback(result);
-                    }
+                        if (callback) {
+                            callback(result);
+                        }
 
-                    resolve(result);
-                }, null);
+                        resolve(result);
+                    }, null);
+                });
             });
         });
     }
@@ -1484,7 +1520,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     // Set the (default) driver.
-    localForage.setDriver(storageLibrary);
+    localForage._ready = localForage.setDriver(storageLibrary);
 
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.

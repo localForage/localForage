@@ -118,7 +118,7 @@
     }
 
     // Set the (default) driver.
-    localForage.setDriver(storageLibrary);
+    localForage._ready = localForage.setDriver(storageLibrary);
 
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
