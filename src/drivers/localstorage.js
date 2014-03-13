@@ -4,13 +4,9 @@
 // can be converted to a string via `JSON.stringify()` will be saved).
 (function() {
     'use strict';
-    var DB_NAME = 'localforage';
-    var DB_VERSION = '1.0';
-    var STORE_NAME = 'keyvaluepairs';
-    var defaultInfos = { dbName: DB_NAME, storeName: STORE_NAME, dbVersion: DB_VERSION };
+
     var keyPrefix =  '';
-
-
+    var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0' };
     var Promise = window.Promise;
     var localStorage = null;
 
@@ -27,7 +23,20 @@
         return;
     }
 
-    function _initStorage() {
+    // We can give optionnal options to set dbInfos
+    function _initStorage(options) {
+        if (options) {
+            for (var i in dbInfos) {
+                if (options[i]) {
+                    dbInfos[i] = options[i];
+                }
+            }
+        }
+
+        keyPrefix = dbInfos.dbName;
+        keyPrefix += '/'+dbInfos.dbVersion;
+        keyPrefix += '/'+dbInfos.storeName;
+
         return Promise.resolve();
     }
 

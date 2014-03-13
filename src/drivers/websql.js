@@ -1,62 +1,46 @@
 (function() {
     'use strict';
 
-    var DB_NAME = 'localforage';
     // Default DB size is _JUST UNDER_ 5MB, as it's the highest size we can use
     // without a prompt.
     //
     // TODO: Add a way to increase this size programmatically?
     var DB_SIZE = 4980736;
-    var DB_VERSION = '1.0';
     var SERIALIZED_MARKER = '__lfsc__:';
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
-    var STORE_NAME = 'keyvaluepairs';
     var Promise = window.Promise;
     var db = null;
-    var defaultInfos = { dbName: DB_NAME, storeName: STORE_NAME, dbVersion: DB_VERSION };
-    var DESCRIPTION = '';
+    var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0', dbDescription: '' };
 
     // If WebSQL methods aren't available, we can stop now.
     if (!window.openDatabase) {
         return;
     }
 
-    function _initStorage() {
+    // We can give optionnal options to set dbInfos
+    function _initStorage(options) {
+        if (options) {
+            for (var i in dbInfos) {
+                if (options[i]) {
+                    dbInfos[i] = options[i];
+                }
+            }
+        }
+
         return new Promise(function(resolve, reject) {
             // Open the database; the openDatabase API will automatically create it for
             // us if it doesn't exist.
-            db = window.openDatabase(DB_NAME, DB_VERSION, STORE_NAME, DB_SIZE);
+            db = window.openDatabase(dbInfos.dbName, dbInfos.dbVersion, dbInfos.dbDescription, DB_SIZE);
 
             // Create our key/value table if it doesn't exist.
             // TODO: Technically I can imagine this being as race condition, as I'm not
             // positive on the WebSQL API enough to be sure that other transactions
             // won't be run before this? But I assume not.
             db.transaction(function (t) {
-                t.executeSql('CREATE TABLE IF NOT EXISTS localforage (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
+                t.executeSql('CREATE TABLE IF NOT EXISTS '+dbInfos.storeName+' (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
                     resolve();
                 }, null);
             });
-        });
-    }
-    function setDbInfos(infos) {
-        if (infos === undefined) {
-            return;
-        }
-
-        for (var prop in defaultInfos) {
-            if (infos[prop] === undefined) {
-                infos[prop] = defaultInfos[prop];
-            }
-        }
-
-        DB_NAME    = infos.dbName;
-        STORE_NAME = infos.storeName;
-        DB_VERSION = infos.dbVersion;
-
-        db = window.openDatabase(DB_NAME, DB_VERSION, DESCRIPTION, DB_SIZE);
-        window.db = db;
-        db.transaction(function (t) {
-            t.executeSql('CREATE TABLE IF NOT EXISTS '+STORE_NAME+' (id INTEGER PRIMARY KEY, key unique, value)');
         });
     }
 
@@ -64,7 +48,7 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('SELECT * FROM localforage WHERE key = ? LIMIT 1', [key], function (t, results) {
+                    t.executeSql('SELECT * FROM ' + dbInfos.storeName + ' WHERE key = ? LIMIT 1', [key], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).value : null;
 
                         // Check to see if this is serialized content we need to
@@ -112,7 +96,7 @@
                 }
 
                 db.transaction(function (t) {
-                    t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, valueToSave], function() {
+                    t.executeSql('INSERT OR REPLACE INTO ' + dbInfos.storeName + ' (key, value) VALUES (?, ?)', [key, valueToSave], function() {
                         if (callback) {
                             callback(value);
                         }
@@ -127,11 +111,10 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('DELETE FROM localforage WHERE key = ?', [key], function() {
+                    t.executeSql('DELETE FROM ' + dbInfos.storeName + ' WHERE key = ?', [key], function() {
                         if (callback) {
                             callback();
                         }
-
                         resolve();
                     }, null);
                 });
@@ -145,7 +128,7 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('DELETE FROM localforage', [], function(t, results) {
+                    t.executeSql('DELETE FROM ' + dbInfos.storeName, [], function(t, results) {
                         if (callback) {
                             callback();
                         }
@@ -163,7 +146,7 @@
             localforage.ready().then(function() {
                 db.transaction(function (t) {
                     // Ahhh, SQL makes this one soooooo easy.
-                    t.executeSql('SELECT COUNT(key) as c FROM localforage', [], function (t, results) {
+                    t.executeSql('SELECT COUNT(key) as c FROM ' + dbInfos.storeName, [], function (t, results) {
                         var result = results.rows.item(0).c;
 
                         if (callback) {
@@ -187,9 +170,8 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('SELECT key FROM localforage WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                    t.executeSql('SELECT key FROM ' + dbInfos.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;
-
                         if (callback) {
                             callback(result);
                         }
