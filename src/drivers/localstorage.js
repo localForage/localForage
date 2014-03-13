@@ -29,13 +29,15 @@
     // the app's key/value store!
     function clear(callback) {
         return new Promise(function(resolve, reject) {
-            localStorage.clear();
+            localforage._ready.then(function() {
+                localStorage.clear();
 
-            if (callback) {
-                callback();
-            }
+                if (callback) {
+                    callback();
+                }
 
-            resolve();
+                resolve();
+            });
         });
     }
 
@@ -44,63 +46,71 @@
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            try {
-                var result = localStorage.getItem(key);
+            localforage._ready.then(function() {
+                try {
+                    var result = localStorage.getItem(key);
 
-                // If a result was found, parse it from serialized JSON into a
-                // JS object. If result isn't truthy, the key is likely
-                // undefined and we'll pass it straight to the callback.
-                if (result) {
-                    result = JSON.parse(result);
+                    // If a result was found, parse it from serialized JSON into a
+                    // JS object. If result isn't truthy, the key is likely
+                    // undefined and we'll pass it straight to the callback.
+                    if (result) {
+                        result = JSON.parse(result);
+                    }
+
+                    if (callback) {
+                        callback(result);
+                    }
+
+                    resolve(result);
+                } catch (e) {
+                    reject(e);
                 }
-
-                if (callback) {
-                    callback(result);
-                }
-
-                resolve(result);
-            } catch (e) {
-                reject(e);
-            }
+            });
         });
     }
 
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
         return new Promise(function(resolve, reject) {
-            var result = localStorage.key(n);
+            localforage._ready.then(function() {
+                var result = localStorage.key(n);
 
-            if (callback) {
-                callback(result);
-            }
+                if (callback) {
+                    callback(result);
+                }
 
-            resolve(result);
+                resolve(result);
+            });
         });
     }
 
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
         return new Promise(function(resolve, reject) {
-            var result = localStorage.length;
+            localforage._ready.then(function() {
+                var result = localStorage.length;
 
-            if (callback) {
-                callback(result);
-            }
+                if (callback) {
+                    callback(result);
+                }
 
-            resolve(result);
+                resolve(result);
+            });
         });
     }
 
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            localStorage.removeItem(key);
+            localforage._ready.then(function() {
+                localStorage.removeItem(key);
 
-            if (callback) {
-                callback();
-            }
+                if (callback) {
+                    callback();
+                }
 
-            resolve();
+                resolve();
+            });
         });
     }
 
@@ -110,28 +120,30 @@
     // saved, or something like that.
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
-            // Convert undefined values to null.
-            // https://github.com/mozilla/localForage/pull/42
-            if (value === undefined) {
-                value = null;
-            }
+            localforage._ready.then(function() {
+                // Convert undefined values to null.
+                // https://github.com/mozilla/localForage/pull/42
+                if (value === undefined) {
+                    value = null;
+                }
 
-            // Save the original value to pass to the callback.
-            var originalValue = value;
+                // Save the original value to pass to the callback.
+                var originalValue = value;
 
-            try {
-                value = JSON.stringify(value);
-            } catch (e) {
-                reject(e);
-            }
+                try {
+                    value = JSON.stringify(value);
+                } catch (e) {
+                    reject(e);
+                }
 
-            localStorage.setItem(key, value);
+                localStorage.setItem(key, value);
 
-            if (callback) {
-                callback(originalValue);
-            }
+                if (callback) {
+                    callback(originalValue);
+                }
 
-            resolve(originalValue);
+                resolve(originalValue);
+            });
         });
     }
 
