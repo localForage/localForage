@@ -1441,7 +1441,7 @@ requireModule('promise/polyfill').polyfill();
         },
 
         setDriver: function(driverName, callback) {
-            return new Promise(function(resolve, reject) {
+            localForage._ready = new Promise(function(resolve, reject) {
                 if ((!indexedDB && driverName === localForage.INDEXEDDB) ||
                     (!window.openDatabase && driverName === localForage.WEBSQL)) {
                     if (callback) {
@@ -1501,6 +1501,8 @@ requireModule('promise/polyfill').polyfill();
                     });
                 }
             });
+
+            return localForage._ready;
         },
 
         _extend: function(libraryMethodsAndProperties) {
@@ -1524,7 +1526,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     // Set the (default) driver.
-    localForage._ready = localForage.setDriver(storageLibrary);
+    localForage.setDriver(storageLibrary);
 
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
