@@ -7,8 +7,8 @@
     var DB_NAME = 'localforage';
     var DB_VERSION = '1.0';
     var STORE_NAME = 'keyvaluepairs';
-    var dbInfos = { dbName: DB_NAME, storeName: STORE_NAME, dbVersion: DB_VERSION };
-    var keyPrefix =  ''
+    var defaultInfos = { dbName: DB_NAME, storeName: STORE_NAME, dbVersion: DB_VERSION };
+    var keyPrefix =  '';
 
 
     var Promise = window.Promise;
