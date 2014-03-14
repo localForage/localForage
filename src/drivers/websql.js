@@ -170,7 +170,7 @@
     }
 
     var webSQLStorage = {
-        driver: 'webSQLStorage',
+        _driver: 'webSQLStorage',
         _initStorage: _initStorage,
         getItem: getItem,
         setItem: setItem,

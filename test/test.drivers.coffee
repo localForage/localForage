@@ -11,7 +11,7 @@ casper.test.begin "Testing localforage driver selection", (test) ->
     test.assertEval ->
       localforage.setDriver "localStorageWrapper"
 
-      localforage.driver is "localStorageWrapper"
+      localforage.driver() is "localStorageWrapper"
     , "localStorageWrapper should be loaded after calling setDriver()"
 
   casper.thenOpen "#{casper.TEST_URL}test.require.html"
@@ -38,7 +38,7 @@ casper.test.begin "Testing localforage driver selection", (test) ->
       @evaluate ->
         require ['localforage'], (localforage) ->
           localforage.setDriver 'localStorageWrapper', (localforage) ->
-            window._localforageDriver = localforage.driver
+            window._localforageDriver = localforage.driver()
             __utils__.findOne('.status').id = 'driver-set'
 
       @waitForSelector '#driver-set', ->
@@ -50,7 +50,7 @@ casper.test.begin "Testing localforage driver selection", (test) ->
       @evaluate ->
         require ['localforage'], (localforage) ->
           localforage.setDriver 'asyncStorage', (localforage) ->
-            window._localforageDriver = localforage.driver
+            window._localforageDriver = localforage.driver()
             __utils__.findOne('.status').id = 'driver-attempt'
 
       @waitForSelector '#driver-attempt', ->
@@ -71,7 +71,7 @@ casper.test.begin "Testing localforage driver selection", (test) ->
 
     casper.then ->
       test.assertEval ->
-        typeof window._lf.driver is 'string' and
+        typeof window._lf.driver is 'function' and
         typeof window._lf._initStorage is 'function' and
         typeof window._lf.getItem is 'function' and
         typeof window._lf.setItem is 'function' and

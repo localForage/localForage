@@ -208,7 +208,7 @@
     }
 
     var asyncStorage = {
-        driver: 'asyncStorage',
+        _driver: 'asyncStorage',
         _initStorage: _initStorage,
         getItem: getItem,
         setItem: setItem,

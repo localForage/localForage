@@ -993,7 +993,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     var asyncStorage = {
-        driver: 'asyncStorage',
+        _driver: 'asyncStorage',
         _initStorage: _initStorage,
         getItem: getItem,
         setItem: setItem,
@@ -1151,7 +1151,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     var localStorageWrapper = {
-        driver: 'localStorageWrapper',
+        _driver: 'localStorageWrapper',
         _initStorage: _initStorage,
         // Default API, from Gaia/localStorage.
         getItem: getItem,
@@ -1344,7 +1344,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     var webSQLStorage = {
-        driver: 'webSQLStorage',
+        _driver: 'webSQLStorage',
         _initStorage: _initStorage,
         getItem: getItem,
         setItem: setItem,
@@ -1399,6 +1399,10 @@ requireModule('promise/polyfill').polyfill();
         INDEXEDDB: 'asyncStorage',
         LOCALSTORAGE: 'localStorageWrapper',
         WEBSQL: 'webSQLStorage',
+
+        driver: function() {
+            return localForage._driver || null;
+        },
 
         setDriver: function(driverName, callback) {
             return new Promise(function(resolve, reject) {

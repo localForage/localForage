@@ -34,6 +34,10 @@
         LOCALSTORAGE: 'localStorageWrapper',
         WEBSQL: 'webSQLStorage',
 
+        driver: function() {
+            return localForage._driver || null;
+        },
+
         setDriver: function(driverName, callback) {
             return new Promise(function(resolve, reject) {
                 if ((!indexedDB && driverName === localForage.INDEXEDDB) ||

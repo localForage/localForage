@@ -18,7 +18,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
     test.info "Test API using callbacks"
 
     test.assertEval ->
-      typeof localforage.driver is 'string' and
+      typeof localforage.driver is 'function' and
       typeof localforage._initStorage is 'function' and
       typeof localforage.getItem is 'function' and
       typeof localforage.setItem is 'function' and
@@ -29,7 +29,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
     , "localforage API is consistent between drivers"
 
     test.assertEvalEquals ->
-      localforage.driver
+      localforage.driver()
     , casper.DRIVER, "#{casper.DRIVER} driver is active"
 
     test.assertEval ->
@@ -351,7 +351,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
     test.info "Test minified version"
 
     test.assertEval ->
-      typeof localforage.driver is 'string' and
+      typeof localforage.driver is 'function' and
       typeof localforage._initStorage is 'function' and
       typeof localforage.getItem is 'function' and
       typeof localforage.setItem is 'function' and
