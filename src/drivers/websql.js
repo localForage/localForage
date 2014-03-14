@@ -39,74 +39,80 @@
 
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            db.transaction(function (t) {
-                t.executeSql('SELECT * FROM localforage WHERE key = ? LIMIT 1', [key], function (t, results) {
-                    var result = results.rows.length ? results.rows.item(0).value : null;
+            localforage.ready().then(function() {
+                db.transaction(function (t) {
+                    t.executeSql('SELECT * FROM localforage WHERE key = ? LIMIT 1', [key], function (t, results) {
+                        var result = results.rows.length ? results.rows.item(0).value : null;
 
-                    // Check to see if this is serialized content we need to
-                    // unpack.
-                    if (result && result.substr(0, SERIALIZED_MARKER_LENGTH) === SERIALIZED_MARKER) {
-                        try {
-                            result = JSON.parse(result.slice(SERIALIZED_MARKER_LENGTH));
-                        } catch (e) {
-                            reject(e);
+                        // Check to see if this is serialized content we need to
+                        // unpack.
+                        if (result && result.substr(0, SERIALIZED_MARKER_LENGTH) === SERIALIZED_MARKER) {
+                            try {
+                                result = JSON.parse(result.slice(SERIALIZED_MARKER_LENGTH));
+                            } catch (e) {
+                                reject(e);
+                            }
                         }
-                    }
 
-                    if (callback) {
-                        callback(result);
-                    }
+                        if (callback) {
+                            callback(result);
+                        }
 
-                    resolve(result);
-                }, null);
+                        resolve(result);
+                    }, null);
+                });
             });
         });
     }
 
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
-            // The localStorage API doesn't return undefined values in an
-            // "expected" way, so undefined is always cast to null in all
-            // drivers. See: https://github.com/mozilla/localForage/pull/42
-            if (value === undefined) {
-                value = null;
-            }
+            localforage.ready().then(function() {
+                // The localStorage API doesn't return undefined values in an
+                // "expected" way, so undefined is always cast to null in all
+                // drivers. See: https://github.com/mozilla/localForage/pull/42
+                if (value === undefined) {
+                    value = null;
+                }
 
-            // We need to serialize certain types of objects using WebSQL;
-            // otherwise they'll get stored as strings as be useless when we
-            // use getItem() later.
-            var valueToSave;
-            if (typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
-                // Mark the content as "localForage serialized content" so we
-                // know to run JSON.parse() on it when we get it back out from
-                // the database.
-                valueToSave = SERIALIZED_MARKER + JSON.stringify(value);
-            } else {
-                valueToSave = value;
-            }
+                // We need to serialize certain types of objects using WebSQL;
+                // otherwise they'll get stored as strings as be useless when we
+                // use getItem() later.
+                var valueToSave;
+                if (typeof(value) === 'boolean' || typeof(value) === 'number' || typeof(value) === 'object') {
+                    // Mark the content as "localForage serialized content" so we
+                    // know to run JSON.parse() on it when we get it back out from
+                    // the database.
+                    valueToSave = SERIALIZED_MARKER + JSON.stringify(value);
+                } else {
+                    valueToSave = value;
+                }
 
-            db.transaction(function (t) {
-                t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, valueToSave], function() {
-                    if (callback) {
-                        callback(value);
-                    }
+                db.transaction(function (t) {
+                    t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, valueToSave], function() {
+                        if (callback) {
+                            callback(value);
+                        }
 
-                    resolve(value);
-                }, null);
+                        resolve(value);
+                    }, null);
+                });
             });
         });
     }
 
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            db.transaction(function (t) {
-                t.executeSql('DELETE FROM localforage WHERE key = ?', [key], function() {
-                    if (callback) {
-                        callback();
-                    }
+            localforage.ready().then(function() {
+                db.transaction(function (t) {
+                    t.executeSql('DELETE FROM localforage WHERE key = ?', [key], function() {
+                        if (callback) {
+                            callback();
+                        }
 
-                    resolve();
-                }, null);
+                        resolve();
+                    }, null);
+                });
             });
         });
     }
@@ -115,14 +121,16 @@
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         return new Promise(function(resolve, reject) {
-            db.transaction(function (t) {
-                t.executeSql('DELETE FROM localforage', [], function(t, results) {
-                    if (callback) {
-                        callback();
-                    }
+            localforage.ready().then(function() {
+                db.transaction(function (t) {
+                    t.executeSql('DELETE FROM localforage', [], function(t, results) {
+                        if (callback) {
+                            callback();
+                        }
 
-                    resolve();
-                }, null);
+                        resolve();
+                    }, null);
+                });
             });
         });
     }
@@ -131,17 +139,19 @@
     // localForage.
     function length(callback) {
         return new Promise(function(resolve, reject) {
-            db.transaction(function (t) {
-                // Ahhh, SQL makes this one soooooo easy.
-                t.executeSql('SELECT COUNT(key) as c FROM localforage', [], function (t, results) {
-                    var result = results.rows.item(0).c;
+            localforage.ready().then(function() {
+                db.transaction(function (t) {
+                    // Ahhh, SQL makes this one soooooo easy.
+                    t.executeSql('SELECT COUNT(key) as c FROM localforage', [], function (t, results) {
+                        var result = results.rows.item(0).c;
 
-                    if (callback) {
-                        callback(result);
-                    }
+                        if (callback) {
+                            callback(result);
+                        }
 
-                    resolve(result);
-                }, null);
+                        resolve(result);
+                    }, null);
+                });
             });
         });
     }
@@ -155,16 +165,18 @@
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
         return new Promise(function(resolve, reject) {
-            db.transaction(function (t) {
-                t.executeSql('SELECT key FROM localforage WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
-                    var result = results.rows.length ? results.rows.item(0).key : null;
+            localforage.ready().then(function() {
+                db.transaction(function (t) {
+                    t.executeSql('SELECT key FROM localforage WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                        var result = results.rows.length ? results.rows.item(0).key : null;
 
-                    if (callback) {
-                        callback(result);
-                    }
+                        if (callback) {
+                            callback(result);
+                        }
 
-                    resolve(result);
-                }, null);
+                        resolve(result);
+                    }, null);
+                });
             });
         });
     }

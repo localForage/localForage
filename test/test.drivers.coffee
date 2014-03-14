@@ -9,6 +9,10 @@ casper.test.begin "Testing localforage driver selection", (test) ->
     , "localforage API includes option to set a driver explicitly"
 
     test.assertEval ->
+      typeof localforage.ready is 'function'
+    , "localforage API includes option to check if driver is initiated"
+
+    test.assertEval ->
       localforage.setDriver "localStorageWrapper"
 
       localforage.driver is "localStorageWrapper"
