@@ -19,8 +19,8 @@
 
   "globals": {
     "define": true,
+    "localforage": true,
     "module": true,
-    "require": true,
-    "localforage": true
+    "require": true
   }
 }
