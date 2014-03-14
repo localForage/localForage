@@ -39,7 +39,7 @@
 
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
 
                 var req = store.get(key);
@@ -64,7 +64,7 @@
 
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
 
                 // Cast to undefined so the value passed to callback/promise is
@@ -93,7 +93,7 @@
 
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
 
                 // We use `['delete']` instead of `.delete` because IE 8 will
@@ -122,7 +122,7 @@
 
     function clear(callback) {
         return new Promise(function(resolve, reject) {
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
 
                 var req = store.clear();
@@ -142,7 +142,7 @@
 
     function length(callback) {
         return new Promise(function(resolve, reject) {
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
 
                 var req = store.count();
@@ -172,7 +172,7 @@
                 return;
             }
 
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
 
                 var advanced = false;

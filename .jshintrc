@@ -20,6 +20,7 @@
   "globals": {
     "define": true,
     "module": true,
-    "require": true
+    "require": true,
+    "localforage": true
   }
 }

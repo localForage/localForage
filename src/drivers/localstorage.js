@@ -29,7 +29,7 @@
     // the app's key/value store!
     function clear(callback) {
         return new Promise(function(resolve, reject) {
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 localStorage.clear();
 
                 if (callback) {
@@ -46,7 +46,7 @@
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 try {
                     var result = localStorage.getItem(key);
 
@@ -72,7 +72,7 @@
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
         return new Promise(function(resolve, reject) {
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 var result = localStorage.key(n);
 
                 if (callback) {
@@ -87,7 +87,7 @@
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
         return new Promise(function(resolve, reject) {
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 var result = localStorage.length;
 
                 if (callback) {
@@ -102,7 +102,7 @@
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 localStorage.removeItem(key);
 
                 if (callback) {
@@ -120,7 +120,7 @@
     // saved, or something like that.
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
-            localforage._ready.then(function() {
+            localforage.ready().then(function() {
                 // Convert undefined values to null.
                 // https://github.com/mozilla/localForage/pull/42
                 if (value === undefined) {

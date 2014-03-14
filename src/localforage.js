@@ -34,8 +34,10 @@
         LOCALSTORAGE: 'localStorageWrapper',
         WEBSQL: 'webSQLStorage',
 
+        _ready: Promise.reject(new Error("setDriver() wasn't called")),
+
         setDriver: function(driverName, callback) {
-            localForage._ready = new Promise(function(resolve, reject) {
+            this._ready = new Promise(function(resolve, reject) {
                 if ((!indexedDB && driverName === localForage.INDEXEDDB) ||
                     (!window.openDatabase && driverName === localForage.WEBSQL)) {
                     if (callback) {
@@ -53,7 +55,7 @@
                     require([driverName], function(lib) {
                         localForage._extend(lib);
 
-                        localForage._initStorage().then(function(val) {
+                        localForage._initStorage().then(function() {
                             if (callback) {
                                 callback(localForage);
                             }
@@ -76,7 +78,7 @@
                     }
                     localForage._extend(driver);
 
-                    localForage._initStorage().then(function(val) {
+                    localForage._initStorage().then(function() {
                         if (callback) {
                             callback(localForage);
                         }
@@ -86,7 +88,7 @@
                 } else {
                     localForage._extend(_this[driverName]);
 
-                    localForage._initStorage().then(function(val) {
+                    localForage._initStorage().then(function() {
                         if (callback) {
                             callback(localForage);
                         }
@@ -97,6 +99,10 @@
             });
 
             return localForage._ready;
+        },
+
+        ready: function() {
+            return this._ready;
         },
 
         _extend: function(libraryMethodsAndProperties) {
