@@ -1,6 +1,6 @@
 {
     "name": "localforage",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "main": [
         "dist/localforage.min.js",
         "dist/backbone.localforage.min.js"
