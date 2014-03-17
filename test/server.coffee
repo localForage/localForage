@@ -15,7 +15,6 @@ app.configure ->
   # Public/static files directory. If you add more folders here,
   # they'll also be served statically from the root URL.
   app.use express.static("#{app_folder}/dist")
-  app.use express.static("#{app_folder}/examples")
   app.use express.static("#{app_folder}/test")
   app.use express.static("#{app_folder}/vendor")
 
@@ -29,7 +28,6 @@ app.configure ->
 console.log ''
 console.log 'Serving folders: '
 console.log " * #{app_folder}/dist"
-console.log " * #{app_folder}/examples"
 console.log " * #{app_folder}/test"
 console.log " * #{app_folder}/vendor"
 
