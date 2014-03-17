@@ -7,10 +7,8 @@
     ],
     "ignore": [
         ".travis.yml",
-        "build.sh",
         "CONTRIBUTING.md",
         "LICENSE",
-        "Makefile",
         "test*",
         "vendor/*"
     ],
