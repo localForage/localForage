@@ -75,23 +75,12 @@ module.exports = exports = function(grunt) {
                         '    (c) 2013-2014 Mozilla, Apache License 2.0\n' +
                         '*/\n'
                 }
-            },
-            backbone: {
-                src: [
-                    'src/adapters/backbone.js'
-                ],
-                dest: 'dist/backbone.localforage.js',
             }
         },
         uglify: {
             localforage: {
                 files: {
                     'dist/localforage.min.js': ['dist/localforage.js']
-                }
-            },
-            backbone: {
-                files: {
-                    'dist/backbone.localforage.min.js': ['dist/backbone.localforage.js']
                 }
             }
         },
