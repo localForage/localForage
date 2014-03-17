@@ -831,27 +831,14 @@ requireModule('promise/polyfill').polyfill();
 
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
-
+                var store = db.transaction(dbInfos.storeName, 'readonly').objectStore(dbInfos.storeName);
                 var req = store.get(key);
                 req.onsuccess = function getItemOnSuccess() {
                     var value = req.result;
                     if (value === undefined) {
                         value = null;
                     }
-=======
-            var store = db.transaction(dbInfos.storeName, 'readonly').objectStore(dbInfos.storeName);
-
-            var req = store.get(key);
-            req.onsuccess = function getItemOnSuccess() {
-                var value = req.result;
-                if (value === undefined) {
-                    value = null;
-                }
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
-
                     if (callback) {
                         callback(value);
                     }
@@ -867,9 +854,8 @@ requireModule('promise/polyfill').polyfill();
 
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
+                var store = db.transaction(dbInfos.storeName, 'readwrite').objectStore(dbInfos.storeName);
 
                 // Cast to undefined so the value passed to callback/promise is
                 // the same as what one would get out of `getItem()` later.
@@ -878,23 +864,6 @@ requireModule('promise/polyfill').polyfill();
                 // baseline and that it's weird.
                 if (value === undefined) {
                     value = null;
-=======
-            var store = db.transaction(dbInfos.storeName, 'readwrite').objectStore(dbInfos.storeName);
-
-            // Cast to undefined so the value passed to callback/promise is
-            // the same as what one would get out of `getItem()` later.
-            // This leads to some weirdness (setItem('foo', undefined) will
-            // return "null"), but it's not my fault localStorage is our
-            // baseline and that it's weird.
-            if (value === undefined) {
-                value = null;
-            }
-
-            var req = store.put(value, key);
-            req.onsuccess = function setItemOnSuccess() {
-                if (callback) {
-                    callback(value);
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
                 }
 
                 var req = store.put(value, key);
@@ -914,9 +883,8 @@ requireModule('promise/polyfill').polyfill();
 
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
+                var store = db.transaction(dbInfos.storeName, 'readwrite').objectStore(dbInfos.storeName);
 
                 // We use `['delete']` instead of `.delete` because IE 8 will
                 // throw a fit if it sees the reserved word "delete" in this
@@ -932,25 +900,6 @@ requireModule('promise/polyfill').polyfill();
                     if (callback) {
                         callback();
                     }
-=======
-            var store = db.transaction(dbInfos.storeName, 'readwrite').objectStore(dbInfos.storeName);
-
-            // We use `['delete']` instead of `.delete` because IE 8 will
-            // throw a fit if it sees the reserved word "delete" in this
-            // scenario. See: https://github.com/mozilla/localForage/pull/67
-            //
-            // This can be removed once we no longer care about IE 8, for
-            // what that's worth.
-            // TODO: Write a test against this? Maybe IE in general? Also,
-            // make sure the minify step doesn't optimise this to `.delete`,
-            // though it currently doesn't.
-            var req = store['delete'](key);
-            req.onsuccess = function removeItemOnSuccess() {
-                if (callback) {
-                    callback();
-                }
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
-
                     resolve();
                 };
                 req.onerror = function removeItemOnError() {
@@ -962,13 +911,8 @@ requireModule('promise/polyfill').polyfill();
 
     function clear(callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
-=======
-            var store = db.transaction(dbInfos.storeName, 'readwrite').objectStore(dbInfos.storeName);
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
-
+                var store = db.transaction(dbInfos.storeName, 'readwrite').objectStore(dbInfos.storeName);
                 var req = store.clear();
                 req.onsuccess = function clearOnSuccess() {
                     if (callback) {
@@ -986,13 +930,8 @@ requireModule('promise/polyfill').polyfill();
 
     function length(callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
-=======
-            var store = db.transaction(dbInfos.storeName, 'readonly').objectStore(dbInfos.storeName);
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
-
+                var store = db.transaction(dbInfos.storeName, 'readonly').objectStore(dbInfos.storeName);
                 var req = store.count();
                 req.onsuccess = function lengthOnSuccess() {
                     if (callback) {
@@ -1020,12 +959,8 @@ requireModule('promise/polyfill').polyfill();
                 return;
             }
 
-<<<<<<< HEAD
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
-=======
-            var store = db.transaction(dbInfos.storeName, 'readonly').objectStore(dbInfos.storeName);
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
+                var store = db.transaction(dbInfos.storeName, 'readonly').objectStore(dbInfos.storeName);
 
                 var advanced = false;
                 var req = store.openCursor();
@@ -1072,15 +1007,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     var asyncStorage = {
-<<<<<<< HEAD
         _driver: 'asyncStorage',
-=======
-        driver: 'asyncStorage',
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
-=======
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
         _initStorage: _initStorage,
         getItem: getItem,
         setItem: setItem,
@@ -1107,7 +1034,7 @@ requireModule('promise/polyfill').polyfill();
 (function() {
     'use strict';
 
-    var keyPrefix =  '';
+    var prefixKey =  '';
     var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0' };
     var Promise = window.Promise;
     var localStorage = null;
@@ -1135,9 +1062,9 @@ requireModule('promise/polyfill').polyfill();
             }
         }
 
-        keyPrefix = dbInfos.dbName;
-        keyPrefix += '/'+dbInfos.dbVersion;
-        keyPrefix += '/'+dbInfos.storeName;
+        prefixKey = dbInfos.dbName;
+        prefixKey += '/'+dbInfos.dbVersion;
+        prefixKey += '/'+dbInfos.storeName;
 
         return Promise.resolve();
     }
@@ -1163,10 +1090,9 @@ requireModule('promise/polyfill').polyfill();
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
                 try {
-                    var result = localStorage.getItem(key);
+                    var result = localStorage.getItem(prefixKey + key);
 
                     // If a result was found, parse it from serialized JSON into a
                     // JS object. If result isn't truthy, the key is likely
@@ -1174,17 +1100,6 @@ requireModule('promise/polyfill').polyfill();
                     if (result) {
                         result = JSON.parse(result);
                     }
-=======
-            try {
-                var result = localStorage.getItem(keyPrefix+key);
-
-                // If a result was found, parse it from serialized JSON into a
-                // JS object. If result isn't truthy, the key is likely
-                // undefined and we'll pass it straight to the callback.
-                if (result) {
-                    result = JSON.parse(result);
-                }
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                     if (callback) {
                         callback(result);
@@ -1204,20 +1119,13 @@ requireModule('promise/polyfill').polyfill();
             localforage.ready().then(function() {
                 var result = localStorage.key(n);
 
-<<<<<<< HEAD
+                // Remove the prefix if exists
+                var regexp = new RegExp("^" + prefixKey + "(.*)");
+                result = result.replace(regexp, "$1");
+
                 if (callback) {
                     callback(result);
                 }
-=======
-            // Remove the prefix if exists
-            var regexp = new RegExp("^" + keyPrefix + "(.*)");
-            result = result.replace(regexp, "$1");
-
-            if (callback) {
-                callback(result);
-            }
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
-
                 resolve(result);
             });
         });
@@ -1241,12 +1149,8 @@ requireModule('promise/polyfill').polyfill();
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
-                localStorage.removeItem(key);
-=======
-            localStorage.removeItem(keyPrefix+key);
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
+                localStorage.removeItem(prefixKey + key);
 
                 if (callback) {
                     callback();
@@ -1279,11 +1183,7 @@ requireModule('promise/polyfill').polyfill();
                     reject(e);
                 }
 
-<<<<<<< HEAD
-                localStorage.setItem(key, value);
-=======
-            localStorage.setItem(keyPrefix+key, value);
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
+                localStorage.setItem(prefixKey + key, value);
 
                 if (callback) {
                     callback(originalValue);
@@ -1355,7 +1255,7 @@ requireModule('promise/polyfill').polyfill();
             // positive on the WebSQL API enough to be sure that other transactions
             // won't be run before this? But I assume not.
             db.transaction(function (t) {
-                t.executeSql('CREATE TABLE IF NOT EXISTS '+dbInfos.storeName+' (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
+                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfos.storeName + ' (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
                     resolve();
                 }, null);
             });
@@ -1364,10 +1264,9 @@ requireModule('promise/polyfill').polyfill();
 
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('SELECT * FROM localforage WHERE key = ? LIMIT 1', [key], function (t, results) {
+                    t.executeSql('SELECT * FROM ' + dbInfos.storeName + ' WHERE key = ? LIMIT 1', [key], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).value : null;
 
                         // Check to see if this is serialized content we need to
@@ -1378,19 +1277,6 @@ requireModule('promise/polyfill').polyfill();
                             } catch (e) {
                                 reject(e);
                             }
-=======
-            db.transaction(function (t) {
-                t.executeSql('SELECT * FROM '+dbInfos.storeName+' WHERE key = ? LIMIT 1', [key], function (t, results) {
-                    var result = results.rows.length ? results.rows.item(0).value : null;
-
-                    // Check to see if this is serialized content we need to
-                    // unpack.
-                    if (result && result.substr(0, SERIALIZED_MARKER_LENGTH) === SERIALIZED_MARKER) {
-                        try {
-                            result = JSON.parse(result.slice(SERIALIZED_MARKER_LENGTH));
-                        } catch (e) {
-                            reject(e);
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
                         }
 
                         if (callback) {
@@ -1405,7 +1291,6 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function setItem(key, value, callback) {
-<<<<<<< HEAD
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 // The localStorage API doesn't return undefined values in an
@@ -1414,15 +1299,6 @@ requireModule('promise/polyfill').polyfill();
                 if (value === undefined) {
                     value = null;
                 }
-=======
-        return new Promise(function(resolve, reject ) {
-            // The localStorage API doesn't return undefined values in an
-            // "expected" way, so undefined is always cast to null in all
-            // drivers. See: https://github.com/mozilla/localForage/pull/42
-            if (value === undefined) {
-                value = null;
-            }
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
 
                 // We need to serialize certain types of objects using WebSQL;
                 // otherwise they'll get stored as strings as be useless when we
@@ -1437,19 +1313,11 @@ requireModule('promise/polyfill').polyfill();
                     valueToSave = value;
                 }
 
-<<<<<<< HEAD
                 db.transaction(function (t) {
-                    t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, valueToSave], function() {
+                    t.executeSql('INSERT OR REPLACE INTO ' + dbInfos.storeName + ' (key, value) VALUES (?, ?)', [key, valueToSave], function() {
                         if (callback) {
                             callback(value);
                         }
-=======
-            db.transaction(function (t) {
-                t.executeSql('INSERT OR REPLACE INTO '+dbInfos.storeName+' (key, value) VALUES (?, ?)', [key, valueToSave], function() {
-                    if (callback) {
-                        callback(value);
-                    }
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                         resolve(value);
                     }, null);
@@ -1460,20 +1328,12 @@ requireModule('promise/polyfill').polyfill();
 
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('DELETE FROM localforage WHERE key = ?', [key], function() {
+                    t.executeSql('DELETE FROM ' + dbInfos.storeName + ' WHERE key = ?', [key], function() {
                         if (callback) {
                             callback();
                         }
-=======
-            db.transaction(function (t) {
-                t.executeSql('DELETE FROM '+dbInfos.storeName+' WHERE key = ?', [key], function() {
-                    if (callback) {
-                        callback();
-                    }
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                         resolve();
                     }, null);
@@ -1486,20 +1346,12 @@ requireModule('promise/polyfill').polyfill();
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('DELETE FROM localforage', [], function(t, results) {
+                    t.executeSql('DELETE FROM ' + dbInfos.storeName, [], function(t, results) {
                         if (callback) {
                             callback();
                         }
-=======
-            db.transaction(function (t) {
-                t.executeSql('DELETE FROM '+dbInfos.storeName+'', [], function(t, results) {
-                    if (callback) {
-                        callback();
-                    }
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                         resolve();
                     }, null);
@@ -1512,18 +1364,11 @@ requireModule('promise/polyfill').polyfill();
     // localForage.
     function length(callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
                 db.transaction(function (t) {
                     // Ahhh, SQL makes this one soooooo easy.
-                    t.executeSql('SELECT COUNT(key) as c FROM localforage', [], function (t, results) {
+                    t.executeSql('SELECT COUNT(key) as c FROM ' + dbInfos.storeName, [], function (t, results) {
                         var result = results.rows.item(0).c;
-=======
-            db.transaction(function (t) {
-                // Ahhh, SQL makes this one soooooo easy.
-                t.executeSql('SELECT COUNT(key) as c FROM '+dbInfos.storeName+'', [], function (t, results) {
-                    var result = results.rows.item(0).c;
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                         if (callback) {
                             callback(result);
@@ -1545,16 +1390,10 @@ requireModule('promise/polyfill').polyfill();
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
         return new Promise(function(resolve, reject) {
-<<<<<<< HEAD
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('SELECT key FROM localforage WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                    t.executeSql('SELECT key FROM ' + dbInfos.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;
-=======
-            db.transaction(function (t) {
-                t.executeSql('SELECT key FROM '+dbInfos.storeName+' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
-                    var result = results.rows.length ? results.rows.item(0).key : null;
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
 
                         if (callback) {
                             callback(result);
@@ -1568,15 +1407,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     var webSQLStorage = {
-<<<<<<< HEAD
         _driver: 'webSQLStorage',
-=======
-        driver: 'webSQLStorage',
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 0a77097... Add setDbInfos function to allow users to change the name, version, and store values
-=======
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
         _initStorage: _initStorage,
         getItem: getItem,
         setItem: setItem,
@@ -1656,12 +1487,7 @@ requireModule('promise/polyfill').polyfill();
                 if (moduleType === MODULE_TYPE_DEFINE) {
                     require([driverName], function(lib) {
                         localForage._extend(lib);
-
-<<<<<<< HEAD
-                        localForage._initStorage().then(function() {
-=======
-                        localForage._initStorage(window.localForageConfig).then(function(val) {
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
+                        localForage._initStorage(window.localForageConfig).then(function() {
                             if (callback) {
                                 callback(localForage);
                             }
@@ -1683,12 +1509,7 @@ requireModule('promise/polyfill').polyfill();
                             driver = require('localforage/src/drivers/websql');
                     }
                     localForage._extend(driver);
-
-<<<<<<< HEAD
-                    localForage._initStorage().then(function() {
-=======
-                    localForage._initStorage(window.localForageConfig).then(function(val) {
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
+                    localForage._initStorage(window.localForageConfig).then(function() {
                         if (callback) {
                             callback(localForage);
                         }
@@ -1697,12 +1518,7 @@ requireModule('promise/polyfill').polyfill();
                     });
                 } else {
                     localForage._extend(_this[driverName]);
-
-<<<<<<< HEAD
-                    localForage._initStorage().then(function() {
-=======
-                    localForage._initStorage(window.localForageConfig).then(function(val) {
->>>>>>> c522534... Rebase from master, now use _initStorage instead of setDbInfos to set infos for database. Options can be set using window.localForageConfig. Run JSHint on code.
+                    localForage._initStorage(window.localForageConfig).then(function() {
                         if (callback) {
                             callback(localForage);
                         }

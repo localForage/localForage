@@ -37,7 +37,7 @@
             // positive on the WebSQL API enough to be sure that other transactions
             // won't be run before this? But I assume not.
             db.transaction(function (t) {
-                t.executeSql('CREATE TABLE IF NOT EXISTS '+dbInfos.storeName+' (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
+                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfos.storeName + ' (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
                     resolve();
                 }, null);
             });
@@ -100,6 +100,7 @@
                         if (callback) {
                             callback(value);
                         }
+
                         resolve(value);
                     }, null);
                 });
@@ -115,6 +116,7 @@
                         if (callback) {
                             callback();
                         }
+
                         resolve();
                     }, null);
                 });
@@ -132,6 +134,7 @@
                         if (callback) {
                             callback();
                         }
+
                         resolve();
                     }, null);
                 });
@@ -152,6 +155,7 @@
                         if (callback) {
                             callback(result);
                         }
+
                         resolve(result);
                     }, null);
                 });
@@ -172,6 +176,7 @@
                 db.transaction(function (t) {
                     t.executeSql('SELECT key FROM ' + dbInfos.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;
+
                         if (callback) {
                             callback(result);
                         }

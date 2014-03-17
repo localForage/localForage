@@ -5,7 +5,7 @@
 (function() {
     'use strict';
 
-    var keyPrefix =  '';
+    var prefixKey =  '';
     var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0' };
     var Promise = window.Promise;
     var localStorage = null;
@@ -33,9 +33,9 @@
             }
         }
 
-        keyPrefix = dbInfos.dbName;
-        keyPrefix += '/'+dbInfos.dbVersion;
-        keyPrefix += '/'+dbInfos.storeName;
+        prefixKey = dbInfos.dbName;
+        prefixKey += '/'+dbInfos.dbVersion;
+        prefixKey += '/'+dbInfos.storeName;
 
         return Promise.resolve();
     }
@@ -63,7 +63,7 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 try {
-                    var result = localStorage.getItem(key);
+                    var result = localStorage.getItem(prefixKey + key);
 
                     // If a result was found, parse it from serialized JSON into a
                     // JS object. If result isn't truthy, the key is likely
@@ -89,6 +89,11 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 var result = localStorage.key(n);
+
+                // Remove the prefix if exists
+                var regexp = new RegExp("^" + prefixKey + "(.*)");
+                result = result.replace(regexp, "$1");
+
                 if (callback) {
                     callback(result);
                 }
@@ -116,7 +121,7 @@
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                localStorage.removeItem(key);
+                localStorage.removeItem(prefixKey + key);
 
                 if (callback) {
                     callback();
@@ -149,7 +154,7 @@
                     reject(e);
                 }
 
-                localStorage.setItem(key, value);
+                localStorage.setItem(prefixKey + key, value);
 
                 if (callback) {
                     callback(originalValue);
