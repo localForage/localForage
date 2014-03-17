@@ -127,15 +127,17 @@ Note that trying to load a driver unavailable on the current browser (like
 trying to load WebSQL in Gecko) will fail and the previously loaded "best
 choice" will continue to be used.
 
-## Backbone.js
+## Framework Support
 
-localForage includes a [Backbone.js](http://backbonejs.org/) storage library
-that you can use to store your Backbone collections offline with only a few
-lines of really simple code. The is a [Backbone example](https://github.com/mozilla/localForage/blob/master/examples/backbone-example.html) available if you're
-interested in using Backbone and localForage together.
+If you use a framework listed, there's a localForage storage driver for the
+models in your framework so you can store data offline with localForage. We
+have drivers for the following frameworks:
 
-Of course, Backbone.js is entirely optional and you can use localForage
-without it.
+* [Backbone](https://github.com/mozilla/localForage-backbone)
+
+If you have a driver you'd like listed, please
+[open an issue](https://github.com/mozilla/localForage/issues/new) to have it
+added to this list.
 
 # Running Tests
 
@@ -185,12 +187,6 @@ Maybe. If it's legacy storage (< IE 8), for a dead platform (WebOS), or
 _really_ obscure (Apple Newton), I'm going to say "no". If it's for a new
 browser technology or a platform-specific driver like Chrome Web Apps or
 Firefox OS, then "yes" is probably the answer.
-
-### Will you add (or accept) support for storage in X framework?
-
-**Yes**. If you have an adapter for EmberJS, Angular, whatever, please add it,
-along with tests, and submit a pull request. The more frameworks this library
-can support, the better.
 
 ### Will you add support for node.js?
 
