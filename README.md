@@ -134,6 +134,7 @@ models in your framework so you can store data offline with localForage. We
 have drivers for the following frameworks:
 
 * [Backbone](https://github.com/mozilla/localForage-backbone)
+* [AngularJS](https://github.com/ocombe/angular-localForage)
 
 If you have a driver you'd like listed, please
 [open an issue](https://github.com/mozilla/localForage/issues/new) to have it
