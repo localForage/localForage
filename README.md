@@ -127,6 +127,22 @@ Note that trying to load a driver unavailable on the current browser (like
 trying to load WebSQL in Gecko) will fail and the previously loaded "best
 choice" will continue to be used.
 
+## Setting database information
+
+You can set database information, by giving the `window.localForageConfig`
+variable a hash of options. Available options are `dbName`, `dbVersion`,
+`storeName` and `dbDescription`.
+
+Example:
+```javascript
+window.localForageConfig = {
+  dbName        : "localforage",
+  dbVersion     : 1,
+  storeName     : "keyvaluepairs",
+  dbDescription : "some description"
+};
+```
+
 ## Framework Support
 
 If you use a framework listed, there's a localForage storage driver for the

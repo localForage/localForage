@@ -5,6 +5,8 @@
 (function() {
     'use strict';
 
+    var prefixKey =  '';
+    var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0' };
     var Promise = window.Promise;
     var localStorage = null;
 
@@ -21,7 +23,18 @@
         return;
     }
 
-    function _initStorage() {
+    // We can give optionnal options to set dbInfos
+    function _initStorage(options) {
+        if (options) {
+            for (var i in dbInfos) {
+                if (options[i]) {
+                    dbInfos[i] = options[i];
+                }
+            }
+        }
+
+        prefixKey = dbInfos.dbName + '/';
+
         return Promise.resolve();
     }
 
@@ -48,7 +61,7 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 try {
-                    var result = localStorage.getItem(key);
+                    var result = localStorage.getItem(prefixKey + key);
 
                     // If a result was found, parse it from serialized JSON into a
                     // JS object. If result isn't truthy, the key is likely
@@ -75,10 +88,14 @@
             localforage.ready().then(function() {
                 var result = localStorage.key(n);
 
+                // Remove the prefix if exists
+                if (result != null) {
+                    result = result.substring(prefixKey.length);
+                }
+
                 if (callback) {
                     callback(result);
                 }
-
                 resolve(result);
             });
         });
@@ -103,7 +120,7 @@
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                localStorage.removeItem(key);
+                localStorage.removeItem(prefixKey + key);
 
                 if (callback) {
                     callback();
@@ -136,7 +153,7 @@
                     reject(e);
                 }
 
-                localStorage.setItem(key, value);
+                localStorage.setItem(prefixKey + key, value);
 
                 if (callback) {
                     callback(originalValue);
