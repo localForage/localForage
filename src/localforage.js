@@ -58,6 +58,7 @@
                 if (moduleType === MODULE_TYPE_DEFINE) {
                     require([driverName], function(lib) {
                         localForage._extend(lib);
+
                         localForage._initStorage(window.localForageConfig).then(function() {
                             if (callback) {
                                 callback(localForage);
@@ -80,6 +81,7 @@
                             driver = require('localforage/src/drivers/websql');
                     }
                     localForage._extend(driver);
+
                     localForage._initStorage(window.localForageConfig).then(function() {
                         if (callback) {
                             callback(localForage);
@@ -89,6 +91,7 @@
                     });
                 } else {
                     localForage._extend(_this[driverName]);
+
                     localForage._initStorage(window.localForageConfig).then(function() {
                         if (callback) {
                             callback(localForage);

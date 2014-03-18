@@ -1062,9 +1062,7 @@ requireModule('promise/polyfill').polyfill();
             }
         }
 
-        prefixKey = dbInfos.dbName;
-        prefixKey += '/'+dbInfos.dbVersion;
-        prefixKey += '/'+dbInfos.storeName;
+        prefixKey = dbInfos.dbName + '/';
 
         return Promise.resolve();
     }
@@ -1120,8 +1118,9 @@ requireModule('promise/polyfill').polyfill();
                 var result = localStorage.key(n);
 
                 // Remove the prefix if exists
-                var regexp = new RegExp("^" + prefixKey + "(.*)");
-                result = result.replace(regexp, "$1");
+                if (result != null) {
+                    result = result.substring(prefixKey.length);
+                }
 
                 if (callback) {
                     callback(result);
@@ -1228,7 +1227,7 @@ requireModule('promise/polyfill').polyfill();
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
     var Promise = window.Promise;
     var db = null;
-    var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0', dbDescription: '' };
+    var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0', dbDescription: ' ' };
 
     // If WebSQL methods aren't available, we can stop now.
     if (!window.openDatabase) {
@@ -1240,7 +1239,7 @@ requireModule('promise/polyfill').polyfill();
         if (options) {
             for (var i in dbInfos) {
                 if (options[i]) {
-                    dbInfos[i] = options[i];
+                    dbInfos[i] = options[i].toString();
                 }
             }
         }
@@ -1487,6 +1486,7 @@ requireModule('promise/polyfill').polyfill();
                 if (moduleType === MODULE_TYPE_DEFINE) {
                     require([driverName], function(lib) {
                         localForage._extend(lib);
+
                         localForage._initStorage(window.localForageConfig).then(function() {
                             if (callback) {
                                 callback(localForage);
@@ -1509,6 +1509,7 @@ requireModule('promise/polyfill').polyfill();
                             driver = require('localforage/src/drivers/websql');
                     }
                     localForage._extend(driver);
+
                     localForage._initStorage(window.localForageConfig).then(function() {
                         if (callback) {
                             callback(localForage);
@@ -1518,6 +1519,7 @@ requireModule('promise/polyfill').polyfill();
                     });
                 } else {
                     localForage._extend(_this[driverName]);
+
                     localForage._initStorage(window.localForageConfig).then(function() {
                         if (callback) {
                             callback(localForage);

@@ -33,9 +33,7 @@
             }
         }
 
-        prefixKey = dbInfos.dbName;
-        prefixKey += '/'+dbInfos.dbVersion;
-        prefixKey += '/'+dbInfos.storeName;
+        prefixKey = dbInfos.dbName + '/';
 
         return Promise.resolve();
     }
@@ -91,8 +89,9 @@
                 var result = localStorage.key(n);
 
                 // Remove the prefix if exists
-                var regexp = new RegExp("^" + prefixKey + "(.*)");
-                result = result.replace(regexp, "$1");
+                if (result != null) {
+                    result = result.substring(prefixKey.length);
+                }
 
                 if (callback) {
                     callback(result);

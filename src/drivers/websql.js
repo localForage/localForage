@@ -10,7 +10,7 @@
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
     var Promise = window.Promise;
     var db = null;
-    var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0', dbDescription: '' };
+    var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0', dbDescription: ' ' };
 
     // If WebSQL methods aren't available, we can stop now.
     if (!window.openDatabase) {
@@ -22,7 +22,7 @@
         if (options) {
             for (var i in dbInfos) {
                 if (options[i]) {
-                    dbInfos[i] = options[i];
+                    dbInfos[i] = options[i].toString();
                 }
             }
         }
