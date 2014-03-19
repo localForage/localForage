@@ -3,6 +3,10 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [Version 0.2.0](https://github.com/mozilla/localForage/releases/tag/0.2.0)
+
+* Add support for ArrayBuffer, Blob, and TypedArrays ([#54](https://github.com/mozilla/localForage/pull/54), [#73](https://github.com/mozilla/localForage/pull/73))
+
 ### [Version 0.1.1](https://github.com/mozilla/localForage/releases/tag/0.1.1)
 
 * Added config options to allow users to set their own database names, etc. ([#100](https://github.com/mozilla/localForage/pull/100))
