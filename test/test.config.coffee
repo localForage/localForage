@@ -53,7 +53,7 @@ casper.test.begin "Testing localforage configuration for #{casper.DRIVER_NAME}",
         @evaluate ->
           window.openDatabase(window.localForageConfig.name, window.localForageConfig.version.toString(), "", 4980736).transaction (t) ->
             t.executeSql "SELECT * FROM #{window.localForageConfig.storeName} WHERE key = ? LIMIT 1", ['some key'], (t, results) ->
-              window._result = results.rows.item(0).value
+              window._result = JSON.parse(results.rows.item(0).value)
               __utils__.findOne('.status').id = "check-key"
 
         @waitForSelector "#check-key", ->
