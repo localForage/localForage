@@ -1,36 +1,47 @@
 (function() {
     'use strict';
 
-    var DB_NAME = 'localforage';
     // Default DB size is _JUST UNDER_ 5MB, as it's the highest size we can use
     // without a prompt.
     //
     // TODO: Add a way to increase this size programmatically?
     var DB_SIZE = 4980736;
-    var DB_VERSION = '1.0';
     var SERIALIZED_MARKER = '__lfsc__:';
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
-    var STORE_NAME = 'keyvaluepairs';
     var Promise = window.Promise;
     var db = null;
+    var dbInfo = {
+        description: '',
+        name: 'localforage',
+        storeName: 'keyvaluepairs',
+        version: '1.0'
+    };
 
     // If WebSQL methods aren't available, we can stop now.
     if (!window.openDatabase) {
         return;
     }
 
-    function _initStorage() {
+    // Open the WebSQL database (automatically creates one if one didn't
+    // previously exist), using any options set in window.localForageConfig.
+    function _initStorage(options) {
+        if (options) {
+            for (var i in dbInfo) {
+                if (options[i] !== undefined) {
+                    dbInfo[i] = typeof(options[i]) !== 'string' ? options[i].toString() : options[i];
+                }
+            }
+        }
+
         return new Promise(function(resolve, reject) {
-            // Open the database; the openDatabase API will automatically create it for
-            // us if it doesn't exist.
-            db = window.openDatabase(DB_NAME, DB_VERSION, STORE_NAME, DB_SIZE);
+            // Open the database; the openDatabase API will automatically
+            // create it for us if it doesn't exist.
+            db = window.openDatabase(dbInfo.name, dbInfo.version,
+                                     dbInfo.description, DB_SIZE);
 
             // Create our key/value table if it doesn't exist.
-            // TODO: Technically I can imagine this being as race condition, as I'm not
-            // positive on the WebSQL API enough to be sure that other transactions
-            // won't be run before this? But I assume not.
             db.transaction(function (t) {
-                t.executeSql('CREATE TABLE IF NOT EXISTS localforage (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
+                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName + ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
                     resolve();
                 }, null);
             });
@@ -41,7 +52,7 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('SELECT * FROM localforage WHERE key = ? LIMIT 1', [key], function (t, results) {
+                    t.executeSql('SELECT * FROM ' + dbInfo.storeName + ' WHERE key = ? LIMIT 1', [key], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).value : null;
 
                         // Check to see if this is serialized content we need to
@@ -89,7 +100,7 @@
                 }
 
                 db.transaction(function (t) {
-                    t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, valueToSave], function() {
+                    t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName + ' (key, value) VALUES (?, ?)', [key, valueToSave], function() {
                         if (callback) {
                             callback(value);
                         }
@@ -105,7 +116,7 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('DELETE FROM localforage WHERE key = ?', [key], function() {
+                    t.executeSql('DELETE FROM ' + dbInfo.storeName + ' WHERE key = ?', [key], function() {
                         if (callback) {
                             callback();
                         }
@@ -123,7 +134,7 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('DELETE FROM localforage', [], function(t, results) {
+                    t.executeSql('DELETE FROM ' + dbInfo.storeName, [], function(t, results) {
                         if (callback) {
                             callback();
                         }
@@ -142,7 +153,7 @@
             localforage.ready().then(function() {
                 db.transaction(function (t) {
                     // Ahhh, SQL makes this one soooooo easy.
-                    t.executeSql('SELECT COUNT(key) as c FROM localforage', [], function (t, results) {
+                    t.executeSql('SELECT COUNT(key) as c FROM ' + dbInfo.storeName, [], function (t, results) {
                         var result = results.rows.item(0).c;
 
                         if (callback) {
@@ -167,7 +178,7 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('SELECT key FROM localforage WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                    t.executeSql('SELECT key FROM ' + dbInfo.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;
 
                         if (callback) {

@@ -3,6 +3,12 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+## [Version 0.1.1](https://github.com/mozilla/localForage/releases/tag/0.1.1)
+
+* Added config options to allow users to set their own database names, etc. #100
+
+---
+
 ## March 16th, 2014
 
 * [Moved Backbone adapter to its own repository](https://github.com/mozilla/localForage/commit/b7987b3091855379d4908376b668b4b51a6fedfe)

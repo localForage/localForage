@@ -3,11 +3,13 @@
 
     // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
 
-    var DBNAME = 'localforage';
-    var DBVERSION = 1;
-    var STORENAME = 'keyvaluepairs';
     var Promise = window.Promise;
     var db = null;
+    var dbInfo = {
+        name: 'localforage',
+        storeName: 'keyvaluepairs',
+        version: 1
+    };
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
     var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
@@ -19,19 +21,28 @@
         return;
     }
 
-    function _initStorage() {
+    // Open the IndexedDB database (automatically creates one if one didn't
+    // previously exist), using any options set in window.localForageConfig.
+    function _initStorage(options) {
+        if (options) {
+            for (var i in dbInfo) {
+                if (options[i] !== undefined) {
+                    dbInfo[i] = options[i];
+                }
+            }
+        }
+
         return new Promise(function(resolve, reject) {
-            var openreq = indexedDB.open(DBNAME, DBVERSION);
+            var openreq = indexedDB.open(dbInfo.name, dbInfo.version);
             openreq.onerror = function withStoreOnError() {
                 reject(openreq.error.name);
             };
             openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
                 // First time setup: create an empty object store
-                openreq.result.createObjectStore(STORENAME);
+                openreq.result.createObjectStore(dbInfo.storeName);
             };
             openreq.onsuccess = function withStoreOnSuccess() {
                 db = openreq.result;
-
                 resolve();
             };
         });
@@ -40,15 +51,13 @@
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
-
+                var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
                 var req = store.get(key);
                 req.onsuccess = function getItemOnSuccess() {
                     var value = req.result;
                     if (value === undefined) {
                         value = null;
                     }
-
                     if (callback) {
                         callback(value);
                     }
@@ -65,7 +74,7 @@
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
+                var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
 
                 // Cast to undefined so the value passed to callback/promise is
                 // the same as what one would get out of `getItem()` later.
@@ -94,7 +103,7 @@
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
+                var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
 
                 // We use `['delete']` instead of `.delete` because IE 8 will
                 // throw a fit if it sees the reserved word "delete" in this
@@ -110,7 +119,6 @@
                     if (callback) {
                         callback();
                     }
-
                     resolve();
                 };
                 req.onerror = function removeItemOnError() {
@@ -123,8 +131,7 @@
     function clear(callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readwrite').objectStore(STORENAME);
-
+                var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
                 var req = store.clear();
                 req.onsuccess = function clearOnSuccess() {
                     if (callback) {
@@ -143,8 +150,7 @@
     function length(callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
-
+                var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
                 var req = store.count();
                 req.onsuccess = function lengthOnSuccess() {
                     if (callback) {
@@ -173,7 +179,7 @@
             }
 
             localforage.ready().then(function() {
-                var store = db.transaction(STORENAME, 'readonly').objectStore(STORENAME);
+                var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
 
                 var advanced = false;
                 var req = store.openCursor();

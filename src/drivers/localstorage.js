@@ -5,6 +5,10 @@
 (function() {
     'use strict';
 
+    var keyPrefix = '';
+    var dbInfo = {
+        name: 'localforage'
+    };
     var Promise = window.Promise;
     var localStorage = null;
 
@@ -21,7 +25,19 @@
         return;
     }
 
-    function _initStorage() {
+    // Config the localStorage backend, using options set in
+    // window.localForageConfig.
+    function _initStorage(options) {
+        if (options) {
+            for (var i in dbInfo) {
+                if (options[i] !== undefined) {
+                    dbInfo[i] = options[i];
+                }
+            }
+        }
+
+        keyPrefix = dbInfo.name + '/';
+
         return Promise.resolve();
     }
 
@@ -48,7 +64,7 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 try {
-                    var result = localStorage.getItem(key);
+                    var result = localStorage.getItem(keyPrefix + key);
 
                     // If a result was found, parse it from serialized JSON into a
                     // JS object. If result isn't truthy, the key is likely
@@ -75,10 +91,14 @@
             localforage.ready().then(function() {
                 var result = localStorage.key(n);
 
+                // Remove the prefix from the key, if a key is found.
+                if (result) {
+                    result = result.substring(keyPrefix.length);
+                }
+
                 if (callback) {
                     callback(result);
                 }
-
                 resolve(result);
             });
         });
@@ -103,7 +123,7 @@
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                localStorage.removeItem(key);
+                localStorage.removeItem(keyPrefix + key);
 
                 if (callback) {
                     callback();
@@ -136,7 +156,7 @@
                     reject(e);
                 }
 
-                localStorage.setItem(key, value);
+                localStorage.setItem(keyPrefix + key, value);
 
                 if (callback) {
                     callback(originalValue);
