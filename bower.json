@@ -2,8 +2,7 @@
     "name": "localforage",
     "version": "0.1.1",
     "main": [
-        "dist/localforage.min.js",
-        "dist/backbone.localforage.min.js"
+        "dist/localforage.min.js"
     ],
     "ignore": [
         ".travis.yml",
