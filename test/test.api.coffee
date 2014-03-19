@@ -13,7 +13,13 @@
 # `evaluate()` calls is a helper class injected into the test DOM by CasperJS.
 # You can read more about it here:
 # http://docs.casperjs.org/en/latest/faq.html#what-s-this-mysterious-utils-object
-casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
+#
+# Note the number of tests constant: we run this to make sure all async tests
+# are run and also that we're keeping track of skipped tests. Be sure to
+# increment the number when you add tests.
+NUMBER_OF_TESTS = 41
+
+casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test) ->
   casper.start "#{casper.TEST_URL}#{casper.URL}.html", ->
     test.info "Test API using callbacks"
 
@@ -402,8 +408,8 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
   # Safari).
   #
   # TODO: Find out why.
-  unless casper.ENGINE is 'phantomjs'
-    casper.then ->
+  casper.then ->
+    unless casper.ENGINE is 'phantomjs'
       @evaluate ->
         request = new XMLHttpRequest()
 
@@ -432,8 +438,8 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
         test.assertEval ->
           window._blob.size is window._blobFromLF.size
         , 'Blob can be saved and retrieved properly'
-  else
-    test.info "Skipping Blob tests in PhantomJS..."
+    else
+      test.skip 2, "Skipping Blob tests in PhantomJS"
 
   # Int8Array
   casper.then ->
