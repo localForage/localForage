@@ -16,7 +16,7 @@ casper.ENGINE = (->
 
 # Assign our test URL; it should be running a simple express server with our
 # test HTML pages.
-casper.TEST_URL = 'http://localhost:8181/'
+casper.TEST_URL = 'http://localhost:8181/test/'
 
 casper.test.begin "Test setup", 1, (test) ->
   casper.start casper.TEST_URL, ->

@@ -4,12 +4,6 @@
     http://mozilla.github.io/localForage
     (c) 2013-2014 Mozilla, Apache License 2.0
 */
-// ES6 Promises Polyfill
-// Version 0.1.1
-// https://github.com/jakearchibald/ES6-Promises
-// http://s3.amazonaws.com/es6-promises/promise-0.1.1.js
-// MIT license
-// (https://github.com/jakearchibald/ES6-Promises/blob/master/LICENSE)
 (function() {
 var define, requireModule, require, requirejs;
 
@@ -783,8 +777,7 @@ define("promise/utils",
     __exports__.now = now;
   });
 requireModule('promise/polyfill').polyfill();
-}());
-(function() {
+}());(function() {
     'use strict';
 
     // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
