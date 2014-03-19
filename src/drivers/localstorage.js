@@ -5,8 +5,10 @@
 (function() {
     'use strict';
 
-    var prefixKey =  '';
-    var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0' };
+    var keyPrefix = '';
+    var dbInfo = {
+        name: 'localforage'
+    };
     var Promise = window.Promise;
     var localStorage = null;
 
@@ -23,17 +25,18 @@
         return;
     }
 
-    // We can give optionnal options to set dbInfos
+    // Config the localStorage backend, using options set in
+    // window.localForageConfig.
     function _initStorage(options) {
         if (options) {
-            for (var i in dbInfos) {
-                if (options[i]) {
-                    dbInfos[i] = options[i];
+            for (var i in dbInfo) {
+                if (options[i] !== undefined) {
+                    dbInfo[i] = options[i];
                 }
             }
         }
 
-        prefixKey = dbInfos.dbName + '/';
+        keyPrefix = dbInfo.name + '/';
 
         return Promise.resolve();
     }
@@ -61,7 +64,7 @@
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 try {
-                    var result = localStorage.getItem(prefixKey + key);
+                    var result = localStorage.getItem(keyPrefix + key);
 
                     // If a result was found, parse it from serialized JSON into a
                     // JS object. If result isn't truthy, the key is likely
@@ -88,9 +91,9 @@
             localforage.ready().then(function() {
                 var result = localStorage.key(n);
 
-                // Remove the prefix if exists
-                if (result != null) {
-                    result = result.substring(prefixKey.length);
+                // Remove the prefix from the key, if a key is found.
+                if (result) {
+                    result = result.substring(keyPrefix.length);
                 }
 
                 if (callback) {
@@ -120,7 +123,7 @@
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                localStorage.removeItem(prefixKey + key);
+                localStorage.removeItem(keyPrefix + key);
 
                 if (callback) {
                     callback();
@@ -153,7 +156,7 @@
                     reject(e);
                 }
 
-                localStorage.setItem(prefixKey + key, value);
+                localStorage.setItem(keyPrefix + key, value);
 
                 if (callback) {
                     callback(originalValue);

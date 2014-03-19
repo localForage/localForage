@@ -791,7 +791,11 @@ requireModule('promise/polyfill').polyfill();
 
     var Promise = window.Promise;
     var db = null;
-    var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: 1 };
+    var dbInfo = {
+        name: 'localforage',
+        storeName: 'keyvaluepairs',
+        version: 1
+    };
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
     var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
@@ -803,24 +807,25 @@ requireModule('promise/polyfill').polyfill();
         return;
     }
 
-    // We can give optionnal options to set dbInfos
+    // Open the IndexedDB database (automatically creates one if one didn't
+    // previously exist), using any options set in window.localForageConfig.
     function _initStorage(options) {
         if (options) {
-            for (var i in dbInfos) {
-                if (options[i]) {
-                    dbInfos[i] = options[i];
+            for (var i in dbInfo) {
+                if (options[i] !== undefined) {
+                    dbInfo[i] = options[i];
                 }
             }
         }
 
         return new Promise(function(resolve, reject) {
-            var openreq = indexedDB.open(dbInfos.dbName, dbInfos.dbVersion);
+            var openreq = indexedDB.open(dbInfo.name, dbInfo.version);
             openreq.onerror = function withStoreOnError() {
                 reject(openreq.error.name);
             };
             openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
                 // First time setup: create an empty object store
-                openreq.result.createObjectStore(dbInfos.storeName);
+                openreq.result.createObjectStore(dbInfo.storeName);
             };
             openreq.onsuccess = function withStoreOnSuccess() {
                 db = openreq.result;
@@ -832,7 +837,7 @@ requireModule('promise/polyfill').polyfill();
     function getItem(key, callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                var store = db.transaction(dbInfos.storeName, 'readonly').objectStore(dbInfos.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
                 var req = store.get(key);
                 req.onsuccess = function getItemOnSuccess() {
                     var value = req.result;
@@ -855,7 +860,7 @@ requireModule('promise/polyfill').polyfill();
     function setItem(key, value, callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                var store = db.transaction(dbInfos.storeName, 'readwrite').objectStore(dbInfos.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
 
                 // Cast to undefined so the value passed to callback/promise is
                 // the same as what one would get out of `getItem()` later.
@@ -884,7 +889,7 @@ requireModule('promise/polyfill').polyfill();
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                var store = db.transaction(dbInfos.storeName, 'readwrite').objectStore(dbInfos.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
 
                 // We use `['delete']` instead of `.delete` because IE 8 will
                 // throw a fit if it sees the reserved word "delete" in this
@@ -912,7 +917,7 @@ requireModule('promise/polyfill').polyfill();
     function clear(callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                var store = db.transaction(dbInfos.storeName, 'readwrite').objectStore(dbInfos.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
                 var req = store.clear();
                 req.onsuccess = function clearOnSuccess() {
                     if (callback) {
@@ -931,7 +936,7 @@ requireModule('promise/polyfill').polyfill();
     function length(callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                var store = db.transaction(dbInfos.storeName, 'readonly').objectStore(dbInfos.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
                 var req = store.count();
                 req.onsuccess = function lengthOnSuccess() {
                     if (callback) {
@@ -960,7 +965,7 @@ requireModule('promise/polyfill').polyfill();
             }
 
             localforage.ready().then(function() {
-                var store = db.transaction(dbInfos.storeName, 'readonly').objectStore(dbInfos.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
 
                 var advanced = false;
                 var req = store.openCursor();
@@ -1034,8 +1039,10 @@ requireModule('promise/polyfill').polyfill();
 (function() {
     'use strict';
 
-    var prefixKey =  '';
-    var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0' };
+    var keyPrefix = '';
+    var dbInfo = {
+        name: 'localforage'
+    };
     var Promise = window.Promise;
     var localStorage = null;
 
@@ -1052,17 +1059,18 @@ requireModule('promise/polyfill').polyfill();
         return;
     }
 
-    // We can give optionnal options to set dbInfos
+    // Config the localStorage backend, using options set in
+    // window.localForageConfig.
     function _initStorage(options) {
         if (options) {
-            for (var i in dbInfos) {
-                if (options[i]) {
-                    dbInfos[i] = options[i];
+            for (var i in dbInfo) {
+                if (options[i] !== undefined) {
+                    dbInfo[i] = options[i];
                 }
             }
         }
 
-        prefixKey = dbInfos.dbName + '/';
+        keyPrefix = dbInfo.name + '/';
 
         return Promise.resolve();
     }
@@ -1090,7 +1098,7 @@ requireModule('promise/polyfill').polyfill();
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 try {
-                    var result = localStorage.getItem(prefixKey + key);
+                    var result = localStorage.getItem(keyPrefix + key);
 
                     // If a result was found, parse it from serialized JSON into a
                     // JS object. If result isn't truthy, the key is likely
@@ -1117,9 +1125,9 @@ requireModule('promise/polyfill').polyfill();
             localforage.ready().then(function() {
                 var result = localStorage.key(n);
 
-                // Remove the prefix if exists
-                if (result != null) {
-                    result = result.substring(prefixKey.length);
+                // Remove the prefix from the key, if a key is found.
+                if (result) {
+                    result = result.substring(keyPrefix.length);
                 }
 
                 if (callback) {
@@ -1149,7 +1157,7 @@ requireModule('promise/polyfill').polyfill();
     function removeItem(key, callback) {
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
-                localStorage.removeItem(prefixKey + key);
+                localStorage.removeItem(keyPrefix + key);
 
                 if (callback) {
                     callback();
@@ -1182,7 +1190,7 @@ requireModule('promise/polyfill').polyfill();
                     reject(e);
                 }
 
-                localStorage.setItem(prefixKey + key, value);
+                localStorage.setItem(keyPrefix + key, value);
 
                 if (callback) {
                     callback(originalValue);
@@ -1227,34 +1235,38 @@ requireModule('promise/polyfill').polyfill();
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
     var Promise = window.Promise;
     var db = null;
-    var dbInfos = { dbName: 'localforage', storeName: 'keyvaluepairs', dbVersion: '1.0', dbDescription: ' ' };
+    var dbInfo = {
+        description: '',
+        name: 'localforage',
+        storeName: 'keyvaluepairs',
+        version: '1.0'
+    };
 
     // If WebSQL methods aren't available, we can stop now.
     if (!window.openDatabase) {
         return;
     }
 
-    // We can give optionnal options to set dbInfos
+    // Open the WebSQL database (automatically creates one if one didn't
+    // previously exist), using any options set in window.localForageConfig.
     function _initStorage(options) {
         if (options) {
-            for (var i in dbInfos) {
-                if (options[i]) {
-                    dbInfos[i] = options[i].toString();
+            for (var i in dbInfo) {
+                if (options[i] !== undefined) {
+                    dbInfo[i] = typeof(options[i]) !== 'string' ? options[i].toString() : options[i];
                 }
             }
         }
 
         return new Promise(function(resolve, reject) {
-            // Open the database; the openDatabase API will automatically create it for
-            // us if it doesn't exist.
-            db = window.openDatabase(dbInfos.dbName, dbInfos.dbVersion, dbInfos.dbDescription, DB_SIZE);
+            // Open the database; the openDatabase API will automatically
+            // create it for us if it doesn't exist.
+            db = window.openDatabase(dbInfo.name, dbInfo.version,
+                                     dbInfo.description, DB_SIZE);
 
             // Create our key/value table if it doesn't exist.
-            // TODO: Technically I can imagine this being as race condition, as I'm not
-            // positive on the WebSQL API enough to be sure that other transactions
-            // won't be run before this? But I assume not.
             db.transaction(function (t) {
-                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfos.storeName + ' (id INTEGER PRIMARY KEY, key unique, value)', [], function(t, results) {
+                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName + ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
                     resolve();
                 }, null);
             });
@@ -1265,7 +1277,7 @@ requireModule('promise/polyfill').polyfill();
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('SELECT * FROM ' + dbInfos.storeName + ' WHERE key = ? LIMIT 1', [key], function (t, results) {
+                    t.executeSql('SELECT * FROM ' + dbInfo.storeName + ' WHERE key = ? LIMIT 1', [key], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).value : null;
 
                         // Check to see if this is serialized content we need to
@@ -1313,7 +1325,7 @@ requireModule('promise/polyfill').polyfill();
                 }
 
                 db.transaction(function (t) {
-                    t.executeSql('INSERT OR REPLACE INTO ' + dbInfos.storeName + ' (key, value) VALUES (?, ?)', [key, valueToSave], function() {
+                    t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName + ' (key, value) VALUES (?, ?)', [key, valueToSave], function() {
                         if (callback) {
                             callback(value);
                         }
@@ -1329,7 +1341,7 @@ requireModule('promise/polyfill').polyfill();
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('DELETE FROM ' + dbInfos.storeName + ' WHERE key = ?', [key], function() {
+                    t.executeSql('DELETE FROM ' + dbInfo.storeName + ' WHERE key = ?', [key], function() {
                         if (callback) {
                             callback();
                         }
@@ -1347,7 +1359,7 @@ requireModule('promise/polyfill').polyfill();
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('DELETE FROM ' + dbInfos.storeName, [], function(t, results) {
+                    t.executeSql('DELETE FROM ' + dbInfo.storeName, [], function(t, results) {
                         if (callback) {
                             callback();
                         }
@@ -1366,7 +1378,7 @@ requireModule('promise/polyfill').polyfill();
             localforage.ready().then(function() {
                 db.transaction(function (t) {
                     // Ahhh, SQL makes this one soooooo easy.
-                    t.executeSql('SELECT COUNT(key) as c FROM ' + dbInfos.storeName, [], function (t, results) {
+                    t.executeSql('SELECT COUNT(key) as c FROM ' + dbInfo.storeName, [], function (t, results) {
                         var result = results.rows.item(0).c;
 
                         if (callback) {
@@ -1391,7 +1403,7 @@ requireModule('promise/polyfill').polyfill();
         return new Promise(function(resolve, reject) {
             localforage.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('SELECT key FROM ' + dbInfos.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                    t.executeSql('SELECT key FROM ' + dbInfo.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;
 
                         if (callback) {
