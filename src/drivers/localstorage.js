@@ -216,6 +216,25 @@
         }
     }
 
+    // Converts a buffer to a string to store, serialized, in the backend
+    // storage library.
+    function _bufferToString(buffer) {
+        var str = '';
+        var uint16Array = new Uint16Array(buffer);
+
+        try {
+            str = String.fromCharCode.apply(null, uint16Array);
+        } catch (e) {
+            // This is a fallback implementation in case the first one does
+            // not work. This is required to get the phantomjs passing...
+            for (var i = 0; i < uint16Array.length; i++) {
+                str += String.fromCharCode(uint16Array[i]);
+            }
+        }
+
+        return str;
+    }
+
     // Serialize a value, afterwards executing a callback (which usually
     // instructs the `setItem()` callback/promise to be executed). This is how
     // we store binary data with localStorage.
@@ -265,18 +284,7 @@
                 }
             }
 
-            var str = '';
-            var uint16Array = new Uint16Array(buffer);
-
-            try {
-                str = String.fromCharCode.apply(null, uint16Array);
-            } catch (e) {
-                // This is a fallback implementation in case the first one does
-                // not work. This is required to get the phantomjs passing...
-                for (var i = 0; i < uint16Array.length; i++) {
-                    str += String.fromCharCode(uint16Array[i]);
-                }
-            }
+            var str = _bufferToString(buffer);
 
             callback(null, marker + str);
         } else if (valueString === "[object Blob]") {
@@ -284,18 +292,7 @@
             var fileReader = new FileReader();
 
             fileReader.onload = function() {
-                var str = '';
-                var uint16Array = new Uint16Array(this.result);
-
-                try {
-                    str = String.fromCharCode.apply(null, uint16Array);
-                } catch (e) {
-                    // This is a fallback implementation in case the first one does
-                    // not work. This is required to get the phantomjs passing...
-                    for (var i = 0; i < uint16Array.length; i++) {
-                        str += String.fromCharCode(uint16Array[i]);
-                    }
-                }
+                var str = _bufferToString(this.result);
 
                 callback(null, SERIALIZED_MARKER + TYPE_BLOB + str);
             };
