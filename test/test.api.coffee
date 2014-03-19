@@ -195,6 +195,23 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
         window._testLength > 0
       , 'Length is greater than zero after values are saved'
 
+  # Test against https://github.com/mozilla/localForage/issues/63
+  casper.then ->
+    @evaluate ->
+      localforage.setItem 'naughtyValue', "'__lfsc__:hello world", ->
+        __utils__.findOne('.status').id = 'serialized-key-set'
+
+    @waitForSelector "#serialized-key-set", ->
+      @evaluate ->
+        localforage.getItem 'naughtyValue', (naughtyValue) ->
+          window._badValue = naughtyValue
+          __utils__.findOne('.status').id = 'serialized-key-get'
+
+    @waitForSelector "#serialized-key-get", ->
+      test.assertEval ->
+        window._badValue is "'__lfsc__:hello world"
+      , "Values with the serialized key marker should be saved and retrieved properly."
+
   casper.then ->
     @evaluate ->
       localforage.clear ->
