@@ -35,7 +35,7 @@
         WEBSQL: 'webSQLStorage',
 
         driver: function() {
-            return localForage._driver || null;
+            return this._driver || null;
         },
 
         _ready: Promise.reject(new Error("setDriver() wasn't called")),

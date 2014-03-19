@@ -49,9 +49,9 @@
     }
 
     function getItem(key, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
                 var req = store.get(key);
                 req.onsuccess = function getItemOnSuccess() {
@@ -73,9 +73,9 @@
     }
 
     function setItem(key, value, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
 
                 // Cast to undefined so the value passed to callback/promise is
@@ -103,9 +103,9 @@
     }
 
     function removeItem(key, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
 
                 // We use `['delete']` instead of `.delete` because IE 8 will
@@ -132,9 +132,9 @@
     }
 
     function clear(callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
                 var req = store.clear();
                 req.onsuccess = function clearOnSuccess() {
@@ -152,9 +152,9 @@
     }
 
     function length(callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
                 var req = store.count();
                 req.onsuccess = function lengthOnSuccess() {
@@ -172,7 +172,7 @@
     }
 
     function key(n, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
             if (n < 0) {
                 if (callback) {
@@ -184,7 +184,7 @@
                 return;
             }
 
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
 
                 var advanced = false;

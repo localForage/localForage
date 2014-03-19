@@ -49,9 +49,9 @@
     }
 
     function getItem(key, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('SELECT * FROM ' + dbInfo.storeName + ' WHERE key = ? LIMIT 1', [key], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).value : null;
@@ -78,9 +78,9 @@
     }
 
     function setItem(key, value, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 // The localStorage API doesn't return undefined values in an
                 // "expected" way, so undefined is always cast to null in all
                 // drivers. See: https://github.com/mozilla/localForage/pull/42
@@ -115,9 +115,9 @@
     }
 
     function removeItem(key, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName + ' WHERE key = ?', [key], function() {
                         if (callback) {
@@ -134,9 +134,9 @@
     // Deletes every item in the table.
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName, [], function(t, results) {
                         if (callback) {
@@ -153,9 +153,9 @@
     // Does a simple `COUNT(key)` to get the number of items stored in
     // localForage.
     function length(callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 db.transaction(function (t) {
                     // Ahhh, SQL makes this one soooooo easy.
                     t.executeSql('SELECT COUNT(key) as c FROM ' + dbInfo.storeName, [], function (t, results) {
@@ -180,9 +180,9 @@
     // procedure for the `setItem()` SQL would solve this problem?
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;

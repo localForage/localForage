@@ -835,9 +835,9 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function getItem(key, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
                 var req = store.get(key);
                 req.onsuccess = function getItemOnSuccess() {
@@ -859,9 +859,9 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function setItem(key, value, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
 
                 // Cast to undefined so the value passed to callback/promise is
@@ -889,9 +889,9 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function removeItem(key, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
 
                 // We use `['delete']` instead of `.delete` because IE 8 will
@@ -918,9 +918,9 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function clear(callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
                 var req = store.clear();
                 req.onsuccess = function clearOnSuccess() {
@@ -938,9 +938,9 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function length(callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
                 var req = store.count();
                 req.onsuccess = function lengthOnSuccess() {
@@ -958,7 +958,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function key(n, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
             if (n < 0) {
                 if (callback) {
@@ -970,7 +970,7 @@ requireModule('promise/polyfill').polyfill();
                 return;
             }
 
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
 
                 var advanced = false;
@@ -1084,9 +1084,9 @@ requireModule('promise/polyfill').polyfill();
     // Remove all keys from the datastore, effectively destroying all data in
     // the app's key/value store!
     function clear(callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 localStorage.clear();
 
                 if (callback) {
@@ -1102,9 +1102,9 @@ requireModule('promise/polyfill').polyfill();
     // library in Gaia, we don't modify return values at all. If a key's value
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 try {
                     var result = localStorage.getItem(keyPrefix + key);
 
@@ -1129,9 +1129,9 @@ requireModule('promise/polyfill').polyfill();
 
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var result = localStorage.key(n);
 
                 // Remove the prefix from the key, if a key is found.
@@ -1149,9 +1149,9 @@ requireModule('promise/polyfill').polyfill();
 
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 var result = localStorage.length;
 
                 if (callback) {
@@ -1165,9 +1165,9 @@ requireModule('promise/polyfill').polyfill();
 
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 localStorage.removeItem(keyPrefix + key);
 
                 if (callback) {
@@ -1184,9 +1184,9 @@ requireModule('promise/polyfill').polyfill();
     // in case you want to operate on that value only after you're sure it
     // saved, or something like that.
     function setItem(key, value, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 // Convert undefined values to null.
                 // https://github.com/mozilla/localForage/pull/42
                 if (value === undefined) {
@@ -1286,9 +1286,9 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function getItem(key, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('SELECT * FROM ' + dbInfo.storeName + ' WHERE key = ? LIMIT 1', [key], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).value : null;
@@ -1315,9 +1315,9 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function setItem(key, value, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 // The localStorage API doesn't return undefined values in an
                 // "expected" way, so undefined is always cast to null in all
                 // drivers. See: https://github.com/mozilla/localForage/pull/42
@@ -1352,9 +1352,9 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function removeItem(key, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName + ' WHERE key = ?', [key], function() {
                         if (callback) {
@@ -1371,9 +1371,9 @@ requireModule('promise/polyfill').polyfill();
     // Deletes every item in the table.
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName, [], function(t, results) {
                         if (callback) {
@@ -1390,9 +1390,9 @@ requireModule('promise/polyfill').polyfill();
     // Does a simple `COUNT(key)` to get the number of items stored in
     // localForage.
     function length(callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 db.transaction(function (t) {
                     // Ahhh, SQL makes this one soooooo easy.
                     t.executeSql('SELECT COUNT(key) as c FROM ' + dbInfo.storeName, [], function (t, results) {
@@ -1417,9 +1417,9 @@ requireModule('promise/polyfill').polyfill();
     // procedure for the `setItem()` SQL would solve this problem?
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
-        var _localforage = this;
+        var _this = this;
         return new Promise(function(resolve, reject) {
-            _localforage.ready().then(function() {
+            _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;
@@ -1493,7 +1493,7 @@ requireModule('promise/polyfill').polyfill();
         WEBSQL: 'webSQLStorage',
 
         driver: function() {
-            return localForage._driver || null;
+            return this._driver || null;
         },
 
         _ready: Promise.reject(new Error("setDriver() wasn't called")),
