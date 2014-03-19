@@ -374,7 +374,7 @@
 
             fileReader.onload = function() {
                 // base64-arraybuffer
-                var bytes = new Uint8Array(this.result);
+                var bytes = new Uint8Array([this.result]);
                 var i;
                 var base64String = '';
 
