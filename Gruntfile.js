@@ -61,7 +61,8 @@ module.exports = exports = function(grunt) {
             },
             localforage: {
                 src: [
-                    'vendor/promise.js',
+                    // https://github.com/jakearchibald/es6-promise
+                    'bower_components/es6-promise/promise.js',
                     'src/drivers/**/*.js',
                     'src/localforage.js'
                 ],

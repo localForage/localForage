@@ -3,7 +3,8 @@ env:
 addons:
   firefox: "27.0"
 before_install:
-  - npm install -g grunt-cli
+  - npm install -g bower grunt-cli
+  - bower install
 before_script:
   - "sh -e /etc/init.d/xvfb start"
   - "echo 'Installing Slimer'"
