@@ -5,7 +5,7 @@ localForage's lifetime.
 
 ## [Version 0.1.1](https://github.com/mozilla/localForage/releases/tag/0.1.1)
 
-* Added config options to allow users to set their own database names, etc. #100
+* Added config options to allow users to set their own database names, etc. ([#100](https://github.com/mozilla/localForage/pull/100))
 
 ---
 
