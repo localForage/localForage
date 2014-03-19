@@ -353,50 +353,70 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
     test.info "Testing binary data types"
 
     @evaluate ->
-      array = new ArrayBuffer(16)
-      localforage.setItem('ArrayBuffer', array).then (writeValue) ->
-        localforage.getItem('ArrayBuffer').then (readValue) ->
-          window._testValue = readValue
-          __utils__.findOne('.status').id = 'ArrayBuffer'
+      request = new XMLHttpRequest()
 
-    @waitForSelector '#ArrayBuffer', ->
+      # Let's get the first user's photo.
+      request.open "GET", "/photo.jpg", true
+      request.responseType = "arraybuffer"
+
+      # When the AJAX state changes, save the photo locally.
+      request.addEventListener "readystatechange", ->
+        if request.readyState == 4 # readyState DONE
+          # Refernce ArrayBuffer and Blob data.
+          window._ab = request.response
+
+          localforage.setItem "arrayBuffer", request.response, ->
+            localforage.getItem "arrayBuffer", (ab) ->
+              window._abFromLF = ab
+              __utils__.findOne('.status').id = 'arraybuffer'
+
+      request.send()
+
+    @waitForSelector '#arraybuffer', ->
       test.assertEval ->
-        window._testValue.toString() is '[object ArrayBuffer]'
-      , 'setItem() and getItem() for ArrayBuffer returns value of type ArrayBuffer'
+        window._abFromLF.toString() is '[object ArrayBuffer]'
+      , 'getItem() for ArrayBuffer returns value of type ArrayBuffer'
 
       test.assertEval ->
-        window._testValue.byteLength is 16
+        window._abFromLF.byteLength is window._ab.byteLength
       , 'ArrayBuffer can be saved and retrieved properly'
 
-  # Blob Data
-  # casper.then ->
-  #   @evaluate ->
-  #     request = new XMLHttpRequest()
+  # Blob Data (these tests fail very specifically in PhantomJS, but not in
+  # Safari).
+  #
+  # TODO: Find out why.
+  unless casper.ENGINE is 'phantomjs'
+    casper.then ->
+      @evaluate ->
+        request = new XMLHttpRequest()
 
-  #     # Let's get the first user's photo.
-  #     request.open "GET", "/photo.jpg", true
-  #     request.responseType = "arraybuffer"
+        # Let's get the first user's photo.
+        request.open "GET", "/photo.jpg", true
+        request.responseType = "arraybuffer"
 
-  #     # When the AJAX state changes, save the photo locally.
-  #     request.addEventListener "readystatechange", ->
-  #       if (request.readyState == 4) # readyState DONE
-  #         # Store Blob data.
-  #         blob = new Blob([request.response])
-  #         __utils__.echo blob
-  #         localforage.setItem "blobData", blob, (writeValue) ->
-  #           __utils__.echo writeValue
-  #           localforage.getItem "blobData", (readValue) ->
-  #             # Photo has been saved, do whatever happens next!
-  #             window._testValue = readValue
-  #             __utils__.echo readValue
-  #             __utils__.findOne('.status').id = 'Blob'
+        # When the AJAX state changes, save the photo locally.
+        request.addEventListener "readystatechange", ->
+          if request.readyState == 4 # readyState DONE
+            # Refernce ArrayBuffer and Blob data.
+            window._blob = new Blob([request.response])
 
-  #     request.send()
+            localforage.setItem "blob", window._blob, ->
+              localforage.getItem "blob", (blob) ->
+                window._blobFromLF = blob
+                __utils__.findOne('.status').id = 'blob'
 
-  #   @waitForSelector '#Blob', ->
-  #     test.assertEval ->
-  #       window._testValue.toString() is '[object Blob]'
-  #     , 'setItem() and getItem() for Blob returns value of type Blob'
+        request.send()
+
+      @waitForSelector '#blob', ->
+        test.assertEval ->
+          window._blob.toString() is '[object Blob]'
+        , 'getItem() for Blob returns value of type Blob'
+
+        test.assertEval ->
+          window._blob.size is window._blobFromLF.size
+        , 'Blob can be saved and retrieved properly'
+  else
+    test.info "Skipping Blob tests in PhantomJS..."
 
   # Int8Array
   casper.then ->
