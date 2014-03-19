@@ -1126,6 +1126,10 @@ requireModule('promise/polyfill').polyfill();
                         result = _deserialize(result);
                     }
 
+                    if (callback) {
+                        callback(result);
+                    }
+
                     resolve(result);
                 } catch (e) {
                     reject(e);
@@ -1521,7 +1525,7 @@ requireModule('promise/polyfill').polyfill();
                         reject(error);
                     } else {
                         db.transaction(function (t) {
-                            t.executeSql('INSERT OR REPLACE INTO localforage (key, value) VALUES (?, ?)', [key, value], function() {
+                            t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName + ' (key, value) VALUES (?, ?)', [key, value], function() {
                                 if (callback) {
                                     callback(originalValue);
                                 }

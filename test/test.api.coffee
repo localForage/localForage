@@ -369,33 +369,34 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
       , 'ArrayBuffer can be saved and retrieved properly'
 
   # Blob Data
-  casper.then ->
-    @evaluate ->
-      request = new XMLHttpRequest()
+  # casper.then ->
+  #   @evaluate ->
+  #     request = new XMLHttpRequest()
 
-      # Let's get the first user's photo.
-      request.open "GET", "/photo.jpg", true
-      request.responseType = "arraybuffer"
+  #     # Let's get the first user's photo.
+  #     request.open "GET", "/photo.jpg", true
+  #     request.responseType = "arraybuffer"
 
-      # When the AJAX state changes, save the photo locally.
-      request.addEventListener "readystatechange", ->
-        if (request.readyState == 4) # readyState DONE
-          # Store Blob data.
-          blob = new Blob([request.response])
-          localforage.setItem "blobData", blob, (writeValue) ->
-            __utils__.echo readValue
-            localforage.getItem "blobData", (readValue) ->
-              # Photo has been saved, do whatever happens next!
-              window._testValue = readValue
-              __utils__.echo readValue
-              __utils__.findOne('.status').id = 'Blob'
+  #     # When the AJAX state changes, save the photo locally.
+  #     request.addEventListener "readystatechange", ->
+  #       if (request.readyState == 4) # readyState DONE
+  #         # Store Blob data.
+  #         blob = new Blob([request.response])
+  #         __utils__.echo blob
+  #         localforage.setItem "blobData", blob, (writeValue) ->
+  #           __utils__.echo writeValue
+  #           localforage.getItem "blobData", (readValue) ->
+  #             # Photo has been saved, do whatever happens next!
+  #             window._testValue = readValue
+  #             __utils__.echo readValue
+  #             __utils__.findOne('.status').id = 'Blob'
 
-      request.send()
+  #     request.send()
 
-    @waitForSelector '#Blob', ->
-      test.assertEval ->
-        window._testValue.toString() is '[object Blob]'
-      , 'setItem() and getItem() for Blob returns value of type Blob'
+  #   @waitForSelector '#Blob', ->
+  #     test.assertEval ->
+  #       window._testValue.toString() is '[object Blob]'
+  #     , 'setItem() and getItem() for Blob returns value of type Blob'
 
   # Int8Array
   casper.then ->

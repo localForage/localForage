@@ -93,6 +93,10 @@
                         result = _deserialize(result);
                     }
 
+                    if (callback) {
+                        callback(result);
+                    }
+
                     resolve(result);
                 } catch (e) {
                     reject(e);
