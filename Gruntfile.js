@@ -1,6 +1,7 @@
 /*global exports:true, require:true */
 module.exports = exports = function(grunt) {
     'use strict';
+
     grunt.initConfig({
         casper: {
             options: {
@@ -86,18 +87,14 @@ module.exports = exports = function(grunt) {
             }
         },
         watch: {
-            concat: {
+            build: {
                 files: ['src/*.js', 'src/**/*.js'],
-                tasks: ['concat']
+                tasks: ['build']
             },
             grunt: {
                 files: [
                     'Gruntfile.js'
                 ]
-            },
-            test: {
-                files: ['src/*.js', 'src/**/*.js'],
-                tasks: ['test']
             }
         }
     });
