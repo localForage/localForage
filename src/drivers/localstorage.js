@@ -44,8 +44,9 @@
     // Remove all keys from the datastore, effectively destroying all data in
     // the app's key/value store!
     function clear(callback) {
+        var _localforage = this;
         return new Promise(function(resolve, reject) {
-            localforage.ready().then(function() {
+            _localforage.ready().then(function() {
                 localStorage.clear();
 
                 if (callback) {
@@ -61,8 +62,9 @@
     // library in Gaia, we don't modify return values at all. If a key's value
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
+        var _localforage = this;
         return new Promise(function(resolve, reject) {
-            localforage.ready().then(function() {
+            _localforage.ready().then(function() {
                 try {
                     var result = localStorage.getItem(keyPrefix + key);
 
@@ -87,8 +89,9 @@
 
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
+        var _localforage = this;
         return new Promise(function(resolve, reject) {
-            localforage.ready().then(function() {
+            _localforage.ready().then(function() {
                 var result = localStorage.key(n);
 
                 // Remove the prefix from the key, if a key is found.
@@ -106,8 +109,9 @@
 
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
+        var _localforage = this;
         return new Promise(function(resolve, reject) {
-            localforage.ready().then(function() {
+            _localforage.ready().then(function() {
                 var result = localStorage.length;
 
                 if (callback) {
@@ -121,8 +125,9 @@
 
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
+        var _localforage = this;
         return new Promise(function(resolve, reject) {
-            localforage.ready().then(function() {
+            _localforage.ready().then(function() {
                 localStorage.removeItem(keyPrefix + key);
 
                 if (callback) {
@@ -139,8 +144,9 @@
     // in case you want to operate on that value only after you're sure it
     // saved, or something like that.
     function setItem(key, value, callback) {
+        var _localforage = this;
         return new Promise(function(resolve, reject) {
-            localforage.ready().then(function() {
+            _localforage.ready().then(function() {
                 // Convert undefined values to null.
                 // https://github.com/mozilla/localForage/pull/42
                 if (value === undefined) {
