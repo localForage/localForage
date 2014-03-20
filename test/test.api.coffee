@@ -13,7 +13,13 @@
 # `evaluate()` calls is a helper class injected into the test DOM by CasperJS.
 # You can read more about it here:
 # http://docs.casperjs.org/en/latest/faq.html#what-s-this-mysterious-utils-object
-casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
+#
+# Note the number of tests constant: we run this to make sure all async tests
+# are run and also that we're keeping track of skipped tests. Be sure to
+# increment the number when you add tests.
+NUMBER_OF_TESTS = 41
+
+casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test) ->
   casper.start "#{casper.TEST_URL}#{casper.URL}.html", ->
     test.info "Test API using callbacks"
 
@@ -195,6 +201,23 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
         window._testLength > 0
       , 'Length is greater than zero after values are saved'
 
+  # Test against https://github.com/mozilla/localForage/issues/63
+  casper.then ->
+    @evaluate ->
+      localforage.setItem 'naughtyValue', "'__lfsc__:hello world", ->
+        __utils__.findOne('.status').id = 'serialized-key-set'
+
+    @waitForSelector "#serialized-key-set", ->
+      @evaluate ->
+        localforage.getItem 'naughtyValue', (naughtyValue) ->
+          window._badValue = naughtyValue
+          __utils__.findOne('.status').id = 'serialized-key-get'
+
+    @waitForSelector "#serialized-key-get", ->
+      test.assertEval ->
+        window._badValue is "'__lfsc__:hello world"
+      , "Values with the serialized key marker should be saved and retrieved properly."
+
   casper.then ->
     @evaluate ->
       localforage.clear ->
@@ -214,9 +237,9 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
     @evaluate ->
       localforage.setItem 'undefined', undefined, (value) ->
         window._testValue = value
-        __utils__.findOne('.status').id = 'undefined-test'
+        __utils__.findOne('.status').id = 'undefined-test-callback'
 
-    @waitForSelector '#undefined-test', ->
+    @waitForSelector '#undefined-test-callback', ->
       test.assertEval ->
         window._testValue is null and
         window._testValue isnt undefined
@@ -346,6 +369,227 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", (test) ->
         window._testValue is null and
         window._testValue isnt undefined
       , 'setItem() returns null for undefined'
+
+  # ArrayBuffer
+  casper.then ->
+    # Test that all types of binary data are saved and retrieved properly.
+    test.info "Testing binary data types"
+
+    @evaluate ->
+      request = new XMLHttpRequest()
+
+      # Let's get the first user's photo.
+      request.open "GET", "/photo.jpg", true
+      request.responseType = "arraybuffer"
+
+      # When the AJAX state changes, save the photo locally.
+      request.addEventListener "readystatechange", ->
+        if request.readyState == 4 # readyState DONE
+          # Refernce ArrayBuffer and Blob data.
+          window._ab = request.response
+
+          localforage.setItem "arrayBuffer", request.response, ->
+            localforage.getItem "arrayBuffer", (ab) ->
+              window._abFromLF = ab
+              __utils__.findOne('.status').id = 'arraybuffer'
+
+      request.send()
+
+    @waitForSelector '#arraybuffer', ->
+      test.assertEval ->
+        window._abFromLF.toString() is '[object ArrayBuffer]'
+      , 'getItem() for ArrayBuffer returns value of type ArrayBuffer'
+
+      test.assertEval ->
+        window._abFromLF.byteLength is window._ab.byteLength
+      , 'ArrayBuffer can be saved and retrieved properly'
+
+  # Blob Data (these tests fail very specifically in PhantomJS, but not in
+  # Safari).
+  #
+  # TODO: Find out why.
+  casper.then ->
+    unless casper.ENGINE is 'phantomjs'
+      @evaluate ->
+        request = new XMLHttpRequest()
+
+        # Let's get the first user's photo.
+        request.open "GET", "/photo.jpg", true
+        request.responseType = "arraybuffer"
+
+        # When the AJAX state changes, save the photo locally.
+        request.addEventListener "readystatechange", ->
+          if request.readyState == 4 # readyState DONE
+            # Refernce ArrayBuffer and Blob data.
+            window._blob = new Blob([request.response])
+
+            localforage.setItem "blob", window._blob, ->
+              localforage.getItem "blob", (blob) ->
+                window._blobFromLF = blob
+                __utils__.findOne('.status').id = 'blob'
+
+        request.send()
+
+      @waitForSelector '#blob', ->
+        test.assertEval ->
+          window._blob.toString() is '[object Blob]'
+        , 'getItem() for Blob returns value of type Blob'
+
+        test.assertEval ->
+          window._blob.size is window._blobFromLF.size
+        , 'Blob can be saved and retrieved properly'
+    else
+      test.skip 2, "Skipping Blob tests in PhantomJS"
+
+  # Int8Array
+  casper.then ->
+    @evaluate ->
+      array = new Int8Array(8)
+      array[2] = 65
+      array[4] = 0
+      localforage.setItem('Int8Array', array).then (writeValue) ->
+        localforage.getItem('Int8Array').then (readValue) ->
+          window._testValue = readValue
+          __utils__.findOne('.status').id = 'Int8Array'
+
+    @waitForSelector '#Int8Array', ->
+      test.assertEval ->
+        window._testValue.toString() is '[object Int8Array]'
+      , 'setItem() and getItem() for Int8Array returns value of type Int8Array'
+
+      test.assertEval ->
+        window._testValue[2] is 65 and
+        window._testValue[4] is 0
+      , 'Int8Array can be saved and retrieved properly'
+
+  # Uint8Array
+  casper.then ->
+    @evaluate ->
+      array = new Uint8Array(8)
+      array[0] = 65
+      array[4] = 0
+      localforage.setItem('Uint8Array', array).then (writeValue) ->
+        localforage.getItem('Uint8Array').then (readValue) ->
+          window._testValue = readValue
+          __utils__.findOne('.status').id = 'Uint8Array'
+
+    @waitForSelector '#Uint8Array', ->
+      test.assertEval ->
+        window._testValue.toString() is '[object Uint8Array]'
+      , 'setItem() and getItem() for Uint8Array returns value of type Uint8Array'
+
+      test.assertEval ->
+        window._testValue[0] is 65 and
+        window._testValue[4] is 0
+      , 'Uinit8Array can be saved and retrieved properly'
+
+  # Uint8ClampedArray
+  # phantomjs/casperjs seems to see the Uint8ClampedArray as an Uint8Array,
+  # not sure why.
+  # casper.then ->
+  #   @evaluate ->
+  #     array = new Uint8ClampedArray(3)
+  #     array[0] = -17
+  #     array[1] = 93
+  #     array[2] = 350
+  #     localforage.setItem('Uint8ClampedArray', array).then (writeValue) ->
+  #       localforage.getItem('Uint8ClampedArray').then (readValue) ->
+  #         window._testValue = readValue
+  #         __utils__.findOne('.status').id = 'Uint8ClampedArray'
+
+  # casper.then ->
+  #   test.assertEval ->
+  #     window._testValue.toString() is '[object Uint8ClampedArray]'
+  #   , 'setItem() and getItem() for Uint8ClampedArray returns value of type Uint8ClampedArray'
+
+  #   test.assertEval ->
+  #     window._testValue[0] is 0 and
+  #     window._testValue[1] is 93 and
+  #     window._testValue[2] is 255
+  #   , 'Uinit8Array can be saved and retrieved properly'
+
+  # Int16Array
+  casper.then ->
+    @evaluate ->
+      array = new Int16Array(8)
+      array[0] = 65
+      array[4] = 0
+      localforage.setItem('Int16Array', array).then (writeValue) ->
+        localforage.getItem('Int16Array').then (readValue) ->
+          window._testValue = readValue
+          __utils__.findOne('.status').id = 'Int16Array'
+
+    @waitForSelector '#Int16Array', ->
+      test.assertEval ->
+        window._testValue.toString() is '[object Int16Array]'
+      , 'setItem() and getItem() for Int16Array returns value of type Int16Array'
+
+      test.assertEval ->
+        window._testValue[0] is 65 and
+        window._testValue[4] is 0
+      , 'Int16Array can be saved and retrieved properly'
+
+  # Uint8Array
+  casper.then ->
+    @evaluate ->
+      array = new Uint8Array(8)
+      array[0] = 65
+      array[4] = 0
+      localforage.setItem('Uint8Array', array).then (writeValue) ->
+        localforage.getItem('Uint8Array').then (readValue) ->
+          window._testValue = readValue
+          __utils__.findOne('.status').id = 'Uint8Array'
+
+    @waitForSelector '#Uint8Array', ->
+      test.assertEval ->
+        window._testValue.toString() is '[object Uint8Array]'
+      , 'setItem() and getItem() for Uint8Array returns value of type Uint8Array'
+
+      test.assertEval ->
+        window._testValue[0] is 65 and
+        window._testValue[4] is 0
+      , 'Uinit8Array can be saved and retrieved properly'
+
+  # Uint16Array
+  casper.then ->
+    @evaluate ->
+      array = new Uint16Array(8)
+      array[0] = 65
+      array[4] = 0
+      localforage.setItem('Uint16Array', array).then (writeValue) ->
+        localforage.getItem('Uint16Array').then (readValue) ->
+          window._testValue = readValue
+          __utils__.findOne('.status').id = 'Uint16Array'
+
+    @waitForSelector '#Uint16Array', ->
+      test.assertEval ->
+        window._testValue.toString() is '[object Uint16Array]'
+      , 'setItem() and getItem() for Uint16Array returns value of type Uint16Array'
+
+      test.assertEval ->
+        window._testValue[0] is 65 and
+        window._testValue[4] is 0
+      , 'Uint16Array can be saved and retrieved properly'
+
+  # casper.then ->
+  #   @evaluate ->
+  #     array = new Uint8Array(8)
+  #     array[0] = 65
+  #     array[4] = 0
+  #     localforage.setItem 'Uint8Array', array, (writeValue) ->
+  #       localforage.getItem 'Uint8Array', (readValue) ->
+  #         window._testValue = readValue
+  #         __utils__.findOne('.status').id = 'Uint8Array-test-callback'
+
+  #   @waitForSelector '#Uint8Array-test-callback', ->
+  #     test.assertEval ->
+  #       window._testValue.toString() is '[object Uint8Array]'
+  #     , 'setItem() and getItem() for Uint8Array returns value of type Uint8Array'
+
+  #     test.assertEval ->
+  #       window._testValue[0] is 65 and
+  #       window._testValue[4] is 0
+  #     , 'setItem() and getItem() for Uint8Array returns same values again'
 
   casper.thenOpen "#{casper.TEST_URL}test.min.html", ->
     test.info "Test minified version"

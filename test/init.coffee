@@ -1,8 +1,14 @@
 'use strict'
 
+# var casper = require('casper').create({
+#     verbose: true,
+#     logLevel: "debug"
+# });
+
 # We run the same test suite for multiple drivers, so we'll set them here.
 casper.DRIVER = casper.cli.get('driver') or 'localStorageWrapper'
 casper.DRIVER_NAME = casper.cli.get('driver-name') or 'localStorage'
+casper.ENGINE = casper.cli.get('engine') or 'casperjs'
 casper.URL = casper.cli.get('url') or 'localstorage'
 
 # Oh boy, this is naughty:
@@ -17,6 +23,8 @@ casper.ENGINE = (->
 # Assign our test URL; it should be running a simple express server with our
 # test HTML pages.
 casper.TEST_URL = 'http://localhost:8181/test/'
+
+casper.dump = require('utils').dump
 
 casper.test.begin "Test setup", 1, (test) ->
   casper.start casper.TEST_URL, ->
