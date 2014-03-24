@@ -1,6 +1,10 @@
 'use strict'
 
-casper.test.begin "Testing localforage driver selection", 10, (test) ->
+# We keep track of these, again, because we skip some tests and like for the
+# numbers to add up/make sense.
+NUMBER_OF_TESTS = 10
+
+casper.test.begin "Testing localforage driver selection", NUMBER_OF_TESTS, (test) ->
   casper.start "#{casper.TEST_URL}test.html", ->
     test.info "Testing using global scope (window.localforage)"
 
