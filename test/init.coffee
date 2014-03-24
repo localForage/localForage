@@ -8,7 +8,6 @@
 # We run the same test suite for multiple drivers, so we'll set them here.
 casper.DRIVER = casper.cli.get('driver') or 'localStorageWrapper'
 casper.DRIVER_NAME = casper.cli.get('driver-name') or 'localStorage'
-casper.ENGINE = casper.cli.get('engine') or 'casperjs'
 casper.URL = casper.cli.get('url') or 'localstorage'
 
 # Oh boy, this is naughty:
@@ -27,7 +26,7 @@ casper.TEST_URL = 'http://localhost:8181/test/'
 casper.dump = require('utils').dump
 
 casper.test.begin "Test setup", 1, (test) ->
-  casper.start casper.TEST_URL, ->
+  casper.start "#{casper.TEST_URL}test.html", ->
     # Test that localStorage is empty to prevent any weird existing state bugs.
     # Seemingly, either CasperJS or PhantomJS persist localStorage
     # state across tests, so this makes sure things are clean when we start.

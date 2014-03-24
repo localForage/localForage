@@ -379,7 +379,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test
       request = new XMLHttpRequest()
 
       # Let's get the first user's photo.
-      request.open "GET", "/photo.jpg", true
+      request.open "GET", "photo.jpg", true
       request.responseType = "arraybuffer"
 
       # When the AJAX state changes, save the photo locally.
@@ -414,7 +414,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test
         request = new XMLHttpRequest()
 
         # Let's get the first user's photo.
-        request.open "GET", "/photo.jpg", true
+        request.open "GET", "photo.jpg", true
         request.responseType = "arraybuffer"
 
         # When the AJAX state changes, save the photo locally.
