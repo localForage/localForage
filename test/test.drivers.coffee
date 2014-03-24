@@ -1,6 +1,10 @@
 'use strict'
 
-casper.test.begin "Testing localforage driver selection", (test) ->
+# We keep track of these, again, because we skip some tests and like for the
+# numbers to add up/make sense.
+NUMBER_OF_TESTS = 10
+
+casper.test.begin "Testing localforage driver selection", NUMBER_OF_TESTS, (test) ->
   casper.start "#{casper.TEST_URL}test.html", ->
     test.info "Testing using global scope (window.localforage)"
 
@@ -38,6 +42,31 @@ casper.test.begin "Testing localforage driver selection", (test) ->
   #
   # TODO: Fix and report this.
   unless casper.ENGINE is 'slimerjs'
+    casper.then ->
+      @evaluate ->
+        require ['localforage'], (lf) ->
+          window._localforage = lf
+
+          lf.ready ->
+            window._readyCallback = true
+
+          lf.ready().then ->
+            window._readyPromise = true
+            __utils__.findOne('.status').id = 'lib-ready'
+
+      @waitForSelector '#lib-ready', ->
+        test.assertEval ->
+          window._localforage isnt undefined
+        , 'localforage should be available inside a define call'
+
+        test.assertEval ->
+          window._readyCallback is true
+        , 'localforage ready() should accept a callback (for RequireJS context)'
+
+        test.assertEval ->
+          window._readyPromise is true
+        , 'localforage ready() should return a Promise (for RequireJS context)'
+
     casper.then ->
       @evaluate ->
         require ['localforage'], (localforage) ->
@@ -84,6 +113,8 @@ casper.test.begin "Testing localforage driver selection", (test) ->
         typeof window._lf.removeItem is 'function' and
         typeof window._lf.key is 'function'
       , "localforage API is available in localforage.min"
+  else
+    test.skip 6, "Skipping RequireJS tests in SlimerJS"
 
   casper.run ->
     test.done()

@@ -1926,7 +1926,9 @@ requireModule('promise/polyfill').polyfill();
             return localForage._ready;
         },
 
-        ready: function() {
+        ready: function(callback) {
+            this._ready.then(callback);
+
             return this._ready;
         },
 
