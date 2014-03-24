@@ -143,6 +143,28 @@ window.localForageConfig = {
 };
 ```
 
+## RequireJS
+
+You can use localForage with [RequireJS](http://requirejs.org/), but note that
+because of the way drivers are loaded using RequireJS, you'll want to make sure
+`localforage.ready`'s Promise has been fulfilled to ensure all of localForage
+is ready to use before you make set/get calls. Essentially, to use localForage
+with RequireJS, your code should look like this:
+
+```javascript
+define(['localforage'], function(localforage) {
+    // As a callback:
+    localforage.ready(function() {
+        localforage.setItem('mykey', 'myvalue', console.log);
+    });
+
+    // With a Promise:
+    localforage.ready().then(function() {
+        localforage.setItem('mykey', 'myvalue', console.log);
+    });
+});
+```
+
 ## Framework Support
 
 If you use a framework listed, there's a localForage storage driver for the
