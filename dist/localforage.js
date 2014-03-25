@@ -1415,17 +1415,14 @@ requireModule('promise/polyfill').polyfill();
     // verbose ways of binary <-> string data storage.
     var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-    // Default DB size is _JUST UNDER_ 5MB, as it's the highest size we can use
-    // without a prompt.
-    //
-    // TODO: Add a way to increase this size programmatically?
-    var DB_SIZE = 4980736;
-
     var Promise = window.Promise;
     var db = null;
     var dbInfo = {
         description: '',
         name: 'localforage',
+        // Default DB size is _JUST UNDER_ 5MB, as it's the highest size we can use
+        // without a prompt.
+        size: 4980736,
         storeName: 'keyvaluepairs',
         version: '1.0'
     };
@@ -1467,7 +1464,7 @@ requireModule('promise/polyfill').polyfill();
             // Open the database; the openDatabase API will automatically
             // create it for us if it doesn't exist.
             db = window.openDatabase(dbInfo.name, dbInfo.version,
-                                     dbInfo.description, DB_SIZE);
+                                     dbInfo.description, dbInfo.size);
 
             // Create our key/value table if it doesn't exist.
             db.transaction(function (t) {
