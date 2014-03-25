@@ -138,6 +138,7 @@ Example:
 window.localForageConfig = {
     name        : 'myApp',
     version     : 1.0,
+    size        : 4980736, // Size of database, in bytes. WebSQL-only for now.
     storeName   : 'keyvaluepairs',
     description : 'some description'
 };

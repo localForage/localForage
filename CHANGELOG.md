@@ -3,6 +3,10 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [Version 0.2.1](https://github.com/mozilla/localForage/releases/tag/0.2.1)
+
+* Allow configuration of WebSQL DB size
+
 ### [Version 0.2.0](https://github.com/mozilla/localForage/releases/tag/0.2.0)
 
 * Add support for ArrayBuffer, Blob, and TypedArrays ([#54](https://github.com/mozilla/localForage/pull/54), [#73](https://github.com/mozilla/localForage/pull/73))
