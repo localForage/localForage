@@ -34,6 +34,8 @@
         LOCALSTORAGE: 'localStorageWrapper',
         WEBSQL: 'webSQLStorage',
 
+        config: {},
+
         driver: function() {
             return this._driver || null;
         },
@@ -41,12 +43,9 @@
         _ready: Promise.reject(new Error("setDriver() wasn't called")),
 
         setDriver: function(driverName, callback) {
-            this._ready = new Promise(function(resolve, reject) {
+            var driver_set = new Promise(function(resolve, reject) {
                 if ((!indexedDB && driverName === localForage.INDEXEDDB) ||
                     (!window.openDatabase && driverName === localForage.WEBSQL)) {
-                    if (callback) {
-                        callback(localForage);
-                    }
 
                     reject(localForage);
 
@@ -58,14 +57,6 @@
                 if (moduleType === MODULE_TYPE_DEFINE) {
                     require([driverName], function(lib) {
                         localForage._extend(lib);
-
-                        localForage._initStorage(window.localForageConfig).then(function() {
-                            if (callback) {
-                                callback(localForage);
-                            }
-
-                            resolve(localForage);
-                        });
                     });
                 } else if (moduleType === MODULE_TYPE_EXPORT) {
                     // Making it browserify friendly
@@ -80,33 +71,28 @@
                         case localForage.WEBSQL:
                             driver = require('localforage/src/drivers/websql');
                     }
+
                     localForage._extend(driver);
-
-                    localForage._initStorage(window.localForageConfig).then(function() {
-                        if (callback) {
-                            callback(localForage);
-                        }
-
-                        resolve(localForage);
-                    });
                 } else {
                     localForage._extend(_this[driverName]);
-
-                    localForage._initStorage(window.localForageConfig).then(function() {
-                        if (callback) {
-                            callback(localForage);
-                        }
-
-                        resolve(localForage);
-                    });
                 }
+
+                localForage._ready = null;
+
+                resolve(localForage);
             });
 
-            return localForage._ready;
+            driver_set.then(callback, callback);
+
+            return driver_set;
         },
 
         ready: function(callback) {
-            this._ready.then(callback);
+            if(this._ready == null) {
+                this._ready = this._initStorage(this.config);
+            }
+
+            this._ready.then(callback, callback);
 
             return this._ready;
         },
@@ -129,6 +115,11 @@
         storageLibrary = localForage.WEBSQL;
     } else { // If nothing else is available, we use localStorage.
         storageLibrary = localForage.LOCALSTORAGE;
+    }
+
+    /* if window.localForageConfig is set */
+    if(this.localForageConfig) {
+        localForage.config = this.localForageConfig;
     }
 
     // Set the (default) driver.
