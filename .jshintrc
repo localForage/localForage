@@ -17,6 +17,8 @@
   "strict": false,
   "trailing": false,
 
+  "validthis": true,
+
   "globals": {
     "define": true,
     "localforage": true,
