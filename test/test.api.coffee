@@ -17,11 +17,18 @@
 # Note the number of tests constant: we run this to make sure all async tests
 # are run and also that we're keeping track of skipped tests. Be sure to
 # increment the number when you add tests.
-NUMBER_OF_TESTS = 41
+NUMBER_OF_TESTS = 42
 
 casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test) ->
   casper.start "#{casper.TEST_URL}#{casper.URL}.html", ->
     test.info "Test API using callbacks"
+
+    # If this test is failing, you are likely missing the Promises polyfill,
+    # installed via bower. Read more here:
+    # https://github.com/mozilla/localForage#working-on-localforage
+    test.assertEval ->
+      typeof window.Promise is 'function'
+    , "Promise API is available (if missing, run `bower install`)"
 
     test.assertEval ->
       typeof localforage.driver is 'function' and
