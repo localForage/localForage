@@ -23,9 +23,10 @@
             console.log('Read: ', readValue);
           });
 
-        // Since this key hasn't been set yet, we'll get a null value
-        localforage.getItem(UNKNOWN_KEY, function(readValue) {
-          console.log('Result of reading ' + UNKNOWN_KEY, readValue);
+          // Since this key hasn't been set yet, we'll get a null value
+          localforage.getItem(UNKNOWN_KEY, function(readValue) {
+            console.log('Result of reading ' + UNKNOWN_KEY, readValue);
+          });
         });
       });
     </script>
