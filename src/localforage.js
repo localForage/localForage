@@ -43,7 +43,7 @@
         _ready: Promise.reject(new Error("setDriver() wasn't called")),
 
         setDriver: function(driverName, callback) {
-            var driver_set = new Promise(function(resolve, reject) {
+            var driverSet = new Promise(function(resolve, reject) {
                 if ((!indexedDB && driverName === localForage.INDEXEDDB) ||
                     (!window.openDatabase && driverName === localForage.WEBSQL)) {
 
@@ -57,6 +57,8 @@
                 if (moduleType === MODULE_TYPE_DEFINE) {
                     require([driverName], function(lib) {
                         localForage._extend(lib);
+
+                        resolve(localForage);
                     });
                 } else if (moduleType === MODULE_TYPE_EXPORT) {
                     // Making it browserify friendly
@@ -73,22 +75,22 @@
                     }
 
                     localForage._extend(driver);
+                    resolve(localForage);
                 } else {
                     localForage._extend(_this[driverName]);
+                    resolve(localForage);
                 }
 
                 localForage._ready = null;
-
-                resolve(localForage);
             });
 
-            driver_set.then(callback, callback);
+            driverSet.then(callback, callback);
 
-            return driver_set;
+            return driverSet;
         },
 
         ready: function(callback) {
-            if(this._ready == null) {
+            if(this._ready === null) {
                 this._ready = this._initStorage(this.config);
             }
 
