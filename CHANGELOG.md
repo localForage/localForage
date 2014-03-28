@@ -5,7 +5,7 @@ localForage's lifetime.
 
 ### [Version 0.2.1](https://github.com/mozilla/localForage/releases/tag/0.2.1)
 
-* Allow configuration of WebSQL DB size
+* Allow configuration of WebSQL DB size ([commit](https://github.com/mozilla/localForage/commit/6e78fff51a23e729206a03e5b750e959d8610f8c))
 * Use bower for JS dependencies instead of `vendor/` folder ([#109](https://github.com/mozilla/localForage/pull/109))
 
 ### [Version 0.2.0](https://github.com/mozilla/localForage/releases/tag/0.2.0)
