@@ -62,7 +62,7 @@
     // the app's key/value store!
     function clear(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             _this.ready().then(function() {
                 localStorage.clear();
 
@@ -108,7 +108,7 @@
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             _this.ready().then(function() {
                 var result = localStorage.key(n);
 
@@ -128,7 +128,7 @@
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             _this.ready().then(function() {
                 var result = localStorage.length;
 
@@ -144,7 +144,7 @@
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             _this.ready().then(function() {
                 localStorage.removeItem(keyPrefix + key);
 
@@ -302,8 +302,9 @@
             try {
                 callback(null, JSON.stringify(value));
             } catch (e) {
-                console.error("Couldn't convert value into a JSON string: ",
-                              value);
+                if (window.console && window.console.error) {
+                    window.console.error("Couldn't convert value into a JSON string: ", value);
+                }
                 callback(e);
             }
         }
