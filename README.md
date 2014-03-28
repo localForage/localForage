@@ -179,7 +179,27 @@ If you have a driver you'd like listed, please
 [open an issue](https://github.com/mozilla/localForage/issues/new) to have it
 added to this list.
 
-# Running Tests
+# Working on localForage
+
+You'll need [node/npm](http://nodejs.org/),
+[bower](http://bower.io/#installing-bower), and
+[Grunt](http://gruntjs.com/getting-started#installing-the-cli).
+
+To work on localForage, you should start by
+[forking it](https://github.com/mozilla/localForage/fork) and installing its
+dependencies. Replace `USERNAME` with your GitHub username and run the
+following:
+
+```bash
+git clone git@github.com:USERNAME/localForage.git
+cd localForage
+npm install
+bower install
+```
+
+Omitting the bower dependencies will cause the tests to fail!
+
+## Running Tests
 
 **tl;dr:** You need PhantomJS and SlimerJS installed to run tests. Then, just
 run `npm test` (or, directly, `grunt test`).
