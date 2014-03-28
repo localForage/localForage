@@ -9,7 +9,7 @@
     var dbInfo = {
         name: 'localforage'
     };
-    var Promise = window.Promise;
+    var Promise = this.Promise;
     var localStorage = null;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
@@ -20,7 +20,7 @@
     try {
         // Initialize localStorage and create a variable to use throughout
         // the code.
-        localStorage = window.localStorage;
+        localStorage = this.localStorage;
     } catch (e) {
         return;
     }

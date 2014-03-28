@@ -782,7 +782,7 @@ requireModule('promise/polyfill').polyfill();
 
     // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
 
-    var Promise = window.Promise;
+    var Promise = this.Promise;
     var db = null;
     var dbInfo = {
         name: 'localforage',
@@ -791,9 +791,9 @@ requireModule('promise/polyfill').polyfill();
     };
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
-    var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
-                    window.mozIndexedDB || window.OIndexedDB ||
-                    window.msIndexedDB;
+    var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
+                    this.mozIndexedDB || this.OIndexedDB ||
+                    this.msIndexedDB;
 
     // If IndexedDB isn't available, we get outta here!
     if (!indexedDB) {
@@ -1042,7 +1042,7 @@ requireModule('promise/polyfill').polyfill();
     var dbInfo = {
         name: 'localforage'
     };
-    var Promise = window.Promise;
+    var Promise = this.Promise;
     var localStorage = null;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
@@ -1053,7 +1053,7 @@ requireModule('promise/polyfill').polyfill();
     try {
         // Initialize localStorage and create a variable to use throughout
         // the code.
-        localStorage = window.localStorage;
+        localStorage = this.localStorage;
     } catch (e) {
         return;
     }
@@ -1415,7 +1415,8 @@ requireModule('promise/polyfill').polyfill();
     // verbose ways of binary <-> string data storage.
     var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-    var Promise = window.Promise;
+    var Promise = this.Promise;
+    var openDatabase = this.openDatabase;
     var db = null;
     var dbInfo = {
         description: '',
@@ -1445,7 +1446,7 @@ requireModule('promise/polyfill').polyfill();
     var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
 
     // If WebSQL methods aren't available, we can stop now.
-    if (!window.openDatabase) {
+    if (!openDatabase) {
         return;
     }
 
@@ -1463,8 +1464,8 @@ requireModule('promise/polyfill').polyfill();
         return new Promise(function(resolve, reject) {
             // Open the database; the openDatabase API will automatically
             // create it for us if it doesn't exist.
-            db = window.openDatabase(dbInfo.name, dbInfo.version,
-                                     dbInfo.description, dbInfo.size);
+            db = openDatabase(dbInfo.name, dbInfo.version, dbInfo.description,
+                              dbInfo.size);
 
             // Create our key/value table if it doesn't exist.
             db.transaction(function (t) {
@@ -1820,7 +1821,7 @@ requireModule('promise/polyfill').polyfill();
     'use strict';
 
     // Promises!
-    var Promise = window.Promise;
+    var Promise = this.Promise;
 
     // Avoid those magic constants!
     var MODULE_TYPE_DEFINE = 1;
@@ -1840,9 +1841,12 @@ requireModule('promise/polyfill').polyfill();
     }
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
-    var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
-                    window.mozIndexedDB || window.OIndexedDB ||
-                    window.msIndexedDB;
+    var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
+                    this.mozIndexedDB || this.OIndexedDB ||
+                    this.msIndexedDB;
+
+    // Check for WebSQL.
+    var openDatabase = this.openDatabase;
 
     // The actual localForage object that we expose as a module or via a global.
     // It's extended by pulling in one of our other libraries.
@@ -1861,7 +1865,7 @@ requireModule('promise/polyfill').polyfill();
         setDriver: function(driverName, callback) {
             this._ready = new Promise(function(resolve, reject) {
                 if ((!indexedDB && driverName === localForage.INDEXEDDB) ||
-                    (!window.openDatabase && driverName === localForage.WEBSQL)) {
+                    (!openDatabase && driverName === localForage.WEBSQL)) {
                     if (callback) {
                         callback(localForage);
                     }
@@ -1943,7 +1947,7 @@ requireModule('promise/polyfill').polyfill();
     // library.
     if (indexedDB) {
         storageLibrary = localForage.INDEXEDDB;
-    } else if (window.openDatabase) { // WebSQL is available, so we'll use that.
+    } else if (openDatabase) { // WebSQL is available, so we'll use that.
         storageLibrary = localForage.WEBSQL;
     } else { // If nothing else is available, we use localStorage.
         storageLibrary = localForage.LOCALSTORAGE;
