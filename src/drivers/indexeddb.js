@@ -3,7 +3,7 @@
 
     // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
 
-    var Promise = window.Promise;
+    var Promise = this.Promise;
     var db = null;
     var dbInfo = {
         name: 'localforage',
@@ -12,9 +12,9 @@
     };
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
-    var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
-                    window.mozIndexedDB || window.OIndexedDB ||
-                    window.msIndexedDB;
+    var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
+                    this.mozIndexedDB || this.OIndexedDB ||
+                    this.msIndexedDB;
 
     // If IndexedDB isn't available, we get outta here!
     if (!indexedDB) {

@@ -2,7 +2,7 @@
     'use strict';
 
     // Promises!
-    var Promise = window.Promise;
+    var Promise = this.Promise;
 
     // Avoid those magic constants!
     var MODULE_TYPE_DEFINE = 1;
@@ -22,9 +22,12 @@
     }
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
-    var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
-                    window.mozIndexedDB || window.OIndexedDB ||
-                    window.msIndexedDB;
+    var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
+                    this.mozIndexedDB || this.OIndexedDB ||
+                    this.msIndexedDB;
+
+    // Check for WebSQL.
+    var openDatabase = this.openDatabase;
 
     // The actual localForage object that we expose as a module or via a global.
     // It's extended by pulling in one of our other libraries.
@@ -43,7 +46,7 @@
         setDriver: function(driverName, callback) {
             this._ready = new Promise(function(resolve, reject) {
                 if ((!indexedDB && driverName === localForage.INDEXEDDB) ||
-                    (!window.openDatabase && driverName === localForage.WEBSQL)) {
+                    (!openDatabase && driverName === localForage.WEBSQL)) {
                     if (callback) {
                         callback(localForage);
                     }
@@ -125,7 +128,7 @@
     // library.
     if (indexedDB) {
         storageLibrary = localForage.INDEXEDDB;
-    } else if (window.openDatabase) { // WebSQL is available, so we'll use that.
+    } else if (openDatabase) { // WebSQL is available, so we'll use that.
         storageLibrary = localForage.WEBSQL;
     } else { // If nothing else is available, we use localStorage.
         storageLibrary = localForage.LOCALSTORAGE;

@@ -15,7 +15,8 @@
     // verbose ways of binary <-> string data storage.
     var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-    var Promise = window.Promise;
+    var Promise = this.Promise;
+    var openDatabase = this.openDatabase;
     var db = null;
     var dbInfo = {
         description: '',
@@ -45,7 +46,7 @@
     var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
 
     // If WebSQL methods aren't available, we can stop now.
-    if (!window.openDatabase) {
+    if (!openDatabase) {
         return;
     }
 
@@ -63,8 +64,8 @@
         return new Promise(function(resolve, reject) {
             // Open the database; the openDatabase API will automatically
             // create it for us if it doesn't exist.
-            db = window.openDatabase(dbInfo.name, dbInfo.version,
-                                     dbInfo.description, dbInfo.size);
+            db = openDatabase(dbInfo.name, dbInfo.version, dbInfo.description,
+                              dbInfo.size);
 
             // Create our key/value table if it doesn't exist.
             db.transaction(function (t) {
