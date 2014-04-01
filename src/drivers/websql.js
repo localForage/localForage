@@ -61,7 +61,7 @@
             }
         }
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             // Open the database; the openDatabase API will automatically
             // create it for us if it doesn't exist.
             db = openDatabase(dbInfo.name, dbInfo.version, dbInfo.description,
@@ -78,7 +78,7 @@
 
     function getItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('SELECT * FROM ' + dbInfo.storeName + ' WHERE key = ? LIMIT 1', [key], function (t, results) {
@@ -136,7 +136,7 @@
 
     function removeItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName + ' WHERE key = ?', [key], function() {
@@ -155,10 +155,10 @@
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             _this.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('DELETE FROM ' + dbInfo.storeName, [], function(t, results) {
+                    t.executeSql('DELETE FROM ' + dbInfo.storeName, [], function() {
                         if (callback) {
                             callback();
                         }
@@ -174,7 +174,7 @@
     // localForage.
     function length(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             _this.ready().then(function() {
                 db.transaction(function (t) {
                     // Ahhh, SQL makes this one soooooo easy.
@@ -201,7 +201,7 @@
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
@@ -227,6 +227,7 @@
         var base64String = '';
 
         for (i = 0; i < bytes.length; i += 3) {
+            /*jslint bitwise: true */
             base64String += BASE_CHARS[bytes[i] >> 2];
             base64String += BASE_CHARS[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
             base64String += BASE_CHARS[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
@@ -287,6 +288,7 @@
             encoded3 = BASE_CHARS.indexOf(serializedString[i+2]);
             encoded4 = BASE_CHARS.indexOf(serializedString[i+3]);
 
+            /*jslint bitwise: true */
             bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
             bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
             bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
@@ -389,8 +391,9 @@
             try {
                 callback(null, JSON.stringify(value));
             } catch (e) {
-                console.error("Couldn't convert value into a JSON string: ",
-                              value);
+                if (window.console && window.console.error) {
+                    window.console.error("Couldn't convert value into a JSON string: ", value);
+                }
                 callback(e);
             }
         }

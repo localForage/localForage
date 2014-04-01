@@ -79,6 +79,12 @@ module.exports = exports = function(grunt) {
                 }
             }
         },
+        jshint: {
+            options: {
+                jshintrc: '.jshintrc'
+            },
+            source: ['src/*.js', 'src/**/*.js']
+        },
         uglify: {
             localforage: {
                 files: {
@@ -101,6 +107,7 @@ module.exports = exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-casper');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
@@ -113,5 +120,5 @@ module.exports = exports = function(grunt) {
         require('./test/server.coffee').listen(8181);
     });
 
-    grunt.registerTask('test', ['build', 'server', 'casper']);
+    grunt.registerTask('test', ['build', 'server', 'casper', 'jshint']);
 };
