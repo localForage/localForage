@@ -262,7 +262,7 @@ want to use an API, you just add a library to your `package.json`.
 # License
 
 This program is free software; it is distributed under an
-[Apache License](http://github.com/mozilla/localForage/blob/master/LICENSE).
+[Apache License](https://github.com/mozilla/localForage/blob/master/LICENSE).
 
 ---
 
