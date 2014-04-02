@@ -9,9 +9,6 @@ toc_footers:
   - <a href="https://github.com/mozilla/localForage">Contribute to localForage</a>
   - <a href="https://github.com/tripit/slate">(Docs Powered by Slate)</a>
 
-# includes:
-#   - errors
-
 ---
 
 # localForage
@@ -53,12 +50,11 @@ versions of all major browsers: Chrome, Firefox, IE, and Safari
 (including Safari Mobile).
 
 localForage supports both a callback-based and Promises-based API, so you can
-use whichever you prefer. Both are documented below, starting with the callback
-version.
+use whichever you prefer. At the current time, these docs use the callback API.
 
 [Download localForage on GitHub.](https://github.com/mozilla/localForage/releases)
 
-# API -- Callbacks
+# API
 
 ## getItem
 
