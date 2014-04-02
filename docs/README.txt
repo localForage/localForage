@@ -1,4 +1,4 @@
-# localForage Docs
+# localForage Docs #
 
 localForage is a handy JavaScript library that improves the offline experience
 of your web app by using asynchronous storage (via IndexedDB or WebSQL where
