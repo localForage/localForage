@@ -1,0 +1,82 @@
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <!-- Always force latest IE rendering engine or request Chrome Frame -->
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+
+    <!-- Use title if it's in the page YAML frontmatter -->
+    <title>API Documentation</title>
+
+    <link href="stylesheets/screen.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/print.css" media="print" rel="stylesheet" type="text/css" />
+    <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="javascripts/all.js" type="text/javascript"></script>
+
+    <script>
+      $(function() {
+        var toc = $("#toc").tocify({
+          selectors: "h1,h2",
+          extendPage: false,
+          theme: "none",
+          smoothScroll: false,
+          showEffectSpeed: 0,
+          hideEffectSpeed: 180,
+          ignoreSelector: ".toc-ignore",
+          hashGenerator: 'pretty',
+          highlightOffset: 60,
+          scrollTo: -2,
+          scrollHistory: true,
+          hashGenerator: function(text, element) {
+            return element[0].getAttribute('id');
+          }
+        }).data("toc-tocify");
+        // Hack to make already open sections to start opened,
+        // instead of displaying an ugly animation
+        setTimeout(function() {
+          toc.setOption("showEffectSpeed", 180);
+        },50);
+        setupLanguages([
+          
+        ]);
+      });
+    </script>
+  </head>
+
+  <body class="README">
+    <div class="tocify-wrapper">
+      <a href="https://mozilla.org/" id="logo">
+        <img alt="Mozilla" src="images/logo.png" />
+      </a>
+      <div id="toc">
+      </div>
+      
+
+      <div class="build-status">
+        <a href="http://travis-ci.org/mozilla/localForage"><img src="https://secure.travis-ci.org/mozilla/localForage.png?branch=master" alt="Build Status"></a>
+      </div>
+    </div>
+    <div class="page-wrapper">
+      <div class="content">
+        <h1 id="localforage-docs">localForage Docs</h1>
+
+<p>localForage is a handy JavaScript library that improves the offline experience
+of your web app by using asynchronous storage (via IndexedDB or WebSQL where
+available) but with a simple, <code class="prettyprint">localStorage</code>-like API.</p>
+
+<p>This is the built version of the
+<a href="http://mozilla.github.io/localForage">localForage docs</a>. You can browse the
+code in the <a href="https://github.com/mozilla/localForage">master branch</a>.</p>
+
+        
+      </div>
+      <div class="dark-box">
+        <div id="lang-selector">
+          
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
