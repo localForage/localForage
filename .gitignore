@@ -2,3 +2,26 @@
 .swp
 bower_components
 node_modules
+
+### Ruby Stuff for slate docs
+*.gem
+*.rbc
+.bundle
+.config
+coverage
+InstalledFiles
+lib/bundler/man
+pkg
+rdoc
+spec/reports
+test/tmp
+test/version_tmp
+tmp
+*.DS_STORE
+build/
+.cache
+
+# YARD artifacts
+.yardoc
+_yardoc
+doc/
