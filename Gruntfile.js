@@ -85,6 +85,14 @@ module.exports = exports = function(grunt) {
             },
             source: ['src/*.js', 'src/**/*.js']
         },
+        shell: {
+            listFolders: {
+                options: {
+                    stdout: true
+                },
+                command: 'rake publish ALLOW_DIRTY=true'
+            }
+        },
         uglify: {
             localforage: {
                 files: {
@@ -110,9 +118,11 @@ module.exports = exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-shell');
 
     grunt.registerTask('default', ['build', 'watch']);
     grunt.registerTask('build', ['concat', 'uglify']);
+    grunt.registerTask('publish', ['shell']);
 
     grunt.registerTask('server', function() {
         grunt.log.writeln('Starting web server at test/server.coffee');
