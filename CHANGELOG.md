@@ -3,7 +3,7 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
-### Next
+### [Version 0.3.0](https://github.com/mozilla/localForage/releases/tag/0.3.0)
 
 * Check code quality in test suite ([#124](https://github.com/mozilla/localForage/pull/124))
 * `_initDriver()` is called after first public API call ([#119](https://github.com/mozilla/localForage/pull/119))
