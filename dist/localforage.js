@@ -1877,6 +1877,8 @@ requireModule('promise/polyfill').polyfill();
                     return;
                 }
 
+                localForage._ready = null;
+
                 // We allow localForage to be declared as a module or as a library
                 // available without AMD/require.js.
                 if (moduleType === MODULE_TYPE_DEFINE) {
@@ -1885,6 +1887,9 @@ requireModule('promise/polyfill').polyfill();
 
                         resolve(localForage);
                     });
+
+                    // Return here so we don't resolve the promise twice.
+                    return;
                 } else if (moduleType === MODULE_TYPE_EXPORT) {
                     // Making it browserify friendly
                     var driver;
@@ -1900,13 +1905,11 @@ requireModule('promise/polyfill').polyfill();
                     }
 
                     localForage._extend(driver);
-                    resolve(localForage);
                 } else {
                     localForage._extend(_this[driverName]);
-                    resolve(localForage);
                 }
 
-                localForage._ready = null;
+                resolve(localForage);
             });
 
             driverSet.then(callback, callback);

@@ -6,6 +6,7 @@ localForage's lifetime.
 ### Next
 
 * Check code quality in test suite ([#124](https://github.com/mozilla/localForage/pull/124))
+* `_initDriver()` is called after first public API call ([#119](https://github.com/mozilla/localForage/pull/119))
 
 ### [Version 0.2.1](https://github.com/mozilla/localForage/releases/tag/0.2.1)
 
