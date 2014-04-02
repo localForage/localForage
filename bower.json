@@ -8,8 +8,8 @@
         ".travis.yml",
         "CONTRIBUTING.md",
         "LICENSE",
-        "test*",
-        "vendor/*"
+        "examples*",
+        "test*"
     ],
     "dependencies": {
         "es6-promise": "~0.1.1"
