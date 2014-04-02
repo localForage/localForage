@@ -1,127 +1,299 @@
+
 <!doctype html>
 <html>
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>localForage by mozilla</title>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!-- Always force latest IE rendering engine or request Chrome Frame -->
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <!-- Use title if it's in the page YAML frontmatter -->
+    <title>localForage API Reference</title>
+
+    <link href="stylesheets/screen.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/print.css" media="print" rel="stylesheet" type="text/css" />
+    <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="javascripts/all.js" type="text/javascript"></script>
+
+    <script>
+      $(function() {
+        var toc = $("#toc").tocify({
+          selectors: "h1,h2",
+          extendPage: false,
+          theme: "none",
+          smoothScroll: false,
+          showEffectSpeed: 0,
+          hideEffectSpeed: 180,
+          ignoreSelector: ".toc-ignore",
+          hashGenerator: 'pretty',
+          highlightOffset: 60,
+          scrollTo: -2,
+          scrollHistory: true,
+          hashGenerator: function(text, element) {
+            return element[0].getAttribute('id');
+          }
+        }).data("toc-tocify");
+        // Hack to make already open sections to start opened,
+        // instead of displaying an ugly animation
+        setTimeout(function() {
+          toc.setOption("showEffectSpeed", 180);
+        },50);
+        setupLanguages([
+          
+            
+              
+                'javascript',
+              
+            
+              
+                'coffeescript',
+              
+            
+          
+        ]);
+      });
+    </script>
   </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>localForage</h1>
-        <p>Offline storage, improved.</p>
-        <p class="view"><a href="https://github.com/mozilla/localForage">View the Project on GitHub <small>mozilla/localForage</small></a></p>
-        <ul>
-          <li><a href="https://github.com/mozilla/localForage/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/mozilla/localForage/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/mozilla/localForage">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>
-<a name="localforage" class="anchor" href="#localforage"><span class="octicon octicon-link"></span></a>localForage</h1>
 
-<p>localForage is a handy library that improves the offline experience of your web
-app by using asynchronous storage (via IndexedDB or WebSQL where available) but
-with a simple, <code>localStorage</code>-like API.</p>
+  <body class="index">
+    <div class="tocify-wrapper">
+      <a href="https://mozilla.org/" id="logo">
+        <img alt="Mozilla" src="images/logo.png" />
+      </a>
+      <div id="toc">
+      </div>
+      
+      <ul class="toc-footer">
+        
+          <li><a href="https://github.com/mozilla/localForage">Contribute to localForage</a></li>
+        
+          <li><a href="https://github.com/tripit/slate">(Docs Powered by Slate)</a></li>
+        
+      </ul>
+      
+
+      <div class="build-status">
+        <a href="http://travis-ci.org/mozilla/localForage"><img src="https://secure.travis-ci.org/mozilla/localForage.png?branch=master" alt="Build Status"></a>
+      </div>
+    </div>
+    <div class="page-wrapper">
+      <div class="content">
+        <h1 id="localforage">localForage</h1>
+<pre class="highlight javascript"><span class="c1">// In localStorage, we would do:
+</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'key'</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="s1">'value'</span><span class="p">));</span>
+<span class="nx">doSomethingElse</span><span class="p">();</span>
+
+<span class="c1">// With localForage, we use callbacks:
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'key'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">,</span> <span class="nx">doSomethingElse</span><span class="p">);</span>
+
+<span class="c1">// Or we can use Promises:
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'key'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">doSomethingElse</span><span class="p">);</span>
+</pre>
+<pre class="highlight coffeescript"><span class="c1"># In localStorage, we would do:
+</span><span class="nx">localStorage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"key"</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="na">stringify</span><span class="p">(</span><span class="s">"value"</span><span class="p">)</span>
+<span class="nx">doSomethingElse</span><span class="p">()</span>
+
+<span class="c1"># With localForage, we use callbacks:
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"key"</span><span class="p">,</span> <span class="s">"value"</span><span class="p">,</span> <span class="nx">doSomethingElse</span>
+
+<span class="c1"># Or we can use Promises:
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span><span class="p">(</span><span class="s">"key"</span><span class="p">,</span> <span class="s">"value"</span><span class="p">).</span><span class="na">then</span> <span class="nx">doSomethingElse</span>
+</pre>
+
+<p><strong>Offline storage, improved.</strong></p>
+
+<p>localForage is a JavaScript library that improves the offline experience of
+your web app by using an asynchronous data store with a simple,
+<code class="prettyprint">localStorage</code>-like API. It allows developers to
+<a href="#setitem">store many types of data</a> instead of just strings.</p>
 
 <p>localForage includes a localStorage-backed fallback store for browsers with no
-IndexedDB or WebSQL support. This means that asynchronous storage is available
-in Chrome, Firefox, and Safari (including Safari Mobile).</p>
+IndexedDB or WebSQL support. Asynchronous storage is available in the current
+versions of all major browsers: Chrome, Firefox, IE, and Safari
+(including Safari Mobile).</p>
 
-<h2>
-<a name="browser-support" class="anchor" href="#browser-support"><span class="octicon octicon-link"></span></a>Browser Support</h2>
+<p>localForage supports both a callback-based and Promises-based API, so you can
+use whichever you prefer. At the current time, these docs use the callback API.</p>
 
-<p>All of 'em. Worst-case localStorage fallback will be used, but asynchronous
-storage will be used for:</p>
+<p><a href="https://github.com/mozilla/localForage/releases">Download localForage on GitHub.</a></p>
+
+<h1 id="api">API</h1>
+
+<h2 id="getitem">getItem</h2>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Run this code once the value has been
+</span>    <span class="c1">// loaded from the offline store.
+</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">getItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="c1"># Run this code once the value has been loaded
+</span>  <span class="c1"># from the offline store.
+</span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">value</span>
+</pre>
+
+<p><code class="prettyprint">getItem(key, successCallback)</code></p>
+
+<p>Gets an item from the storage library and supplies the result to a callback.
+If the key does not exist, <code class="prettyprint">getItem()</code> will return <code class="prettyprint">null</code>.</p>
+
+<p><aside class="notice">Even if <code class="prettyprint">undefined</code> is saved, <code class="prettyprint">null</code> will be returned by <code class="prettyprint">getItem()</code>. This is due to a <a href="https://github.com/mozilla/localForage/pull/42">limitation in localStorage</a>, and for compatibility reasons localForage cannot store the value <code class="prettyprint">undefined</code>.</aside></p>
+
+<h2 id="setitem">setItem</h2>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="s1">'some value'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Do other things once the value has been saved.
+</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// Unlike localStorage, you can store non-strings.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'my array'</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'three'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// This will output `1`.
+</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="p">});</span>
+
+<span class="c1">// You can even store binary data from an AJAX request.
+</span><span class="nx">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">request</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s1">'/photo.jpg'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nx">request</span><span class="p">.</span><span class="nx">responseType</span> <span class="o">=</span> <span class="s1">'arraybuffer'</span><span class="p">;</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'readystatechange'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// readyState DONE
+</span>        <span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'my photo'</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">response</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">img</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// This will be a valid blob URI for an &lt;img&gt; tag.
+</span>            <span class="kd">var</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="nx">image</span><span class="p">]);</span>
+            <span class="kd">var</span> <span class="nx">imageURI</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">blob</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">getItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="s">"some value"</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="c1"># Do other things once the value has been saved.
+</span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">value</span>
+
+<span class="c1"># Unlike localStorage, you can store non-strings.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"my array"</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s">"three"</span><span class="p">],</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="c1"># This will output `1`.
+</span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># You can even store binary data from an AJAX request.
+</span><span class="nx">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">()</span>
+<span class="nx">request</span><span class="p">.</span><span class="na">open</span> <span class="s">"GET"</span><span class="p">,</span> <span class="s">"photo.jpg"</span><span class="p">,</span> <span class="no">true</span>
+<span class="nx">request</span><span class="p">.</span><span class="na">responseType</span> <span class="o">=</span> <span class="s">"arraybuffer"</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="na">addEventListener</span> <span class="s">"readystatechange"</span><span class="p">,</span> <span class="o">-&gt;</span>
+  <span class="k">if</span> <span class="nx">request</span><span class="p">.</span><span class="na">readyState</span> <span class="o">==</span> <span class="mi">4</span> <span class="c1"># readyState DONE
+</span>    <span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"arrayBuffer"</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="na">response</span><span class="p">,</span> <span class="p">(</span><span class="nx">img</span><span class="p">)</span> <span class="o">-&gt;</span>
+      <span class="c1"># This will be a valid blob URI for an &lt;img&gt; tag.
+</span>      <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span> <span class="p">[</span><span class="nx">image</span><span class="p">]</span>
+      <span class="nx">imageURI</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="na">URL</span><span class="p">.</span><span class="na">createObjectURL</span> <span class="nx">blob</span>
+</pre>
+
+<p><code class="prettyprint">setItem(key, value, successCallback)</code></p>
+
+<p>Saves data to an offline store. You can store the following types of JavaScript
+objects:</p>
 
 <ul>
-<li>Android Browser (2.1+)</li>
-<li>Blackberry (7+)</li>
-<li>Chrome (23+)</li>
-<li>Chrome for Android (32+)</li>
-<li>Firefox (10+)</li>
-<li>Firefox for Android (25+)</li>
-<li>IE (10+)</li>
-<li>IE Mobile (10+)</li>
-<li>Opera (15+)</li>
-<li>Opera Mobile (11+)</li>
-<li>Safari (3.1+)</li>
-</ul><h2>
-<a name="callbacks" class="anchor" href="#callbacks"><span class="octicon octicon-link"></span></a>Callbacks</h2>
+<li><strong><code class="prettyprint">Array</code></strong></li>
+<li><strong><code class="prettyprint">ArrayBuffer</code></strong></li>
+<li><strong><code class="prettyprint">Blob</code></strong></li>
+<li><strong><code class="prettyprint">Float32Array</code></strong></li>
+<li><strong><code class="prettyprint">Float64Array</code></strong></li>
+<li><strong><code class="prettyprint">Int8Array</code></strong></li>
+<li><strong><code class="prettyprint">Int16Array</code></strong></li>
+<li><strong><code class="prettyprint">Int32Array</code></strong></li>
+<li><strong><code class="prettyprint">Number</code></strong></li>
+<li><strong><code class="prettyprint">Object</code></strong></li>
+<li><strong><code class="prettyprint">Uint8Array</code></strong></li>
+<li><strong><code class="prettyprint">Uint8ClampedArray</code></strong></li>
+<li><strong><code class="prettyprint">Uint16Array</code></strong></li>
+<li><strong><code class="prettyprint">Uint32Array</code></strong></li>
+<li><strong><code class="prettyprint">String</code></strong></li>
+</ul>
 
-<p>Because localForage uses async storage, it has an async API. It's otherwise
-exactly the same as the
-<a href="https://hacks.mozilla.org/2009/06/localstorage/">localStorage API</a>.</p>
+<p><aside class="notice">When using localStorage and WebSQL backends, binary data will be serialized before being saved (and retrieved). This serialization will incur a size increase when binary data is saved.</aside></p>
 
-<pre><code>// In localStorage, we would do:
-localStorage.setItem('key', JSON.stringify('value'));
-doSomethingElse();
+<h2 id="removeitem">removeItem</h2>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Run this code once the key has been removed.
+</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Key is cleared!'</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">removeItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="o">-&gt;</span>
+  <span class="c1"># Run this code once the key has been removed.
+</span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Key is cleared!"</span>
+</pre>
 
-// With localForage, we use callbacks:
-localForage.setItem('key', 'value', doSomethingElse);
-</code></pre>
+<p><code class="prettyprint">removeItem(key, successCallback)</code></p>
 
-<p>Similarly, please don't expect a return value from calls to
-<code>localForage.getItem()</code>. Instead, use a callback:</p>
+<p>Removes the value of a key from the offline store.</p>
 
-<pre><code>// Synchronous; slower!
-var value = JSON.parse(localStorage.getItem('key'));
-alert(value);
+<h2 id="clear">clear</h2>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">clear</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Run this code once the database has been entirely deleted.
+</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Database is now empty.'</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">clear</span> <span class="o">-&gt;</span>
+  <span class="c1"># Run this code once the database has been entirely deleted.
+</span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Database is now empty."</span>
+</pre>
 
-// Async, fast, and non-blocking!
-localForage.getItem('key', alert);
-</code></pre>
+<p><code class="prettyprint">clear(successCallback)</code></p>
 
-<p>Also of note is that localForage will automatically convert the values you
-get and set to JSON if you happen to be using localStorage as a backend. You
-don't have to pollute your code with <code>JSON.stringify()</code> and <code>JSON.parse</code> calls!</p>
+<p>Removes every key from the database, returning it to a blank slate.</p>
 
-<p>If you try to read a key that hasn't been stored yet, <code>null</code> will be returned
-in the callback.</p>
+<p><aside class="warning"><code class="prettyprint">localforage.clear()</code> will remove <strong>every item in the offline store</strong>. Use this method with caution.</aside></p>
 
-<h2>
-<a name="promises" class="anchor" href="#promises"><span class="octicon octicon-link"></span></a>Promises</h2>
+<h2 id="length">length</h2>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">length</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">numberOfKeys</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Outputs the length of the database.
+</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numberOfKeys</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">length</span> <span class="p">(</span><span class="nx">numberOfKeys</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="c1"># Outputs the length of the database.
+</span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">numberOfKeys</span>
+</pre>
 
-<p>Promises are pretty cool! If you'd rather use promises than callbacks,
-localForage supports that too:</p>
+<p><code class="prettyprint">length(successCallback)</code></p>
 
-<pre><code>function doSomethingElse(value) {
-    console.log(value);
-}
+<p>Gets the number of keys in the offline store (i.e. its &ldquo;length&rdquo;).</p>
 
-// With localForage, we allow promises:
-localForage.setItem('key', 'value').then(doSomethingElse);
-</code></pre>
+<h2 id="key">key</h2>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">key</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">keyName</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Name of the key.
+</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">keyName</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">key</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="nx">keyName</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="c1"># Name of the key.
+</span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">keyName</span>
+</pre>
 
-<p>localForage relies on native <a href="http://www.promisejs.org/">ES6 Promises</a>, but
-<a href="https://github.com/jakearchibald/ES6-Promises">ships with an awesome polyfill</a>
-for browsers that don't yet support ES6 Promises natively.</p>
+<p><code class="prettyprint">key(keyIndex, successCallback)</code></p>
 
-<h2>
-<a name="forcing-localstorage" class="anchor" href="#forcing-localstorage"><span class="octicon octicon-link"></span></a>Forcing localStorage</h2>
+<p>Get the name of a key based on its ID.</p>
 
-<p>For development, it can be easier to use the
-slower--but easier to debug--localStorage driver. Because localStorage can
-easily be inspected from the console, we allow for this with a simple global
-variable assignment: <code>window._FORCE_LOCALSTORAGE = true;</code>. If this is set to
-any truthy value, localStorage will be used regardless of driver.</p>
-      </section>
+<p><aside class="notice">This method is inherited from the localStorage API, but is acknowledged to be kinda weird.</aside></p>
+
+        
+      </div>
+      <div class="dark-box">
+        <div id="lang-selector">
+          
+            
+              
+                <a href="#" data-language-name="javascript">javascript</a>
+              
+            
+              
+                <a href="#" data-language-name="coffeescript">coffeescript</a>
+              
+            
+          
+        </div>
+      </div>
     </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/mozilla">mozilla</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
   </body>
 </html>
