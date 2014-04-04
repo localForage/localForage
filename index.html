@@ -117,6 +117,20 @@ use whichever you prefer. At the current time, these docs use the callback API.<
 
 <p><a href="https://github.com/mozilla/localForage/releases">Download localForage on GitHub.</a></p>
 
+<h1 id="installation">Installation</h1>
+<pre class="highlight shell"><span class="c"># Optional installation with bower:</span>
+bower install localforage
+</pre>
+<pre class="highlight html"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"localforage.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'my alert'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">alert</span><span class="p">);</span><span class="nt">&lt;/script&gt;</span>
+</pre>
+
+<p>To use localForage, <a href="https://github.com/mozilla/localForage/releases">download the latest release</a> or install with <a href="http://bower.io/">bower</a> (<code class="prettyprint">bower install localforage</code>).</p>
+
+<p>Then simply include the JS file and start using localForage:
+<code class="prettyprint">&lt;script src=&quot;localforage.js&quot;&gt;&lt;/script&gt;</code>. You don&rsquo;t need to run any init method
+or wait for any <code class="prettyprint">onready</code> events.</p>
+
 <h1 id="api">API</h1>
 
 <h2 id="getitem">getItem</h2>
