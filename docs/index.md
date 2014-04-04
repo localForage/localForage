@@ -54,6 +54,23 @@ use whichever you prefer. At the current time, these docs use the callback API.
 
 [Download localForage on GitHub.](https://github.com/mozilla/localForage/releases)
 
+# Installation
+
+``` bash
+# Optional installation with bower:
+bower install localforage
+```
+``` html
+<script src="localforage.js"></script>
+<script>localforage.getItem('my alert').then(alert);</script>
+```
+
+To use localForage, [download the latest release](https://github.com/mozilla/localForage/releases) or install with [bower](http://bower.io/) (`bower install localforage`).
+
+Then simply include the JS file and start using localForage:
+`<script src="localforage.js"></script>`. You don't need to run any init method
+or wait for any `onready` events.
+
 # API
 
 ## getItem
