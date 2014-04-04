@@ -9,6 +9,18 @@ IndexedDB or WebSQL support. Asynchronous storage is available in the current
 versions of all major browsers: Chrome, Firefox, IE, and Safari
 (including Safari Mobile). See below for detailed compatibility info.
 
+To use localForage, just drop a single JavaScript file into your page:
+
+```html
+<script src="localforage.js"></script>
+<script>localforage.getItem('something', myCallback);</script>
+```
+
+Download the [latest localForage from GitHub](https://github.com/mozilla/localForage/releases/latest), or install with
+[bower](http://bower.io):
+
+    bower install localforage
+
 ## Supported Browsers/Platforms
 
 localForage works in all modern browsers (IE 8 and above).
