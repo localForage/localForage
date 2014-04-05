@@ -125,7 +125,7 @@
     }
 
     /* if window.localForageConfig is set */
-    if(this.localForageConfig) {
+    if (this.localForageConfig) {
         localForage.config = this.localForageConfig;
     }
 
