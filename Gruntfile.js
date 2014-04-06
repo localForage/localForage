@@ -125,5 +125,5 @@ module.exports = exports = function(grunt) {
         require('./test/server.coffee').listen(8181);
     });
 
-    grunt.registerTask('test', ['build', 'server', 'casper', 'jshint']);
+    grunt.registerTask('test', ['build', 'jshint', 'server', 'casper']);
 };
