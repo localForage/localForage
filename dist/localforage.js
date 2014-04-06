@@ -1936,10 +1936,14 @@ requireModule('promise/polyfill').polyfill();
         }
     };
 
+    // Select our storage library.
     var storageLibrary;
-    // Check to see if IndexedDB is available; it's our preferred backend
-    // library.
-    if (indexedDB) {
+    // Check to see if IndexedDB is available and if it is the latest
+    // implementation; it's our preferred backend library. We use "_spec_test"
+    // as the name of the database because it's not the one we'll operate on,
+    // but it's useful to make sure its using the right spec.
+    // See: https://github.com/mozilla/localForage/issues/128
+    if (indexedDB && indexedDB.open('_localforage_spec_test', 1).onupgradeneeded === null ) {
         storageLibrary = localForage.INDEXEDDB;
     } else if (openDatabase) { // WebSQL is available, so we'll use that.
         storageLibrary = localForage.WEBSQL;
@@ -1947,8 +1951,8 @@ requireModule('promise/polyfill').polyfill();
         storageLibrary = localForage.LOCALSTORAGE;
     }
 
-    /* if window.localForageConfig is set */
-    if(this.localForageConfig) {
+    // If window.localForageConfig is set, use it for configuration.
+    if (this.localForageConfig) {
         localForage.config = this.localForageConfig;
     }
 
