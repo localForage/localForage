@@ -1937,9 +1937,9 @@ requireModule('promise/polyfill').polyfill();
     };
 
     var storageLibrary;
-    // Check to see if IndexedDB is available; it's our preferred backend
-    // library.
-    if (indexedDB) {
+    // Check to see if IndexedDB is available and if it is the latest
+    // implementation; it's our preferred backend library.
+    if (indexedDB && indexedDB.open('implementationCheck', 1).onupgradeneeded === null ) {
         storageLibrary = localForage.INDEXEDDB;
     } else if (openDatabase) { // WebSQL is available, so we'll use that.
         storageLibrary = localForage.WEBSQL;
@@ -1948,7 +1948,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     /* if window.localForageConfig is set */
-    if(this.localForageConfig) {
+    if (this.localForageConfig) {
         localForage.config = this.localForageConfig;
     }
 
