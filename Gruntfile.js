@@ -96,7 +96,8 @@ module.exports = exports = function(grunt) {
         uglify: {
             localforage: {
                 files: {
-                    'dist/localforage.min.js': ['dist/localforage.js']
+                    'dist/localforage.min.js': ['dist/localforage.js'],
+                    'docs/localforage.min.js': ['dist/localforage.js']
                 }
             }
         },
@@ -117,7 +118,7 @@ module.exports = exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'watch']);
     grunt.registerTask('build', ['concat', 'uglify']);
-    grunt.registerTask('publish', ['shell']);
+    grunt.registerTask('publish', ['build', 'shell']);
 
     grunt.registerTask('server', function() {
         grunt.log.writeln('Starting web server at test/server.coffee');
