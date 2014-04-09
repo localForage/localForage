@@ -93,6 +93,13 @@ module.exports = exports = function(grunt) {
                 command: 'rake publish ALLOW_DIRTY=true'
             }
         },
+        browserify: {
+          dist: {
+            files: {
+              'dist/localforage.browserify.js': ['src/localforage.js'],
+            }
+          }
+        },
         uglify: {
             localforage: {
                 files: {
