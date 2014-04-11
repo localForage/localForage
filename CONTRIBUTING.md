@@ -26,8 +26,10 @@ ask you to fix any errors or merge the code into master. Here are a few tips:
 * **write tests**: if you're adding new features, _please_ write tests; likewise, if you're fixing a bug that wasn't previously caught by a test, please add one
 * **run `make` before you commit**: this will build out the files in the `dist/` folder and ensure your tests pass
 
-Please commit changes inside the `dist/` folder along with your changes in the
-`src/` folder--**do not make these changes separate commits**.
+Please commit changes at the top-level folder along with your changes in the
+`src/` folder--**do not make these changes separate commits**. These are the
+built versions of `localforage.js` and `localforage.min.js`, which are
+used by bower.
 
 If you have any questions, need some help, or anything else, don't feel shy!
 The team behind this library is often available on IRC
