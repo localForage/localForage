@@ -7,7 +7,12 @@
     "ignore": [
         ".travis.yml",
         "CONTRIBUTING.md",
+        "config.rb",
+        "Gemfile",
+        "Gemfile.lock",
+        "Rakefile",
         "LICENSE",
+        "docs*",
         "examples*",
         "test*"
     ],
