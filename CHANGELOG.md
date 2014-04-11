@@ -3,6 +3,10 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [Version 0.4.0](https://github.com/mozilla/localForage/releases/tag/0.4.0)
+
+* Built versions of localForage are now in the top-level directory. ([2d11c90]((https://github.com/mozilla/localForage/commit/2d11c90)))
+
 ### [Version 0.3.0](https://github.com/mozilla/localForage/releases/tag/0.3.0)
 
 * Check code quality in test suite ([#124](https://github.com/mozilla/localForage/pull/124))
