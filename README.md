@@ -156,9 +156,9 @@ window.localForageConfig = {
 };
 ```
 
-**Please note that you must set `window.localForageConfig` _before_ you include
+**Note:** you must set `window.localForageConfig` _before_ you include
 `localforage.js` in your app. This issue is being worked on and will be fixed
-soon.**
+soon.
 
 ## RequireJS
 
