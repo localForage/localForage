@@ -72,7 +72,7 @@ module.exports = exports = function(grunt) {
                     banner:
                         '/*!\n' +
                         '    localForage -- Offline Storage, Improved\n' +
-                        '    Version 0.4.1\n' +
+                        '    Version 0.4.2\n' +
                         '    http://mozilla.github.io/localForage\n' +
                         '    (c) 2013-2014 Mozilla, Apache License 2.0\n' +
                         '*/\n'
