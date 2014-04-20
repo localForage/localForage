@@ -41,7 +41,7 @@ fallback in parentheses.
 * **Phonegap/Apache Cordova 1.2.0**
 * **Safari 3.1** (includes Mobile Safari)
 
-Different browsers have vary in [amount of local data that can be stored](http://www.html5rocks.com/en/tutorials/offline/quota-research/#toc-overview), so plan accordingly.
+Different browsers have [different storage limits](http://www.html5rocks.com/en/tutorials/offline/quota-research/#toc-overview), so plan accordingly.
 
 Note that, thanks to WebSQL support, apps packaged with Phonegap will also
 use asynchronous storage. Pretty slick!
