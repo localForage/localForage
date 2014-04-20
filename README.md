@@ -24,19 +24,19 @@ Download the [latest localForage from GitHub](https://github.com/mozilla/localFo
 ## Supported Browsers/Platforms
 
 localForage works in all modern browsers (IE 8 and above).
-_Asynchronous storage_ is available in all browsers **in bold**, with localStorage
-fallback in parentheses.
+_Asynchronous storage_ is available in all browsers **in bold**, with
+localStorage fallback in parentheses.
 
 * **Android Browser 2.1** 
 * **Blackberry 7**
-* **Chrome 23** (Chrome 4.0 with localStorage)
+* **Chrome 23** (Chrome 4.0+ with localStorage)
 * **Chrome for Android 32**
-* **Firefox 10** (Firefox 3.5 with localStorage)
+* **Firefox 10** (Firefox 3.5+ with localStorage)
 * **Firefox for Android 25**
 * **Firefox OS 1.0**
-* **IE 10** (IE 8 & 9 with localStorage)
+* **IE 10** (IE 8+ with localStorage)
 * **IE Mobile 10**
-* **Opera 15** (Opera 10.5 with localStorage)
+* **Opera 15** (Opera 10.5+ with localStorage)
 * **Opera Mobile 11**
 * **Phonegap/Apache Cordova 1.2.0**
 * **Safari 3.1** (includes Mobile Safari)
