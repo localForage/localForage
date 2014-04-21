@@ -1,7 +1,7 @@
 env:
   - SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 PATH=$TRAVIS_BUILD_DIR/slimerjs:$PATH
 addons:
-  firefox: "27.0"
+  firefox: "28.0"
 before_install:
   - npm install -g bower grunt-cli
   - bower install
