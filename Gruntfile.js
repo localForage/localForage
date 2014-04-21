@@ -86,11 +86,17 @@ module.exports = exports = function(grunt) {
             source: ['src/*.js', 'src/**/*.js']
         },
         shell: {
-            listFolders: {
+            publishDocs: {
                 options: {
                     stdout: true
                 },
                 command: 'rake publish ALLOW_DIRTY=true'
+            },
+            serveDocs: {
+                options: {
+                    stdout: true
+                },
+                command: 'bundle exec middleman server'
             }
         },
         uglify: {
@@ -118,7 +124,8 @@ module.exports = exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'watch']);
     grunt.registerTask('build', ['concat', 'uglify']);
-    grunt.registerTask('publish', ['build', 'shell']);
+    grunt.registerTask('docs', ['shell:serveDocs']);
+    grunt.registerTask('publish', ['build', 'shell:publishDocs']);
 
     grunt.registerTask('server', function() {
         grunt.log.writeln('Starting web server at test/server.coffee');
