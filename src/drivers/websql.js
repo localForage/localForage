@@ -138,6 +138,22 @@
 
                                 reject(error);
                             });
+                        }, function(sqlError) { // The transaction failed; check
+                                                // to see if it's a quota error.
+                            if (sqlError.code === sqlError.QUOTA_ERR) {
+                                // We reject the callback outright for now, but
+                                // it's worth trying to re-run the transaction.
+                                // Even if the user accepts the prompt to use
+                                // more storage on Safari, this error will
+                                // be called.
+                                //
+                                // TODO: Try to re-run the transaction.
+                                if (callback) {
+                                    callback(null, sqlError);
+                                }
+
+                                reject(sqlError);
+                            }
                         });
                     }
                 });

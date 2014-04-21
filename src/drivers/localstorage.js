@@ -334,7 +334,20 @@
 
                         reject(error);
                     } else {
-                        localStorage.setItem(keyPrefix + key, value);
+                        try {
+                            localStorage.setItem(keyPrefix + key, value);
+                        } catch (e) {
+                            // localStorage capacity exceeded.
+                            // TODO: Make this a specific error/event.
+                            if (e.name === 'QuotaExceededError' ||
+                                e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                                if (callback) {
+                                    callback(null, e);
+                                }
+
+                                reject(e);
+                            }
+                        }
 
                         if (callback) {
                             callback(originalValue);

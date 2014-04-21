@@ -134,12 +134,26 @@
                     resolve();
                 };
 
-                req.onerror = function removeItemOnError() {
+                req.onerror = function() {
                     if (callback) {
                         callback(req.error.name);
                     }
 
                     reject(req.error.name);
+                };
+
+                // The request will be aborted if we've exceeded our storage
+                // space. In this case, we will reject with a specific
+                // "QuotaExceededError".
+                req.onabort = function(event) {
+                    var error = event.target.error;
+                    if (error.name === 'QuotaExceededError') {
+                        if (callback) {
+                            callback(error.name);
+                        }
+
+                        reject(error.name);
+                    }
                 };
             });
         });
