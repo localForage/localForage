@@ -6,9 +6,7 @@
     'use strict';
 
     var keyPrefix = '';
-    var dbInfo = {
-        name: 'localforage'
-    };
+    var dbInfo = {};
     var Promise = this.Promise;
     var localStorage = null;
 
@@ -29,10 +27,8 @@
     // window.localForageConfig.
     function _initStorage(options) {
         if (options) {
-            for (var i in dbInfo) {
-                if (options[i] !== undefined) {
-                    dbInfo[i] = options[i];
-                }
+            for (var i in options) {
+                dbInfo[i] = options[i];
             }
         }
 

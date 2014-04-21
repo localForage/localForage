@@ -5,11 +5,7 @@
 
     var Promise = this.Promise;
     var db = null;
-    var dbInfo = {
-        name: 'localforage',
-        storeName: 'keyvaluepairs',
-        version: 1
-    };
+    var dbInfo = {};
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
     var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
@@ -25,10 +21,8 @@
     // previously exist), using any options set in window.localForageConfig.
     function _initStorage(options) {
         if (options) {
-            for (var i in dbInfo) {
-                if (options[i] !== undefined) {
-                    dbInfo[i] = options[i];
-                }
+            for (var i in options) {
+                dbInfo[i] = options[i];
             }
         }
 

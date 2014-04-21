@@ -18,15 +18,7 @@
     var Promise = this.Promise;
     var openDatabase = this.openDatabase;
     var db = null;
-    var dbInfo = {
-        description: '',
-        name: 'localforage',
-        // Default DB size is _JUST UNDER_ 5MB, as it's the highest size we can use
-        // without a prompt.
-        size: 4980736,
-        storeName: 'keyvaluepairs',
-        version: '1.0'
-    };
+    var dbInfo = {};
 
     var SERIALIZED_MARKER = '__lfsc__:';
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
@@ -55,9 +47,7 @@
     function _initStorage(options) {
         if (options) {
             for (var i in dbInfo) {
-                if (options[i] !== undefined) {
-                    dbInfo[i] = typeof(options[i]) !== 'string' ? options[i].toString() : options[i];
-                }
+                dbInfo[i] = typeof(options[i]) !== 'string' ? options[i].toString() : options[i];
             }
         }
 
