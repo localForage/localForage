@@ -149,18 +149,18 @@ variable a hash of options. Available options are `name`, `storeName`,
 
 Example:
 ```javascript
-window.localForageConfig = {
+localforage.config({
     name        : 'myApp',
     version     : 1.0,
     size        : 4980736, // Size of database, in bytes. WebSQL-only for now.
     storeName   : 'keyvaluepairs',
     description : 'some description'
-};
+});
 ```
 
-**Note:** you must set `window.localForageConfig` _before_ you include
-`localforage.js` in your app. This issue is being worked on and will be fixed
-soon.
+**Note:** you must call `config()` _before_ you interact with your data. This
+means calling `config()` before using `getItem()`, `setItem()`, `removeItem()`,
+`clear()`, `key()`, or `length()`.
 
 ## RequireJS
 
