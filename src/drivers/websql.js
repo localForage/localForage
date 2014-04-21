@@ -69,7 +69,8 @@
 
             // Create our key/value table if it doesn't exist.
             db.transaction(function (t) {
-                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName + ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
+                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName + 
+                             ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
                     resolve();
                 }, null);
             });
@@ -78,10 +79,11 @@
 
     function getItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('SELECT * FROM ' + dbInfo.storeName + ' WHERE key = ? LIMIT 1', [key], function (t, results) {
+                    t.executeSql('SELECT * FROM ' + dbInfo.storeName + 
+                                 ' WHERE key = ? LIMIT 1', [key], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).value : null;
 
                         // Check to see if this is serialized content we need to
@@ -95,7 +97,13 @@
                         }
 
                         resolve(result);
-                    }, null);
+                    }, function(t, error) {
+                        if (callback) {
+                            callback(null, error);
+                        }
+
+                        reject(error);
+                    });
                 });
             });
         });
@@ -115,18 +123,25 @@
                 // Save the original value to pass to the callback.
                 var originalValue = value;
 
-                _serialize(value, function setItemserializeValueCallback(error, value) {
+                _serialize(value, function(value, error) {
                     if (error) {
                         reject(error);
                     } else {
                         db.transaction(function (t) {
-                            t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName + ' (key, value) VALUES (?, ?)', [key, value], function() {
+                            t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName + 
+                                         ' (key, value) VALUES (?, ?)', [key, value], function() {
                                 if (callback) {
                                     callback(originalValue);
                                 }
 
                                 resolve(originalValue);
-                            }, null);
+                            }, function(t, error) {
+                                if (callback) {
+                                    callback(null, error);
+                                }
+
+                                reject(error);
+                            });
                         });
                     }
                 });
@@ -136,16 +151,23 @@
 
     function removeItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('DELETE FROM ' + dbInfo.storeName + ' WHERE key = ?', [key], function() {
+                    t.executeSql('DELETE FROM ' + dbInfo.storeName + 
+                                 ' WHERE key = ?', [key], function() {
                         if (callback) {
                             callback();
                         }
 
                         resolve();
-                    }, null);
+                    }, function(t, error) {
+                        if (callback) {
+                            callback(error);
+                        }
+
+                        reject(error);
+                    });
                 });
             });
         });
@@ -155,7 +177,7 @@
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function (t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName, [], function() {
@@ -164,7 +186,13 @@
                         }
 
                         resolve();
-                    }, null);
+                    }, function(t, error) {
+                        if (callback) {
+                            callback(error);
+                        }
+
+                        reject(error);
+                    });
                 });
             });
         });
@@ -174,11 +202,12 @@
     // localForage.
     function length(callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function (t) {
                     // Ahhh, SQL makes this one soooooo easy.
-                    t.executeSql('SELECT COUNT(key) as c FROM ' + dbInfo.storeName, [], function (t, results) {
+                    t.executeSql('SELECT COUNT(key) as c FROM ' + 
+                                 dbInfo.storeName, [], function (t, results) {
                         var result = results.rows.item(0).c;
 
                         if (callback) {
@@ -186,7 +215,13 @@
                         }
 
                         resolve(result);
-                    }, null);
+                    }, function(t, error) {
+                        if (callback) {
+                            callback(null, error);
+                        }
+
+                        reject(error);
+                    });
                 });
             });
         });
@@ -201,10 +236,11 @@
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function (t) {
-                    t.executeSql('SELECT key FROM ' + dbInfo.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                    t.executeSql('SELECT key FROM ' + dbInfo.storeName +
+                                 ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;
 
                         if (callback) {
@@ -212,7 +248,13 @@
                         }
 
                         resolve(result);
-                    }, null);
+                    }, function(t, error) {
+                        if (callback) {
+                            callback(null, error);
+                        }
+
+                        reject(error);
+                    });
                 });
             });
         });
@@ -373,9 +415,7 @@
                 }
             }
 
-            var str = _bufferToString(buffer);
-
-            callback(null, marker + str);
+            callback(marker + _bufferToString(buffer));
         } else if (valueString === "[object Blob]") {
             // Conver the blob to a binaryArray and then to a string.
             var fileReader = new FileReader();
@@ -383,18 +423,19 @@
             fileReader.onload = function() {
                 var str = _bufferToString(this.result);
 
-                callback(null, SERIALIZED_MARKER + TYPE_BLOB + str);
+                callback(SERIALIZED_MARKER + TYPE_BLOB + str);
             };
 
             fileReader.readAsArrayBuffer(value);
         } else {
             try {
-                callback(null, JSON.stringify(value));
+                callback(JSON.stringify(value));
             } catch (e) {
                 if (window.console && window.console.error) {
                     window.console.error("Couldn't convert value into a JSON string: ", value);
                 }
-                callback(e);
+
+                callback(null, e);
             }
         }
     }
