@@ -128,9 +128,11 @@ module.exports = exports = function(grunt) {
     grunt.registerTask('publish', ['build', 'shell:publishDocs']);
 
     grunt.registerTask('server', function() {
-        grunt.log.writeln('Starting web server at test/server.coffee');
+        grunt.log.writeln('Starting web servers at test/server.coffee');
 
         require('./test/server.coffee').listen(8181);
+        // Used to test cross-origin iframes.
+        require('./test/server.coffee').listen(8182);
     });
 
     grunt.registerTask('test', ['build', 'jshint', 'server', 'casper']);

@@ -45,6 +45,8 @@
     // Open the WebSQL database (automatically creates one if one didn't
     // previously exist), using any options set in window.localForageConfig.
     function _initStorage(options) {
+        var _this = this;
+
         if (options) {
             for (var i in dbInfo) {
                 dbInfo[i] = typeof(options[i]) !== 'string' ? options[i].toString() : options[i];
@@ -54,8 +56,12 @@
         return new Promise(function(resolve) {
             // Open the database; the openDatabase API will automatically
             // create it for us if it doesn't exist.
-            db = openDatabase(dbInfo.name, dbInfo.version, dbInfo.description,
-                              dbInfo.size);
+            try {
+                db = openDatabase(dbInfo.name, dbInfo.version,
+                                  dbInfo.description, dbInfo.size);
+            } catch (e) {
+                return _this.setDriver('localStorageWrapper').then(resolve);
+            }
 
             // Create our key/value table if it doesn't exist.
             db.transaction(function (t) {
