@@ -52,7 +52,7 @@ versions of all major browsers: Chrome, Firefox, IE, and Safari
 localForage supports both a callback-based and Promises-based API, so you can
 use whichever you prefer. At the current time, these docs use the callback API.
 
-[Download localForage on GitHub.](https://github.com/mozilla/localForage/releases)
+[Download localforage.min.js](http://mozilla.github.io/localForage/localforage.min.js)
 
 # Installation
 
