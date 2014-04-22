@@ -3,6 +3,10 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [Version 0.6.1](https://github.com/mozilla/localForage/releases/tag/0.6.1)
+
+* Put built versions back in `dist/` directory.
+
 ### [Version 0.6.0](https://github.com/mozilla/localForage/releases/tag/0.6.0)
 
 * Add `localforage.config`. ([#40](https://github.com/mozilla/localForage/pull/140))
