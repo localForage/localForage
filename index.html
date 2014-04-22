@@ -115,7 +115,7 @@ versions of all major browsers: Chrome, Firefox, IE, and Safari
 <p>localForage supports both a callback-based and Promises-based API, so you can
 use whichever you prefer. At the current time, these docs use the callback API.</p>
 
-<p><a href="https://github.com/mozilla/localForage/releases">Download localForage on GitHub.</a></p>
+<p><a href="http://mozilla.github.io/localForage/localforage.min.js">Download localforage.min.js</a></p>
 
 <h1 id="installation">Installation</h1>
 <pre class="highlight shell"><span class="c"># Optional installation with bower:</span>
@@ -131,7 +131,9 @@ bower install localforage
 <code class="prettyprint">&lt;script src=&quot;localforage.js&quot;&gt;&lt;/script&gt;</code>. You don&rsquo;t need to run any init method
 or wait for any <code class="prettyprint">onready</code> events.</p>
 
-<h1 id="api">API</h1>
+<h1 id="data-api">Data API</h1>
+
+<p>These APIs deal with getting and setting data in the offline store.</p>
 
 <h2 id="getitem">getItem</h2>
 <pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
@@ -151,7 +153,12 @@ or wait for any <code class="prettyprint">onready</code> events.</p>
 <p>Gets an item from the storage library and supplies the result to a callback.
 If the key does not exist, <code class="prettyprint">getItem()</code> will return <code class="prettyprint">null</code>.</p>
 
-<p><aside class="notice">Even if <code class="prettyprint">undefined</code> is saved, <code class="prettyprint">null</code> will be returned by <code class="prettyprint">getItem()</code>. This is due to a <a href="https://github.com/mozilla/localForage/pull/42">limitation in localStorage</a>, and for compatibility reasons localForage cannot store the value <code class="prettyprint">undefined</code>.</aside></p>
+<p><aside class="notice">
+  Even if <code class="prettyprint">undefined</code> is saved, <code class="prettyprint">null</code> will be returned by <code class="prettyprint">getItem()</code>. This
+  is due to a
+  <a href="https://github.com/mozilla/localForage/pull/42">limitation in localStorage</a>,
+  and for compatibility reasons localForage cannot store the value <code class="prettyprint">undefined</code>.
+</aside></p>
 
 <h2 id="setitem">setItem</h2>
 <pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="s1">'some value'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
@@ -172,7 +179,7 @@ If the key does not exist, <code class="prettyprint">getItem()</code> will retur
 
 <span class="nx">request</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'readystatechange'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// readyState DONE
-</span>        <span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'my photo'</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">response</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">img</span><span class="p">)</span> <span class="p">{</span>
+</span>        <span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'photo'</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">response</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">img</span><span class="p">)</span> <span class="p">{</span>
             <span class="c1">// This will be a valid blob URI for an &lt;img&gt; tag.
 </span>            <span class="kd">var</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="nx">image</span><span class="p">]);</span>
             <span class="kd">var</span> <span class="nx">imageURI</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">blob</span><span class="p">);</span>
@@ -196,7 +203,7 @@ If the key does not exist, <code class="prettyprint">getItem()</code> will retur
 
 <span class="nx">request</span><span class="p">.</span><span class="na">addEventListener</span> <span class="s">"readystatechange"</span><span class="p">,</span> <span class="o">-&gt;</span>
   <span class="k">if</span> <span class="nx">request</span><span class="p">.</span><span class="na">readyState</span> <span class="o">==</span> <span class="mi">4</span> <span class="c1"># readyState DONE
-</span>    <span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"arrayBuffer"</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="na">response</span><span class="p">,</span> <span class="p">(</span><span class="nx">img</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span>    <span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"photo"</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="na">response</span><span class="p">,</span> <span class="p">(</span><span class="nx">img</span><span class="p">)</span> <span class="o">-&gt;</span>
       <span class="c1"># This will be a valid blob URI for an &lt;img&gt; tag.
 </span>      <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span> <span class="p">[</span><span class="nx">image</span><span class="p">]</span>
       <span class="nx">imageURI</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="na">URL</span><span class="p">.</span><span class="na">createObjectURL</span> <span class="nx">blob</span>
@@ -225,7 +232,11 @@ objects:</p>
 <li><strong><code class="prettyprint">String</code></strong></li>
 </ul>
 
-<p><aside class="notice">When using localStorage and WebSQL backends, binary data will be serialized before being saved (and retrieved). This serialization will incur a size increase when binary data is saved.</aside></p>
+<p><aside class="notice">
+  When using localStorage and WebSQL backends, binary data will be serialized
+  before being saved (and retrieved). This serialization will incur a size
+  increase when binary data is saved.
+</aside></p>
 
 <h2 id="removeitem">removeItem</h2>
 <pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
@@ -257,7 +268,10 @@ objects:</p>
 
 <p>Removes every key from the database, returning it to a blank slate.</p>
 
-<p><aside class="warning"><code class="prettyprint">localforage.clear()</code> will remove <strong>every item in the offline store</strong>. Use this method with caution.</aside></p>
+<p><aside class="warning">
+  <code class="prettyprint">localforage.clear()</code> will remove <strong>every item in the offline store</strong>. Use
+  this method with caution.
+</aside></p>
 
 <h2 id="length">length</h2>
 <pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">length</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">numberOfKeys</span><span class="p">)</span> <span class="p">{</span>
@@ -289,7 +303,106 @@ objects:</p>
 
 <p>Get the name of a key based on its ID.</p>
 
-<p><aside class="notice">This method is inherited from the localStorage API, but is acknowledged to be kinda weird.</aside></p>
+<p><aside class="notice">
+  This method is inherited from the localStorage API, but is acknowledged to
+  be kinda weird.
+</aside></p>
+
+<h1 id="settings-api">Settings API</h1>
+
+<p>These methods allow driver selection and database configuration. These methods
+should generally be called before the first <em>data</em> API call to localForage (
+i.e. before you call <code class="prettyprint">getItem()</code> or <code class="prettyprint">length()</code>, etc.)</p>
+
+<h2 id="setdriver">setDriver</h2>
+<pre class="highlight javascript"><span class="c1">// Force localStorage to be the backend driver.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">(</span><span class="s1">'localStorageWrapper'</span><span class="p">);</span>
+</pre>
+<pre class="highlight coffeescript"><span class="c1"># Force localStorage to be the backend driver.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="s">"localStorageWrapper"</span>
+</pre>
+
+<p><code class="prettyprint">setDriver(driverName)</code></p>
+
+<p>Force usage of a particular driver, if it is available.</p>
+
+<p>By default, localForage selects backend drivers for the datastore in this
+order:</p>
+
+<ol>
+<li>IndexedDB</li>
+<li>WebSQL</li>
+<li>localStorage</li>
+</ol>
+
+<p>If you would like to force usage of a particular driver you can use
+<code class="prettyprint">setDriver()</code>.</p>
+
+<p><aside class="notice">
+  If the backend you&rsquo;re trying to load isn&rsquo;t available on the user&rsquo;s browser,
+  localForage will continue to use whatever backend driver it was previously
+  using. This means that if you try to force a Gecko browser to use WebSQL,
+  it will fail and continue using IndexedDB.
+</aside></p>
+
+<h2 id="config">config</h2>
+<pre class="highlight javascript"><span class="c1">// This will rename the database from "localforage"
+// to "Hipster PDA App".
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+    <span class="na">name</span><span class="p">:</span> <span class="s1">'Hipster PDA App'</span>
+<span class="p">});</span>
+</pre>
+<pre class="highlight coffeescript"><span class="c1"># This will rename the database from "localforage"
+# to "Hipster PDA App".
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">config</span>
+  <span class="na">name</span><span class="o">:</span> <span class="s">"Hipster PDA App"</span>
+</pre>
+
+<p><code class="prettyprint">config(options)</code></p>
+
+<p>Set and persist localForage options. This must be called <em>before</em> any other
+calls to localForage are made, but can be called after localForage is loaded.
+If you set any config values with this method they will persist after driver
+changes, so you can call <code class="prettyprint">config()</code> then <code class="prettyprint">setDriver()</code>. The following config
+values can be set:</p>
+
+<dl>
+  <dt>name</dt>
+  <dd>
+    The name of the database. May appear during storage limit prompts.
+    Useful to use the name of your app here.<br>
+    Default: <code>'localforage'</code>
+  </dd>
+  <dt>size</dt>
+  <dd>
+    The size of the database in bytes. Used only in WebSQL for now.<br>
+    Default: <code>4980736</code>
+  </dd>
+  <dt>storeName</dt>
+  <dd>
+    The name of the datastore. In IndexedDB this is the
+    <code>dataStore</code>, in WebSQL this is the name of the key/value
+    table in the database. In localStorage, this is used as a key prefix for
+    all keys stored in localStorage.<br>
+    Default: <code>'keyvaluepairs'</code>
+  </dd>
+  <dt>version</dt>
+  <dd>
+    The version of your database. May be used for upgrades in the future;
+    currently unused.<br>
+    Default: <code>1.0</code>
+  </dd>
+  <dt>description</dt>
+  <dd>
+    A description of the database, essentially for developer usage.<br>
+    Default: <code>''</code>
+  </dd>
+</dl>
+
+<p><aside class="notice">
+  Unlike most of the localForage API, the <code>config</code> method is
+  synchronous.
+</aside></p>
 
         
       </div>
