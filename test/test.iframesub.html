@@ -9,7 +9,7 @@
 
     <div id="myText"></div>
 
-    <script src="../localforage.js"></script>
+    <script src="../dist/localforage.js"></script>
     <script>localforage.setItem('my cool key', 'I have been set').then(function() {
         localforage.getItem('my cool key').then(function(value) {
             document.getElementById('myText').innerHTML = value;
