@@ -2,7 +2,8 @@
     'use strict';
 
     // Promises!
-    var Promise = this.Promise;
+    var Promise = (typeof module !== 'undefined' && module.exports) ? require('promise')
+            : this.Promise;
 
     // Avoid those magic constants!
     var MODULE_TYPE_DEFINE = 1;

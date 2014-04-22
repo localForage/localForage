@@ -3,7 +3,10 @@
 
     // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
 
-    var Promise = this.Promise;
+    // Promises!
+    var Promise = (typeof module !== 'undefined' && module.exports) ? require('promise')
+            : this.Promise;
+
     var db = null;
     var dbInfo = {
         name: 'localforage',

@@ -782,7 +782,10 @@ requireModule('promise/polyfill').polyfill();
 
     // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
 
-    var Promise = this.Promise;
+    // Promises!
+    var Promise = (typeof module !== 'undefined' && module.exports) ? require('promise')
+            : this.Promise;
+
     var db = null;
     var dbInfo = {
         name: 'localforage',
@@ -1042,7 +1045,11 @@ requireModule('promise/polyfill').polyfill();
     var dbInfo = {
         name: 'localforage'
     };
-    var Promise = this.Promise;
+
+    // Promises!
+    var Promise = (typeof module !== 'undefined' && module.exports) ? require('promise')
+            : this.Promise;
+
     var localStorage = null;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
@@ -1416,7 +1423,10 @@ requireModule('promise/polyfill').polyfill();
     // verbose ways of binary <-> string data storage.
     var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-    var Promise = this.Promise;
+    // Promises!
+    var Promise = (typeof module !== 'undefined' && module.exports) ? require('promise')
+            : this.Promise;
+
     var openDatabase = this.openDatabase;
     var db = null;
     var dbInfo = {
@@ -1825,7 +1835,8 @@ requireModule('promise/polyfill').polyfill();
     'use strict';
 
     // Promises!
-    var Promise = this.Promise;
+    var Promise = (typeof module !== 'undefined' && module.exports) ? require('promise')
+            : this.Promise;
 
     // Avoid those magic constants!
     var MODULE_TYPE_DEFINE = 1;

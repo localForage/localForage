@@ -2,6 +2,7 @@
 .swp
 bower_components
 node_modules
+components
 dist/localforage.cmp.js
 
 ### Ruby Stuff for slate docs
