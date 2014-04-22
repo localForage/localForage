@@ -4,6 +4,10 @@ casper.test.begin "Testing localforage configuration for #{casper.DRIVER_NAME}",
   casper.start "#{casper.TEST_URL}test.config.html", ->
     test.info "Trying to set config values that are respected across drivers"
 
+    test.assertEval ->
+      localforage.config("name") is "localforage"
+    , "config('name') returns a default config value"
+
     if casper.DRIVER_NAME is "IndexedDB"
       @evaluate ->
         localforage.setDriver "asyncStorage"
@@ -16,7 +20,16 @@ casper.test.begin "Testing localforage configuration for #{casper.DRIVER_NAME}",
       @evaluate ->
         localforage.setDriver "webSQLStorage"
 
-  casper.wait 350 # Lazy, whatever
+  casper.wait 250 # Lazy, whatever
+
+  casper.then ->
+    @evaluate ->
+      localforage.config
+        name: "myCoolApp"
+        storeName: "storefront"
+        version: 2.0
+
+  casper.wait 250 # Lazy, whatever
 
   casper.then ->
     @evaluate ->
@@ -27,11 +40,13 @@ casper.test.begin "Testing localforage configuration for #{casper.DRIVER_NAME}",
       if casper.DRIVER_NAME is "IndexedDB"
         @evaluate ->
           localforage.setItem 'some key', 'some value', ->
-            indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB;
-            openreq = indexedDB.open(window.localForageConfig.name, window.localForageConfig.version)
+            indexedDB = (indexedDB || window.indexedDB ||
+                         window.webkitIndexedDB || window.mozIndexedDB ||
+                         window.OIndexedDB || window.msIndexedDB)
+            openreq = indexedDB.open("myCoolApp", 2.0)
 
             openreq.onsuccess = ->
-              store = openreq.result.transaction(window.localForageConfig.storeName, 'readonly').objectStore(window.localForageConfig.storeName)
+              store = openreq.result.transaction("storefront", 'readonly').objectStore("storefront")
 
               req = store.get('some key')
 
@@ -46,13 +61,13 @@ casper.test.begin "Testing localforage configuration for #{casper.DRIVER_NAME}",
 
       if casper.DRIVER_NAME is "localStorage"
         test.assertEval ->
-          JSON.parse(localStorage["#{window.localForageConfig.name}/some key"]) is "some value"
+          JSON.parse(localStorage["myCoolApp/some key"]) is "some value"
         , "localStorageWrapper namespaces keys from config"
 
       if casper.DRIVER_NAME is "WebSQL"
         @evaluate ->
-          window.openDatabase(window.localForageConfig.name, window.localForageConfig.version.toString(), "", 4980736).transaction (t) ->
-            t.executeSql "SELECT * FROM #{window.localForageConfig.storeName} WHERE key = ? LIMIT 1", ['some key'], (t, results) ->
+          window.openDatabase("myCoolApp", (2.0).toString(), "", 4980736).transaction (t) ->
+            t.executeSql "SELECT * FROM storefront WHERE key = ? LIMIT 1", ['some key'], (t, results) ->
               window._result = JSON.parse(results.rows.item(0).value)
               __utils__.findOne('.status').id = "check-key"
 
@@ -60,6 +75,21 @@ casper.test.begin "Testing localforage configuration for #{casper.DRIVER_NAME}",
           test.assertEval ->
             window._result is 'some value'
           , "WebSQL database and table exists when config is set"
+
+  casper.wait 150
+
+  casper.then ->
+    test.assertEval ->
+      typeof localforage.config() is 'object'
+    , "config() returns all config values"
+
+    test.assertEval ->
+      localforage.config("name") is "myCoolApp"
+    , "config('name') returns a single config value"
+
+    test.assertEval ->
+      (localforage.config {name: "myNewApp"}).toString() is "Error: Can't call config() after localforage has been used."
+    , "Config should return an Error after API calls have been made"
 
   casper.run ->
     test.done()

@@ -1,15 +1,11 @@
+// Some code originally from async_storage.js in
+// [Gaia](https://github.com/mozilla-b2g/gaia).
 (function() {
     'use strict';
 
-    // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
-
     var Promise = this.Promise;
     var db = null;
-    var dbInfo = {
-        name: 'localforage',
-        storeName: 'keyvaluepairs',
-        version: 1
-    };
+    var dbInfo = {};
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
     var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
@@ -25,10 +21,8 @@
     // previously exist), using any options set in window.localForageConfig.
     function _initStorage(options) {
         if (options) {
-            for (var i in dbInfo) {
-                if (options[i] !== undefined) {
-                    dbInfo[i] = options[i];
-                }
+            for (var i in options) {
+                dbInfo[i] = options[i];
             }
         }
 
@@ -52,20 +46,28 @@
         var _this = this;
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readonly')
+                              .objectStore(dbInfo.storeName);
                 var req = store.get(key);
-                req.onsuccess = function getItemOnSuccess() {
+
+                req.onsuccess = function() {
                     var value = req.result;
                     if (value === undefined) {
                         value = null;
                     }
+
                     if (callback) {
                         callback(value);
                     }
 
                     resolve(value);
                 };
-                req.onerror = function getItemOnError() {
+
+                req.onerror = function() {
+                    if (callback) {
+                        callback(null, req.error.name);
+                    }
+
                     reject(req.error.name);
                 };
             });
@@ -76,7 +78,8 @@
         var _this = this;
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readwrite')
+                              .objectStore(dbInfo.storeName);
 
                 // Cast to undefined so the value passed to callback/promise is
                 // the same as what one would get out of `getItem()` later.
@@ -88,14 +91,18 @@
                 }
 
                 var req = store.put(value, key);
-                req.onsuccess = function setItemOnSuccess() {
+                req.onsuccess = function() {
                     if (callback) {
                         callback(value);
                     }
 
                     resolve(value);
                 };
-                req.onerror = function setItemOnError() {
+                req.onerror = function() {
+                    if (callback) {
+                        callback(null, req.error.name);
+                    }
+
                     reject(req.error.name);
                 };
             });
@@ -106,7 +113,8 @@
         var _this = this;
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readwrite')
+                              .objectStore(dbInfo.storeName);
 
                 // We use `['delete']` instead of `.delete` because IE 8 will
                 // throw a fit if it sees the reserved word "delete" in this
@@ -118,14 +126,34 @@
                 // make sure the minify step doesn't optimise this to `.delete`,
                 // though it currently doesn't.
                 var req = store['delete'](key);
-                req.onsuccess = function removeItemOnSuccess() {
+                req.onsuccess = function() {
                     if (callback) {
                         callback();
                     }
+
                     resolve();
                 };
-                req.onerror = function removeItemOnError() {
+
+                req.onerror = function() {
+                    if (callback) {
+                        callback(req.error.name);
+                    }
+
                     reject(req.error.name);
+                };
+
+                // The request will be aborted if we've exceeded our storage
+                // space. In this case, we will reject with a specific
+                // "QuotaExceededError".
+                req.onabort = function(event) {
+                    var error = event.target.error;
+                    if (error.name === 'QuotaExceededError') {
+                        if (callback) {
+                            callback(error.name);
+                        }
+
+                        reject(error.name);
+                    }
                 };
             });
         });
@@ -135,16 +163,23 @@
         var _this = this;
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readwrite').objectStore(dbInfo.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readwrite')
+                              .objectStore(dbInfo.storeName);
                 var req = store.clear();
-                req.onsuccess = function clearOnSuccess() {
+
+                req.onsuccess = function() {
                     if (callback) {
                         callback();
                     }
 
                     resolve();
                 };
-                req.onerror = function clearOnError() {
+
+                req.onerror = function() {
+                    if (callback) {
+                        callback(null, req.error.name);
+                    }
+
                     reject(req.error.name);
                 };
             });
@@ -155,16 +190,23 @@
         var _this = this;
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readonly')
+                              .objectStore(dbInfo.storeName);
                 var req = store.count();
-                req.onsuccess = function lengthOnSuccess() {
+
+                req.onsuccess = function() {
                     if (callback) {
                         callback(req.result);
                     }
 
                     resolve(req.result);
                 };
-                req.onerror = function lengthOnError() {
+
+                req.onerror = function() {
+                    if (callback) {
+                        callback(null, req.error.name);
+                    }
+
                     reject(req.error.name);
                 };
             });
@@ -185,11 +227,12 @@
             }
 
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readonly').objectStore(dbInfo.storeName);
+                var store = db.transaction(dbInfo.storeName, 'readonly')
+                              .objectStore(dbInfo.storeName);
 
                 var advanced = false;
                 var req = store.openCursor();
-                req.onsuccess = function keyOnSuccess() {
+                req.onsuccess = function() {
                     var cursor = req.result;
                     if (!cursor) {
                         // this means there weren't enough keys
@@ -201,8 +244,10 @@
 
                         return;
                     }
+
                     if (n === 0) {
-                        // We have the first key, return it if that's what they wanted
+                        // We have the first key, return it if that's what they
+                        // wanted.
                         if (callback) {
                             callback(cursor.key);
                         }
@@ -210,7 +255,8 @@
                         resolve(cursor.key);
                     } else {
                         if (!advanced) {
-                            // Otherwise, ask the cursor to skip ahead n records
+                            // Otherwise, ask the cursor to skip ahead n
+                            // records.
                             advanced = true;
                             cursor.advance(n);
                         } else {
@@ -224,7 +270,11 @@
                     }
                 };
 
-                req.onerror = function keyOnError() {
+                req.onerror = function() {
+                    if (callback) {
+                        callback(null, req.error.name);
+                    }
+
                     reject(req.error.name);
                 };
             });

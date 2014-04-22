@@ -72,7 +72,7 @@ module.exports = exports = function(grunt) {
                     banner:
                         '/*!\n' +
                         '    localForage -- Offline Storage, Improved\n' +
-                        '    Version 0.4.2\n' +
+                        '    Version 0.6.0\n' +
                         '    http://mozilla.github.io/localForage\n' +
                         '    (c) 2013-2014 Mozilla, Apache License 2.0\n' +
                         '*/\n'
@@ -86,11 +86,17 @@ module.exports = exports = function(grunt) {
             source: ['src/*.js', 'src/**/*.js']
         },
         shell: {
-            listFolders: {
+            publishDocs: {
                 options: {
                     stdout: true
                 },
                 command: 'rake publish ALLOW_DIRTY=true'
+            },
+            serveDocs: {
+                options: {
+                    stdout: true
+                },
+                command: 'bundle exec middleman server'
             }
         },
         uglify: {
@@ -118,12 +124,15 @@ module.exports = exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'watch']);
     grunt.registerTask('build', ['concat', 'uglify']);
-    grunt.registerTask('publish', ['build', 'shell']);
+    grunt.registerTask('docs', ['shell:serveDocs']);
+    grunt.registerTask('publish', ['build', 'shell:publishDocs']);
 
     grunt.registerTask('server', function() {
-        grunt.log.writeln('Starting web server at test/server.coffee');
+        grunt.log.writeln('Starting web servers at test/server.coffee');
 
         require('./test/server.coffee').listen(8181);
+        // Used to test cross-origin iframes.
+        require('./test/server.coffee').listen(8182);
     });
 
     grunt.registerTask('test', ['build', 'jshint', 'server', 'casper']);

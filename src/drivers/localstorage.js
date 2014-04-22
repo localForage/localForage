@@ -6,9 +6,7 @@
     'use strict';
 
     var keyPrefix = '';
-    var dbInfo = {
-        name: 'localforage'
-    };
+    var dbInfo = {};
     var Promise = this.Promise;
     var localStorage = null;
 
@@ -29,10 +27,8 @@
     // window.localForageConfig.
     function _initStorage(options) {
         if (options) {
-            for (var i in dbInfo) {
-                if (options[i] !== undefined) {
-                    dbInfo[i] = options[i];
-                }
+            for (var i in options) {
+                dbInfo[i] = options[i];
             }
         }
 
@@ -94,11 +90,15 @@
                     }
 
                     if (callback) {
-                        callback(result);
+                        callback(result, null);
                     }
 
                     resolve(result);
                 } catch (e) {
+                    if (callback) {
+                        callback(null, e);
+                    }
+
                     reject(e);
                 }
             });
@@ -284,9 +284,7 @@
                 }
             }
 
-            var str = _bufferToString(buffer);
-
-            callback(null, marker + str);
+            callback(marker + _bufferToString(buffer));
         } else if (valueString === "[object Blob]") {
             // Conver the blob to a binaryArray and then to a string.
             var fileReader = new FileReader();
@@ -294,18 +292,19 @@
             fileReader.onload = function() {
                 var str = _bufferToString(this.result);
 
-                callback(null, SERIALIZED_MARKER + TYPE_BLOB + str);
+                callback(SERIALIZED_MARKER + TYPE_BLOB + str);
             };
 
             fileReader.readAsArrayBuffer(value);
         } else {
             try {
-                callback(null, JSON.stringify(value));
+                callback(JSON.stringify(value));
             } catch (e) {
                 if (window.console && window.console.error) {
                     window.console.error("Couldn't convert value into a JSON string: ", value);
                 }
-                callback(e);
+
+                callback(null, e);
             }
         }
     }
@@ -327,11 +326,28 @@
                 // Save the original value to pass to the callback.
                 var originalValue = value;
 
-                _serialize(value, function setSerialized(error, value) {
+                _serialize(value, function(value, error) {
                     if (error) {
+                        if (callback) {
+                            callback(null, error);
+                        }
+
                         reject(error);
                     } else {
-                        localStorage.setItem(keyPrefix + key, value);
+                        try {
+                            localStorage.setItem(keyPrefix + key, value);
+                        } catch (e) {
+                            // localStorage capacity exceeded.
+                            // TODO: Make this a specific error/event.
+                            if (e.name === 'QuotaExceededError' ||
+                                e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                                if (callback) {
+                                    callback(null, e);
+                                }
+
+                                reject(e);
+                            }
+                        }
 
                         if (callback) {
                             callback(originalValue);
