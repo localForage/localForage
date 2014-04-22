@@ -44,7 +44,7 @@ casper.test.begin "Testing localforage driver selection", NUMBER_OF_TESTS, (test
   unless casper.ENGINE is 'slimerjs'
     casper.then ->
       @evaluate ->
-        require ['localforage'], (lf) ->
+        require ['../dist/localforage'], (lf) ->
           window._localforage = lf
 
           lf.ready ->

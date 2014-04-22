@@ -1,4 +1,4 @@
-define(['../localforage'], function(lf) {
+define(['../dist/localforage'], function(lf) {
     lf.ready(function() {
         var key = 'STORE_KEY';
         var value = 'What we save offline';

@@ -67,7 +67,7 @@ module.exports = exports = function(grunt) {
                     'src/drivers/**/*.js',
                     'src/localforage.js'
                 ],
-                dest: 'localforage.js',
+                dest: 'dist/localforage.js',
                 options: {
                     banner:
                         '/*!\n' +
@@ -96,8 +96,8 @@ module.exports = exports = function(grunt) {
         uglify: {
             localforage: {
                 files: {
-                    'localforage.min.js': ['localforage.js'],
-                    'docs/localforage.min.js': ['localforage.js']
+                    'dist/localforage.min.js': ['dist/localforage.js'],
+                    'docs/localforage.min.js': ['dist/localforage.js']
                 }
             }
         },

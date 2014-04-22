@@ -8,7 +8,7 @@
     "storage",
     "websql"
   ],
-  "version": "0.4.2",
+  "version": "0.4.3",
   "homepage": "https://github.com/mozilla/localForage",
   "repository": {
     "type": "git",
@@ -31,8 +31,8 @@
     "grunt-shell": "^0.6.4",
     "load-grunt-tasks": "^0.4.0"
   },
-  "browser": "localforage.js",
-  "main": "localforage.js",
+  "browser": "dist/localforage.js",
+  "main": "dist/localforage.js",
   "licence": "Apache-2.0",
   "bugs": {
     "url": "http://github.com/mozilla/localForage/issues"
