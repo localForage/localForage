@@ -86,19 +86,15 @@ module.exports = exports = function(grunt) {
             source: ['src/*.js', 'src/**/*.js']
         },
         shell: {
-            listFolders: {
-                options: {
-                    stdout: true
-                },
+            options: {
+                stdout: true
+            },
+            publish: {
                 command: 'rake publish ALLOW_DIRTY=true'
+            },
+            component: {
+                command: './node_modules/component/bin/component-build -o dist -n localforage.cmp'
             }
-        },
-        browserify: {
-          dist: {
-            files: {
-              'dist/localforage.browserify.js': ['src/localforage.js'],
-            }
-          }
         },
         uglify: {
             localforage: {
@@ -124,8 +120,8 @@ module.exports = exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
 
     grunt.registerTask('default', ['build', 'watch']);
-    grunt.registerTask('build', ['concat', 'uglify']);
-    grunt.registerTask('publish', ['build', 'shell']);
+    grunt.registerTask('build', ['concat', 'uglify', 'shell:component']);
+    grunt.registerTask('publish', ['build', 'shell:publish']);
 
     grunt.registerTask('server', function() {
         grunt.log.writeln('Starting web server at test/server.coffee');

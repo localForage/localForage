@@ -19,11 +19,9 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "browserify": "^3.41.0",
     "coffee-script": "^1.7.1",
     "express": "^3.4.8",
     "grunt": "^0.4.2",
-    "grunt-browserify": "^2.0.7",
     "grunt-casper": "^0.3.3",
     "grunt-contrib-concat": "^0.3.0",
     "grunt-contrib-jshint": "^0.9.2",
@@ -31,7 +29,8 @@
     "grunt-contrib-watch": "^0.5.0",
     "grunt-shell": "^0.6.4",
     "load-grunt-tasks": "^0.4.0",
-    "uglify-js": "^2.3.x"
+    "uglify-js": "^2.3.x",
+    "component": "^1.0.0"
   },
   "browser": "dist/localforage.js",
   "main": "dist/localforage.js",
