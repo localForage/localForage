@@ -286,7 +286,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test
 
   casper.then ->
     @evaluate ->
-      localforage.setItem( 'officeName', 'Initech').then (value) ->
+      localforage.setItem('officeName', 'Initech').then (value) ->
         window._callbackReturnValue = value
         __utils__.findOne('.status').id = 'value-set'
 
