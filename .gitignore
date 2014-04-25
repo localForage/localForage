@@ -3,7 +3,7 @@
 bower_components
 node_modules
 components
-dist/localforage.cmp.js
+test/localforage.component.js
 
 ### Ruby Stuff for slate docs
 *.gem

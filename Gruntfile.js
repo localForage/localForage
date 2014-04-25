@@ -1,4 +1,6 @@
 /*global exports:true, require:true */
+var path = require('path');
+
 module.exports = exports = function(grunt) {
     'use strict';
 
@@ -86,14 +88,16 @@ module.exports = exports = function(grunt) {
             source: ['src/*.js', 'src/**/*.js']
         },
         shell: {
+            component: {
+                command: path.resolve('node_modules', 'component', 'bin',
+                                      'component-build') +
+                         ' -o test -n localforage.component'
+            },
             options: {
                 stdout: true
             },
             publish: {
                 command: 'rake publish ALLOW_DIRTY=true'
-            },
-            component: {
-                command: './node_modules/component/bin/component-build -o dist -n localforage.cmp'
             }
         },
         uglify: {
