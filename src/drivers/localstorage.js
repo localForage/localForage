@@ -7,7 +7,9 @@
 
     var keyPrefix = '';
     var dbInfo = {};
-    var Promise = this.Promise;
+    // Promises!
+    var Promise = (typeof module !== 'undefined' && module.exports) ?
+                  require('promise') : this.Promise;
     var localStorage = null;
 
     // If the app is running inside a Google Chrome packaged webapp, or some

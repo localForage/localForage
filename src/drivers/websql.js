@@ -15,7 +15,10 @@
     // verbose ways of binary <-> string data storage.
     var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-    var Promise = this.Promise;
+    // Promises!
+    var Promise = (typeof module !== 'undefined' && module.exports) ?
+                  require('promise') : this.Promise;
+
     var openDatabase = this.openDatabase;
     var db = null;
     var dbInfo = {};

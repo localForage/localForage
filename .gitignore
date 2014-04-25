@@ -2,6 +2,8 @@
 .swp
 bower_components
 node_modules
+components
+test/localforage.component.js
 
 ### Ruby Stuff for slate docs
 *.gem

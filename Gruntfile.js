@@ -1,4 +1,6 @@
 /*global exports:true, require:true */
+var path = require('path');
+
 module.exports = exports = function(grunt) {
     'use strict';
 
@@ -86,16 +88,18 @@ module.exports = exports = function(grunt) {
             source: ['src/*.js', 'src/**/*.js']
         },
         shell: {
+            options: {
+                stdout: true
+            },
+            component: {
+                command: path.resolve('node_modules', 'component', 'bin',
+                                      'component-build') +
+                         ' -o test -n localforage.component'
+            },
             publishDocs: {
-                options: {
-                    stdout: true
-                },
                 command: 'rake publish ALLOW_DIRTY=true'
             },
             serveDocs: {
-                options: {
-                    stdout: true
-                },
                 command: 'bundle exec middleman server'
             }
         },
@@ -135,5 +139,5 @@ module.exports = exports = function(grunt) {
         require('./test/server.coffee').listen(8182);
     });
 
-    grunt.registerTask('test', ['build', 'jshint', 'server', 'casper']);
+    grunt.registerTask('test', ['build', 'jshint', 'shell:component', 'server', 'casper']);
 };

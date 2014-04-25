@@ -1,0 +1,17 @@
+{
+    "name": "localforage",
+    "version": "0.4.2",
+
+    "dependencies": {
+        "then/promise": "*"
+    },
+
+    "scripts": [
+        "src/localforage.js",
+        "src/drivers/indexeddb.js",
+        "src/drivers/localstorage.js",
+        "src/drivers/websql.js"
+    ],
+    "main": "src/localforage.js"
+}
+

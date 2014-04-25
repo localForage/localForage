@@ -2,7 +2,8 @@
     'use strict';
 
     // Promises!
-    var Promise = this.Promise;
+    var Promise = (typeof module !== 'undefined' && module.exports) ?
+                  require('promise') : this.Promise;
 
     // Avoid those magic constants!
     var MODULE_TYPE_DEFINE = 1;
@@ -108,13 +109,13 @@
                     var driver;
                     switch (driverName) {
                         case localForage.INDEXEDDB:
-                            driver = require('localforage/src/drivers/indexeddb');
+                            driver = require('./drivers/indexeddb');
                             break;
                         case localForage.LOCALSTORAGE:
-                            driver = require('localforage/src/drivers/localstorage');
+                            driver = require('./drivers/localstorage');
                             break;
                         case localForage.WEBSQL:
-                            driver = require('localforage/src/drivers/websql');
+                            driver = require('./drivers/websql');
                     }
 
                     localForage._extend(driver);
