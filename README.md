@@ -19,7 +19,9 @@ To use localForage, just drop a single JavaScript file into your page:
 Download the [latest localForage from GitHub](https://github.com/mozilla/localForage/releases/latest), or install with
 [bower](http://bower.io):
 
-    bower install localforage
+```bash
+bower install localforage
+```
 
 ## Supported Browsers/Platforms
 
