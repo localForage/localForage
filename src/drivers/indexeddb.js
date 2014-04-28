@@ -34,7 +34,7 @@
         return new Promise(function(resolve, reject) {
             var openreq = indexedDB.open(dbInfo.name, dbInfo.version);
             openreq.onerror = function withStoreOnError() {
-                reject(openreq.error.name);
+                reject(openreq.error);
             };
             openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
                 // First time setup: create an empty object store
@@ -70,10 +70,10 @@
 
                 req.onerror = function() {
                     if (callback) {
-                        callback(null, req.error.name);
+                        callback(null, req.error);
                     }
 
-                    reject(req.error.name);
+                    reject(req.error);
                 };
             });
         });
@@ -105,10 +105,10 @@
                 };
                 req.onerror = function() {
                     if (callback) {
-                        callback(null, req.error.name);
+                        callback(null, req.error);
                     }
 
-                    reject(req.error.name);
+                    reject(req.error);
                 };
             });
         });
@@ -141,10 +141,10 @@
 
                 req.onerror = function() {
                     if (callback) {
-                        callback(req.error.name);
+                        callback(req.error);
                     }
 
-                    reject(req.error.name);
+                    reject(req.error);
                 };
 
                 // The request will be aborted if we've exceeded our storage
@@ -152,12 +152,12 @@
                 // "QuotaExceededError".
                 req.onabort = function(event) {
                     var error = event.target.error;
-                    if (error.name === 'QuotaExceededError') {
+                    if (error === 'QuotaExceededError') {
                         if (callback) {
-                            callback(error.name);
+                            callback(error);
                         }
 
-                        reject(error.name);
+                        reject(error);
                     }
                 };
             });
@@ -182,10 +182,10 @@
 
                 req.onerror = function() {
                     if (callback) {
-                        callback(null, req.error.name);
+                        callback(null, req.error);
                     }
 
-                    reject(req.error.name);
+                    reject(req.error);
                 };
             });
         });
@@ -209,10 +209,10 @@
 
                 req.onerror = function() {
                     if (callback) {
-                        callback(null, req.error.name);
+                        callback(null, req.error);
                     }
 
-                    reject(req.error.name);
+                    reject(req.error);
                 };
             });
         });
@@ -277,10 +277,10 @@
 
                 req.onerror = function() {
                     if (callback) {
-                        callback(null, req.error.name);
+                        callback(null, req.error);
                     }
 
-                    reject(req.error.name);
+                    reject(req.error);
                 };
             });
         });
