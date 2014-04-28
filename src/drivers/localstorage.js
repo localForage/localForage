@@ -25,8 +25,7 @@
         return;
     }
 
-    // Config the localStorage backend, using options set in
-    // window.localForageConfig.
+    // Config the localStorage backend, using options set in the config.
     function _initStorage(options) {
         if (options) {
             for (var i in options) {
@@ -302,8 +301,8 @@
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                if (window.console && window.console.error) {
-                    window.console.error("Couldn't convert value into a JSON string: ", value);
+                if (this.console && this.console.error) {
+                    this.console.error("Couldn't convert value into a JSON string: ", value);
                 }
 
                 callback(null, e);

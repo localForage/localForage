@@ -23,7 +23,7 @@
     }
 
     // Open the IndexedDB database (automatically creates one if one didn't
-    // previously exist), using any options set in window.localForageConfig.
+    // previously exist), using any options set in the config.
     function _initStorage(options) {
         if (options) {
             for (var i in options) {
