@@ -106,7 +106,7 @@ localforage.setItem('key', 'value').then(doSomethingElse);
 
 localForage relies on native [ES6 Promises](http://www.promisejs.org/), but
 [ships with an awesome polyfill](https://github.com/jakearchibald/ES6-Promises)
-for browsers that don't yet support ES6 Promises natively.
+for browsers that don't support ES6 Promises yet.
 
 ## Driver Selection (i.e. forcing localStorage)
 
