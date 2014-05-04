@@ -46,7 +46,7 @@
     }
 
     // Open the WebSQL database (automatically creates one if one didn't
-    // previously exist), using any options set in window.localForageConfig.
+    // previously exist), using any options set in the config.
     function _initStorage(options) {
         var _this = this;
 
@@ -446,8 +446,8 @@
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                if (window.console && window.console.error) {
-                    window.console.error("Couldn't convert value into a JSON string: ", value);
+                if (this.console && this.console.error) {
+                    this.console.error("Couldn't convert value into a JSON string: ", value);
                 }
 
                 callback(null, e);
