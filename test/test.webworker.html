@@ -51,11 +51,10 @@
 </ul>
 
 <script>
-
-    _worker = new Worker('localforage-worker.js');
+    var _worker = new Worker('test.webworker-client.js');
 
     _worker.addEventListener('error', function (e) {
-        console.error(e.message);
+        window.console.error(e.message);
         var status = document.querySelector('.status');
         status.id = 'error';
         status.innerHTML = e.message;
@@ -73,17 +72,19 @@
 
         if (window._testError) {
             status.classList.add('error');
-            console.error(e.data.error);
+            window.console.error(e.data.error);
         }
     });
 
     function runWith(driver) {
         var status = document.querySelector('.status');
         status.classList.remove('error');
-        _worker.postMessage({ driver: driver, key: driver, value: 'I have been set'});
+        _worker.postMessage({
+            driver: driver,
+            key: driver,
+            value: 'I have been set'
+        });
     }
-
-
 </script>
 </body>
 </html>

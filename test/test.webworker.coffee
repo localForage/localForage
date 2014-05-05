@@ -1,4 +1,4 @@
-'use strict'
+"use strict"
 
 casper.test.begin "Testing web worker handling", (test) ->
   casper.start "#{casper.TEST_URL}test.webworker.html", ->
@@ -6,43 +6,35 @@ casper.test.begin "Testing web worker handling", (test) ->
 
     test.assertEval ->
       typeof _worker is "object"
-    , "worker exists"
+    , "Web worker exists"
 
     test.assertEval ->
       typeof runWith is "function"
-    , "test runner exists"
+    , "Test runner exists"
 
   casper.then ->
-    @evaluate ->
-      runWith('localStorageWrapper')
+    if casper.ENGINE is "slimerjs"
+      test.skip 1, "Skip web worker test in SlimerJS; it's buggy"
+    else unless casper.DRIVER_NAME is "localStorage"
+      @evaluate (driver) ->
+        runWith(driver)
+        __utils__.echo result
+      , casper.DRIVER
 
-    @waitForSelector '#localStorageWrapper', ->
-      test.assertEvalEquals ->
-        window._testError
-      , true, 'localStorageWrapper cannot run in web workers'
+      @waitForSelector "##{casper.DRIVER}", ->
+        test.assertEvalEquals ->
+          window._testText
+        , "I have been set with #{casper.DRIVER}"
+        , "#{casper.DRIVER} can run in web workers"
+    else
+      @evaluate (driver) ->
+        runWith(driver)
+      , casper.DRIVER
 
-
-  casper.then ->
-    @evaluate ->
-      runWith('asyncStorage')
-
-    @waitForSelector '#asyncStorage', ->
-      test.assertEvalEquals ->
-        window._testText
-      , 'I have been set with asyncStorage', 'asyncStorage can run in web workers'
-
-
-  casper.then ->
-    @evaluate ->
-      runWith('webSQLStorage')
-
-    @waitForSelector '#webSQLStorage', ->
-      test.assertEvalEquals ->
-        window._testText
-      , 'I have been set with webSQLStorage', 'webSQLStorage can run in web workers'
-
+      @waitForSelector "##{casper.DRIVER}", ->
+        test.assertEval ->
+          window._testError is true
+        , "#{casper.DRIVER_NAME} cannot run in web workers"
 
   casper.run ->
     test.done()
-
-

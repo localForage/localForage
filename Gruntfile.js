@@ -1,7 +1,7 @@
 /*global exports:true, require:true */
 var path = require('path');
 
-module.exports = exports = function (grunt) {
+module.exports = exports = function(grunt) {
     'use strict';
 
     grunt.initConfig({
@@ -21,8 +21,7 @@ module.exports = exports = function (grunt) {
                     engine: 'slimerjs'
                 },
                 src: [
-                    'test/test.*.coffee',
-                    '!test/test.webworker.coffee'
+                    'test/test.*.coffee'
                 ]
             },
 
@@ -36,15 +35,13 @@ module.exports = exports = function (grunt) {
                     engine: 'slimerjs'
                 },
                 src: [
-                    'test/test.*.coffee',
-                    '!test/test.webworker.coffee'
+                    'test/test.*.coffee'
                 ]
             },
 
             localstorageWebKit: {
                 src: [
-                    'test/test.*.coffee',
-                    '!test/test.webworker.coffee'
+                    'test/test.*.coffee'
                 ]
             },
 
@@ -57,17 +54,7 @@ module.exports = exports = function (grunt) {
                     ]
                 },
                 src: [
-                    'test/test.*.coffee',
-                    '!test/test.webworker.coffee'
-                ]
-            },
-
-            webworker: {
-                options: {
-                    engine: 'phantomjs'
-                },
-                src: [
-                    'test/test.webworker.coffee'
+                    'test/test.*.coffee'
                 ]
             }
         },
@@ -84,7 +71,8 @@ module.exports = exports = function (grunt) {
                 ],
                 dest: 'dist/localforage.js',
                 options: {
-                    banner: '/*!\n' +
+                    banner:
+                        '/*!\n' +
                         '    localForage -- Offline Storage, Improved\n' +
                         '    Version 0.7.0\n' +
                         '    http://mozilla.github.io/localForage\n' +
@@ -97,7 +85,7 @@ module.exports = exports = function (grunt) {
             options: {
                 jshintrc: '.jshintrc'
             },
-            source: ['src/*.js', 'src/**/*.js']
+            source: ['Gruntfile.js', 'src/*.js', 'src/**/*.js']
         },
         shell: {
             options: {
@@ -105,8 +93,8 @@ module.exports = exports = function (grunt) {
             },
             component: {
                 command: path.resolve('node_modules', 'component', 'bin',
-                    'component-build') +
-                    ' -o test -n localforage.component'
+                                      'component-build') +
+                         ' -o test -n localforage.component'
             },
             publishDocs: {
                 command: 'rake publish ALLOW_DIRTY=true'
@@ -143,7 +131,7 @@ module.exports = exports = function (grunt) {
     grunt.registerTask('docs', ['shell:serveDocs']);
     grunt.registerTask('publish', ['build', 'shell:publishDocs']);
 
-    grunt.registerTask('server', function () {
+    grunt.registerTask('test-server', function() {
         grunt.log.writeln('Starting web servers at test/server.coffee');
 
         require('./test/server.coffee').listen(8181);
@@ -151,8 +139,6 @@ module.exports = exports = function (grunt) {
         require('./test/server.coffee').listen(8182);
     });
 
-    grunt.registerTask('test', ['build', 'jshint', 'shell:component', 'server', 'casper']);
-
-    grunt.registerTask('serve', ['build', 'server', 'watch']);
-    grunt.registerTask('test-webworker', ['build', 'jshint', 'shell:component', 'server', 'casper:webworker']);
+    grunt.registerTask('serve', ['build', 'test-server', 'watch']);
+    grunt.registerTask('test', ['build', 'jshint', 'shell:component', 'test-server', 'casper']);
 };

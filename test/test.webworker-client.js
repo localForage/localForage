@@ -1,6 +1,6 @@
 importScripts("../dist/localforage.js");
 
-self.addEventListener('message', function (e) {
+self.addEventListener('message', function(e) {
     var data = e.data;
 
     function handleError(e) {
