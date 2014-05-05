@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Web Worker Test</title>
+    <style>
+
+        .status {
+            padding: 5px;
+            border: 1px solid white;
+            color: black;
+            background-color: white;
+        }
+
+        #localStorageWrapper {
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+            color: #3c763d;
+        }
+
+        #asyncStorage {
+            background-color: #d9edf7;
+            border-color: #bce8f1;
+            color: #31708f;
+        }
+
+        #webSQLStorage {
+            background-color: #fcf8e3;
+            border-color: #faebcc;
+            color: #8a6d3b;
+        }
+
+        #error,
+        #localStorageWrapper.error,
+        #asyncStorage.error,
+        #webSQLStorage.error {
+            background-color: #f2dede;
+            border-color: #ebccd1;
+            color: #a94442;
+        }
+
+    </style>
+</head>
+<body>
+<div class="status"></div>
+
+<ul>
+    <li><a href="" onclick="runWith('localStorageWrapper'); return false;">test localStorageWrapper</a></li>
+    <li><a href="" onclick="runWith('asyncStorage'); return false;">test asyncStorage</a></li>
+    <li><a href="" onclick="runWith('webSQLStorage'); return false;">test webSQLStorage</a></li>
+</ul>
+
+<script>
+
+    _worker = new Worker('localforage-worker.js');
+
+    _worker.addEventListener('error', function (e) {
+        console.error(e.message);
+        var status = document.querySelector('.status');
+        status.id = 'error';
+        status.innerHTML = e.message;
+        window._testText = e.message;
+    });
+
+    _worker.addEventListener('message', function (e) {
+        var body = e.data.body || {};
+        var status = document.querySelector('.status');
+        status.id = body.key || 'error';
+        status.innerHTML = body.value;
+
+        window._testText = body.value;
+        window._testError = e.data.fail || false;
+
+        if (window._testError) {
+            status.classList.add('error');
+            console.error(e.data.error);
+        }
+    });
+
+    function runWith(driver) {
+        var status = document.querySelector('.status');
+        status.classList.remove('error');
+        _worker.postMessage({ driver: driver, key: driver, value: 'I have been set'});
+    }
+
+
+</script>
+</body>
+</html>
