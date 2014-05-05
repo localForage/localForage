@@ -152,5 +152,7 @@ module.exports = exports = function (grunt) {
     });
 
     grunt.registerTask('test', ['build', 'jshint', 'shell:component', 'server', 'casper']);
+
+    grunt.registerTask('serve', ['build', 'server', 'watch']);
     grunt.registerTask('test-webworker', ['build', 'jshint', 'shell:component', 'server', 'casper:webworker']);
 };
