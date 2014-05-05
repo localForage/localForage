@@ -162,7 +162,7 @@ define("promise/asap",
     "use strict";
     var browserGlobal = (typeof window !== 'undefined') ? window : {};
     var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-    var local = (typeof global !== 'undefined') ? global : this;
+    var local = (typeof global !== 'undefined') ? global : (this === undefined? window:this);
 
     // node
     function useNextTick() {
@@ -221,77 +221,6 @@ define("promise/asap",
 
     __exports__.asap = asap;
   });
-define("promise/cast", 
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    /**
-      `RSVP.Promise.cast` returns the same promise if that promise shares a constructor
-      with the promise being casted.
-
-      Example:
-
-      ```javascript
-      var promise = RSVP.resolve(1);
-      var casted = RSVP.Promise.cast(promise);
-
-      console.log(promise === casted); // true
-      ```
-
-      In the case of a promise whose constructor does not match, it is assimilated.
-      The resulting promise will fulfill or reject based on the outcome of the
-      promise being casted.
-
-      In the case of a non-promise, a promise which will fulfill with that value is
-      returned.
-
-      Example:
-
-      ```javascript
-      var value = 1; // could be a number, boolean, string, undefined...
-      var casted = RSVP.Promise.cast(value);
-
-      console.log(value === casted); // false
-      console.log(casted instanceof RSVP.Promise) // true
-
-      casted.then(function(val) {
-        val === value // => true
-      });
-      ```
-
-      `RSVP.Promise.cast` is similar to `RSVP.resolve`, but `RSVP.Promise.cast` differs in the
-      following ways:
-      * `RSVP.Promise.cast` serves as a memory-efficient way of getting a promise, when you
-      have something that could either be a promise or a value. RSVP.resolve
-      will have the same effect but will create a new promise wrapper if the
-      argument is a promise.
-      * `RSVP.Promise.cast` is a way of casting incoming thenables or promise subclasses to
-      promises of the exact class specified, so that the resulting object's `then` is
-      ensured to have the behavior of the constructor you are calling cast on (i.e., RSVP.Promise).
-
-      @method cast
-      @for RSVP
-      @param {Object} object to be casted
-      @return {Promise} promise that is fulfilled when all properties of `promises`
-      have been fulfilled, or rejected if any of them become rejected.
-    */
-
-
-    function cast(object) {
-      /*jshint validthis:true */
-      if (object && typeof object === 'object' && object.constructor === this) {
-        return object;
-      }
-
-      var Promise = this;
-
-      return new Promise(function(resolve) {
-        resolve(object);
-      });
-    }
-
-    __exports__.cast = cast;
-  });
 define("promise/config", 
   ["exports"],
   function(__exports__) {
@@ -315,49 +244,58 @@ define("promise/polyfill",
   ["./promise","./utils","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
+    /*global self*/
     var RSVPPromise = __dependency1__.Promise;
     var isFunction = __dependency2__.isFunction;
 
     function polyfill() {
+      var local;
+
+      if (typeof global !== 'undefined') {
+        local = global;
+      } else if (typeof window !== 'undefined' && window.document) {
+        local = window;
+      } else {
+        local = self;
+      }
+
       var es6PromiseSupport = 
-        "Promise" in window &&
+        "Promise" in local &&
         // Some of these methods are missing from
         // Firefox/Chrome experimental implementations
-        "cast" in window.Promise &&
-        "resolve" in window.Promise &&
-        "reject" in window.Promise &&
-        "all" in window.Promise &&
-        "race" in window.Promise &&
+        "resolve" in local.Promise &&
+        "reject" in local.Promise &&
+        "all" in local.Promise &&
+        "race" in local.Promise &&
         // Older version of the spec had a resolver object
         // as the arg rather than a function
         (function() {
           var resolve;
-          new window.Promise(function(r) { resolve = r; });
+          new local.Promise(function(r) { resolve = r; });
           return isFunction(resolve);
         }());
 
       if (!es6PromiseSupport) {
-        window.Promise = RSVPPromise;
+        local.Promise = RSVPPromise;
       }
     }
 
     __exports__.polyfill = polyfill;
   });
 define("promise/promise", 
-  ["./config","./utils","./cast","./all","./race","./resolve","./reject","./asap","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __exports__) {
+  ["./config","./utils","./all","./race","./resolve","./reject","./asap","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __exports__) {
     "use strict";
     var config = __dependency1__.config;
     var configure = __dependency1__.configure;
     var objectOrFunction = __dependency2__.objectOrFunction;
     var isFunction = __dependency2__.isFunction;
     var now = __dependency2__.now;
-    var cast = __dependency3__.cast;
-    var all = __dependency4__.all;
-    var race = __dependency5__.race;
-    var staticResolve = __dependency6__.resolve;
-    var staticReject = __dependency7__.reject;
-    var asap = __dependency8__.asap;
+    var all = __dependency3__.all;
+    var race = __dependency4__.race;
+    var staticResolve = __dependency5__.resolve;
+    var staticReject = __dependency6__.reject;
+    var asap = __dependency7__.asap;
 
     var counter = 0;
 
@@ -480,7 +418,6 @@ define("promise/promise",
     };
 
     Promise.all = all;
-    Promise.cast = cast;
     Promise.race = race;
     Promise.resolve = staticResolve;
     Promise.reject = staticReject;
@@ -708,42 +645,15 @@ define("promise/resolve",
   ["exports"],
   function(__exports__) {
     "use strict";
-    /**
-      `RSVP.resolve` returns a promise that will become fulfilled with the passed
-      `value`. `RSVP.resolve` is essentially shorthand for the following:
-
-      ```javascript
-      var promise = new RSVP.Promise(function(resolve, reject){
-        resolve(1);
-      });
-
-      promise.then(function(value){
-        // value === 1
-      });
-      ```
-
-      Instead of writing the above, your code now simply becomes the following:
-
-      ```javascript
-      var promise = RSVP.resolve(1);
-
-      promise.then(function(value){
-        // value === 1
-      });
-      ```
-
-      @method resolve
-      @for RSVP
-      @param {Any} value value that the returned promise will be resolved with
-      @param {String} label optional string for identifying the returned promise.
-      Useful for tooling.
-      @return {Promise} a promise that will become fulfilled with the given
-      `value`
-    */
     function resolve(value) {
       /*jshint validthis:true */
+      if (value && typeof value === 'object' && value.constructor === this) {
+        return value;
+      }
+
       var Promise = this;
-      return new Promise(function(resolve, reject) {
+
+      return new Promise(function(resolve) {
         resolve(value);
       });
     }
@@ -802,7 +712,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     // Open the IndexedDB database (automatically creates one if one didn't
-    // previously exist), using any options set in window.localForageConfig.
+    // previously exist), using any options set in the config.
     function _initStorage(options) {
         if (options) {
             for (var i in options) {
@@ -1113,8 +1023,7 @@ requireModule('promise/polyfill').polyfill();
         return;
     }
 
-    // Config the localStorage backend, using options set in
-    // window.localForageConfig.
+    // Config the localStorage backend, using options set in the config.
     function _initStorage(options) {
         if (options) {
             for (var i in options) {
@@ -1390,8 +1299,8 @@ requireModule('promise/polyfill').polyfill();
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                if (window.console && window.console.error) {
-                    window.console.error("Couldn't convert value into a JSON string: ", value);
+                if (this.console && this.console.error) {
+                    this.console.error("Couldn't convert value into a JSON string: ", value);
                 }
 
                 callback(null, e);
@@ -1520,7 +1429,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     // Open the WebSQL database (automatically creates one if one didn't
-    // previously exist), using any options set in window.localForageConfig.
+    // previously exist), using any options set in the config.
     function _initStorage(options) {
         var _this = this;
 
@@ -1920,8 +1829,8 @@ requireModule('promise/polyfill').polyfill();
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                if (window.console && window.console.error) {
-                    window.console.error("Couldn't convert value into a JSON string: ", value);
+                if (this.console && this.console.error) {
+                    this.console.error("Couldn't convert value into a JSON string: ", value);
                 }
 
                 callback(null, e);
