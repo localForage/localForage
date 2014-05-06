@@ -186,6 +186,12 @@ define(['localforage'], function(localforage) {
 });
 ```
 
+## Web Workers
+
+You can use localForage inside web workers, but keep in mind that
+`localStorage` is not available inside the context of a web worker, so you'll
+have to be using either IndexedDB or WebSQL as your database driver.
+
 ## Framework Support
 
 If you use a framework listed, there's a localForage storage driver for the
