@@ -56,8 +56,12 @@ Lost? Need help? Try the
 If you're stuck using the library, running the tests, or want to contribute,
 to localForage, you can visit
 [irc.mozilla.org](https://wiki.mozilla.org/IRC) and head to the `#apps`
-channel to ask questions about localForage. The best person to ask about
-localForage is **tofumatt**, who is usually online from 8am-10pm Eastern Time.
+channel to ask questions about localForage.
+
+The best person to ask about localForage is [**tofumatt**][tofumatt], who
+is usually online from 8am-10pm Eastern Time.
+
+[tofumatt]: http://tofumatt.com/
 
 # How to use localForage
 
