@@ -286,7 +286,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test
 
   casper.then ->
     @evaluate ->
-      localforage.setItem( 'officeName', 'Initech').then (value) ->
+      localforage.setItem('officeName', 'Initech').then (value) ->
         window._callbackReturnValue = value
         __utils__.findOne('.status').id = 'value-set'
 
@@ -392,7 +392,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test
       # When the AJAX state changes, save the photo locally.
       request.addEventListener "readystatechange", ->
         if request.readyState == 4 # readyState DONE
-          # Refernce ArrayBuffer and Blob data.
+          # Reference ArrayBuffer and Blob data.
           window._ab = request.response
 
           localforage.setItem "arrayBuffer", request.response, ->

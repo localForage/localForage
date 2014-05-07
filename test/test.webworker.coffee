@@ -15,10 +15,11 @@ casper.test.begin "Testing web worker handling", (test) ->
   casper.then ->
     if casper.ENGINE is "slimerjs"
       test.skip 1, "Skip web worker test in SlimerJS; it's buggy"
-    else unless casper.DRIVER_NAME is "localStorage"
+      return
+
+    unless casper.DRIVER_NAME is "localStorage"
       @evaluate (driver) ->
         runWith(driver)
-        __utils__.echo result
       , casper.DRIVER
 
       @waitForSelector "##{casper.DRIVER}", ->
