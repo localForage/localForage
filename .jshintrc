@@ -12,10 +12,10 @@
   "noarg": true,
   "nonew": true,
   "quotmark": false,
-  "undef": true,
-  "unused": true,
   "strict": false,
   "trailing": false,
+  "undef": true,
+  "unused": true,
 
   "validthis": true,
 
