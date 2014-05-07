@@ -18,7 +18,6 @@ casper.test.begin "Testing web worker handling", (test) ->
     else unless casper.DRIVER_NAME is "localStorage"
       @evaluate (driver) ->
         runWith(driver)
-        __utils__.echo result
       , casper.DRIVER
 
       @waitForSelector "##{casper.DRIVER}", ->
