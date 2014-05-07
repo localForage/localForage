@@ -50,11 +50,14 @@ use asynchronous storage. Pretty slick!
 
 ## Support
 
-Lost? Need help? This README has some simple guides and the code has decent
-documentation, but I'm working on a real API guide. In the meantime, if you're
-stuck using the library, running the tests, or want to contribute, you can
-visit [irc.mozilla.org](https://wiki.mozilla.org/IRC) and head to the `#apps`
-channel to ask questions about localForage.
+Lost? Need help? Try the
+[localForage API documentation](http://mozilla.github.io/localForage).
+
+If you're stuck using the library, running the tests, or want to contribute,
+to localForage, you can visit
+[irc.mozilla.org](https://wiki.mozilla.org/IRC) and head to the `#apps`
+channel to ask questions about localForage. The best person to ask about
+localForage is **tofumatt**, who is usually online from 8am-10pm Eastern Time.
 
 # How to use localForage
 
