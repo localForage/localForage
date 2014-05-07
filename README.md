@@ -111,6 +111,17 @@ localForage relies on native [ES6 Promises](http://www.promisejs.org/), but
 [ships with an awesome polyfill](https://github.com/jakearchibald/ES6-Promises)
 for browsers that don't support ES6 Promises yet.
 
+## Storing Blobs, TypedArrays, and other JS objects
+
+localForage supports storing all native JS objects that can be serialized to
+JSON, as well as ArrayBuffers, Blobs, and TypedArrays. Check the
+[API docs][api] for a full list of types supported by localForage.
+
+All types are supported in every storage backend, though storage limits in
+localStorage make storing many large Blobs impossible.
+
+[api]: http://mozilla.github.io/localForage/#setitem
+
 ## Driver Selection (i.e. forcing localStorage)
 
 For development, it can be easier to use the
