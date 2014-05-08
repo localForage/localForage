@@ -2,7 +2,7 @@
 
 localForage is a JavaScript library that improves the offline experience of
 your web app by using asynchronous storage (via IndexedDB or WebSQL
-where available) but with a simple, `localStorage`-like API.
+where available) with a simple, `localStorage`-like API.
 
 localForage uses localStorage in browsers with no IndexedDB or
 WebSQL support. Asynchronous storage is available in the current
