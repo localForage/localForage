@@ -1,16 +1,9 @@
-env:
-  - SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 PATH=$TRAVIS_BUILD_DIR/slimerjs:$PATH
-addons:
-  firefox: "27.0"
 before_install:
-  - npm install -g bower grunt-cli
-  - bower install
-before_script:
-  - "sh -e /etc/init.d/xvfb start"
-  - "echo 'Installing Slimer'"
-  - "wget http://download.slimerjs.org/v0.9/0.9.0/slimerjs-0.9.0.zip"
-  - "unzip slimerjs-0.9.0.zip"
-  - "mv slimerjs-0.9.0 ./slimerjs"
+- npm install -g bower grunt-cli
+- bower install
 language: node_js
 node_js:
-- "0.10"
+- '0.10'
+env:
+  global:
+    secure: LSmHs32nmcjgp3/5hQASgIPUDF/zexvwV/XASRYCDkwJRllDZ8n8wIvHx+D1QVcotx7jSAVEKM2tcfMq/JLXVHUmNNpeG9maUMfZAHA7xFlAo5GNAG3p/rqYe3tan9Xum+Is6A71kXTVnaVyOTG5ApEyj8QUwPfHpv1ziGJu72Y=
