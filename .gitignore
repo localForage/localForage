@@ -5,6 +5,9 @@ node_modules
 components
 test/localforage.component.js
 
+# Logs + Sauce Labs Tests
+*.log
+
 ### Ruby Stuff for slate docs
 *.gem
 *.rbc
