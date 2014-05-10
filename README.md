@@ -245,46 +245,17 @@ Omitting the bower dependencies will cause the tests to fail!
 
 ## Running Tests
 
-**tl;dr:** You need PhantomJS and SlimerJS installed to run tests. Then, just
-run `npm test` (or, directly, `grunt test`). Your code must also pass the
+You need PhantomJS installed to run local tests. Run `npm test` (or,
+directly: `grunt test`). Your code must also pass the
 [linter](http://www.jshint.com/).
 
-_Note for Windows users:_ SlimerJS doesn't seem to work on Windows for our
-tests, so run the tests with `grunt test --force`. The SlimerJS versions will
-be run on Travis when you submit a pull request.
-
 localForage is designed to run in the browser, so the tests explicitly require
-a browser environment instead of any JavaScript environment (i.e. node.js).
-The tests are run on both a headless WebKit (using
-[PhantomJS](http://phantomjs.org)) and
-["headless" Gecko](http://slimerjs.org/faq.html) (using
-[SlimerJS](http://slimerjs.org/)). The tests are written using
-[CasperJS's tester module](http://docs.casperjs.org/en/latest/modules/tester.html).
-We run tests against Gecko and WebKit to ensure that IndexedDB and WebSQL
-support is functioning as-expected.
+a browser environment. Local tests are run on a headless WebKit (using
+[PhantomJS](http://phantomjs.org)), but cross-browser tests are run using
+[Sauce Labs](https://saucelabs.com/).
 
-On Mac OS X, you'll need to install both PhantomJS and SlimerJS like so:
-
-```
-brew install phantomjs slimerjs
-```
-
-If you're using Windows or Linux, you can get
-[get PhantomJS](http://phantomjs.org/download) and
-[get SlimerJS](http://slimerjs.org/download) from their websites. I haven't
-tried it myself, but it seems easy enough.
-
-Generally you'll need a version of Firefox or XULRunner installed for SlimerJS
-to run your tests. The exact steps how to install and setup SlimerJS are
-described on the
-[project homepage](http://slimerjs.org/install.html#install-firefox).
-
-Once everything is installed you can simply type `grunt test`
-to make sure the code is working as expected. This will also
-[check your code quality](http://www.jshint.com/), ensuring your patch is
-in-line with localForage's code style.
-
-TODO: Provide Windows/Linux instructions; check into XULRunner setup.
+When you submit a pull request, tests will be run against all browsers that
+localForage supports.
 
 # Frequently Asked Questions
 
