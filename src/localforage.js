@@ -27,6 +27,10 @@
                     this.mozIndexedDB || this.OIndexedDB ||
                     this.msIndexedDB;
 
+    var supportsIndexedDB = indexedDB &&
+                            indexedDB.open('_localforage_spec_test', 1)
+                                     .onupgradeneeded === null;
+
     // Check for WebSQL.
     var openDatabase = this.openDatabase;
 
@@ -84,7 +88,8 @@
 
         setDriver: function(driverName, callback) {
             var driverSet = new Promise(function(resolve, reject) {
-                if ((!indexedDB && driverName === localForage.INDEXEDDB) ||
+                if ((!supportsIndexedDB &&
+                     driverName === localForage.INDEXEDDB) ||
                     (!openDatabase && driverName === localForage.WEBSQL)) {
                     reject(localForage);
 
@@ -157,7 +162,7 @@
     // as the name of the database because it's not the one we'll operate on,
     // but it's useful to make sure its using the right spec.
     // See: https://github.com/mozilla/localForage/issues/128
-    if (indexedDB && indexedDB.open('_localforage_spec_test', 1).onupgradeneeded === null) {
+    if (supportsIndexedDB) {
         storageLibrary = localForage.INDEXEDDB;
     } else if (openDatabase) { // WebSQL is available, so we'll use that.
         storageLibrary = localForage.WEBSQL;
