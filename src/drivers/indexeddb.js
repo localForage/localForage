@@ -33,14 +33,14 @@
 
         return new Promise(function(resolve, reject) {
             var openreq = indexedDB.open(dbInfo.name, dbInfo.version);
-            openreq.onerror = function withStoreOnError() {
+            openreq.onerror = function() {
                 reject(openreq.error);
             };
-            openreq.onupgradeneeded = function withStoreOnUpgradeNeeded() {
+            openreq.onupgradeneeded = function() {
                 // First time setup: create an empty object store
                 openreq.result.createObjectStore(dbInfo.storeName);
             };
-            openreq.onsuccess = function withStoreOnSuccess() {
+            openreq.onsuccess = function() {
                 db = openreq.result;
                 resolve();
             };
@@ -84,18 +84,27 @@
                 var store = db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
 
-                // Cast to undefined so the value passed to callback/promise is
-                // the same as what one would get out of `getItem()` later.
-                // This leads to some weirdness (setItem('foo', undefined) will
-                // return "null"), but it's not my fault localStorage is our
-                // baseline and that it's weird.
-                if (value === undefined) {
-                    value = null;
+                // The reason we don't _save_ null is because IE 10 does
+                // not support saving the `null` type in IndexedDB. How
+                // ironic, given the bug below!
+                // See: https://github.com/mozilla/localForage/issues/161
+                if (value === null) {
+                    value = undefined;
                 }
 
                 var req = store.put(value, key);
                 req.onsuccess = function() {
-                    deferCallback(callback,value);
+                    // Cast to undefined so the value passed to
+                    // callback/promise is the same as what one would get out
+                    // of `getItem()` later. This leads to some weirdness
+                    // (setItem('foo', undefined) will return `null`), but
+                    // it's not my fault localStorage is our baseline and that
+                    // it's weird.
+                    if (value === undefined) {
+                        value = null;
+                    }
+
+                    deferCallback(callback, value);
 
                     resolve(value);
                 };
@@ -119,13 +128,11 @@
 
                 // We use `['delete']` instead of `.delete` because IE 8 will
                 // throw a fit if it sees the reserved word "delete" in this
-                // scenario. See: https://github.com/mozilla/localForage/pull/67
+                // scenario.
+                // See: https://github.com/mozilla/localForage/pull/67
                 //
                 // This can be removed once we no longer care about IE 8, for
                 // what that's worth.
-                // TODO: Write a test against this? Maybe IE in general? Also,
-                // make sure the minify step doesn't optimise this to `.delete`,
-                // though it currently doesn't.
                 var req = store['delete'](key);
                 req.onsuccess = function() {
 

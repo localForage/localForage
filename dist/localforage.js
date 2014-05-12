@@ -783,9 +783,6 @@ requireModule('promise/polyfill').polyfill();
 
                 var req = store.put(value, key);
                 req.onsuccess = function() {
-<<<<<<< HEAD
-                    deferCallback(callback,value);
-=======
                     // Cast to undefined so the value passed to
                     // callback/promise is the same as what one would get out
                     // of `getItem()` later. This leads to some weirdness
@@ -796,10 +793,7 @@ requireModule('promise/polyfill').polyfill();
                         value = null;
                     }
 
-                    if (callback) {
-                        callback(value);
-                    }
->>>>>>> Add browser-based, mocha API tests (#148)
+                    deferCallback(callback, value);
 
                     resolve(value);
                 };
@@ -1074,6 +1068,11 @@ requireModule('promise/polyfill').polyfill();
     // `if (window.chrome && window.chrome.runtime)` code.
     // See: https://github.com/mozilla/localForage/issues/68
     try {
+        // If localStorage isn't available, we get outta here!
+        // This should be inside a try catch
+        if (!this.localStorage || !('setItem' in this.localStorage)) {
+            return;
+        }
         // Initialize localStorage and create a variable to use throughout
         // the code.
         localStorage = this.localStorage;
@@ -1167,12 +1166,7 @@ requireModule('promise/polyfill').polyfill();
         var _this = this;
         return new Promise(function(resolve) {
             _this.ready().then(function() {
-                var result;
-                try {
-                    result = localStorage.key(n);
-                } catch (error) {
-                    result = null;
-                }
+                var result = localStorage.key(n);
 
                 // Remove the prefix from the key, if a key is found.
                 if (result) {
@@ -2005,11 +1999,21 @@ requireModule('promise/polyfill').polyfill();
                     this.msIndexedDB;
 
     var supportsIndexedDB = indexedDB &&
+                            typeof indexedDB.open === 'function' &&
                             indexedDB.open('_localforage_spec_test', 1)
                                      .onupgradeneeded === null;
 
     // Check for WebSQL.
     var openDatabase = this.openDatabase;
+
+    // Check for LocalStorage.
+    var supportsLocalStorage = (function() {
+        try {
+            return localStorage && typeof localStorage.setItem === 'function';
+        } catch (e) {
+            return false;
+        }
+    })();
 
     // The actual localForage object that we expose as a module or via a global.
     // It's extended by pulling in one of our other libraries.
@@ -2069,7 +2073,9 @@ requireModule('promise/polyfill').polyfill();
             this._driverSet = new Promise(function(resolve, reject) {
                 if ((!supportsIndexedDB &&
                      driverName === localForage.INDEXEDDB) ||
-                    (!openDatabase && driverName === localForage.WEBSQL)) {
+                    (!openDatabase && driverName === localForage.WEBSQL) ||
+                    (!supportsLocalStorage &&
+                     driverName === localForage.LOCALSTORAGE)) {
                     reject(localForage);
 
                     return;
@@ -2152,7 +2158,7 @@ requireModule('promise/polyfill').polyfill();
         storageLibrary = localForage.INDEXEDDB;
     } else if (openDatabase) { // WebSQL is available, so we'll use that.
         storageLibrary = localForage.WEBSQL;
-    } else { // If nothing else is available, we use localStorage.
+    } else if (supportsLocalStorage) { // If nothing else is available, we try to use localStorage.
         storageLibrary = localForage.LOCALSTORAGE;
     }
 
@@ -2161,8 +2167,12 @@ requireModule('promise/polyfill').polyfill();
         localForage.config = this.localForageConfig;
     }
 
-    // Set the (default) driver.
-    localForage.setDriver(storageLibrary);
+    // Set the (default) driver, or report the error.
+    if (storageLibrary) {
+        localForage.setDriver(storageLibrary);
+    } else {
+        localForage._ready = Promise.reject(new Error("No available storage method found."));
+    }
 
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
