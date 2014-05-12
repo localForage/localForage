@@ -87,6 +87,11 @@ module.exports = exports = function(grunt) {
             },
             source: ['Gruntfile.js', 'src/*.js', 'src/**/*.js']
         },
+        open: {
+            site: {
+                path: 'http://localhost:4567/'
+            }
+        },
         shell: {
             options: {
                 stdout: true
@@ -96,10 +101,10 @@ module.exports = exports = function(grunt) {
                                       'component-build') +
                          ' -o test -n localforage.component'
             },
-            publishDocs: {
+            'publish-site': {
                 command: 'rake publish ALLOW_DIRTY=true'
             },
-            serveDocs: {
+            'serve-site': {
                 command: 'bundle exec middleman server'
             }
         },
@@ -128,9 +133,16 @@ module.exports = exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'watch']);
     grunt.registerTask('build', ['concat', 'uglify']);
-    grunt.registerTask('docs', ['shell:serveDocs']);
-    grunt.registerTask('publish', ['build', 'shell:publishDocs']);
-
+    grunt.registerTask('publish', ['build', 'shell:publish-site']);
+    grunt.registerTask('serve', ['build', 'test-server', 'watch']);
+    grunt.registerTask('site', ['shell:serve-site']);
+    grunt.registerTask('test', [
+        'build',
+        'jshint',
+        'shell:component',
+        'test-server',
+        'casper'
+    ]);
     grunt.registerTask('test-server', function() {
         grunt.log.writeln('Starting web servers at test/server.coffee');
 
@@ -138,7 +150,4 @@ module.exports = exports = function(grunt) {
         // Used to test cross-origin iframes.
         require('./test/server.coffee').listen(8182);
     });
-
-    grunt.registerTask('serve', ['build', 'test-server', 'watch']);
-    grunt.registerTask('test', ['build', 'jshint', 'shell:component', 'test-server', 'casper']);
 };

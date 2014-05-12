@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "coffee-script": "^1.7.1",
+    "component": "^1.0.0",
     "express": "^3.4.8",
     "grunt": "^0.4.2",
     "grunt-casper": "^0.3.3",
@@ -29,8 +30,7 @@
     "grunt-contrib-watch": "^0.5.0",
     "grunt-shell": "^0.6.4",
     "load-grunt-tasks": "^0.4.0",
-    "uglify-js": "^2.3.x",
-    "component": "^1.0.0"
+    "uglify-js": "^2.3.x"
   },
   "browser": "dist/localforage.js",
   "main": "dist/localforage.js",

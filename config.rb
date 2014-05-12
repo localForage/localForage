@@ -1,4 +1,4 @@
-set :source, 'docs'
+set :source, 'site'
 
 set :css_dir, 'stylesheets'
 
@@ -26,13 +26,4 @@ configure :build do
 
   # Minify Javascript on build
   activate :minify_javascript
-
-  # Enable cache buster
-  # activate :asset_hash
-
-  # Use relative URLs
-  # activate :relative_assets
-
-  # Or use a different image path
-  # set :http_prefix, "/Content/images/"
 end
