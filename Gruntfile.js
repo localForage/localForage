@@ -112,7 +112,7 @@ module.exports = exports = function(grunt) {
             localforage: {
                 files: {
                     'dist/localforage.min.js': ['dist/localforage.js'],
-                    'docs/localforage.min.js': ['dist/localforage.js']
+                    'site/localforage.min.js': ['dist/localforage.js']
                 }
             }
         },
