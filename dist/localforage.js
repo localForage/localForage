@@ -1434,7 +1434,7 @@ requireModule('promise/polyfill').polyfill();
         var _this = this;
 
         if (options) {
-            for (var i in dbInfo) {
+            for (var i in options) {
                 dbInfo[i] = typeof(options[i]) !== 'string' ? options[i].toString() : options[i];
             }
         }
