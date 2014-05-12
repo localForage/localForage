@@ -13,8 +13,8 @@ casper.test.begin "Testing web worker handling", (test) ->
     , "Test runner exists"
 
   casper.then ->
-    if casper.ENGINE is "slimerjs"
-      test.skip 1, "Skip web worker test in SlimerJS; it's buggy"
+    if casper.ENGINE is "slimerjs" or casper.DRIVER_NAME is "WebSQL"
+      test.skip 1, "Skip web worker test in SlimerJS/WebSQL; it's buggy"
       return
 
     unless casper.DRIVER_NAME is "localStorage"
