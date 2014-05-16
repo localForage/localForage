@@ -1450,7 +1450,7 @@ requireModule('promise/polyfill').polyfill();
             }
 
             // Create our key/value table if it doesn't exist.
-            db.transaction(function (t) {
+            db.transaction(function(t) {
                 t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName + 
                              ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
                     resolve();
@@ -1463,9 +1463,9 @@ requireModule('promise/polyfill').polyfill();
         var _this = this;
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                db.transaction(function (t) {
+                db.transaction(function(t) {
                     t.executeSql('SELECT * FROM ' + dbInfo.storeName + 
-                                 ' WHERE key = ? LIMIT 1', [key], function (t, results) {
+                                 ' WHERE key = ? LIMIT 1', [key], function(t, results) {
                         var result = results.rows.length ? results.rows.item(0).value : null;
 
                         // Check to see if this is serialized content we need to
@@ -1509,7 +1509,7 @@ requireModule('promise/polyfill').polyfill();
                     if (error) {
                         reject(error);
                     } else {
-                        db.transaction(function (t) {
+                        db.transaction(function(t) {
                             t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName + 
                                          ' (key, value) VALUES (?, ?)', [key, value], function() {
                                 if (callback) {
@@ -1551,7 +1551,7 @@ requireModule('promise/polyfill').polyfill();
         var _this = this;
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                db.transaction(function (t) {
+                db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName + 
                                  ' WHERE key = ?', [key], function() {
                         if (callback) {
@@ -1577,7 +1577,7 @@ requireModule('promise/polyfill').polyfill();
         var _this = this;
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                db.transaction(function (t) {
+                db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName, [], function() {
                         if (callback) {
                             callback();
@@ -1602,10 +1602,10 @@ requireModule('promise/polyfill').polyfill();
         var _this = this;
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                db.transaction(function (t) {
+                db.transaction(function(t) {
                     // Ahhh, SQL makes this one soooooo easy.
                     t.executeSql('SELECT COUNT(key) as c FROM ' + 
-                                 dbInfo.storeName, [], function (t, results) {
+                                 dbInfo.storeName, [], function(t, results) {
                         var result = results.rows.item(0).c;
 
                         if (callback) {
@@ -1636,9 +1636,9 @@ requireModule('promise/polyfill').polyfill();
         var _this = this;
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                db.transaction(function (t) {
+                db.transaction(function(t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName +
-                                 ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                                 ' WHERE id = ? LIMIT 1', [n + 1], function(t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;
 
                         if (callback) {

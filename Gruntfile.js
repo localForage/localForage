@@ -1,6 +1,8 @@
 /*global exports:true, require:true */
 var path = require('path');
 
+var sourceFiles = ['Gruntfile.js', 'src/*.js', 'src/**/*.js'];
+
 module.exports = exports = function(grunt) {
     'use strict';
 
@@ -81,11 +83,14 @@ module.exports = exports = function(grunt) {
                 }
             }
         },
+        jscs: {
+            source: sourceFiles
+        },
         jshint: {
             options: {
                 jshintrc: '.jshintrc'
             },
-            source: ['Gruntfile.js', 'src/*.js', 'src/**/*.js']
+            source: sourceFiles
         },
         open: {
             site: {
@@ -139,6 +144,7 @@ module.exports = exports = function(grunt) {
     grunt.registerTask('test', [
         'build',
         'jshint',
+        'jscs',
         'shell:component',
         'test-server',
         'casper'
