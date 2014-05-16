@@ -124,21 +124,17 @@ module.exports = exports = function(grunt) {
                 files: ['src/*.js', 'src/**/*.js'],
                 tasks: ['build']
             },
-            grunt: {
-                files: [
-                    'Gruntfile.js'
-                ]
-            },
-            test: {
+            /*jshint scripturl:true */
+            'mocha:unit': {
                 files: ['dist/localforage.js', 'test/test.*.*', ],
-                tasks: ['jshint', 'jscs', 'mocha']
+                tasks: ['jshint', 'jscs', 'mocha:unit']
             }
         }
     });
 
     require('load-grunt-tasks')(grunt);
 
-    grunt.registerTask('default', ['test', 'watch']);
+    grunt.registerTask('default', ['build', 'connect:test', 'watch']);
     grunt.registerTask('build', ['concat', 'uglify']);
     grunt.registerTask('publish', ['build', 'shell:publish-site']);
     grunt.registerTask('serve', ['build', 'connect:test', 'watch']);
