@@ -28,6 +28,7 @@
     "grunt-contrib-jshint": "^0.9.2",
     "grunt-contrib-uglify": "^0.4.0",
     "grunt-contrib-watch": "^0.5.0",
+    "grunt-jscs-checker": "^0.4.4",
     "grunt-shell": "^0.6.4",
     "load-grunt-tasks": "^0.4.0",
     "uglify-js": "^2.3.x"
