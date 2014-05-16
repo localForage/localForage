@@ -254,6 +254,10 @@ a browser environment. Local tests are run on a headless WebKit (using
 [PhantomJS](http://phantomjs.org)), but cross-browser tests are run using
 [Sauce Labs](https://saucelabs.com/).
 
+If you have Sauce Labs credentials on your machine, localForage will attempt
+to connect to Sauce Labs to run the tests on Sauce Labs as well. To skip
+Sauce Labs tests, run `grunt test:local`.
+
 When you submit a pull request, tests will be run against all browsers that
 localForage supports.
 
