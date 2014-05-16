@@ -139,14 +139,8 @@ module.exports = exports = function(grunt) {
     grunt.registerTask('publish', ['build', 'shell:publish-site']);
     grunt.registerTask('serve', ['build', 'connect:test', 'watch']);
     grunt.registerTask('site', ['shell:serve-site']);
-    grunt.registerTask('test-server', function() {
-        grunt.log.writeln('Starting web servers at test/server.coffee');
 
-        require('./test/server.coffee').listen(8181);
-        // Used to test cross-origin iframes.
-        require('./test/server.coffee').listen(8182);
-    });
-
+    // These are the test tasks we run regardless of Sauce Labs credentials.
     var testTasks = [
         'build',
         'jshint',
@@ -157,7 +151,9 @@ module.exports = exports = function(grunt) {
     ];
     grunt.registerTask('test:local', testTasks.slice());
 
-    // Run tests on travis with Saucelabs.
+    // Run tests using Sauce Labs if we are on Travis or have locally
+    // available Sauce Labs credentials. Use `grunt test:local` to skip
+    // Sauce Labs tests.
     if (process.env.TRAVIS_JOB_ID ||
         (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
         testTasks.push('saucelabs-mocha');
