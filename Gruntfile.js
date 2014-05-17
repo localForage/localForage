@@ -10,8 +10,9 @@ var sourceFiles = [
 ];
 
 var testURLs = [
+    'http://localhost:9999/test/test.component.html',
     'http://localhost:9999/test/test.main.html',
-    'http://localhost:9999/test/test.component.html'
+    'http://localhost:9999/test/test.require.html'
 ];
 
 module.exports = exports = function(grunt) {
@@ -131,7 +132,11 @@ module.exports = exports = function(grunt) {
             },
             /*jshint scripturl:true */
             'mocha:unit': {
-                files: ['dist/localforage.js', 'test/test.*.*', ],
+                files: [
+                    'dist/localforage.js',
+                    'test/runner.js',
+                    'test/test.*.*'
+                ],
                 tasks: ['jshint', 'jscs', 'shell:component', 'mocha:unit']
             }
         }

@@ -4,7 +4,7 @@ var mocha = this.mocha;
 
 mocha.setup('bdd');
 
-this.addEventListener('load', function() {
+function runTests() {
     var runner = mocha.run();
 
     var failedTests = [];
@@ -36,4 +36,19 @@ this.addEventListener('load', function() {
     }
 
     runner.on('fail', logFailure);
-});
+}
+
+var require = this.require;
+if (require) {
+    require(['/dist/localforage.js'], function(localforage) {
+        window.localforage = localforage;
+
+        require([
+            '/test/test.api.js',
+            '/test/test.config.js',
+            '/test/test.drivers.js'
+        ], runTests);
+    });
+} else {
+    this.addEventListener('load', runTests);
+}
