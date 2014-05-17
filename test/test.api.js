@@ -57,6 +57,7 @@ DRIVERS.forEach(function(driverName) {
             expect(typeof localforage.removeItem).to.be('function');
             expect(typeof localforage.key).to.be('function');
             expect(typeof localforage.setDriver).to.be('function');
+            expect(typeof localforage.ready).to.be('function');
         });
 
         it('sets the right database driver', function() {
