@@ -241,62 +241,70 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        it('saves binary data [callback]', function(done) {
-            var request = new XMLHttpRequest();
+        // Skip binary data tests if Array Buffer isn't supported.
+        if (typeof ArrayBuffer !== 'undefined') {
+            it('saves binary data [callback]', function(done) {
+                var request = new XMLHttpRequest();
 
-            request.open('GET', '/test/photo.jpg', true);
-            request.responseType = 'arraybuffer';
+                request.open('GET', '/test/photo.jpg', true);
+                request.responseType = 'arraybuffer';
 
-            // When the AJAX state changes, save the photo locally.
-            request.addEventListener('readystatechange', function() {
-                if (request.readyState === 4) { // readyState DONE
-                    var response = request.response;
-                    localforage.setItem('ab', request.response, function(sab) {
-                        expect(sab.toString()).to.be('[object ArrayBuffer]');
-                        expect(sab.byteLength).to.be(response.byteLength);
+                // When the AJAX state changes, save the photo locally.
+                request.addEventListener('readystatechange', function() {
+                    if (request.readyState === 4) { // readyState DONE
+                        var response = request.response;
+                        localforage.setItem('ab', request.response,
+                                            function(sab) {
+                            expect(sab.toString())
+                                .to.be('[object ArrayBuffer]');
+                            expect(sab.byteLength)
+                                .to.be(response.byteLength);
 
-                        localforage.getItem('ab', function(ab) {
+                            localforage.getItem('ab', function(ab) {
+                                expect(ab.toString())
+                                    .to.be('[object ArrayBuffer]');
+                                expect(ab.byteLength)
+                                    .to.be(request.response.byteLength);
+
+                                done();
+                            });
+                        });
+                    }
+                });
+
+                request.send();
+            });
+            it('saves binary data [promise]', function(done) {
+                var request = new XMLHttpRequest();
+
+                request.open('GET', '/test/photo.jpg', true);
+                request.responseType = 'arraybuffer';
+
+                // When the AJAX state changes, save the photo locally.
+                request.addEventListener('readystatechange', function() {
+                    if (request.readyState === 4) { // readyState DONE
+                        var response = request.response;
+                        localforage.setItem('ab', response).then(function(ab) {
                             expect(ab.toString())
                                 .to.be('[object ArrayBuffer]');
                             expect(ab.byteLength)
-                                .to.be(request.response.byteLength);
+                                .to.be(response.byteLength);
+                            return localforage.getItem('ab');
+                        }).then(function(ab) {
+                            expect(ab.toString())
+                                .to.be('[object ArrayBuffer]');
+                            expect(ab.byteLength)
+                                .to.be(response.byteLength);
 
                             done();
                         });
-                    });
-                }
+                    }
+                });
+
+                request.send();
             });
-
-            request.send();
-        });
-        it('saves binary data [promise]', function(done) {
-            var request = new XMLHttpRequest();
-
-            request.open('GET', '/test/photo.jpg', true);
-            request.responseType = 'arraybuffer';
-
-            // When the AJAX state changes, save the photo locally.
-            request.addEventListener('readystatechange', function() {
-                if (request.readyState === 4) { // readyState DONE
-                    var response = request.response;
-                    localforage.setItem('ab', response).then(function(ab) {
-                        expect(ab.toString())
-                            .to.be('[object ArrayBuffer]');
-                        expect(ab.byteLength)
-                            .to.be(response.byteLength);
-                        return localforage.getItem('ab');
-                    }).then(function(ab) {
-                        expect(ab.toString())
-                            .to.be('[object ArrayBuffer]');
-                        expect(ab.byteLength)
-                            .to.be(response.byteLength);
-
-                        done();
-                    });
-                }
-            });
-
-            request.send();
-        });
+        } else {
+            it.skip('saves binary data (ArrayBuffer type does not exist)');
+        }
     });
 });
