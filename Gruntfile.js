@@ -9,13 +9,6 @@ var sourceFiles = [
     'test/**/test.*.js'
 ];
 
-var testURLs = [
-    'http://localhost:9999/test/test.component.html',
-    'http://localhost:9999/test/test.main.html',
-    'http://localhost:9999/test/test.min.html',
-    'http://localhost:9999/test/test.require.html'
-];
-
 module.exports = exports = function(grunt) {
     'use strict';
 
@@ -76,7 +69,12 @@ module.exports = exports = function(grunt) {
         mocha: {
             unit: {
                 options: {
-                    urls: testURLs
+                    urls: [
+                        'http://localhost:9999/test/test.component.html',
+                        'http://localhost:9999/test/test.main.html',
+                        'http://localhost:9999/test/test.min.html',
+                        'http://localhost:9999/test/test.require.html'
+                    ]
                 }
             }
         },
@@ -90,7 +88,7 @@ module.exports = exports = function(grunt) {
                 options: {
                     username: process.env.SAUCE_USERNAME,
                     key: process.env.SAUCE_ACCESS_KEY,
-                    urls: testURLs,
+                    urls: ['http://localhost:9999/test/test.main.html'],
                     tunnelTimeout: 5,
                     build: process.env.TRAVIS_JOB_ID,
                     concurrency: 3,
