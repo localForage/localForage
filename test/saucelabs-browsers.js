@@ -4,41 +4,19 @@ var SAUCELAB_BROWSERS = [
     {
         base: 'SauceLabs',
         browserName: 'chrome',
-        version: '32',
-    },
-    {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        version: '33',
-    },
-    {
-        base: 'SauceLabs',
-        browserName: 'chrome',
+        platform: 'Windows 7',
         version: '34',
     },
     {
         base: 'SauceLabs',
         browserName: 'firefox',
-        version: '25',
-    },
-    {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        version: '26',
-    },
-    {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        version: '27',
-    },
-    {
-        base: 'SauceLabs',
-        browserName: 'firefox',
+        platform: 'Windows 7',
         version: '28',
     },
     {
         base: 'SauceLabs',
         browserName: 'firefox',
+        platform: 'Windows 7',
         version: '29',
     },
 
@@ -113,21 +91,25 @@ var SAUCELAB_BROWSERS = [
     // },
 
     {
+        base: 'SauceLabs',
         deviceName: 'iPhone',
         browserName: 'iphone',
         version: '6.0',
     },
     {
+        base: 'SauceLabs',
         deviceName: 'iPhone',
         browserName: 'iphone',
         version: '6.1',
     },
     {
+        base: 'SauceLabs',
         deviceName: 'iPhone',
         browserName: 'iphone',
         version: '7.0',
     },
     {
+        base: 'SauceLabs',
         deviceName: 'iPhone',
         browserName: 'iphone',
         version: '7.1'
