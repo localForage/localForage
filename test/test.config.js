@@ -84,8 +84,8 @@ describe('Config API', function() {
 
                 req.onsuccess = function() {
                     var dbValue = req.result
-                                     .transaction('storefront', 'readonly')
-                                     .objectStore('storefront')
+                                     .transaction('storeFront', 'readonly')
+                                     .objectStore('storeFront')
                                      .get('some key');
                     expect(dbValue).to.be(value);
                     done();
@@ -93,7 +93,7 @@ describe('Config API', function() {
             } else if (localforage.driver() === localforage.WEBSQL) {
                 window.openDatabase('My Cool App', (2.0).toString(),
                                     '', 4980736).transaction(function(t) {
-                    t.executeSql('SELECT * FROM storefront WHERE key = ? ' +
+                    t.executeSql('SELECT * FROM storeFront WHERE key = ? ' +
                                  'LIMIT 1', ['some key'],
                                  function(t, results) {
                         var dbValue = JSON.parse(results.rows.item(0).value);
