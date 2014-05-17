@@ -46,6 +46,7 @@ if (require) {
         require([
             '/test/test.api.js',
             '/test/test.config.js',
+            '/test/test.datatypes.js',
             '/test/test.drivers.js'
         ], runTests);
     });

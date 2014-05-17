@@ -39,8 +39,8 @@ DRIVERS.forEach(function(driverName) {
     describe(driverName + ' driver', function() {
         'use strict';
 
-        before(function() {
-            localforage.setDriver(driverName);
+        before(function(done) {
+            localforage.setDriver(driverName).then(done);
         });
 
         beforeEach(function(done) {
@@ -115,6 +115,39 @@ DRIVERS.forEach(function(driverName) {
                 return localforage.getItem('office');
             }).then(function(value) {
                 expect(value).to.be('Initech');
+                done();
+            });
+        });
+
+        it('saves an item over an existing key [callback]', function(done) {
+            localforage.setItem('4th floor', 'Mozilla', function(setValue) {
+                expect(setValue).to.be('Mozilla');
+
+                localforage.setItem('4th floor', 'Quora', function(newValue) {
+                    expect(newValue).to.not.be(setValue);
+                    expect(newValue).to.be('Quora');
+
+                    localforage.getItem('4th floor', function(value) {
+                        expect(value).to.not.be(setValue);
+                        expect(value).to.be(newValue);
+                        done();
+                    });
+                });
+            });
+        });
+        it('saves an item over an existing key [promise]', function(done) {
+            localforage.setItem('4e', 'Mozilla').then(function(setValue) {
+                expect(setValue).to.be('Mozilla');
+
+                return localforage.setItem('4e', 'Quora');
+            }).then(function(newValue) {
+                expect(newValue).to.not.be('Mozilla');
+                expect(newValue).to.be('Quora');
+
+                return localforage.getItem('4e');
+            }).then(function(value) {
+                expect(value).to.not.be('Mozilla');
+                expect(value).to.be('Quora');
                 done();
             });
         });
