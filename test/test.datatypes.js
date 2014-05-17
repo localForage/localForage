@@ -240,5 +240,63 @@ DRIVERS.forEach(function(driverName) {
                 done();
             });
         });
+
+        it('saves binary data [callback]', function(done) {
+            var request = new XMLHttpRequest();
+
+            request.open('GET', '/test/photo.jpg', true);
+            request.responseType = 'arraybuffer';
+
+            // When the AJAX state changes, save the photo locally.
+            request.addEventListener('readystatechange', function() {
+                if (request.readyState === 4) { // readyState DONE
+                    var response = request.response;
+                    localforage.setItem('ab', request.response, function(sab) {
+                        expect(sab.toString()).to.be('[object ArrayBuffer]');
+                        expect(sab.byteLength).to.be(response.byteLength);
+
+                        localforage.getItem('ab', function(ab) {
+                            expect(ab.toString())
+                                .to.be('[object ArrayBuffer]');
+                            expect(ab.byteLength)
+                                .to.be(request.response.byteLength);
+
+                            done();
+                        });
+                    });
+                }
+            });
+
+            request.send();
+        });
+        it('saves binary data [promise]', function(done) {
+            var request = new XMLHttpRequest();
+
+            request.open('GET', '/test/photo.jpg', true);
+            request.responseType = 'arraybuffer';
+
+            // When the AJAX state changes, save the photo locally.
+            request.addEventListener('readystatechange', function() {
+                if (request.readyState === 4) { // readyState DONE
+                    var response = request.response;
+                    localforage.setItem('ab', response).then(function(ab) {
+                        expect(ab.toString())
+                            .to.be('[object ArrayBuffer]');
+                        expect(ab.byteLength)
+                            .to.be(response.byteLength);
+                        return localforage.getItem('ab');
+                    }).then(function(ab) {
+                        expect(ab.toString())
+                            .to.be('[object ArrayBuffer]');
+                        expect(ab.byteLength)
+                            .to.be(response.byteLength);
+
+                        done();
+                    });
+                }
+            });
+
+            request.send();
+        });
     });
 });
