@@ -69,7 +69,9 @@ module.exports = exports = function(grunt) {
         mocha: {
             unit: {
                 options: {
-                    urls: ['http://localhost:9999/test/test.main.html']
+                    urls: [
+                        'http://localhost:9999/test/test.main.html'
+                    ]
                 }
             }
         },
@@ -83,7 +85,9 @@ module.exports = exports = function(grunt) {
                 options: {
                     username: process.env.SAUCE_USERNAME,
                     key: process.env.SAUCE_ACCESS_KEY,
-                    urls: ['http://localhost:9999/test/test.main.html'],
+                    urls: [
+                        'http://localhost:9999/test/test.main.html'
+                    ],
                     tunnelTimeout: 5,
                     build: process.env.TRAVIS_JOB_ID,
                     concurrency: 3,
