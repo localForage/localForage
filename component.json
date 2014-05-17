@@ -3,7 +3,7 @@
     "version": "0.8.1",
 
     "dependencies": {
-        "then/promise": "*"
+        "then/promise": "4.0.0"
     },
 
     "scripts": [
