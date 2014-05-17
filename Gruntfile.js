@@ -6,7 +6,7 @@ var sourceFiles = [
     'Gruntfile.js',
     'src/*.js',
     'src/**/*.js',
-    'test/**/test.api.js'
+    'test/**/test.*.js'
 ];
 
 module.exports = exports = function(grunt) {
