@@ -2070,7 +2070,7 @@ requireModule('promise/polyfill').polyfill();
             return this._driver || null;
         },
 
-        _ready: Promise.reject(new Error("setDriver() wasn't called")),
+        _ready: false,
 
         _driverSet: null,
 
