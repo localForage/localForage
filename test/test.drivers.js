@@ -47,6 +47,8 @@ describe('Driver API', function() {
             var previousDriver = localforage.driver();
             expect(previousDriver).to.not.be(localforage.INDEXEDDB);
 
+            // These should be rejected in component builds but aren't.
+            // TODO: Look into why.
             localforage.setDriver(localforage.INDEXEDDB, null, function() {
                 expect(localforage.driver()).to.be(previousDriver);
                 done();
@@ -56,6 +58,8 @@ describe('Driver API', function() {
             var previousDriver = localforage.driver();
             expect(previousDriver).to.not.be(localforage.INDEXEDDB);
 
+            // These should be rejected in component builds but aren't.
+            // TODO: Look into why.
             localforage.setDriver(localforage.INDEXEDDB).then(null,
                                                               function() {
                 expect(localforage.driver()).to.be(previousDriver);

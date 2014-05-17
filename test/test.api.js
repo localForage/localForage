@@ -1,9 +1,13 @@
-/* global before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true */
+/* global before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true, require:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
     localforage.WEBSQL
 ];
+
+var componentBuild = window.require && window.require.modules &&
+                     window.require.modules.localforage &&
+                     window.require.modules.localforage.component;
 
 describe('localForage API', function() {
     beforeEach(function(done) {
@@ -14,7 +18,12 @@ describe('localForage API', function() {
     // installed via bower. Read more here:
     // https://github.com/mozilla/localForage#working-on-localforage
     it('has Promises available', function() {
-        expect(typeof Promise).to.be('function');
+        if (componentBuild) {
+            var promise = require.modules['then~promise@4.0.0'].exports;
+            expect(typeof promise).to.be('function');
+        } else {
+            expect(typeof Promise).to.be('function');
+        }
     });
 });
 
