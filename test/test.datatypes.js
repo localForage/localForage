@@ -240,7 +240,6 @@ DRIVERS.forEach(function(driverName) {
         // Skip binary data tests if Array Buffer isn't supported.
         if (typeof ArrayBuffer !== 'undefined') {
             it('saves binary data', function(done) {
-                // this.timeout(50000);
                 var request = new XMLHttpRequest();
 
                 request.open('GET', '/test/photo.jpg', true);
