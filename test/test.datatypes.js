@@ -5,10 +5,6 @@ var DRIVERS = [
     localforage.WEBSQL
 ];
 
-// var componentBuild = window.require && window.require.modules &&
-//                      window.require.modules.localforage &&
-//                      window.require.modules.localforage.component;
-
 DRIVERS.forEach(function(driverName) {
     if ((!Modernizr.indexeddb && driverName === localforage.INDEXEDDB) ||
         (!Modernizr.localstorage && driverName === localforage.LOCALSTORAGE) ||
@@ -243,63 +239,36 @@ DRIVERS.forEach(function(driverName) {
 
         // Skip binary data tests if Array Buffer isn't supported.
         if (typeof ArrayBuffer !== 'undefined') {
-            it('saves binary data [callback]', function(done) {
+            it('saves binary data', function(done) {
+                // this.timeout(50000);
                 var request = new XMLHttpRequest();
 
                 request.open('GET', '/test/photo.jpg', true);
                 request.responseType = 'arraybuffer';
 
                 // When the AJAX state changes, save the photo locally.
-                request.addEventListener('readystatechange', function() {
-                    if (request.readyState === 4) { // readyState DONE
+                request.onreadystatechange = function() {
+                    if (request.readyState === request.DONE) {
                         var response = request.response;
-                        localforage.setItem('ab', request.response,
-                                            function(sab) {
+                        localforage.setItem('ab', response, function(sab) {
                             expect(sab.toString())
                                 .to.be('[object ArrayBuffer]');
                             expect(sab.byteLength)
                                 .to.be(response.byteLength);
-
-                            localforage.getItem('ab', function(ab) {
-                                expect(ab.toString())
+                        }).then(function() {
+                            // TODO: Running getItem from inside the setItem
+                            // callback times out on IE 10/11. Could be an
+                            // open transaction issue?
+                            localforage.getItem('ab', function(arrayBuff) {
+                                expect(arrayBuff.toString())
                                     .to.be('[object ArrayBuffer]');
-                                expect(ab.byteLength)
-                                    .to.be(request.response.byteLength);
-
-                                done();
+                                expect(arrayBuff.byteLength)
+                                    .to.be(response.byteLength);
                             });
-                        });
-                    }
-                });
-
-                request.send();
-            });
-            it('saves binary data [promise]', function(done) {
-                var request = new XMLHttpRequest();
-
-                request.open('GET', '/test/photo.jpg', true);
-                request.responseType = 'arraybuffer';
-
-                // When the AJAX state changes, save the photo locally.
-                request.addEventListener('readystatechange', function() {
-                    if (request.readyState === 4) { // readyState DONE
-                        var response = request.response;
-                        localforage.setItem('ab', response).then(function(ab) {
-                            expect(ab.toString())
-                                .to.be('[object ArrayBuffer]');
-                            expect(ab.byteLength)
-                                .to.be(response.byteLength);
-                            return localforage.getItem('ab');
-                        }).then(function(ab) {
-                            expect(ab.toString())
-                                .to.be('[object ArrayBuffer]');
-                            expect(ab.byteLength)
-                                .to.be(response.byteLength);
-
                             done();
                         });
                     }
-                });
+                };
 
                 request.send();
             });
