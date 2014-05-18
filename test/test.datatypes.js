@@ -275,4 +275,199 @@ DRIVERS.forEach(function(driverName) {
             it.skip('saves binary data (ArrayBuffer type does not exist)');
         }
     });
+
+    describe('Typed Array handling in ' + driverName, function() {
+        if (typeof Int8Array !== 'undefined') {
+            it('saves an Int8Array', function(done) {
+                var array = new Int8Array(8);
+                array[2] = 65;
+                array[4] = 0;
+
+                localforage.setItem('array', array, function(writeValue) {
+                    localforage.getItem('array', function(readValue) {
+                        expect(readValue instanceof Int8Array).to.be(true);
+                        expect(readValue[2]).to.be(array[2]);
+                        expect(readValue[4]).to.be(writeValue[4]);
+                        expect(readValue.length).to.be(writeValue.length);
+
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip("doesn't have the Int8Array type");
+        }
+
+        if (typeof Uint8Array !== 'undefined') {
+            it('saves an Uint8Array', function(done) {
+                var array = new Uint8Array(8);
+                array[0] = 65;
+                array[4] = 0;
+
+                localforage.setItem('array', array, function(writeValue) {
+                    localforage.getItem('array', function(readValue) {
+                        expect(readValue instanceof Uint8Array).to.be(true);
+                        expect(readValue[0]).to.be(array[0]);
+                        expect(readValue[4]).to.be(writeValue[4]);
+                        expect(readValue.length).to.be(writeValue.length);
+
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip("doesn't have the Uint8Array type");
+        }
+
+        if (typeof Uint8ClampedArray !== 'undefined') {
+            it('saves an Uint8ClampedArray', function(done) {
+                var array = new Uint8ClampedArray(8);
+                array[0] = 0;
+                array[1] = 93;
+                array[2] = 350;
+
+                localforage.setItem('array', array, function(writeValue) {
+                    localforage.getItem('array', function(readValue) {
+                        expect(readValue instanceof Uint8ClampedArray)
+                            .to.be(true);
+                        expect(readValue[0]).to.be(array[0]);
+                        expect(readValue[1]).to.be(array[1]);
+                        expect(readValue[2]).to.be(array[2]);
+                        expect(readValue[1]).to.be(writeValue[1]);
+                        expect(readValue.length).to.be(writeValue.length);
+
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip("doesn't have the Uint8Array type");
+        }
+
+        if (typeof Int16Array !== 'undefined') {
+            it('saves an Int16Array', function(done) {
+                var array = new Int16Array(8);
+                array[0] = 65;
+                array[4] = 0;
+
+                localforage.setItem('array', array, function(writeValue) {
+                    localforage.getItem('array', function(readValue) {
+                        expect(readValue instanceof Int16Array).to.be(true);
+                        expect(readValue[0]).to.be(array[0]);
+                        expect(readValue[4]).to.be(writeValue[4]);
+                        expect(readValue.length).to.be(writeValue.length);
+
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip("doesn't have the Int16Array type");
+        }
+
+        if (typeof Uint16Array !== 'undefined') {
+            it('saves an Uint16Array', function(done) {
+                var array = new Uint16Array(8);
+                array[0] = 65;
+                array[4] = 0;
+
+                localforage.setItem('array', array, function(writeValue) {
+                    localforage.getItem('array', function(readValue) {
+                        expect(readValue instanceof Uint16Array).to.be(true);
+                        expect(readValue[0]).to.be(array[0]);
+                        expect(readValue[4]).to.be(writeValue[4]);
+                        expect(readValue.length).to.be(writeValue.length);
+
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip("doesn't have the Uint16Array type");
+        }
+
+        if (typeof Int32Array !== 'undefined') {
+            it('saves an Int32Array', function(done) {
+                var array = new Int32Array(8);
+                array[0] = 65;
+                array[4] = 0;
+
+                localforage.setItem('array', array, function(writeValue) {
+                    localforage.getItem('array', function(readValue) {
+                        expect(readValue instanceof Int32Array).to.be(true);
+                        expect(readValue[0]).to.be(array[0]);
+                        expect(readValue[4]).to.be(writeValue[4]);
+                        expect(readValue.length).to.be(writeValue.length);
+
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip("doesn't have the Int32Array type");
+        }
+
+        if (typeof Uint32Array !== 'undefined') {
+            it('saves an Uint32Array', function(done) {
+                var array = new Uint32Array(8);
+                array[0] = 65;
+                array[4] = 0;
+
+                localforage.setItem('array', array, function(writeValue) {
+                    localforage.getItem('array', function(readValue) {
+                        expect(readValue instanceof Uint32Array).to.be(true);
+                        expect(readValue[0]).to.be(array[0]);
+                        expect(readValue[4]).to.be(writeValue[4]);
+                        expect(readValue.length).to.be(writeValue.length);
+
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip("doesn't have the Uint32Array type");
+        }
+
+        if (typeof Float32Array !== 'undefined') {
+            it('saves a Float32Array', function(done) {
+                var array = new Float32Array(8);
+                array[0] = 6.5;
+                array[4] = 0.1;
+
+                localforage.setItem('array', array, function(writeValue) {
+                    localforage.getItem('array', function(readValue) {
+                        expect(readValue instanceof Float32Array).to.be(true);
+                        expect(readValue[0]).to.be(array[0]);
+                        expect(readValue[4]).to.be(writeValue[4]);
+                        expect(readValue.length).to.be(writeValue.length);
+
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip("doesn't have the Float32Array type");
+        }
+
+        if (typeof Float64Array !== 'undefined') {
+            it('saves a Float64Array', function(done) {
+                var array = new Float64Array(8);
+                array[0] = 6.5;
+                array[4] = 0.1;
+
+                localforage.setItem('array', array, function(writeValue) {
+                    localforage.getItem('array', function(readValue) {
+                        expect(readValue instanceof Float64Array).to.be(true);
+                        expect(readValue[0]).to.be(array[0]);
+                        expect(readValue[4]).to.be(writeValue[4]);
+                        expect(readValue.length).to.be(writeValue.length);
+
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip("doesn't have the Float64Array type");
+        }
+    });
 });
