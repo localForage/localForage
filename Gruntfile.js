@@ -163,10 +163,10 @@ module.exports = exports = function(grunt) {
     // Run tests using Sauce Labs if we are on Travis or have locally
     // available Sauce Labs credentials. Use `grunt test:local` to skip
     // Sauce Labs tests.
-    if (process.env.TRAVIS_JOB_ID ||
-        (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
-        testTasks.push('saucelabs-mocha');
-    }
+    // if (process.env.TRAVIS_JOB_ID ||
+    //     (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
+    //     testTasks.push('saucelabs-mocha');
+    // }
 
     grunt.registerTask('test', testTasks);
 };
