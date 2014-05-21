@@ -65,13 +65,18 @@ module.exports = exports = function(grunt) {
                 separator: '',
             },
             localforage: {
-                src: [
-                    // https://github.com/jakearchibald/es6-promise
-                    'bower_components/es6-promise/promise.js',
-                    'src/drivers/**/*.js',
-                    'src/localforage.js'
-                ],
-                dest: 'dist/localforage.js',
+                files: {
+                    'dist/localforage.js': [
+                        // https://github.com/jakearchibald/es6-promise
+                        'bower_components/es6-promise/promise.js',
+                        'src/drivers/**/*.js',
+                        'src/localforage.js'
+                    ],
+                    'dist/localforage.nopromises.js': [
+                        'src/drivers/**/*.js',
+                        'src/localforage.js'
+                    ],
+                },
                 options: {
                     banner:
                         '/*!\n' +
@@ -117,6 +122,7 @@ module.exports = exports = function(grunt) {
             localforage: {
                 files: {
                     'dist/localforage.min.js': ['dist/localforage.js'],
+                    'dist/localforage.nopromises.min.js': ['dist/localforage.nopromises.js'],
                     'site/localforage.min.js': ['dist/localforage.js']
                 }
             }
