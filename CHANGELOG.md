@@ -3,6 +3,10 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [Next Version](https://github.com/mozilla/localForage/)
+
+* Add build versions with the Promises polyfill to `dist/` directory. ([#172](https://github.com/mozilla/localForage/pull/172))
+
 ### [Version 0.6.1](https://github.com/mozilla/localForage/releases/tag/0.6.1)
 
 * Put built versions back in `dist/` directory.
