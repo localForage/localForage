@@ -751,7 +751,9 @@ requireModule('promise/polyfill').polyfill();
                     }
 
                     if (callback) {
-                        callback(value);
+                        setTimeout(function() {
+                            callback(value);
+                        },0);
                     }
 
                     resolve(value);
@@ -787,7 +789,9 @@ requireModule('promise/polyfill').polyfill();
                 var req = store.put(value, key);
                 req.onsuccess = function() {
                     if (callback) {
-                        callback(value);
+                        setTimeout(function() {
+                            callback(value);
+                        },0);
                     }
 
                     resolve(value);
@@ -822,7 +826,7 @@ requireModule('promise/polyfill').polyfill();
                 var req = store['delete'](key);
                 req.onsuccess = function() {
                     if (callback) {
-                        callback();
+                        setTimeout(callback, 0);
                     }
 
                     resolve();
@@ -863,7 +867,7 @@ requireModule('promise/polyfill').polyfill();
 
                 req.onsuccess = function() {
                     if (callback) {
-                        callback();
+                        setTimeout(callback, 0);
                     }
 
                     resolve();

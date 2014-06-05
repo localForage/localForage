@@ -68,7 +68,9 @@
                     }
 
                     if (callback) {
-                        callback(value);
+                        setTimeout(function() {
+                            callback(value);
+                        },0);
                     }
 
                     resolve(value);
@@ -104,7 +106,9 @@
                 var req = store.put(value, key);
                 req.onsuccess = function() {
                     if (callback) {
-                        callback(value);
+                        setTimeout(function() {
+                            callback(value);
+                        },0);
                     }
 
                     resolve(value);
@@ -139,7 +143,7 @@
                 var req = store['delete'](key);
                 req.onsuccess = function() {
                     if (callback) {
-                        callback();
+                        setTimeout(callback, 0);
                     }
 
                     resolve();
@@ -180,7 +184,7 @@
 
                 req.onsuccess = function() {
                     if (callback) {
-                        callback();
+                        setTimeout(callback, 0);
                     }
 
                     resolve();
