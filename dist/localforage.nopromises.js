@@ -67,9 +67,7 @@
                         value = null;
                     }
 
-                    if (callback) {
-                        callback(value);
-                    }
+                    deferCallback(callback,value);
 
                     resolve(value);
                 };
@@ -103,9 +101,7 @@
 
                 var req = store.put(value, key);
                 req.onsuccess = function() {
-                    if (callback) {
-                        callback(value);
-                    }
+                    deferCallback(callback,value);
 
                     resolve(value);
                 };
@@ -138,9 +134,8 @@
                 // though it currently doesn't.
                 var req = store['delete'](key);
                 req.onsuccess = function() {
-                    if (callback) {
-                        callback();
-                    }
+
+                    deferCallback(callback);
 
                     resolve();
                 };
@@ -179,9 +174,7 @@
                 var req = store.clear();
 
                 req.onsuccess = function() {
-                    if (callback) {
-                        callback();
-                    }
+                    deferCallback(callback);
 
                     resolve();
                 };
@@ -290,6 +283,14 @@
                 };
             });
         });
+    }
+
+    function deferCallback(callback, value) {
+        if (callback) {
+            return setTimeout(function() {
+                return callback(value);
+            }, 0);
+        }
     }
 
     var asyncStorage = {
