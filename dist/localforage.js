@@ -750,11 +750,7 @@ requireModule('promise/polyfill').polyfill();
                         value = null;
                     }
 
-                    if (callback) {
-                        setTimeout(function() {
-                            callback(value);
-                        },0);
-                    }
+                    deferCallback(callback,value);
 
                     resolve(value);
                 };
@@ -788,11 +784,7 @@ requireModule('promise/polyfill').polyfill();
 
                 var req = store.put(value, key);
                 req.onsuccess = function() {
-                    if (callback) {
-                        setTimeout(function() {
-                            callback(value);
-                        },0);
-                    }
+                    deferCallback(callback,value);
 
                     resolve(value);
                 };
@@ -825,9 +817,8 @@ requireModule('promise/polyfill').polyfill();
                 // though it currently doesn't.
                 var req = store['delete'](key);
                 req.onsuccess = function() {
-                    if (callback) {
-                        setTimeout(callback, 0);
-                    }
+
+                    deferCallback(callback);
 
                     resolve();
                 };
@@ -866,9 +857,7 @@ requireModule('promise/polyfill').polyfill();
                 var req = store.clear();
 
                 req.onsuccess = function() {
-                    if (callback) {
-                        setTimeout(callback, 0);
-                    }
+                    deferCallback(callback);
 
                     resolve();
                 };
@@ -977,6 +966,14 @@ requireModule('promise/polyfill').polyfill();
                 };
             });
         });
+    }
+
+    function deferCallback(callback, value) {
+        if (callback) {
+            return setTimeout(function() {
+                return callback(value);
+            }, 0);
+        }
     }
 
     var asyncStorage = {
