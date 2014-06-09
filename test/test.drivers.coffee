@@ -111,7 +111,8 @@ casper.test.begin "Testing localforage driver selection", NUMBER_OF_TESTS, (test
         typeof window._lf.clear is 'function' and
         typeof window._lf.length is 'function' and
         typeof window._lf.removeItem is 'function' and
-        typeof window._lf.key is 'function'
+        typeof window._lf.key is 'function' and
+        typeof window._lf.keys is 'function'
       , "localforage API is available in localforage.min"
   else
     test.skip 6, "Skipping RequireJS tests in SlimerJS"
