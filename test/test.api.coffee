@@ -17,7 +17,7 @@
 # Note the number of tests constant: we run this to make sure all async tests
 # are run and also that we're keeping track of skipped tests. Be sure to
 # increment the number when you add tests.
-NUMBER_OF_TESTS = 42
+NUMBER_OF_TESTS = 45
 
 casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test) ->
   casper.start "#{casper.TEST_URL}#{casper.URL}.html", ->
@@ -38,7 +38,8 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test
       typeof localforage.clear is 'function' and
       typeof localforage.length is 'function' and
       typeof localforage.removeItem is 'function' and
-      typeof localforage.key is 'function'
+      typeof localforage.key is 'function' and
+      typeof localforage.keys is 'function'
     , "localforage API is consistent between drivers"
 
     test.assertEvalEquals ->
@@ -51,7 +52,8 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test
       typeof localforage.clear is 'function' and
       typeof localforage.length is 'function' and
       typeof localforage.removeItem is 'function' and
-      typeof localforage.key is 'function'
+      typeof localforage.key is 'function' and
+      typeof localforage.keys is 'function'
     , "localStorage API is available using #{casper.DRIVER}"
 
   casper.then ->
@@ -598,6 +600,52 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test
   #       window._testValue[4] is 0
   #     , 'setItem() and getItem() for Uint8Array returns same values again'
 
+  # 'keys' api (3 tests)
+  casper.then ->
+    @evaluate ->
+      localforage.clear ->
+        localforage.keys (value) ->
+          window._testValue = value
+          __utils__.findOne('.status').id = 'empty-keys-value'
+
+    @waitForSelector '#empty-keys-value', ->
+      test.assertEval ->
+        window._testValue isnt null and
+        window._testValue isnt undefined and
+        window._testValue.length is 0
+      , 'keys() returns an empty array when localforage is empty'
+
+  casper.then ->
+    @evaluate ->
+      localforage.setItem 'officeName', 'Initech', () ->
+        localforage.keys (value) ->
+          window._testValue = value
+          __utils__.findOne('.status').id = 'keys-single-value'
+
+    @waitForSelector '#keys-single-value', ->
+      test.assertEval ->
+        window._testValue isnt null and
+        window._testValue isnt undefined and
+        window._testValue.length is 1
+        window._testValue[0] is 'officeName'
+      , 'keys() returns an array with one item'
+
+  casper.then ->
+    @evaluate ->
+      localforage.setItem 'business', 'Embezzlement', () ->
+        localforage.keys (value) ->
+          window._testValue = value
+          __utils__.findOne('.status').id = 'keys-multiple-values'
+
+    @waitForSelector '#keys-multiple-values', ->
+      test.assertEval ->
+        window._testValue isnt null and
+        window._testValue isnt undefined and
+        window._testValue.length is 2
+        window._testValue.indexOf('business') isnt -1
+        window._testValue.indexOf('officeName') isnt -1
+      , 'keys() returns an array with multiple items'
+
   casper.thenOpen "#{casper.TEST_URL}test.min.html", ->
     test.info "Test minified version"
 
@@ -609,7 +657,8 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test
       typeof localforage.clear is 'function' and
       typeof localforage.length is 'function' and
       typeof localforage.removeItem is 'function' and
-      typeof localforage.key is 'function'
+      typeof localforage.key is 'function' and
+      typeof localforage.keys is 'function'
     , "Minified version has localforage API intact"
 
   casper.run ->
