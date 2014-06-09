@@ -126,6 +126,23 @@
         });
     }
 
+    function keys(callback) {
+        var _this = this;
+        return new Promise(function(resolve) {
+            _this.ready().then(function() {
+                var len = localStorage.length, _keys = [], i;
+                for (i = 0; i < len; i++) {
+                    _keys.push(localStorage.key(i).substring(keyPrefix.length));
+                }
+
+                if (callback) {
+                    callback(_keys);
+                }
+                resolve(_keys);
+            });
+        });
+    }
+
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
         var _this = this;
@@ -370,7 +387,8 @@
         removeItem: removeItem,
         clear: clear,
         length: length,
-        key: key
+        key: key,
+        keys: keys
     };
 
     if (typeof define === 'function' && define.amd) {
