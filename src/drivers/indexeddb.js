@@ -279,8 +279,47 @@
         });
     }
 
-    // Under Chrome the callback is called before the changes (save, clear) 
-    // are actually made. So we use a defer function which wait that the 
+    function keys(callback) {
+        var _this = this;
+
+        return new Promise(function(resolve, reject) {
+
+            _this.ready().then(function() {
+                var store = db.transaction(dbInfo.storeName, 'readonly')
+                              .objectStore(dbInfo.storeName);
+
+                var req = store.openCursor();
+
+                var _keys = [];
+                req.onsuccess = function() {
+                    var cursor = req.result;
+
+                    if (!cursor) {
+                        if (callback) {
+                            callback(_keys);
+                        }
+
+                        resolve(_keys);
+                        return;
+                    }
+
+                    _keys.push(cursor.key);
+                    cursor.continue();
+                };
+
+                req.onerror = function() {
+                    if (callback) {
+                        callback(null, req.error);
+                    }
+
+                    reject(req.error);
+                };
+            });
+        });
+    }
+
+    // Under Chrome the callback is called before the changes (save, clear)
+    // are actually made. So we use a defer function which wait that the
     // call stack to be empty.
     // For more info : https://github.com/mozilla/localForage/issues/175
     // Pull request : https://github.com/mozilla/localForage/pull/178
@@ -300,7 +339,8 @@
         removeItem: removeItem,
         clear: clear,
         length: length,
-        key: key
+        key: key,
+        keys: keys
     };
 
     if (typeof define === 'function' && define.amd) {
