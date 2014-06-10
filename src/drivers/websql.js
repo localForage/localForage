@@ -68,7 +68,7 @@
 
             // Create our key/value table if it doesn't exist.
             db.transaction(function(t) {
-                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName + 
+                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
                              ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
                     resolve();
                 }, null);
@@ -81,7 +81,7 @@
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
-                    t.executeSql('SELECT * FROM ' + dbInfo.storeName + 
+                    t.executeSql('SELECT * FROM ' + dbInfo.storeName +
                                  ' WHERE key = ? LIMIT 1', [key], function(t, results) {
                         var result = results.rows.length ? results.rows.item(0).value : null;
 
@@ -127,7 +127,7 @@
                         reject(error);
                     } else {
                         db.transaction(function(t) {
-                            t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName + 
+                            t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName +
                                          ' (key, value) VALUES (?, ?)', [key, value], function() {
                                 if (callback) {
                                     callback(originalValue);
@@ -169,7 +169,7 @@
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
-                    t.executeSql('DELETE FROM ' + dbInfo.storeName + 
+                    t.executeSql('DELETE FROM ' + dbInfo.storeName +
                                  ' WHERE key = ?', [key], function() {
                         if (callback) {
                             callback();
@@ -221,7 +221,7 @@
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     // Ahhh, SQL makes this one soooooo easy.
-                    t.executeSql('SELECT COUNT(key) as c FROM ' + 
+                    t.executeSql('SELECT COUNT(key) as c FROM ' +
                                  dbInfo.storeName, [], function(t, results) {
                         var result = results.rows.item(0).c;
 
@@ -263,6 +263,37 @@
                         }
 
                         resolve(result);
+                    }, function(t, error) {
+                        if (callback) {
+                            callback(null, error);
+                        }
+
+                        reject(error);
+                    });
+                });
+            });
+        });
+    }
+
+    function keys(callback) {
+        var _this = this;
+        return new Promise(function(resolve, reject) {
+            _this.ready().then(function() {
+                db.transaction(function(t) {
+                    t.executeSql('SELECT key FROM ' + dbInfo.storeName, [],
+                                 function(t, results) {
+                        var length = results.rows.length;
+                        var keys = [];
+
+                        for (var i = 0; i < length; i++) {
+                            keys.push(results.rows.item(i).key);
+                        }
+
+                        if (callback) {
+                            callback(keys);
+                        }
+
+                        resolve(keys);
                     }, function(t, error) {
                         if (callback) {
                             callback(null, error);
@@ -463,7 +494,8 @@
         removeItem: removeItem,
         clear: clear,
         length: length,
-        key: key
+        key: key,
+        keys: keys
     };
 
     if (typeof define === 'function' && define.amd) {

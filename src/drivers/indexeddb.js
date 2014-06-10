@@ -61,9 +61,7 @@
                         value = null;
                     }
 
-                    if (callback) {
-                        callback(value);
-                    }
+                    deferCallback(callback,value);
 
                     resolve(value);
                 };
@@ -97,9 +95,7 @@
 
                 var req = store.put(value, key);
                 req.onsuccess = function() {
-                    if (callback) {
-                        callback(value);
-                    }
+                    deferCallback(callback,value);
 
                     resolve(value);
                 };
@@ -132,9 +128,8 @@
                 // though it currently doesn't.
                 var req = store['delete'](key);
                 req.onsuccess = function() {
-                    if (callback) {
-                        callback();
-                    }
+
+                    deferCallback(callback);
 
                     resolve();
                 };
@@ -173,9 +168,7 @@
                 var req = store.clear();
 
                 req.onsuccess = function() {
-                    if (callback) {
-                        callback();
-                    }
+                    deferCallback(callback);
 
                     resolve();
                 };
@@ -286,6 +279,57 @@
         });
     }
 
+    function keys(callback) {
+        var _this = this;
+
+        return new Promise(function(resolve, reject) {
+            _this.ready().then(function() {
+                var store = db.transaction(dbInfo.storeName, 'readonly')
+                              .objectStore(dbInfo.storeName);
+
+                var req = store.openCursor();
+                var keys = [];
+
+                req.onsuccess = function() {
+                    var cursor = req.result;
+
+                    if (!cursor) {
+                        if (callback) {
+                            callback(keys);
+                        }
+
+                        resolve(keys);
+                        return;
+                    }
+
+                    keys.push(cursor.key);
+                    cursor.continue();
+                };
+
+                req.onerror = function() {
+                    if (callback) {
+                        callback(null, req.error);
+                    }
+
+                    reject(req.error);
+                };
+            });
+        });
+    }
+
+    // Under Chrome the callback is called before the changes (save, clear)
+    // are actually made. So we use a defer function which wait that the
+    // call stack to be empty.
+    // For more info : https://github.com/mozilla/localForage/issues/175
+    // Pull request : https://github.com/mozilla/localForage/pull/178
+    function deferCallback(callback, value) {
+        if (callback) {
+            return setTimeout(function() {
+                return callback(value);
+            }, 0);
+        }
+    }
+
     var asyncStorage = {
         _driver: 'asyncStorage',
         _initStorage: _initStorage,
@@ -294,7 +338,8 @@
         removeItem: removeItem,
         clear: clear,
         length: length,
-        key: key
+        key: key,
+        keys: keys
     };
 
     if (typeof define === 'function' && define.amd) {

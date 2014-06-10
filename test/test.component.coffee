@@ -14,13 +14,14 @@ casper.test.begin "Testing localforage component build", (test) ->
       typeof localforage.clear is 'function' and
       typeof localforage.length is 'function' and
       typeof localforage.removeItem is 'function' and
-      typeof localforage.key is 'function'
+      typeof localforage.key is 'function' and
+      typeof localforage.keys is 'function'
     , "component version has localforage API intact"
 
     test.assertEval ->
       localforage = require "localforage"
 
-      typeof localforage.length() is 'object' and 
+      typeof localforage.length() is 'object' and
       localforage.length().then isnt undefined
     , "localforage methods return a Promise"
 

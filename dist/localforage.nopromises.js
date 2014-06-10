@@ -67,9 +67,7 @@
                         value = null;
                     }
 
-                    if (callback) {
-                        callback(value);
-                    }
+                    deferCallback(callback,value);
 
                     resolve(value);
                 };
@@ -103,9 +101,7 @@
 
                 var req = store.put(value, key);
                 req.onsuccess = function() {
-                    if (callback) {
-                        callback(value);
-                    }
+                    deferCallback(callback,value);
 
                     resolve(value);
                 };
@@ -138,9 +134,8 @@
                 // though it currently doesn't.
                 var req = store['delete'](key);
                 req.onsuccess = function() {
-                    if (callback) {
-                        callback();
-                    }
+
+                    deferCallback(callback);
 
                     resolve();
                 };
@@ -179,9 +174,7 @@
                 var req = store.clear();
 
                 req.onsuccess = function() {
-                    if (callback) {
-                        callback();
-                    }
+                    deferCallback(callback);
 
                     resolve();
                 };
@@ -292,6 +285,57 @@
         });
     }
 
+    function keys(callback) {
+        var _this = this;
+
+        return new Promise(function(resolve, reject) {
+            _this.ready().then(function() {
+                var store = db.transaction(dbInfo.storeName, 'readonly')
+                              .objectStore(dbInfo.storeName);
+
+                var req = store.openCursor();
+                var keys = [];
+
+                req.onsuccess = function() {
+                    var cursor = req.result;
+
+                    if (!cursor) {
+                        if (callback) {
+                            callback(keys);
+                        }
+
+                        resolve(keys);
+                        return;
+                    }
+
+                    keys.push(cursor.key);
+                    cursor.continue();
+                };
+
+                req.onerror = function() {
+                    if (callback) {
+                        callback(null, req.error);
+                    }
+
+                    reject(req.error);
+                };
+            });
+        });
+    }
+
+    // Under Chrome the callback is called before the changes (save, clear)
+    // are actually made. So we use a defer function which wait that the
+    // call stack to be empty.
+    // For more info : https://github.com/mozilla/localForage/issues/175
+    // Pull request : https://github.com/mozilla/localForage/pull/178
+    function deferCallback(callback, value) {
+        if (callback) {
+            return setTimeout(function() {
+                return callback(value);
+            }, 0);
+        }
+    }
+
     var asyncStorage = {
         _driver: 'asyncStorage',
         _initStorage: _initStorage,
@@ -300,7 +344,8 @@
         removeItem: removeItem,
         clear: clear,
         length: length,
-        key: key
+        key: key,
+        keys: keys
     };
 
     if (typeof define === 'function' && define.amd) {
@@ -437,6 +482,26 @@
                     callback(result);
                 }
                 resolve(result);
+            });
+        });
+    }
+
+    function keys(callback) {
+        var _this = this;
+        return new Promise(function(resolve) {
+            _this.ready().then(function() {
+                var length = localStorage.length;
+                var keys = [];
+
+                for (var i = 0; i < length; i++) {
+                    keys.push(localStorage.key(i).substring(keyPrefix.length));
+                }
+
+                if (callback) {
+                    callback(keys);
+                }
+
+                resolve(keys);
             });
         });
     }
@@ -685,7 +750,8 @@
         removeItem: removeItem,
         clear: clear,
         length: length,
-        key: key
+        key: key,
+        keys: keys
     };
 
     if (typeof define === 'function' && define.amd) {
@@ -768,7 +834,7 @@
 
             // Create our key/value table if it doesn't exist.
             db.transaction(function(t) {
-                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName + 
+                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
                              ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
                     resolve();
                 }, null);
@@ -781,7 +847,7 @@
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
-                    t.executeSql('SELECT * FROM ' + dbInfo.storeName + 
+                    t.executeSql('SELECT * FROM ' + dbInfo.storeName +
                                  ' WHERE key = ? LIMIT 1', [key], function(t, results) {
                         var result = results.rows.length ? results.rows.item(0).value : null;
 
@@ -827,7 +893,7 @@
                         reject(error);
                     } else {
                         db.transaction(function(t) {
-                            t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName + 
+                            t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName +
                                          ' (key, value) VALUES (?, ?)', [key, value], function() {
                                 if (callback) {
                                     callback(originalValue);
@@ -869,7 +935,7 @@
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
-                    t.executeSql('DELETE FROM ' + dbInfo.storeName + 
+                    t.executeSql('DELETE FROM ' + dbInfo.storeName +
                                  ' WHERE key = ?', [key], function() {
                         if (callback) {
                             callback();
@@ -921,7 +987,7 @@
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     // Ahhh, SQL makes this one soooooo easy.
-                    t.executeSql('SELECT COUNT(key) as c FROM ' + 
+                    t.executeSql('SELECT COUNT(key) as c FROM ' +
                                  dbInfo.storeName, [], function(t, results) {
                         var result = results.rows.item(0).c;
 
@@ -963,6 +1029,37 @@
                         }
 
                         resolve(result);
+                    }, function(t, error) {
+                        if (callback) {
+                            callback(null, error);
+                        }
+
+                        reject(error);
+                    });
+                });
+            });
+        });
+    }
+
+    function keys(callback) {
+        var _this = this;
+        return new Promise(function(resolve, reject) {
+            _this.ready().then(function() {
+                db.transaction(function(t) {
+                    t.executeSql('SELECT key FROM ' + dbInfo.storeName, [],
+                                 function(t, results) {
+                        var length = results.rows.length;
+                        var keys = [];
+
+                        for (var i = 0; i < length; i++) {
+                            keys.push(results.rows.item(i).key);
+                        }
+
+                        if (callback) {
+                            callback(keys);
+                        }
+
+                        resolve(keys);
                     }, function(t, error) {
                         if (callback) {
                             callback(null, error);
@@ -1163,7 +1260,8 @@
         removeItem: removeItem,
         clear: clear,
         length: length,
-        key: key
+        key: key,
+        keys: keys
     };
 
     if (typeof define === 'function' && define.amd) {
