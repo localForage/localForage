@@ -283,27 +283,26 @@
         var _this = this;
 
         return new Promise(function(resolve, reject) {
-
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
 
                 var req = store.openCursor();
+                var keys = [];
 
-                var _keys = [];
                 req.onsuccess = function() {
                     var cursor = req.result;
 
                     if (!cursor) {
                         if (callback) {
-                            callback(_keys);
+                            callback(keys);
                         }
 
-                        resolve(_keys);
+                        resolve(keys);
                         return;
                     }
 
-                    _keys.push(cursor.key);
+                    keys.push(cursor.key);
                     cursor.continue();
                 };
 

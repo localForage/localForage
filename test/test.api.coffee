@@ -52,8 +52,7 @@ casper.test.begin "Testing #{casper.DRIVER_NAME} driver", NUMBER_OF_TESTS, (test
       typeof localforage.clear is 'function' and
       typeof localforage.length is 'function' and
       typeof localforage.removeItem is 'function' and
-      typeof localforage.key is 'function' and
-      typeof localforage.keys is 'function'
+      typeof localforage.key is 'function'
     , "localStorage API is available using #{casper.DRIVER}"
 
   casper.then ->

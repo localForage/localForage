@@ -130,15 +130,18 @@
         var _this = this;
         return new Promise(function(resolve) {
             _this.ready().then(function() {
-                var len = localStorage.length, _keys = [], i;
-                for (i = 0; i < len; i++) {
-                    _keys.push(localStorage.key(i).substring(keyPrefix.length));
+                var length = localStorage.length;
+                var keys = [];
+
+                for (var i = 0; i < length; i++) {
+                    keys.push(localStorage.key(i).substring(keyPrefix.length));
                 }
 
                 if (callback) {
-                    callback(_keys);
+                    callback(keys);
                 }
-                resolve(_keys);
+
+                resolve(keys);
             });
         });
     }

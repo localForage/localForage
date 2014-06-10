@@ -280,17 +280,20 @@
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
-                    t.executeSql('SELECT key FROM ' + dbInfo.storeName, [], function(t, results) {
-                        var len = results.rows.length, _keys = [], i;
-                        for (i = 0; i < len; i++) {
-                            _keys.push(results.rows.item(i).key);
+                    t.executeSql('SELECT key FROM ' + dbInfo.storeName, [],
+                                 function(t, results) {
+                        var length = results.rows.length;
+                        var keys = [];
+
+                        for (var i = 0; i < length; i++) {
+                            keys.push(results.rows.item(i).key);
                         }
 
                         if (callback) {
-                            callback(_keys);
+                            callback(keys);
                         }
 
-                        resolve(_keys);
+                        resolve(keys);
                     }, function(t, error) {
                         if (callback) {
                             callback(null, error);

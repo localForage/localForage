@@ -972,27 +972,26 @@ requireModule('promise/polyfill').polyfill();
         var _this = this;
 
         return new Promise(function(resolve, reject) {
-
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
 
                 var req = store.openCursor();
+                var keys = [];
 
-                var _keys = [];
                 req.onsuccess = function() {
                     var cursor = req.result;
 
                     if (!cursor) {
                         if (callback) {
-                            callback(_keys);
+                            callback(keys);
                         }
 
-                        resolve(_keys);
+                        resolve(keys);
                         return;
                     }
 
-                    _keys.push(cursor.key);
+                    keys.push(cursor.key);
                     cursor.continue();
                 };
 
@@ -1174,15 +1173,18 @@ requireModule('promise/polyfill').polyfill();
         var _this = this;
         return new Promise(function(resolve) {
             _this.ready().then(function() {
-                var len = localStorage.length, _keys = [], i;
-                for (i = 0; i < len; i++) {
-                    _keys.push(localStorage.key(i).substring(keyPrefix.length));
+                var length = localStorage.length;
+                var keys = [];
+
+                for (var i = 0; i < length; i++) {
+                    keys.push(localStorage.key(i).substring(keyPrefix.length));
                 }
 
                 if (callback) {
-                    callback(_keys);
+                    callback(keys);
                 }
-                resolve(_keys);
+
+                resolve(keys);
             });
         });
     }
@@ -1727,17 +1729,20 @@ requireModule('promise/polyfill').polyfill();
         return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
-                    t.executeSql('SELECT key FROM ' + dbInfo.storeName, [], function(t, results) {
-                        var len = results.rows.length, _keys = [], i;
-                        for (i = 0; i < len; i++) {
-                            _keys.push(results.rows.item(i).key);
+                    t.executeSql('SELECT key FROM ' + dbInfo.storeName, [],
+                                 function(t, results) {
+                        var length = results.rows.length;
+                        var keys = [];
+
+                        for (var i = 0; i < length; i++) {
+                            keys.push(results.rows.item(i).key);
                         }
 
                         if (callback) {
-                            callback(_keys);
+                            callback(keys);
                         }
 
-                        resolve(_keys);
+                        resolve(keys);
                     }, function(t, error) {
                         if (callback) {
                             callback(null, error);
