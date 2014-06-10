@@ -270,6 +270,25 @@ Get the name of a key based on its ID.
   be kinda weird.
 </aside>
 
+## keys
+
+```javascript
+localforage.keys(function(keys) {
+    // An array of all the key names.
+    console.log(keys);
+});
+```
+
+```coffeescript
+localforage.keys (keys) ->
+  # An array of all the key names.
+  console.log keys
+```
+
+`keys(successCallback)`
+
+Get the list of all keys in the datastore.
+
 # Settings API
 
 These methods allow driver selection and database configuration. These methods
