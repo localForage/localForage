@@ -308,6 +308,21 @@ objects:</p>
   be kinda weird.
 </aside></p>
 
+<h2 id="keys">keys</h2>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// An array of all the key names.
+</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">keys</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">keys</span> <span class="p">(</span><span class="nx">keys</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="c1"># An array of all the key names.
+</span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">keys</span>
+</pre>
+
+<p><code class="prettyprint">keys(successCallback)</code></p>
+
+<p>Get the list of all keys in the datastore.</p>
+
 <h1 id="settings-api">Settings API</h1>
 
 <p>These methods allow driver selection and database configuration. These methods
