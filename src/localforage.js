@@ -86,8 +86,10 @@
 
         _ready: Promise.reject(new Error("setDriver() wasn't called")),
 
+        _driverSet: null,
+
         setDriver: function(driverName, callback) {
-            var driverSet = new Promise(function(resolve, reject) {
+            this._driverSet = new Promise(function(resolve, reject) {
                 if ((!supportsIndexedDB &&
                      driverName === localForage.INDEXEDDB) ||
                     (!openDatabase && driverName === localForage.WEBSQL)) {
@@ -131,19 +133,30 @@
                 resolve(localForage);
             });
 
-            driverSet.then(callback, callback);
+            this._driverSet.then(callback, callback);
 
-            return driverSet;
+            return this._driverSet;
         },
 
         ready: function(callback) {
-            if (this._ready === null) {
-                this._ready = this._initStorage(this._config);
-            }
 
-            this._ready.then(callback, callback);
+            var ready = new Promise(function(resolve) {
 
-            return this._ready;
+                localForage._driverSet.then(function() {
+
+                    if (localForage._ready === null) {
+                        localForage._ready = localForage._initStorage(localForage._config);
+                    }
+
+                    localForage._ready.then(resolve);
+
+                });
+
+            });
+
+            ready.then(callback, callback);
+
+            return ready;
         },
 
         _extend: function(libraryMethodsAndProperties) {
