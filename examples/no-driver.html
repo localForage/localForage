@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <title>localForage no available driver example</title>
+  </head>
+  <body>
+    <script>
+      try {
+        window.indexedDB.open = null;
+      } catch (e) { }
+      try {
+        window.localStorage.setItem = null;
+      } catch (e) { }
+      try {
+        window.openDatabase = null;
+      } catch (e) { }
+    </script>
+    <script src="../dist/localforage.js"></script>
+    <script>
+      localforage.ready(function() {
+          console.log('ready', arguments);
+
+          localforage.setItem('testKey', 'testValue').then(function() {}, function() {
+            console.log('setItem: ', arguments);
+          });
+
+          localforage.getItem('testKey').then(function() {}, function() {
+            console.log('getItem: ', arguments);
+          });
+          
+        })
+        .then(function() {
+          
+        }, function() {
+          console.log('ready().then', arguments);
+          console.log('localforage.driver():', localforage.driver());
+
+          localforage.setDriver(localforage.LOCALSTORAGE).then(function() {}, function() {
+            console.log('setDriver', arguments);
+          });
+        });
+    </script>
+  </body>
+</html>

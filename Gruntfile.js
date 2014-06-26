@@ -58,6 +58,19 @@ module.exports = exports = function(grunt) {
                 src: [
                     'test/test.*.coffee'
                 ]
+            },
+
+            noDriver: {
+                options: {
+                    args: [
+                        '--driver=noDriver',
+                        '--driver-name=noDriver',
+                        '--url=nodriver'
+                    ]
+                },
+                src: [
+                    'test/nodriver.coffee'
+                ]
             }
         },
         concat: {

@@ -18,6 +18,11 @@
     // `if (window.chrome && window.chrome.runtime)` code.
     // See: https://github.com/mozilla/localForage/issues/68
     try {
+        // If localStorage isn't available, we get outta here!
+        // This should be inside a try catch
+        if (!this.localStorage || !('setItem' in this.localStorage)) {
+            return;
+        }
         // Initialize localStorage and create a variable to use throughout
         // the code.
         localStorage = this.localStorage;

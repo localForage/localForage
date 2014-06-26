@@ -28,11 +28,21 @@
                     this.msIndexedDB;
 
     var supportsIndexedDB = indexedDB &&
+                            typeof indexedDB.open === 'function' &&
                             indexedDB.open('_localforage_spec_test', 1)
                                      .onupgradeneeded === null;
 
     // Check for WebSQL.
     var openDatabase = this.openDatabase;
+
+    // Check for LocalStorage.
+    var supportsLocalStorage = (function() {
+        try {
+            return localStorage && typeof localStorage.setItem === 'function';
+        } catch (e) {
+            return false;
+        }
+    })();
 
     // The actual localForage object that we expose as a module or via a global.
     // It's extended by pulling in one of our other libraries.
@@ -90,7 +100,9 @@
             var driverSet = new Promise(function(resolve, reject) {
                 if ((!supportsIndexedDB &&
                      driverName === localForage.INDEXEDDB) ||
-                    (!openDatabase && driverName === localForage.WEBSQL)) {
+                    (!openDatabase && driverName === localForage.WEBSQL) ||
+                    (!supportsLocalStorage &&
+                     driverName === localForage.LOCALSTORAGE)) {
                     reject(localForage);
 
                     return;
@@ -166,7 +178,7 @@
         storageLibrary = localForage.INDEXEDDB;
     } else if (openDatabase) { // WebSQL is available, so we'll use that.
         storageLibrary = localForage.WEBSQL;
-    } else { // If nothing else is available, we use localStorage.
+    } else if (supportsLocalStorage) { // If nothing else is available, we try to use localStorage.
         storageLibrary = localForage.LOCALSTORAGE;
     }
 
@@ -175,8 +187,12 @@
         localForage.config = this.localForageConfig;
     }
 
-    // Set the (default) driver.
-    localForage.setDriver(storageLibrary);
+    // Set the (default) driver, or report the error.
+    if (storageLibrary) {
+        localForage.setDriver(storageLibrary);
+    } else {
+        localForage._ready = Promise.reject(new Error("No available storage method found."));
+    }
 
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
