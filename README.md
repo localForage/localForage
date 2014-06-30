@@ -218,6 +218,7 @@ have drivers for the following frameworks:
 
 * [AngularJS](https://github.com/ocombe/angular-localForage)
 * [Backbone](https://github.com/mozilla/localForage-backbone)
+* [Ember](https://github.com/genkgo/ember-localforage-adapter)
 
 If you have a driver you'd like listed, please
 [open an issue](https://github.com/mozilla/localForage/issues/new) to have it
