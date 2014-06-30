@@ -151,10 +151,12 @@
                     self._extend(_this[driverName]);
                 }
 
+                if (callback) {
+                    callback();
+                }
+
                 resolve();
             });
-
-            this._driverSet.then(callback, errorCallback);
 
             return this._driverSet;
         },
