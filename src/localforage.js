@@ -139,19 +139,15 @@
         },
 
         ready: function(callback) {
-
             var ready = new Promise(function(resolve) {
-
                 localForage._driverSet.then(function() {
-
                     if (localForage._ready === null) {
-                        localForage._ready = localForage._initStorage(localForage._config);
+                        localForage._ready = localForage._initStorage(
+                            localForage._config);
                     }
 
                     localForage._ready.then(resolve);
-
                 });
-
             });
 
             ready.then(callback, callback);
