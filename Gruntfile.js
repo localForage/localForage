@@ -42,18 +42,24 @@ module.exports = exports = function(grunt) {
             }
         },
         connect: {
-            'cross-origin': {
-                options:{
-                    base: '.',
-                    hostname: '*',
-                    port: 9998
-                }
-            },
             test: {
-                options:{
+                options: {
                     base: '.',
                     hostname: '*',
-                    port: 9999
+                    port: 9999,
+                    middleware: function(connect) {
+                        return [
+                            function(req, res, next) {
+                                res.setHeader('Access-Control-Allow-Origin',
+                                              '*');
+                                res.setHeader('Access-Control-Allow-Methods',
+                                              '*');
+
+                                return next();
+                            },
+                            connect.static(require('path').resolve('.'))
+                        ];
+                    }
                 }
             }
         },
@@ -71,6 +77,7 @@ module.exports = exports = function(grunt) {
                 options: {
                     urls: [
                         'http://localhost:9999/test/test.component.html',
+                        'http://localhost:9999/test/test.nodriver.html',
                         'http://localhost:9999/test/test.main.html',
                         'http://localhost:9999/test/test.min.html',
                         'http://localhost:9999/test/test.require.html'
@@ -143,7 +150,7 @@ module.exports = exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
 
-    grunt.registerTask('default', ['build', 'connect:test', 'watch']);
+    grunt.registerTask('default', ['build', 'connect', 'watch']);
     grunt.registerTask('build', ['concat', 'uglify']);
     grunt.registerTask('publish', ['build', 'shell:publish-site']);
     grunt.registerTask('serve', ['build', 'connect:test', 'watch']);

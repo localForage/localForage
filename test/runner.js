@@ -48,6 +48,7 @@ if (require) {
             '/test/test.config.js',
             '/test/test.datatypes.js',
             '/test/test.drivers.js',
+            '/test/test.iframes.js',
             '/test/test.webworkers.js'
         ], runTests);
     });

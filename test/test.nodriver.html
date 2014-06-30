@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>localForage Component Tests!</title>
+    <title>localForage Tests!</title>
 
     <link rel="stylesheet" type="text/css"
           href="/bower_components/mocha/mocha.css">
 
     <script src="/bower_components/assert/assert.js"></script>
     <script src="/bower_components/mocha/mocha.js"></script>
-    
+
     <script src="/bower_components/expect/index.js"></script>
 
     <!-- Modernizr  -->
@@ -19,20 +19,10 @@
     <script src="/test/runner.js"></script>
 
     <!-- localForage -->
-    <script src="/test/localforage.component.js"></script>
-
-    <script>
-        /* jshint unused: false */
-        var localforage = require('localforage');
-    </script>
+    <script src="/dist/localforage.js"></script>
 
     <!-- specs -->
-    <script src="/test/test.api.js"></script>
-    <script src="/test/test.config.js"></script>
-    <script src="/test/test.datatypes.js"></script>
-    <script src="/test/test.drivers.js"></script>
-    <script src="/test/test.iframes.js"></script>
-    <script src="/test/test.webworkers.js"></script>
+    <script src="/test/test.nodriver.js"></script>
   </head>
   <body>
     <div id="mocha"></div>
