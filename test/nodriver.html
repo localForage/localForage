@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>no drivers: Global Scope Test</title>
+  </head>
+  <body>
+    <div class="status"></div>
+
+    <script>
+      try {
+        window.indexedDB.open = null;
+      } catch (e) { }
+      try {
+        window.localStorage.setItem = null;
+      } catch (e) { }
+      try {
+        window.openDatabase = null;
+      } catch (e) { }
+    </script>
+    <script src="../dist/localforage.js"></script>
+  </body>
+</html>
