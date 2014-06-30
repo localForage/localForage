@@ -35,7 +35,7 @@
     // Check for WebSQL.
     var openDatabase = this.openDatabase;
 
-    // Check for LocalStorage.
+    // Check for localStorage.
     var supportsLocalStorage = (function() {
         try {
             return localStorage && typeof localStorage.setItem === 'function';
@@ -44,8 +44,8 @@
         }
     })();
 
-    // The actual localForage object that we expose as a module or via a global.
-    // It's extended by pulling in one of our other libraries.
+    // The actual localForage object that we expose as a module or via a
+    // global. It's extended by pulling in one of our other libraries.
     var _this = this;
     var localForage = {
         INDEXEDDB: 'asyncStorage',
@@ -94,58 +94,69 @@
             return this._driver || null;
         },
 
-        _ready: Promise.reject(new Error("setDriver() wasn't called")),
+        _ready: false,
 
         _driverSet: null,
 
-        setDriver: function(driverName, callback) {
+        setDriver: function(driverName, callback, errorCallback) {
+            var self = this;
+
             this._driverSet = new Promise(function(resolve, reject) {
                 if ((!supportsIndexedDB &&
                      driverName === localForage.INDEXEDDB) ||
                     (!openDatabase && driverName === localForage.WEBSQL) ||
                     (!supportsLocalStorage &&
                      driverName === localForage.LOCALSTORAGE)) {
+
+                    if (errorCallback) {
+                        errorCallback();
+                    }
+
                     reject(localForage);
 
                     return;
                 }
 
-                localForage._ready = null;
+                self._ready = null;
 
-                // We allow localForage to be declared as a module or as a library
-                // available without AMD/require.js.
+                // We allow localForage to be declared as a module or as a
+                // library available without AMD/require.js.
                 if (moduleType === MODULE_TYPE_DEFINE) {
                     require([driverName], function(lib) {
-                        localForage._extend(lib);
+                        self._extend(lib);
 
-                        resolve(localForage);
+                        if (callback) {
+                            callback();
+                        }
+                        resolve();
                     });
 
-                    // Return here so we don't resolve the promise twice.
                     return;
                 } else if (moduleType === MODULE_TYPE_EXPORT) {
                     // Making it browserify friendly
                     var driver;
                     switch (driverName) {
-                        case localForage.INDEXEDDB:
+                        case self.INDEXEDDB:
                             driver = require('./drivers/indexeddb');
                             break;
-                        case localForage.LOCALSTORAGE:
+                        case self.LOCALSTORAGE:
                             driver = require('./drivers/localstorage');
                             break;
-                        case localForage.WEBSQL:
+                        case self.WEBSQL:
                             driver = require('./drivers/websql');
                     }
 
-                    localForage._extend(driver);
+                    self._extend(driver);
                 } else {
-                    localForage._extend(_this[driverName]);
+                    self._extend(_this[driverName]);
                 }
 
-                resolve(localForage);
-            });
+                if (callback) {
+                    callback();
+                }
 
-            this._driverSet.then(callback, callback);
+                resolve();
+            });
 
             return this._driverSet;
         },
@@ -187,7 +198,8 @@
         storageLibrary = localForage.INDEXEDDB;
     } else if (openDatabase) { // WebSQL is available, so we'll use that.
         storageLibrary = localForage.WEBSQL;
-    } else if (supportsLocalStorage) { // If nothing else is available, we try to use localStorage.
+    } else if (supportsLocalStorage) { // If nothing else is available,
+                                       // we try to use localStorage.
         storageLibrary = localForage.LOCALSTORAGE;
     }
 
@@ -200,7 +212,8 @@
     if (storageLibrary) {
         localForage.setDriver(storageLibrary);
     } else {
-        localForage._ready = Promise.reject(new Error("No available storage method found."));
+        localForage._ready = Promise.reject(
+            new Error('No available storage method found.'));
     }
 
     // We allow localForage to be declared as a module or as a library

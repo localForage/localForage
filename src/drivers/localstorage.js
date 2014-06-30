@@ -116,7 +116,12 @@
         var _this = this;
         return new Promise(function(resolve) {
             _this.ready().then(function() {
-                var result = localStorage.key(n);
+                var result;
+                try {
+                    result = localStorage.key(n);
+                } catch (error) {
+                    result = null;
+                }
 
                 // Remove the prefix from the key, if a key is found.
                 if (result) {

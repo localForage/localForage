@@ -5,7 +5,19 @@ localForage's lifetime.
 
 ### [Next Version](https://github.com/mozilla/localForage/)
 
-* Add build versions with the Promises polyfill to `dist/` directory. ([#172](https://github.com/mozilla/localForage/pull/172))
+This release drops support for some legacy browsers, though not actually the
+ones you might think. localForage's new policy is to support the current
+version of all major browsers plus up to three versions back.
+
+* Add built versions without the Promises polyfill to `dist/` directory. ([#172](https://github.com/mozilla/localForage/pull/172))
+* **Drop support for Firefox 3.5. Minimum version is now Firefox 25.** (Technically, Firefox 4+ seems to work.)
+* **Drop support for Chrome 31 and below. Minimum version is now Chrome 32.**
+* Fix a **lot** of bugs. Especially in Internet Exploder.
+* Switch to Mocha tests and test on [Sauce Labs](https://saucelabs.com/).
+
+### [Version 0.8.0](https://github.com/mozilla/localForage/releases/tag/0.8.0)
+
+* Add support for web workers. ([#144](https://github.com/mozilla/localForage/pull/144), [#147](https://github.com/mozilla/localForage/pull/147)).
 
 ### [Version 0.6.1](https://github.com/mozilla/localForage/releases/tag/0.6.1)
 

@@ -1,78 +1,18 @@
-/*global exports:true, require:true */
+/* jshint node:true */
 var path = require('path');
+var saucelabsBrowsers = require(path.resolve('test', 'saucelabs-browsers.js'));
 
-var sourceFiles = ['Gruntfile.js', 'src/*.js', 'src/**/*.js'];
+var sourceFiles = [
+    'Gruntfile.js',
+    'src/*.js',
+    'src/**/*.js',
+    'test/**/test.*.js'
+];
 
 module.exports = exports = function(grunt) {
     'use strict';
 
     grunt.initConfig({
-        casper: {
-            options: {
-                pre: './test/init.coffee',
-                test: true
-            },
-
-            indexedDB: {
-                options: {
-                    args: [
-                        '--driver=asyncStorage',
-                        '--driver-name=IndexedDB',
-                        '--url=indexeddb'
-                    ],
-                    engine: 'slimerjs'
-                },
-                src: [
-                    'test/test.*.coffee'
-                ]
-            },
-
-            localstorageGecko: {
-                options: {
-                    args: [
-                        '--driver=localStorageWrapper',
-                        '--driver-name=localStorage',
-                        '--url=localstorage'
-                    ],
-                    engine: 'slimerjs'
-                },
-                src: [
-                    'test/test.*.coffee'
-                ]
-            },
-
-            localstorageWebKit: {
-                src: [
-                    'test/test.*.coffee'
-                ]
-            },
-
-            websql: {
-                options: {
-                    args: [
-                        '--driver=webSQLStorage',
-                        '--driver-name=WebSQL',
-                        '--url=websql'
-                    ]
-                },
-                src: [
-                    'test/test.*.coffee'
-                ]
-            },
-
-            noDriver: {
-                options: {
-                    args: [
-                        '--driver=noDriver',
-                        '--driver-name=noDriver',
-                        '--url=nodriver'
-                    ]
-                },
-                src: [
-                    'test/nodriver.coffee'
-                ]
-            }
-        },
         concat: {
             options: {
                 separator: '',
@@ -101,6 +41,28 @@ module.exports = exports = function(grunt) {
                 }
             }
         },
+        connect: {
+            test: {
+                options: {
+                    base: '.',
+                    hostname: '*',
+                    port: 9999,
+                    middleware: function(connect) {
+                        return [
+                            function(req, res, next) {
+                                res.setHeader('Access-Control-Allow-Origin',
+                                              '*');
+                                res.setHeader('Access-Control-Allow-Methods',
+                                              '*');
+
+                                return next();
+                            },
+                            connect.static(require('path').resolve('.'))
+                        ];
+                    }
+                }
+            }
+        },
         jscs: {
             source: sourceFiles
         },
@@ -110,9 +72,36 @@ module.exports = exports = function(grunt) {
             },
             source: sourceFiles
         },
+        mocha: {
+            unit: {
+                options: {
+                    urls: [
+                        'http://localhost:9999/test/test.component.html',
+                        'http://localhost:9999/test/test.nodriver.html',
+                        'http://localhost:9999/test/test.main.html',
+                        'http://localhost:9999/test/test.min.html',
+                        'http://localhost:9999/test/test.require.html'
+                    ]
+                }
+            }
+        },
         open: {
             site: {
                 path: 'http://localhost:4567/'
+            }
+        },
+        'saucelabs-mocha': {
+            all: {
+                options: {
+                    username: process.env.SAUCE_USERNAME,
+                    key: process.env.SAUCE_ACCESS_KEY,
+                    urls: ['http://localhost:9999/test/test.main.html'],
+                    tunnelTimeout: 5,
+                    build: process.env.TRAVIS_JOB_ID,
+                    concurrency: 3,
+                    browsers: saucelabsBrowsers,
+                    testname: 'localForage Tests'
+                }
             }
         },
         shell: {
@@ -135,7 +124,9 @@ module.exports = exports = function(grunt) {
             localforage: {
                 files: {
                     'dist/localforage.min.js': ['dist/localforage.js'],
-                    'dist/localforage.nopromises.min.js': ['dist/localforage.nopromises.js'],
+                    'dist/localforage.nopromises.min.js': [
+                        'dist/localforage.nopromises.js'
+                    ],
                     'site/localforage.min.js': ['dist/localforage.js']
                 }
             }
@@ -145,34 +136,44 @@ module.exports = exports = function(grunt) {
                 files: ['src/*.js', 'src/**/*.js'],
                 tasks: ['build']
             },
-            grunt: {
+            /*jshint scripturl:true */
+            'mocha:unit': {
                 files: [
-                    'Gruntfile.js'
-                ]
+                    'dist/localforage.js',
+                    'test/runner.js',
+                    'test/test.*.*'
+                ],
+                tasks: ['jshint', 'jscs', 'shell:component', 'mocha:unit']
             }
         }
     });
 
     require('load-grunt-tasks')(grunt);
 
-    grunt.registerTask('default', ['build', 'watch']);
+    grunt.registerTask('default', ['build', 'connect', 'watch']);
     grunt.registerTask('build', ['concat', 'uglify']);
     grunt.registerTask('publish', ['build', 'shell:publish-site']);
-    grunt.registerTask('serve', ['build', 'test-server', 'watch']);
+    grunt.registerTask('serve', ['build', 'connect:test', 'watch']);
     grunt.registerTask('site', ['shell:serve-site']);
-    grunt.registerTask('test', [
+
+    // These are the test tasks we run regardless of Sauce Labs credentials.
+    var testTasks = [
         'build',
         'jshint',
         'jscs',
         'shell:component',
-        'test-server',
-        'casper'
-    ]);
-    grunt.registerTask('test-server', function() {
-        grunt.log.writeln('Starting web servers at test/server.coffee');
+        'connect:test',
+        'mocha'
+    ];
+    grunt.registerTask('test:local', testTasks.slice());
 
-        require('./test/server.coffee').listen(8181);
-        // Used to test cross-origin iframes.
-        require('./test/server.coffee').listen(8182);
-    });
+    // Run tests using Sauce Labs if we are on Travis or have locally
+    // available Sauce Labs credentials. Use `grunt test:local` to skip
+    // Sauce Labs tests.
+    // if (process.env.TRAVIS_JOB_ID ||
+    //     (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
+    //     testTasks.push('saucelabs-mocha');
+    // }
+
+    grunt.registerTask('test', testTasks);
 };
