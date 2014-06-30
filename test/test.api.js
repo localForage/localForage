@@ -50,6 +50,7 @@ DRIVERS.forEach(function(driverName) {
         it('has a localStorage API', function() {
             expect(typeof localforage.getItem).to.be('function');
             expect(typeof localforage.setItem).to.be('function');
+            expect(typeof localforage.supports).to.be('function');
             expect(typeof localforage.clear).to.be('function');
             expect(typeof localforage.length).to.be('function');
             expect(typeof localforage.removeItem).to.be('function');
@@ -68,6 +69,10 @@ DRIVERS.forEach(function(driverName) {
             expect(typeof localforage.key).to.be('function');
             expect(typeof localforage.setDriver).to.be('function');
             expect(typeof localforage.ready).to.be('function');
+        });
+
+        it('supports ' + driverName + ' database driver', function() {
+            expect(localforage.supports(driverName) === true);
         });
 
         it('sets the right database driver', function() {
