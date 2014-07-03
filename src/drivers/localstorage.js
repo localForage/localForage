@@ -58,7 +58,8 @@
     var TYPE_UINT32ARRAY = 'ui32';
     var TYPE_FLOAT32ARRAY = 'fl32';
     var TYPE_FLOAT64ARRAY = 'fl64';
-    var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
+    var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH +
+                                        TYPE_ARRAYBUFFER.length;
 
     // Remove all keys from the datastore, effectively destroying all data in
     // the app's key/value store!
@@ -96,7 +97,7 @@
                     }
 
                     if (callback) {
-                        callback(result, null);
+                        callback(result);
                     }
 
                     resolve(result);
@@ -200,7 +201,8 @@
         // If we haven't marked this string as being specially serialized (i.e.
         // something other than serialized JSON), we can just return it and be
         // done with it.
-        if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
+        if (value.substring(0,
+            SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
             return JSON.parse(value);
         }
 
@@ -208,10 +210,12 @@
         // TypedArray. First we separate out the type of data we're dealing
         // with from the data itself.
         var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);
-        var type = value.substring(SERIALIZED_MARKER_LENGTH, TYPE_SERIALIZED_MARKER_LENGTH);
+        var type = value.substring(SERIALIZED_MARKER_LENGTH,
+                                   TYPE_SERIALIZED_MARKER_LENGTH);
 
         // Fill the string into a ArrayBuffer.
-        var buffer = new ArrayBuffer(serializedString.length * 2); // 2 bytes for each char
+        // 2 bytes for each char.
+        var buffer = new ArrayBuffer(serializedString.length * 2);
         var bufferView = new Uint16Array(buffer);
         for (var i = serializedString.length - 1; i >= 0; i--) {
             bufferView[i] = serializedString.charCodeAt(i);
