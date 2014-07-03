@@ -1,11 +1,9 @@
 {
     "name": "localforage",
-    "version": "0.8.1",
-
+    "version": "0.9.0",
     "dependencies": {
         "then/promise": "4.0.0"
     },
-
     "scripts": [
         "src/localforage.js",
         "src/drivers/indexeddb.js",
@@ -14,4 +12,3 @@
     ],
     "main": "src/localforage.js"
 }
-

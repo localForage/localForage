@@ -1,45 +1,45 @@
 {
-  "name": "localforage",
-  "author": "Mozilla",
-  "description": "Offline storage, improved.",
-  "keywords": [
-    "indexeddb",
-    "localstorage",
-    "storage",
-    "websql"
-  ],
-  "version": "0.8.1",
-  "homepage": "https://github.com/mozilla/localForage",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/mozilla/localForage.git"
-  },
-  "scripts": {
-    "prepublish": "grunt build",
-    "test": "grunt test"
-  },
-  "devDependencies": {
-    "component": "^1.0.0",
-    "cors": "^2.3.1",
-    "grunt": "^0.4.2",
-    "grunt-contrib-concat": "^0.3.0",
-    "grunt-contrib-connect": "^0.8.0",
-    "grunt-contrib-jshint": "^0.9.2",
-    "grunt-contrib-uglify": "^0.4.0",
-    "grunt-contrib-watch": "^0.5.0",
-    "grunt-jscs-checker": "^0.4.4",
-    "grunt-mocha": "^0.4.10",
-    "grunt-saucelabs": "^5.1.2",
-    "grunt-shell": "^0.6.4",
-    "load-grunt-tasks": "^0.4.0",
-    "mocha": "^1.18.2",
-    "phantomjs": "^1.9.7-12",
-    "uglify-js": "^2.3.x"
-  },
-  "browser": "dist/localforage.js",
-  "main": "dist/localforage.js",
-  "licence": "Apache-2.0",
-  "bugs": {
-    "url": "http://github.com/mozilla/localForage/issues"
-  }
+    "name": "localforage",
+    "author": "Mozilla",
+    "description": "Offline storage, improved.",
+    "keywords": [
+        "indexeddb",
+        "localstorage",
+        "storage",
+        "websql"
+    ],
+    "version": "0.9.0",
+    "homepage": "https://github.com/mozilla/localForage",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/mozilla/localForage.git"
+    },
+    "scripts": {
+        "prepublish": "grunt build",
+        "test": "grunt test"
+    },
+    "devDependencies": {
+        "component": "^1.0.0",
+        "cors": "^2.3.1",
+        "grunt": "^0.4.2",
+        "grunt-contrib-concat": "^0.3.0",
+        "grunt-contrib-connect": "^0.8.0",
+        "grunt-contrib-jshint": "^0.9.2",
+        "grunt-contrib-uglify": "^0.4.0",
+        "grunt-contrib-watch": "^0.5.0",
+        "grunt-jscs-checker": "^0.4.4",
+        "grunt-mocha": "^0.4.10",
+        "grunt-saucelabs": "^5.1.2",
+        "grunt-shell": "^0.6.4",
+        "load-grunt-tasks": "^0.4.0",
+        "mocha": "^1.18.2",
+        "phantomjs": "^1.9.7-12",
+        "uglify-js": "^2.3.x"
+    },
+    "browser": "dist/localforage.js",
+    "main": "dist/localforage.js",
+    "licence": "Apache-2.0",
+    "bugs": {
+        "url": "http://github.com/mozilla/localForage/issues"
+    }
 }
