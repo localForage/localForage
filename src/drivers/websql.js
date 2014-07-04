@@ -72,7 +72,7 @@
                              ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
                     resolve();
                 }, function(t, error) {
-	            reject(error);
+                    reject(error);
                 });
             });
         });
