@@ -73,6 +73,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -115,6 +117,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -162,6 +166,8 @@
                         reject(error);
                     }
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -187,6 +193,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -214,6 +222,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -282,6 +292,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -320,6 +332,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
