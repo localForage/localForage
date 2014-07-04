@@ -65,7 +65,7 @@
     // the app's key/value store!
     function clear(callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 localStorage.clear();
 
@@ -74,7 +74,7 @@
                 }
 
                 resolve();
-            });
+            }, reject);
         });
     }
 
@@ -108,14 +108,14 @@
 
                     reject(e);
                 }
-            });
+            }, reject);
         });
     }
 
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var result;
                 try {
@@ -133,13 +133,13 @@
                     callback(result);
                 }
                 resolve(result);
-            });
+            }, reject);
         });
     }
 
     function keys(callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var length = localStorage.length;
                 var keys = [];
@@ -153,14 +153,14 @@
                 }
 
                 resolve(keys);
-            });
+            }, reject);
         });
     }
 
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var result = localStorage.length;
 
@@ -169,14 +169,14 @@
                 }
 
                 resolve(result);
-            });
+            }, reject);
         });
     }
 
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 localStorage.removeItem(keyPrefix + key);
 
@@ -185,7 +185,7 @@
                 }
 
                 resolve();
-            });
+            }, reject);
         });
     }
 
@@ -391,7 +391,7 @@
                         resolve(originalValue);
                     }
                 });
-            });
+            }, reject);
         });
     }
 
