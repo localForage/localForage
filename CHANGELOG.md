@@ -3,7 +3,7 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
-### [Next Version](https://github.com/mozilla/localForage/)
+### [0.9](https://github.com/mozilla/localForage/releases/tag/0.9.1)
 
 This release drops support for some legacy browsers, though not actually the
 ones you might think. localForage's new policy is to support the current
@@ -14,8 +14,10 @@ version of all major browsers plus up to three versions back.
 * **Drop support for Chrome 31 and below. Minimum version is now Chrome 32.**
 * Fix a **lot** of bugs. Especially in Internet Exploder.
 * Switch to Mocha tests and test on [Sauce Labs](https://saucelabs.com/).
+* Add a `keys()` method. ([#180](https://github.com/mozilla/localForage/pull/180))
+* Check for localStorage instead of assuming it's available. ([#183](https://github.com/mozilla/localForage/pull/183))
 
-### [Version 0.8.0](https://github.com/mozilla/localForage/releases/tag/0.8.0)
+### [Version 0.8](https://github.com/mozilla/localForage/releases/tag/0.8.1)
 
 * Add support for web workers. ([#144](https://github.com/mozilla/localForage/pull/144), [#147](https://github.com/mozilla/localForage/pull/147)).
 
@@ -30,11 +32,11 @@ version of all major browsers plus up to three versions back.
 * Improve error handling. ([#60](https://github.com/mozilla/localForage/issues/60))
 * Remove support for `window.localForageConfig`. ([#135](https://github.com/mozilla/localForage/issues/135))
 
-### [Version 0.4.0](https://github.com/mozilla/localForage/releases/tag/0.4.0)
+### [Version 0.4](https://github.com/mozilla/localForage/releases/tag/0.4.0)
 
 * Built versions of localForage are now in the top-level directory. ([2d11c90](https://github.com/mozilla/localForage/commit/2d11c90))
 
-### [Version 0.3.0](https://github.com/mozilla/localForage/releases/tag/0.3.0)
+### [Version 0.3](https://github.com/mozilla/localForage/releases/tag/0.3.0)
 
 * Check code quality in test suite ([#124](https://github.com/mozilla/localForage/pull/124))
 * `_initDriver()` is called after first public API call ([#119](https://github.com/mozilla/localForage/pull/119))
