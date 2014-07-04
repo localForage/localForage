@@ -71,8 +71,8 @@
                 t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
                              ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
                     resolve();
-                }, , function(t, error) {
-	                reject(error);
+                }, function(t, error) {
+	            reject(error);
                 });
             });
         });
