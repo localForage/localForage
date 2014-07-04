@@ -1,6 +1,6 @@
 /*!
     localForage -- Offline Storage, Improved
-    Version 0.9.0
+    Version 0.9.1
     http://mozilla.github.io/localForage
     (c) 2013-2014 Mozilla, Apache License 2.0
 */
@@ -79,6 +79,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -121,6 +123,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -168,6 +172,8 @@
                         reject(error);
                     }
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -193,6 +199,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -220,6 +228,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -288,6 +298,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }
@@ -326,6 +338,8 @@
 
                     reject(req.error);
                 };
+            }, function(err) {
+               reject(err) ;
             });
         });
     }

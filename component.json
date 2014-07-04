@@ -1,14 +1,14 @@
 {
-    "name": "localforage",
-    "version": "0.9.0",
-    "dependencies": {
-        "then/promise": "4.0.0"
-    },
-    "scripts": [
-        "src/localforage.js",
-        "src/drivers/indexeddb.js",
-        "src/drivers/localstorage.js",
-        "src/drivers/websql.js"
-    ],
-    "main": "src/localforage.js"
+  "name": "localforage",
+  "version": "0.9.1",
+  "dependencies": {
+    "then/promise": "4.0.0"
+  },
+  "scripts": [
+    "src/localforage.js",
+    "src/drivers/indexeddb.js",
+    "src/drivers/localstorage.js",
+    "src/drivers/websql.js"
+  ],
+  "main": "src/localforage.js"
 }
