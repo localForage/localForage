@@ -56,7 +56,7 @@
             }
         }
 
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             // Open the database; the openDatabase API will automatically
             // create it for us if it doesn't exist.
             try {
@@ -71,7 +71,9 @@
                 t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
                              ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
                     resolve();
-                }, null);
+                }, , function(t, error) {
+	                reject(error);
+                });
             });
         });
     }
