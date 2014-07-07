@@ -165,8 +165,9 @@
         }
     };
 
-    var driverSupport = (function getDriverSupport(_this) {
-        // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
+    var driverSupport = (function(_this) {
+        // Initialize IndexedDB; fall back to vendor-prefixed versions
+        // if needed.
         var indexedDB = indexedDB || _this.indexedDB || _this.webkitIndexedDB ||
                         _this.mozIndexedDB || _this.OIndexedDB ||
                         _this.msIndexedDB;
@@ -174,15 +175,17 @@
         var result = {};
 
         result[localForage.WEBSQL] = !!_this.openDatabase;
-
-        result[localForage.INDEXEDDB] = !!(indexedDB &&
-                                           typeof indexedDB.open === 'function' &&
-                                           indexedDB.open('_localforage_spec_test', 1)
-                                                    .onupgradeneeded === null);
+        result[localForage.INDEXEDDB] = !!(
+            indexedDB &&
+            typeof indexedDB.open === 'function' &&
+            indexedDB.open('_localforage_spec_test', 1)
+                     .onupgradeneeded === null
+        );
 
         result[localForage.LOCALSTORAGE] = !!(function() {
             try {
-                return localStorage && typeof localStorage.setItem === 'function';
+                return (localStorage &&
+                        typeof localStorage.setItem === 'function');
             } catch (e) {
                 return false;
             }
@@ -197,22 +200,21 @@
         localForage.LOCALSTORAGE
     ];
 
-    // Select our storage library.
-    var storageLibrary;
     // Check to see if IndexedDB is available and if it is the latest
     // implementation; it's our preferred backend library. We use "_spec_test"
     // as the name of the database because it's not the one we'll operate on,
     // but it's useful to make sure its using the right spec.
     // See: https://github.com/mozilla/localForage/issues/128
-    storageLibrary = (function getPreferedStorageLibrary(driverSupport, driverTestOrder) {
+    var storageLibrary = (function(driverSupport, driverTestOrder) {
         for (var i = 0; i < driverTestOrder.length; i++) {
             var driverToTest = driverTestOrder[i];
 
-            if (driverSupport[driverToTest]) {
+            if (driverSupport[driverTestOrder[i]]) {
                 return driverToTest;
             }
         }
-        return undefined;
+
+        return null;
     })(driverSupport, driverTestOrder);
 
     // If window.localForageConfig is set, use it for configuration.

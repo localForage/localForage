@@ -50,7 +50,6 @@ DRIVERS.forEach(function(driverName) {
         it('has a localStorage API', function() {
             expect(typeof localforage.getItem).to.be('function');
             expect(typeof localforage.setItem).to.be('function');
-            expect(typeof localforage.supports).to.be('function');
             expect(typeof localforage.clear).to.be('function');
             expect(typeof localforage.length).to.be('function');
             expect(typeof localforage.removeItem).to.be('function');
@@ -61,6 +60,7 @@ DRIVERS.forEach(function(driverName) {
             expect(typeof localforage._initStorage).to.be('function');
             expect(typeof localforage.config).to.be('function');
             expect(typeof localforage.driver).to.be('function');
+            expect(typeof localforage.supports).to.be('function');
             expect(typeof localforage.getItem).to.be('function');
             expect(typeof localforage.setItem).to.be('function');
             expect(typeof localforage.clear).to.be('function');
@@ -71,8 +71,10 @@ DRIVERS.forEach(function(driverName) {
             expect(typeof localforage.ready).to.be('function');
         });
 
+        // Make sure we don't support bogus drivers.
         it('supports ' + driverName + ' database driver', function() {
             expect(localforage.supports(driverName) === true);
+            expect(localforage.supports('I am not a driver') === false);
         });
 
         it('sets the right database driver', function() {

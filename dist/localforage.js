@@ -1998,28 +1998,6 @@ requireModule('promise/polyfill').polyfill();
         moduleType = MODULE_TYPE_EXPORT;
     }
 
-    // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
-    var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
-                    this.mozIndexedDB || this.OIndexedDB ||
-                    this.msIndexedDB;
-
-    var supportsIndexedDB = indexedDB &&
-                            typeof indexedDB.open === 'function' &&
-                            indexedDB.open('_localforage_spec_test', 1)
-                                     .onupgradeneeded === null;
-
-    // Check for WebSQL.
-    var openDatabase = this.openDatabase;
-
-    // Check for localStorage.
-    var supportsLocalStorage = (function() {
-        try {
-            return localStorage && typeof localStorage.setItem === 'function';
-        } catch (e) {
-            return false;
-        }
-    })();
-
     // The actual localForage object that we expose as a module or via a
     // global. It's extended by pulling in one of our other libraries.
     var _this = this;
@@ -2078,11 +2056,7 @@ requireModule('promise/polyfill').polyfill();
             var self = this;
 
             this._driverSet = new Promise(function(resolve, reject) {
-                if ((!supportsIndexedDB &&
-                     driverName === localForage.INDEXEDDB) ||
-                    (!openDatabase && driverName === localForage.WEBSQL) ||
-                    (!supportsLocalStorage &&
-                     driverName === localForage.LOCALSTORAGE)) {
+                if (!self.supports(driverName)) {
 
                     if (errorCallback) {
                         errorCallback();
@@ -2127,12 +2101,18 @@ requireModule('promise/polyfill').polyfill();
                     self._extend(_this[driverName]);
                 }
 
+                if (callback) {
+                    callback();
+                }
+
                 resolve();
             });
 
-            this._driverSet.then(callback, errorCallback);
-
             return this._driverSet;
+        },
+
+        supports: function(driverName) {
+            return !!driverSupport[driverName];
         },
 
         ready: function(callback) {
@@ -2161,21 +2141,57 @@ requireModule('promise/polyfill').polyfill();
         }
     };
 
-    // Select our storage library.
-    var storageLibrary;
+    var driverSupport = (function(_this) {
+        // Initialize IndexedDB; fall back to vendor-prefixed versions
+        // if needed.
+        var indexedDB = indexedDB || _this.indexedDB || _this.webkitIndexedDB ||
+                        _this.mozIndexedDB || _this.OIndexedDB ||
+                        _this.msIndexedDB;
+
+        var result = {};
+
+        result[localForage.WEBSQL] = !!_this.openDatabase;
+        result[localForage.INDEXEDDB] = !!(
+            indexedDB &&
+            typeof indexedDB.open === 'function' &&
+            indexedDB.open('_localforage_spec_test', 1)
+                     .onupgradeneeded === null
+        );
+
+        result[localForage.LOCALSTORAGE] = !!(function() {
+            try {
+                return (localStorage &&
+                        typeof localStorage.setItem === 'function');
+            } catch (e) {
+                return false;
+            }
+        })();
+
+        return result;
+    })(this);
+
+    var driverTestOrder = [
+        localForage.INDEXEDDB,
+        localForage.WEBSQL,
+        localForage.LOCALSTORAGE
+    ];
+
     // Check to see if IndexedDB is available and if it is the latest
     // implementation; it's our preferred backend library. We use "_spec_test"
     // as the name of the database because it's not the one we'll operate on,
     // but it's useful to make sure its using the right spec.
     // See: https://github.com/mozilla/localForage/issues/128
-    if (supportsIndexedDB) {
-        storageLibrary = localForage.INDEXEDDB;
-    } else if (openDatabase) { // WebSQL is available, so we'll use that.
-        storageLibrary = localForage.WEBSQL;
-    } else if (supportsLocalStorage) { // If nothing else is available,
-                                       // we try to use localStorage.
-        storageLibrary = localForage.LOCALSTORAGE;
-    }
+    var storageLibrary = (function(driverSupport, driverTestOrder) {
+        for (var i = 0; i < driverTestOrder.length; i++) {
+            var driverToTest = driverTestOrder[i];
+
+            if (driverSupport[driverTestOrder[i]]) {
+                return driverToTest;
+            }
+        }
+
+        return null;
+    })(driverSupport, driverTestOrder);
 
     // If window.localForageConfig is set, use it for configuration.
     if (this.localForageConfig) {
