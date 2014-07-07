@@ -217,11 +217,6 @@
         return null;
     })(driverSupport, driverTestOrder);
 
-    // If window.localForageConfig is set, use it for configuration.
-    if (this.localForageConfig) {
-        localForage.config = this.localForageConfig;
-    }
-
     // Set the (default) driver, or report the error.
     if (storageLibrary) {
         localForage.setDriver(storageLibrary);
