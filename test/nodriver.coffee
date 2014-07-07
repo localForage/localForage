@@ -4,6 +4,12 @@ casper.test.begin "Testing localforage when no driver is available", (test) ->
   casper.start "#{casper.TEST_URL}nodriver.html", ->
     test.info "Test no driver configuration"
 
+    casper.then ->
+      test.assertEval ->
+        !localforage.supports localforage.INDEXEDDB and
+        !localforage.supports localforage.LOCALSTORAGE and
+        !localforage.supports localforage.WEBSQL
+      , 'supports() should return false for all drivers'
 
     casper.then ->
       @evaluate ->
