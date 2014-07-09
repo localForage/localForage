@@ -36,6 +36,9 @@
     "phantomjs": "^1.9.7-12",
     "uglify-js": "^2.3.x"
   },
+  "dependencies": {
+    "es6-promise": "^1.0.0"
+  },
   "browser": "dist/localforage.js",
   "main": "dist/localforage.js",
   "licence": "Apache-2.0",
