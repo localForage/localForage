@@ -3,7 +3,7 @@
 
     // Promises!
     var Promise = (typeof module !== 'undefined' && module.exports) ?
-                  require('promise') : this.Promise;
+                  require('es6-promise').Promise : this.Promise;
 
     // Avoid those magic constants!
     var MODULE_TYPE_DEFINE = 1;

@@ -7,7 +7,7 @@
 
     // Promises!
     var Promise = (typeof module !== 'undefined' && module.exports) ?
-                  require('promise') : this.Promise;
+                  require('es6-promise').Promise : this.Promise;
 
     var db = null;
     var dbInfo = {};

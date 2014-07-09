@@ -13,7 +13,7 @@
 
     // Promises!
     var Promise = (typeof module !== 'undefined' && module.exports) ?
-                  require('promise') : this.Promise;
+                  require('es6-promise').Promise : this.Promise;
 
     var db = null;
     var dbInfo = {};
@@ -390,7 +390,7 @@
     var dbInfo = {};
     // Promises!
     var Promise = (typeof module !== 'undefined' && module.exports) ?
-                  require('promise') : this.Promise;
+                  require('es6-promise').Promise : this.Promise;
     var localStorage = null;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
@@ -818,7 +818,7 @@
 
     // Promises!
     var Promise = (typeof module !== 'undefined' && module.exports) ?
-                  require('promise') : this.Promise;
+                  require('es6-promise').Promise : this.Promise;
 
     var openDatabase = this.openDatabase;
     var db = null;
@@ -1314,7 +1314,7 @@
 
     // Promises!
     var Promise = (typeof module !== 'undefined' && module.exports) ?
-                  require('promise') : this.Promise;
+                  require('es6-promise').Promise : this.Promise;
 
     // Avoid those magic constants!
     var MODULE_TYPE_DEFINE = 1;
