@@ -140,7 +140,7 @@
         },
 
         ready: function(callback) {
-            var ready = new Promise(function(resolve) {
+            var ready = new Promise(function(resolve, reject) {
                 localForage._driverSet.then(function() {
                     if (localForage._ready === null) {
                         localForage._ready = localForage._initStorage(
@@ -148,6 +148,8 @@
                     }
 
                     localForage._ready.then(resolve);
+                }, function(error) {
+                    reject(error);
                 });
             });
 
@@ -221,7 +223,7 @@
     if (storageLibrary) {
         localForage.setDriver(storageLibrary);
     } else {
-        localForage._ready = Promise.reject(
+        localForage._driverSet = Promise.reject(
             new Error('No available storage method found.'));
     }
 
