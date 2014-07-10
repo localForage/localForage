@@ -21,7 +21,7 @@ describe('When No Drivers Are Available', function() {
 
     it('fails to load localForage [callback]', function(done) {
         localforage.ready(function(error) {
-            expect(error instanceof Error).to.be(true);
+            expect(error).to.be.an(Error);
             expect(error.message).to.be('No available storage method found.');
             done();
         });
@@ -29,7 +29,7 @@ describe('When No Drivers Are Available', function() {
 
     it('fails to load localForage [promise]', function(done) {
         localforage.ready().then(null, function(error) {
-            expect(error instanceof Error).to.be(true);
+            expect(error).to.be.an(Error);
             expect(error.message).to.be('No available storage method found.');
             done();
         });
