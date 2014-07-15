@@ -1302,30 +1302,87 @@
     var Promise = (typeof module !== 'undefined' && module.exports) ?
                   require('promise') : this.Promise;
 
-    // Avoid those magic constants!
-    var MODULE_TYPE_DEFINE = 1;
-    var MODULE_TYPE_EXPORT = 2;
-    var MODULE_TYPE_WINDOW = 3;
+    var DriverType = {
+        INDEXEDDB: 'asyncStorage',
+        LOCALSTORAGE: 'localStorageWrapper',
+        WEBSQL: 'webSQLStorage'
+    };
+
+    var DEFAULT_DRIVER_ORDER = [
+        DriverType.INDEXEDDB,
+        DriverType.WEBSQL,
+        DriverType.LOCALSTORAGE
+    ];
+
+    var LibraryMethods = [
+        'clear',
+        'getItem',
+        'key',
+        'keys',
+        'length',
+        'removeItem',
+        'setItem'
+    ];
+
+    var ModuleType = {
+        DEFINE: 1,
+        EXPORT: 2,
+        WINDOW: 3
+    };
 
     // Attaching to window (i.e. no module loader) is the assumed,
     // simple default.
-    var moduleType = MODULE_TYPE_WINDOW;
+    var moduleType = ModuleType.WINDOW;
 
     // Find out what kind of module setup we have; if none, we'll just attach
     // localForage to the main window.
     if (typeof define === 'function' && define.amd) {
-        moduleType = MODULE_TYPE_DEFINE;
+        moduleType = ModuleType.DEFINE;
     } else if (typeof module !== 'undefined' && module.exports) {
-        moduleType = MODULE_TYPE_EXPORT;
+        moduleType = ModuleType.EXPORT;
     }
+
+    // Check to see if IndexedDB is available and if it is the latest
+    // implementation; it's our preferred backend library. We use "_spec_test"
+    // as the name of the database because it's not the one we'll operate on,
+    // but it's useful to make sure its using the right spec.
+    // See: https://github.com/mozilla/localForage/issues/128
+    var driverSupport = (function(_this) {
+        // Initialize IndexedDB; fall back to vendor-prefixed versions
+        // if needed.
+        var indexedDB = indexedDB || _this.indexedDB || _this.webkitIndexedDB ||
+                        _this.mozIndexedDB || _this.OIndexedDB ||
+                        _this.msIndexedDB;
+
+        var result = {};
+
+        result[DriverType.WEBSQL] = !!_this.openDatabase;
+        result[DriverType.INDEXEDDB] = !!(
+            indexedDB &&
+            typeof indexedDB.open === 'function' &&
+            indexedDB.open('_localforage_spec_test', 1)
+                     .onupgradeneeded === null
+        );
+
+        result[DriverType.LOCALSTORAGE] = !!(function() {
+            try {
+                return (localStorage &&
+                        typeof localStorage.setItem === 'function');
+            } catch (e) {
+                return false;
+            }
+        })();
+
+        return result;
+    })(this);
 
     // The actual localForage object that we expose as a module or via a
     // global. It's extended by pulling in one of our other libraries.
     var _this = this;
     var localForage = {
-        INDEXEDDB: 'asyncStorage',
-        LOCALSTORAGE: 'localStorageWrapper',
-        WEBSQL: 'webSQLStorage',
+        INDEXEDDB: DriverType.INDEXEDDB,
+        LOCALSTORAGE: DriverType.LOCALSTORAGE,
+        WEBSQL: DriverType.WEBSQL,
 
         _config: {
             description: '',
@@ -1376,11 +1433,7 @@
         setDriver: function(drivers, callback, errorCallback) {
             var self = this;
 
-            var isArray = Array.isArray || function(arg) {
-                return Object.prototype.toString.call(arg) === '[object Array]';
-            };
-
-            if (!isArray(drivers) && typeof drivers === 'string') {
+            if (typeof drivers === 'string') {
                 drivers = [drivers];
             }
 
@@ -1404,7 +1457,7 @@
 
                 // We allow localForage to be declared as a module or as a
                 // library available without AMD/require.js.
-                if (moduleType === MODULE_TYPE_DEFINE) {
+                if (moduleType === ModuleType.DEFINE) {
                     require([driverName], function(lib) {
                         self._extend(lib);
 
@@ -1415,7 +1468,7 @@
                     });
 
                     return;
-                } else if (moduleType === MODULE_TYPE_EXPORT) {
+                } else if (moduleType === ModuleType.EXPORT) {
                     // Making it browserify friendly
                     var driver;
                     switch (driverName) {
@@ -1445,7 +1498,11 @@
         },
 
         _getFirstSupportedDriver: function(drivers) {
-            if (drivers) {
+            var isArray = Array.isArray || function(arg) {
+                return Object.prototype.toString.call(arg) === '[object Array]';
+            };
+
+            if (drivers && isArray(drivers)) {
                 for (var i = 0; i < drivers.length; i++) {
                     var driver = drivers[i];
 
@@ -1488,55 +1545,28 @@
         }
     };
 
-    // Check to see if IndexedDB is available and if it is the latest
-    // implementation; it's our preferred backend library. We use "_spec_test"
-    // as the name of the database because it's not the one we'll operate on,
-    // but it's useful to make sure its using the right spec.
-    // See: https://github.com/mozilla/localForage/issues/128
-    var driverSupport = (function(_this) {
-        // Initialize IndexedDB; fall back to vendor-prefixed versions
-        // if needed.
-        var indexedDB = indexedDB || _this.indexedDB || _this.webkitIndexedDB ||
-                        _this.mozIndexedDB || _this.OIndexedDB ||
-                        _this.msIndexedDB;
+    function callWhenReady(libraryMethod) {
+        localForage[libraryMethod] = function() {
+            var _args = arguments;
+            return localForage.ready().then(function() {
+                return localForage[libraryMethod].apply(localForage, _args);
+            });
+        };
+    }
 
-        var result = {};
+    for (var i = 0; i < LibraryMethods.length; i++) {
+        callWhenReady(LibraryMethods[i]);
+    }
 
-        result[localForage.WEBSQL] = !!_this.openDatabase;
-        result[localForage.INDEXEDDB] = !!(
-            indexedDB &&
-            typeof indexedDB.open === 'function' &&
-            indexedDB.open('_localforage_spec_test', 1)
-                     .onupgradeneeded === null
-        );
-
-        result[localForage.LOCALSTORAGE] = !!(function() {
-            try {
-                return (localStorage &&
-                        typeof localStorage.setItem === 'function');
-            } catch (e) {
-                return false;
-            }
-        })();
-
-        return result;
-    })(this);
-
-    var driverTestOrder = [
-        localForage.INDEXEDDB,
-        localForage.WEBSQL,
-        localForage.LOCALSTORAGE
-    ];
-
-    localForage.setDriver(driverTestOrder);
+    localForage.setDriver(DEFAULT_DRIVER_ORDER);
 
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
-    if (moduleType === MODULE_TYPE_DEFINE) {
+    if (moduleType === ModuleType.DEFINE) {
         define(function() {
             return localForage;
         });
-    } else if (moduleType === MODULE_TYPE_EXPORT) {
+    } else if (moduleType === ModuleType.EXPORT) {
         module.exports = localForage;
     } else {
         this.localforage = localForage;

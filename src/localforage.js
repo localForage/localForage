@@ -5,12 +5,6 @@
     var Promise = (typeof module !== 'undefined' && module.exports) ?
                   require('promise') : this.Promise;
 
-    var ModuleType = {
-        DEFINE: 1,
-        EXPORT: 2,
-        WINDOW: 3
-    };
-
     var DriverType = {
         INDEXEDDB: 'asyncStorage',
         LOCALSTORAGE: 'localStorageWrapper',
@@ -22,6 +16,22 @@
         DriverType.WEBSQL,
         DriverType.LOCALSTORAGE
     ];
+
+    var LibraryMethods = [
+        'clear',
+        'getItem',
+        'key',
+        'keys',
+        'length',
+        'removeItem',
+        'setItem'
+    ];
+
+    var ModuleType = {
+        DEFINE: 1,
+        EXPORT: 2,
+        WINDOW: 3
+    };
 
     // Attaching to window (i.e. no module loader) is the assumed,
     // simple default.
@@ -237,6 +247,19 @@
             }
         }
     };
+
+    function callWhenReady(libraryMethod) {
+        localForage[libraryMethod] = function() {
+            var _args = arguments;
+            return localForage.ready().then(function() {
+                return localForage[libraryMethod].apply(localForage, _args);
+            });
+        };
+    }
+
+    for (var i = 0; i < LibraryMethods.length; i++) {
+        callWhenReady(LibraryMethods[i]);
+    }
 
     localForage.setDriver(DEFAULT_DRIVER_ORDER);
 
