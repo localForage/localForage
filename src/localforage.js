@@ -88,60 +88,62 @@
             }
 
             this._driverSet = new Promise(function(resolve, reject) {
-                var driverName = self._getFirstSupportedDriver(drivers);
+                localForage._driverSupportSet.then(function() {
+                    var driverName = self._getFirstSupportedDriver(drivers);
 
-                if (!driverName) {
-                    var error = new Error('No available storage method found.');
-                    self._driverSet = Promise.reject(error);
+                    if (!driverName) {
+                        var error = new Error('No available storage method found.');
+                        self._driverSet = Promise.reject(error);
 
-                    if (errorCallback) {
-                        errorCallback(error);
-                    }
-
-                    reject(error);
-
-                    return;
-                }
-
-                self._ready = null;
-
-                // We allow localForage to be declared as a module or as a
-                // library available without AMD/require.js.
-                if (moduleType === MODULE_TYPE_DEFINE) {
-                    require([driverName], function(lib) {
-                        self._extend(lib);
-
-                        if (callback) {
-                            callback();
+                        if (errorCallback) {
+                            errorCallback(error);
                         }
-                        resolve();
-                    });
 
-                    return;
-                } else if (moduleType === MODULE_TYPE_EXPORT) {
-                    // Making it browserify friendly
-                    var driver;
-                    switch (driverName) {
-                        case self.INDEXEDDB:
-                            driver = require('./drivers/indexeddb');
-                            break;
-                        case self.LOCALSTORAGE:
-                            driver = require('./drivers/localstorage');
-                            break;
-                        case self.WEBSQL:
-                            driver = require('./drivers/websql');
+                        reject(error);
+
+                        return;
                     }
 
-                    self._extend(driver);
-                } else {
-                    self._extend(_this[driverName]);
-                }
+                    self._ready = null;
 
-                if (callback) {
-                    callback();
-                }
+                    // We allow localForage to be declared as a module or as a
+                    // library available without AMD/require.js.
+                    if (moduleType === MODULE_TYPE_DEFINE) {
+                        require([driverName], function(lib) {
+                            self._extend(lib);
 
-                resolve();
+                            if (callback) {
+                                callback();
+                            }
+                            resolve();
+                        });
+
+                        return;
+                    } else if (moduleType === MODULE_TYPE_EXPORT) {
+                        // Making it browserify friendly
+                        var driver;
+                        switch (driverName) {
+                            case self.INDEXEDDB:
+                                driver = require('./drivers/indexeddb');
+                                break;
+                            case self.LOCALSTORAGE:
+                                driver = require('./drivers/localstorage');
+                                break;
+                            case self.WEBSQL:
+                                driver = require('./drivers/websql');
+                        }
+
+                        self._extend(driver);
+                    } else {
+                        self._extend(_this[driverName]);
+                    }
+
+                    if (callback) {
+                        callback();
+                    }
+
+                    resolve();
+                }, reject);
             });
 
             return this._driverSet;
@@ -166,20 +168,15 @@
         },
 
         ready: function(callback) {
-            var ready = new Promise(function(resolve, reject) {
-                localForage._driverSet.then(function() {
+            return localForage._driverSupportSet.then(function() {
+                return localForage._driverSet.then(function() {
                     if (localForage._ready === null) {
                         localForage._ready = localForage._initStorage(
                             localForage._config);
                     }
-
-                    localForage._ready.then(resolve, reject);
-                }, reject);
-            });
-
-            ready.then(callback, callback);
-
-            return ready;
+                    return localForage._ready;
+                });
+            }).then(callback, callback);
         },
 
         _extend: function(libraryMethodsAndProperties) {
@@ -223,7 +220,8 @@
     // as the name of the database because it's not the one we'll operate on,
     // but it's useful to make sure its using the right spec.
     // See: https://github.com/mozilla/localForage/issues/128
-    var driverSupport = (function(_this) {
+    var driverSupport = {};
+    localForage._driverSupportSet = (function(_this) {
         // Initialize IndexedDB; fall back to vendor-prefixed versions
         // if needed.
         var indexedDB = indexedDB || _this.indexedDB || _this.webkitIndexedDB ||
@@ -233,12 +231,6 @@
         var result = {};
 
         result[localForage.WEBSQL] = !!_this.openDatabase;
-        result[localForage.INDEXEDDB] = !!(
-            indexedDB &&
-            typeof indexedDB.open === 'function' &&
-            indexedDB.open('_localforage_spec_test', 1)
-                     .onupgradeneeded === null
-        );
 
         result[localForage.LOCALSTORAGE] = !!(function() {
             try {
@@ -249,7 +241,25 @@
             }
         })();
 
-        return result;
+        return (new Promise(function(resolve, reject) {
+            if (indexedDB && typeof indexedDB.open === 'function') {
+                var request = indexedDB.open('_localforage_spec_test', 1);
+                if (request.onupgradeneeded === null) {
+                    // Async test is needed to detect lack of support in
+                    // Firefox Private Browsing mode.
+                    request.onsuccess = resolve;
+                    request.onerror = reject;
+                    return;
+                }
+            }
+            reject();
+        })).then(function() {
+            result[localForage.INDEXEDDB] = true;
+        }, function() {
+            result[localForage.INDEXEDDB] = false;
+        }).then(function() {
+            driverSupport = result;
+        });
     })(this);
 
     var driverTestOrder = [
