@@ -191,6 +191,29 @@
         }
     };
 
+    var libraryMethods = [
+        'clear',
+        'getItem',
+        'key',
+        'keys',
+        'length',
+        'removeItem',
+        'setItem'
+    ];
+
+    var callWhenReady = function(libraryMethod) {
+        localForage[libraryMethod] = function() {
+            var args = arguments;
+            return localForage.ready().then(function() {
+                return localForage[libraryMethod].apply(localForage, args);
+            });
+        };
+    };
+
+    for (var i = 0; i < libraryMethods.length; i++) {
+        callWhenReady(libraryMethods[i]);
+    }
+
     // Check to see if IndexedDB is available and if it is the latest
     // implementation; it's our preferred backend library. We use "_spec_test"
     // as the name of the database because it's not the one we'll operate on,
