@@ -1,4 +1,4 @@
-/* global before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true, require:true */
+/* global after:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true, require:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
@@ -334,6 +334,68 @@ DRIVERS.forEach(function(driverName) {
             }).then(function(length) {
                 expect(length).to.be(1);
 
+                done();
+            });
+        });
+    });
+
+    describe(driverName + ' driver when ready() gets rejected', function() {
+        'use strict';
+
+        var _oldReady;
+
+        before(function(done) {
+            _oldReady = localforage.ready;
+            localforage.ready = function() {
+                return Promise.reject();
+            };
+            done();
+        });
+
+        after(function(done) {
+            localforage.ready = _oldReady;
+            _oldReady = null;
+            done();
+        });
+
+        it('rejects getItem() promise', function(done) {
+            localforage.getItem().then(null, function(/*err*/) {
+                done();
+            });
+        });
+
+        it('rejects setItem() promise', function(done) {
+            localforage.setItem().then(null, function(/*err*/) {
+                done();
+            });
+        });
+
+        it('rejects clear() promise', function(done) {
+            localforage.clear().then(null, function(/*err*/) {
+                done();
+            });
+        });
+
+        it('rejects length() promise', function(done) {
+            localforage.length().then(null, function(/*err*/) {
+                done();
+            });
+        });
+
+        it('rejects removeItem() promise', function(done) {
+            localforage.removeItem().then(null, function(/*err*/) {
+                done();
+            });
+        });
+
+        it('rejects key() promise', function(done) {
+            localforage.key().then(null, function(/*err*/) {
+                done();
+            });
+        });
+
+        it('rejects keys() promise', function(done) {
+            localforage.keys().then(null, function(/*err*/) {
                 done();
             });
         });
