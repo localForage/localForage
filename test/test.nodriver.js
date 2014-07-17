@@ -1,44 +1,58 @@
-/* global before:true, describe:true, expect:true, it:true */
+/* global describe:true, expect:true, it:true, Modernizr:true */
 describe('When No Drivers Are Available', function() {
     'use strict';
 
-    before(function(done) {
-        try {
-            window.indexedDB.open = null;
-        } catch (error) {
-        }
-        try {
-            window.localStorage.setItem = null;
-        } catch (error) {
-        }
-        try {
-            window.openDatabase = null;
-        } catch (error) {
-        }
+    var DRIVERS = [
+        localforage.INDEXEDDB,
+        localforage.LOCALSTORAGE,
+        localforage.WEBSQL
+    ];
 
-        done();
+    it('agrees with Modernizr on storage drivers support', function() {
+        expect(localforage.supports(localforage.INDEXEDDB)).to.be(false);
+        expect(localforage.supports(localforage.INDEXEDDB)).to.be(Modernizr.indexeddb);
+
+        expect(localforage.supports(localforage.LOCALSTORAGE)).to.be(false);
+        expect(localforage.supports(localforage.LOCALSTORAGE)).to.be(Modernizr.localstorage);
+
+        expect(localforage.supports(localforage.WEBSQL)).to.be(false);
+        expect(localforage.supports(localforage.WEBSQL)).to.be(Modernizr.websqldatabase);
     });
 
-    // Test to make sure localStorage isn't used when it isn't available.
-    // it("can't use unsupported localStorage [callback]", function(done) {
-    //     var _oldLS = window.localStorage;
-    //     window.localStorage = null;
-    //
-    //     localforage.setDriver(localforage.LOCALSTORAGE, null, function() {
-    //         expect(localforage.driver()).to.be(previousDriver);
-    //         done();
-    //     });
-    // });
-    it.skip('fails to load localForage [promise]', function(done) {
-        localforage.ready(null, function(error) {
-            expect(error).to.be('No available storage method found.');
+    it('fails to load localForage [callback]', function(done) {
+        localforage.ready(function(error) {
+            expect(error).to.be.an(Error);
+            expect(error.message).to.be('No available storage method found.');
             done();
         });
-        // localforage.setDriver(localforage.LOCALSTORAGE).then(null,
-        //                                                      function(error) {
-        //     expect(error).to.be('No available storage method found.');
-        //     window.localStorage = _oldLS;
-        //     done();
-        // });
+    });
+
+    it('fails to load localForage [promise]', function(done) {
+        localforage.ready().then(null, function(error) {
+            expect(error).to.be.an(Error);
+            expect(error.message).to.be('No available storage method found.');
+            done();
+        });
+    });
+
+    it('has no driver set', function(done) {
+        localforage.ready(function() {
+            expect(localforage.driver()).to.be(null);
+            done();
+        });
+    });
+
+    DRIVERS.forEach(function(driverName) {
+        it('fails to setDriver ' + driverName + ' [callback]', function(done) {
+            localforage.setDriver(driverName, null, function() {
+                done();
+            });
+        });
+
+        it('fails to setDriver ' + driverName + ' [promise]', function(done) {
+            localforage.setDriver(driverName).then(null, function() {
+                done();
+            });
+        });
     });
 });

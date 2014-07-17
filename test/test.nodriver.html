@@ -12,6 +12,24 @@
 
     <script src="/bower_components/expect/index.js"></script>
 
+    <script>
+        // Virtually remove support for the drivers.
+        // This has to be done before localforage
+        // and Modernizr execute.
+
+        try {
+            window.indexedDB.open = null;
+        } catch (error) { }
+
+        try {
+            window.localStorage.setItem = null;
+        } catch (error) { }
+
+        try {
+            window.openDatabase = null;
+        } catch (error) { }
+    </script>
+
     <!-- Modernizr  -->
     <script src="/bower_components/modernizr/modernizr.js"></script>
 
