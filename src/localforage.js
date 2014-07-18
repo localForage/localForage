@@ -147,10 +147,8 @@
                             localForage._config);
                     }
 
-                    localForage._ready.then(resolve);
-                }, function(error) {
-                    reject(error);
-                });
+                    localForage._ready.then(resolve, reject);
+                }, reject);
             });
 
             ready.then(callback, callback);
