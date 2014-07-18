@@ -19,8 +19,7 @@ describe('localForage API', function() {
     // https://github.com/mozilla/localForage#working-on-localforage
     it('has Promises available', function() {
         if (componentBuild) {
-            var promise = require.modules['then~promise@4.0.0'].exports;
-            expect(typeof promise).to.be('function');
+            expect(typeof require('promise')).to.be('function');
         } else {
             expect(typeof Promise).to.be('function');
         }
