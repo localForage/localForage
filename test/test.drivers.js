@@ -16,12 +16,12 @@ describe('Driver API', function() {
         }
     });
 
-    if ((Modernizr.indexeddb &&
-         localforage.driver() === localforage.INDEXEDDB) ||
-        (Modernizr.websqldatabase &&
-         localforage.driver() === localforage.WEBSQL)) {
-        it('can change to localStorage from ' + localforage.driver() +
-           ' [callback]', function(done) {
+    it('can change to localStorage from other driver' +
+       ' [callback]', function(done) {
+        if ((Modernizr.indexeddb &&
+             localforage.driver() === localforage.INDEXEDDB) ||
+            (Modernizr.websqldatabase &&
+             localforage.driver() === localforage.WEBSQL)) {
             var previousDriver = localforage.driver();
 
             localforage.setDriver(localforage.LOCALSTORAGE, function() {
@@ -29,9 +29,16 @@ describe('Driver API', function() {
                 expect(localforage.driver()).to.not.be(previousDriver);
                 done();
             });
-        });
-        it('can change to localStorage from ' + localforage.driver() +
-           ' [promise]', function(done) {
+        } else {
+            done();
+        }
+    });
+    it('can change to localStorage from other driver' +
+       ' [promise]', function(done) {
+        if ((Modernizr.indexeddb &&
+             localforage.driver() === localforage.INDEXEDDB) ||
+            (Modernizr.websqldatabase &&
+             localforage.driver() === localforage.WEBSQL)) {
             var previousDriver = localforage.driver();
 
             localforage.setDriver(localforage.LOCALSTORAGE).then(function() {
@@ -39,8 +46,10 @@ describe('Driver API', function() {
                 expect(localforage.driver()).to.not.be(previousDriver);
                 done();
             });
-        });
-    }
+        } else {
+            done();
+        }
+    });
 
     if (!Modernizr.indexeddb) {
         it("can't use unsupported IndexedDB [callback]", function(done) {

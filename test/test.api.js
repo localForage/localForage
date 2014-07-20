@@ -29,17 +29,19 @@ describe('localForage API', function() {
 describe('localForage', function() {
     var appropriateDriver;
 
-    before(function() {
-        appropriateDriver =
-            (localforage.supports(localforage.WEBSQL) && localforage.WEBSQL) ||
-            (localforage.supports(localforage.INDEXEDDB) &&
-             localforage.INDEXEDDB) ||
-            (localforage.supports(localforage.localStorage) &&
-             localforage.localStorage);
+    before(function(done) {
+        localforage.ready().then(function() {
+            appropriateDriver =
+                (localforage.supports(localforage.WEBSQL) && localforage.WEBSQL) ||
+                (localforage.supports(localforage.INDEXEDDB) &&
+                 localforage.INDEXEDDB) ||
+                (localforage.supports(localforage.localStorage) &&
+                 localforage.localStorage);
+            done();
+        });
     });
 
-    it('automatically selects the most appropriate driver (' +
-       appropriateDriver + ')', function(done) {
+    it('automatically selects the most appropriate driver', function(done) {
         if (appropriateDriver) {
             localforage.ready().then(function() {
                 expect(localforage.driver()).to.be(appropriateDriver);
