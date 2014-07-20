@@ -2,7 +2,7 @@
   "name": "localforage",
   "version": "0.9.1",
   "dependencies": {
-    "then/promise": "4.0.0"
+    "then/promise": "5.0.0"
   },
   "scripts": [
     "src/localforage.js",

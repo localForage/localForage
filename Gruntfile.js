@@ -111,7 +111,7 @@ module.exports = exports = function(grunt) {
             component: {
                 command: path.resolve('node_modules', 'component', 'bin',
                                       'component-build') +
-                         ' -o test -n localforage.component'
+                         ' --dev -o test -n localforage.component'
             },
             'publish-site': {
                 command: 'rake publish ALLOW_DIRTY=true'
