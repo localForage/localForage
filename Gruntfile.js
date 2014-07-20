@@ -94,7 +94,8 @@ module.exports = exports = function(grunt) {
                         'http://localhost:9999/test/test.nodriver.html',
                         'http://localhost:9999/test/test.main.html',
                         'http://localhost:9999/test/test.min.html',
-                        'http://localhost:9999/test/test.require.html'
+                        'http://localhost:9999/test/test.require.html',
+                        'http://localhost:9999/test/test.callwhenready.html'
                     ]
                 }
             }
