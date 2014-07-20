@@ -1,4 +1,4 @@
-/* global after:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true, require:true */
+/* global afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true, require:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
@@ -407,7 +407,7 @@ DRIVERS.forEach(function(driverName) {
 
         var _oldReady;
 
-        before(function(done) {
+        beforeEach(function(done) {
             _oldReady = localforage.ready;
             localforage.ready = function() {
                 return Promise.reject();
@@ -415,7 +415,7 @@ DRIVERS.forEach(function(driverName) {
             done();
         });
 
-        after(function(done) {
+        afterEach(function(done) {
             localforage.ready = _oldReady;
             _oldReady = null;
             done();
