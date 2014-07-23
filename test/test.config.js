@@ -112,7 +112,7 @@ describe('Config API', function() {
     });
 
     it("returns all values when config isn't passed arguments", function() {
-        expect(typeof localforage.config()).to.be('object');
+        expect(localforage.config()).to.be.an('object');
         expect(Object.keys(localforage.config()).length).to.be(5);
     });
 

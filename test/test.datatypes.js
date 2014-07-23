@@ -49,11 +49,11 @@ DRIVERS.forEach(function(driverName) {
         it('saves a number [callback]', function(done) {
             localforage.setItem('number', 546, function(setValue) {
                 expect(setValue).to.be(546);
-                expect(typeof setValue).to.be('number');
+                expect(setValue).to.be.a('number');
 
                 localforage.getItem('number', function(value) {
                     expect(value).to.be(setValue);
-                    expect(typeof value).to.be('number');
+                    expect(value).to.be.a('number');
                     done();
                 });
             });
@@ -61,12 +61,12 @@ DRIVERS.forEach(function(driverName) {
         it('saves a number [promise]', function(done) {
             localforage.setItem('number', 546).then(function(setValue) {
                 expect(setValue).to.be(546);
-                expect(typeof setValue).to.be('number');
+                expect(setValue).to.be.a('number');
 
                 return localforage.getItem('number');
             }).then(function(value) {
                 expect(value).to.be(546);
-                expect(typeof value).to.be('number');
+                expect(value).to.be.a('number');
                 done();
             });
         });
@@ -74,11 +74,11 @@ DRIVERS.forEach(function(driverName) {
         it('saves a boolean [callback]', function(done) {
             localforage.setItem('boolean', false, function(setValue) {
                 expect(setValue).to.be(false);
-                expect(typeof setValue).to.be('boolean');
+                expect(setValue).to.be.a('boolean');
 
                 localforage.getItem('boolean', function(value) {
                     expect(value).to.be(setValue);
-                    expect(typeof value).to.be('boolean');
+                    expect(value).to.be.a('boolean');
                     done();
                 });
             });
@@ -86,12 +86,12 @@ DRIVERS.forEach(function(driverName) {
         it('saves a boolean [promise]', function(done) {
             localforage.setItem('boolean', false).then(function(setValue) {
                 expect(setValue).to.be(false);
-                expect(typeof setValue).to.be('boolean');
+                expect(setValue).to.be.a('boolean');
 
                 return localforage.getItem('boolean');
             }).then(function(value) {
                 expect(value).to.be(false);
-                expect(typeof value).to.be('boolean');
+                expect(value).to.be.a('boolean');
                 done();
             });
         });
@@ -99,11 +99,9 @@ DRIVERS.forEach(function(driverName) {
         it('saves null [callback]', function(done) {
             localforage.setItem('null', null, function(setValue) {
                 expect(setValue).to.be(null);
-                expect(typeof setValue).to.be('object');
 
                 localforage.getItem('null', function(value) {
-                    expect(value).to.be(setValue);
-                    expect(typeof value).to.be('object');
+                    expect(value).to.be(null);
                     done();
                 });
             });
@@ -111,12 +109,10 @@ DRIVERS.forEach(function(driverName) {
         it('saves null [promise]', function(done) {
             localforage.setItem('null', null).then(function(setValue) {
                 expect(setValue).to.be(null);
-                expect(typeof setValue).to.be('object');
 
                 return localforage.getItem('null');
             }).then(function(value) {
                 expect(value).to.be(null);
-                expect(typeof value).to.be('object');
                 done();
             });
         });
@@ -124,11 +120,9 @@ DRIVERS.forEach(function(driverName) {
         it('saves undefined as null [callback]', function(done) {
             localforage.setItem('null', undefined, function(setValue) {
                 expect(setValue).to.be(null);
-                expect(typeof setValue).to.be('object');
 
                 localforage.getItem('null', function(value) {
-                    expect(value).to.be(setValue);
-                    expect(typeof value).to.be('object');
+                    expect(value).to.be(null);
                     done();
                 });
             });
@@ -136,12 +130,10 @@ DRIVERS.forEach(function(driverName) {
         it('saves undefined as null [promise]', function(done) {
             localforage.setItem('null', undefined).then(function(setValue) {
                 expect(setValue).to.be(null);
-                expect(typeof setValue).to.be('object');
 
                 return localforage.getItem('null');
             }).then(function(value) {
                 expect(value).to.be(null);
-                expect(typeof value).to.be('object');
                 done();
             });
         });
@@ -149,11 +141,11 @@ DRIVERS.forEach(function(driverName) {
         it('saves a float [callback]', function(done) {
             localforage.setItem('float', 546.041, function(setValue) {
                 expect(setValue).to.be(546.041);
-                expect(typeof setValue).to.be('number');
+                expect(setValue).to.be.a('number');
 
                 localforage.getItem('float', function(value) {
                     expect(value).to.be(setValue);
-                    expect(typeof value).to.be('number');
+                    expect(value).to.be.a('number');
                     done();
                 });
             });
@@ -161,12 +153,12 @@ DRIVERS.forEach(function(driverName) {
         it('saves a float [promise]', function(done) {
             localforage.setItem('float', 546.041).then(function(setValue) {
                 expect(setValue).to.be(546.041);
-                expect(typeof setValue).to.be('number');
+                expect(setValue).to.be.a('number');
 
                 return localforage.getItem('float');
             }).then(function(value) {
                 expect(value).to.be(546.041);
-                expect(typeof value).to.be('number');
+                expect(value).to.be.a('number');
                 done();
             });
         });
@@ -180,7 +172,7 @@ DRIVERS.forEach(function(driverName) {
                 localforage.getItem('array', function(value) {
                     expect(value.length).to.be(arrayToSave.length);
                     expect(value instanceof Array).to.be(true);
-                    expect(typeof value[1]).to.be('string');
+                    expect(value[1]).to.be.a('string');
                     done();
                 });
             });
@@ -194,7 +186,7 @@ DRIVERS.forEach(function(driverName) {
             }).then(function(value) {
                 expect(value.length).to.be(arrayToSave.length);
                 expect(value instanceof Array).to.be(true);
-                expect(typeof value[1]).to.be('string');
+                expect(value[1]).to.be.a('string');
                 done();
             });
         });
@@ -210,13 +202,13 @@ DRIVERS.forEach(function(driverName) {
             localforage.setItem('obj', objectToSave, function(setValue) {
                 expect(Object.keys(setValue).length)
                     .to.be(Object.keys(objectToSave).length);
-                expect(typeof setValue).to.be('object');
+                expect(setValue).to.be.an('object');
 
                 localforage.getItem('obj', function(value) {
                     expect(Object.keys(value).length)
                         .to.be(Object.keys(objectToSave).length);
-                    expect(typeof value).to.be('object');
-                    expect(typeof value.nested).to.be('object');
+                    expect(value).to.be.an('object');
+                    expect(value.nested).to.be.an('object');
                     done();
                 });
             });
@@ -225,14 +217,14 @@ DRIVERS.forEach(function(driverName) {
             localforage.setItem('obj', objectToSave).then(function(setValue) {
                 expect(Object.keys(setValue).length)
                     .to.be(Object.keys(objectToSave).length);
-                expect(typeof setValue).to.be('object');
+                expect(setValue).to.be.an('object');
 
                 return localforage.getItem('obj');
             }).then(function(value) {
                 expect(Object.keys(value).length)
                     .to.be(Object.keys(objectToSave).length);
-                expect(typeof value).to.be('object');
-                expect(typeof value.nested).to.be('object');
+                expect(value).to.be.an('object');
+                expect(value.nested).to.be.an('object');
                 done();
             });
         });

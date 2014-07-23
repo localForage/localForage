@@ -19,9 +19,9 @@ describe('localForage API', function() {
     // https://github.com/mozilla/localForage#working-on-localforage
     it('has Promises available', function() {
         if (componentBuild) {
-            expect(typeof require('promise')).to.be('function');
+            expect(require('promise')).to.be.a('function');
         } else {
-            expect(typeof Promise).to.be('function');
+            expect(Promise).to.be.a('function');
         }
     });
 });
@@ -47,27 +47,27 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('has a localStorage API', function() {
-            expect(typeof localforage.getItem).to.be('function');
-            expect(typeof localforage.setItem).to.be('function');
-            expect(typeof localforage.clear).to.be('function');
-            expect(typeof localforage.length).to.be('function');
-            expect(typeof localforage.removeItem).to.be('function');
-            expect(typeof localforage.key).to.be('function');
+            expect(localforage.getItem).to.be.a('function');
+            expect(localforage.setItem).to.be.a('function');
+            expect(localforage.clear).to.be.a('function');
+            expect(localforage.length).to.be.a('function');
+            expect(localforage.removeItem).to.be.a('function');
+            expect(localforage.key).to.be.a('function');
         });
 
         it('has the localForage API', function() {
-            expect(typeof localforage._initStorage).to.be('function');
-            expect(typeof localforage.config).to.be('function');
-            expect(typeof localforage.driver).to.be('function');
-            expect(typeof localforage.supports).to.be('function');
-            expect(typeof localforage.getItem).to.be('function');
-            expect(typeof localforage.setItem).to.be('function');
-            expect(typeof localforage.clear).to.be('function');
-            expect(typeof localforage.length).to.be('function');
-            expect(typeof localforage.removeItem).to.be('function');
-            expect(typeof localforage.key).to.be('function');
-            expect(typeof localforage.setDriver).to.be('function');
-            expect(typeof localforage.ready).to.be('function');
+            expect(localforage._initStorage).to.be.a('function');
+            expect(localforage.config).to.be.a('function');
+            expect(localforage.driver).to.be.a('function');
+            expect(localforage.supports).to.be.a('function');
+            expect(localforage.getItem).to.be.a('function');
+            expect(localforage.setItem).to.be.a('function');
+            expect(localforage.clear).to.be.a('function');
+            expect(localforage.length).to.be.a('function');
+            expect(localforage.removeItem).to.be.a('function');
+            expect(localforage.key).to.be.a('function');
+            expect(localforage.setDriver).to.be.a('function');
+            expect(localforage.ready).to.be.a('function');
         });
 
         // Make sure we don't support bogus drivers.
