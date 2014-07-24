@@ -26,6 +26,33 @@ describe('localForage API', function() {
     });
 });
 
+describe('localForage', function() {
+    var appropriateDriver;
+
+    before(function() {
+        appropriateDriver =
+            (localforage.supports(localforage.WEBSQL) && localforage.WEBSQL) ||
+            (localforage.supports(localforage.INDEXEDDB) && localforage.INDEXEDDB) ||
+            (localforage.supports(localforage.localStorage) && localforage.localStorage);
+    });
+
+    it('automatically selects the most appropriate driver (' + appropriateDriver + ')', function(done) {
+        if (appropriateDriver) {
+            localforage.ready().then(function() {
+                expect(localforage.driver()).to.be(appropriateDriver);
+                done();
+            });
+        } else {
+            localforage.ready().then(null, function(error) {
+                expect(error).to.be.an(Error);
+                expect(error.message).to.be('No available storage method found.');
+                expect(localforage.driver()).to.be(null);
+                done();
+            });
+        }
+    });
+});
+
 DRIVERS.forEach(function(driverName) {
     if ((!Modernizr.indexeddb && driverName === localforage.INDEXEDDB) ||
         (!Modernizr.localstorage && driverName === localforage.LOCALSTORAGE) ||
@@ -333,6 +360,39 @@ DRIVERS.forEach(function(driverName) {
             }).then(function(length) {
                 expect(length).to.be(1);
 
+                done();
+            });
+        });
+    });
+
+    describe(driverName + ' driver', function() {
+        'use strict';
+
+        var driverPreferedOrder;
+
+        before(function() {
+            // add some unsupported drivers before
+            // and after the target driver
+            driverPreferedOrder = ['I am a not supported driver'];
+
+            if (!Modernizr.websqldatabase) {
+                driverPreferedOrder.push(localforage.WEBSQL);
+            }
+            if (!Modernizr.indexeddb) {
+                driverPreferedOrder.push(localforage.INDEXEDDB);
+            }
+            if (!Modernizr.localstorage) {
+                driverPreferedOrder.push(localforage.localStorage);
+            }
+
+            driverPreferedOrder.push(driverName);
+            
+            driverPreferedOrder.push('I am another not supported driver');
+        });
+
+        it('is used according to setDriver preference order', function(done) {
+            localforage.setDriver(driverPreferedOrder).then(function() {
+                expect(localforage.driver()).to.be(driverName);
                 done();
             });
         });

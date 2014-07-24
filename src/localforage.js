@@ -76,17 +76,30 @@
 
         _driverSet: null,
 
-        setDriver: function(driverName, callback, errorCallback) {
+        setDriver: function(drivers, callback, errorCallback) {
             var self = this;
 
+            var isArray = Array.isArray || function(arg) {
+                return Object.prototype.toString.call(arg) === '[object Array]';
+            };
+
+            if (!isArray(drivers) && typeof drivers === 'string') {
+                drivers = [drivers];
+            }
+
             this._driverSet = new Promise(function(resolve, reject) {
-                if (!self.supports(driverName)) {
+                var driverName = self._getFirstSupportedDriver(drivers);
+
+                if (!driverName) {
+
+                    var error = new Error('No available storage method found.');
+                    self._driverSet = Promise.reject(error);
 
                     if (errorCallback) {
-                        errorCallback();
+                        errorCallback(error);
                     }
 
-                    reject(localForage);
+                    reject(error);
 
                     return;
                 }
@@ -135,6 +148,20 @@
             return this._driverSet;
         },
 
+        _getFirstSupportedDriver: function(drivers) {
+            if (drivers) {
+                for (var i = 0; i < drivers.length; i++) {
+                    var driver = drivers[i];
+
+                    if (this.supports(driver)) {
+                        return driver;
+                    }
+                }
+            }
+
+            return null;
+        },
+
         supports: function(driverName) {
             return !!driverSupport[driverName];
         },
@@ -165,6 +192,11 @@
         }
     };
 
+    // Check to see if IndexedDB is available and if it is the latest
+    // implementation; it's our preferred backend library. We use "_spec_test"
+    // as the name of the database because it's not the one we'll operate on,
+    // but it's useful to make sure its using the right spec.
+    // See: https://github.com/mozilla/localForage/issues/128
     var driverSupport = (function(_this) {
         // Initialize IndexedDB; fall back to vendor-prefixed versions
         // if needed.
@@ -200,30 +232,7 @@
         localForage.LOCALSTORAGE
     ];
 
-    // Check to see if IndexedDB is available and if it is the latest
-    // implementation; it's our preferred backend library. We use "_spec_test"
-    // as the name of the database because it's not the one we'll operate on,
-    // but it's useful to make sure its using the right spec.
-    // See: https://github.com/mozilla/localForage/issues/128
-    var storageLibrary = (function(driverSupport, driverTestOrder) {
-        for (var i = 0; i < driverTestOrder.length; i++) {
-            var driverToTest = driverTestOrder[i];
-
-            if (driverSupport[driverTestOrder[i]]) {
-                return driverToTest;
-            }
-        }
-
-        return null;
-    })(driverSupport, driverTestOrder);
-
-    // Set the (default) driver, or report the error.
-    if (storageLibrary) {
-        localForage.setDriver(storageLibrary);
-    } else {
-        localForage._driverSet = Promise.reject(
-            new Error('No available storage method found.'));
-    }
+    localForage.setDriver(driverTestOrder);
 
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
