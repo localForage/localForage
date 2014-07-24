@@ -63,7 +63,7 @@
                 db = openDatabase(dbInfo.name, dbInfo.version,
                                   dbInfo.description, dbInfo.size);
             } catch (e) {
-                return _this.setDriver('localStorageWrapper').then(resolve);
+                return _this.setDriver('localStorageWrapper').then(resolve, reject);
             }
 
             // Create our key/value table if it doesn't exist.
