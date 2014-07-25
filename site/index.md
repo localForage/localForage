@@ -313,8 +313,7 @@ localforage.setDriver "localStorageWrapper"
 localforage.setDriver ["WebSQLStorage", "localStorageWrapper"]
 ```
 
-`setDriver(driverName)`
-- or -
+`setDriver(driverName)`<br>
 `setDriver([driverName, nextDriverName])`
 
 Force usage of a particular driver or drivers, if available.
