@@ -196,6 +196,12 @@ DRIVERS.forEach(function(driverName) {
             nested: {
                 array: [1, 2, 3]
             },
+            nestedObjects: [
+                {truth: true},
+                {theCake: 'is a lie'},
+                {happiness: 'is a warm gun'},
+                false
+            ],
             string: 'bar'
         };
         it('saves a nested object [callback]', function(done) {
@@ -209,6 +215,9 @@ DRIVERS.forEach(function(driverName) {
                         .to.be(Object.keys(objectToSave).length);
                     expect(value).to.be.an('object');
                     expect(value.nested).to.be.an('object');
+                    expect(value.nestedObjects[0].truth).to.be.a('boolean');
+                    expect(value.nestedObjects[1].theCake).to.be.a('string');
+                    expect(value.nestedObjects[3]).to.be(false);
                     done();
                 });
             });
@@ -225,6 +234,9 @@ DRIVERS.forEach(function(driverName) {
                     .to.be(Object.keys(objectToSave).length);
                 expect(value).to.be.an('object');
                 expect(value.nested).to.be.an('object');
+                expect(value.nestedObjects[0].truth).to.be.a('boolean');
+                expect(value.nestedObjects[1].theCake).to.be.a('string');
+                expect(value.nestedObjects[3]).to.be(false);
                 done();
             });
         });
