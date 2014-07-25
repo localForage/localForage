@@ -32,11 +32,14 @@ describe('localForage', function() {
     before(function() {
         appropriateDriver =
             (localforage.supports(localforage.WEBSQL) && localforage.WEBSQL) ||
-            (localforage.supports(localforage.INDEXEDDB) && localforage.INDEXEDDB) ||
-            (localforage.supports(localforage.localStorage) && localforage.localStorage);
+            (localforage.supports(localforage.INDEXEDDB) &&
+             localforage.INDEXEDDB) ||
+            (localforage.supports(localforage.localStorage) &&
+             localforage.localStorage);
     });
 
-    it('automatically selects the most appropriate driver (' + appropriateDriver + ')', function(done) {
+    it('automatically selects the most appropriate driver (' +
+       appropriateDriver + ')', function(done) {
         if (appropriateDriver) {
             localforage.ready().then(function() {
                 expect(localforage.driver()).to.be(appropriateDriver);
@@ -45,7 +48,8 @@ describe('localForage', function() {
         } else {
             localforage.ready().then(null, function(error) {
                 expect(error).to.be.an(Error);
-                expect(error.message).to.be('No available storage method found.');
+                expect(error.message).to
+                                     .be('No available storage method found.');
                 expect(localforage.driver()).to.be(null);
                 done();
             });
@@ -386,7 +390,7 @@ DRIVERS.forEach(function(driverName) {
             }
 
             driverPreferedOrder.push(driverName);
-            
+
             driverPreferedOrder.push('I am another not supported driver');
         });
 

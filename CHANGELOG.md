@@ -3,6 +3,10 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### Next Version
+
+* `setDriver` now accepts an array of drivers to be used, in order of preference, instead of simply a string. The string option is still supported. (eg. now one can use `setDriver(['WebSQL', 'localStorage'])` instead of `setDriver('WebSQL')`)
+
 ### [0.9](https://github.com/mozilla/localForage/releases/tag/0.9.1)
 
 This release drops support for some legacy browsers, though not actually the

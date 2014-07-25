@@ -79,9 +79,7 @@
 
                     reject(req.error);
                 };
-            }, function(err) {
-               reject(err) ;
-            });
+            }, reject);
         });
     }
 
@@ -123,9 +121,7 @@
 
                     reject(req.error);
                 };
-            }, function(err) {
-               reject(err) ;
-            });
+            }, reject);
         });
     }
 
@@ -172,9 +168,7 @@
                         reject(error);
                     }
                 };
-            }, function(err) {
-               reject(err) ;
-            });
+            }, reject);
         });
     }
 
@@ -199,9 +193,7 @@
 
                     reject(req.error);
                 };
-            }, function(err) {
-               reject(err) ;
-            });
+            }, reject);
         });
     }
 
@@ -228,9 +220,7 @@
 
                     reject(req.error);
                 };
-            }, function(err) {
-               reject(err) ;
-            });
+            }, reject);
         });
     }
 
@@ -298,9 +288,7 @@
 
                     reject(req.error);
                 };
-            }, function(err) {
-               reject(err) ;
-            });
+            }, reject);
         });
     }
 
@@ -338,9 +326,7 @@
 
                     reject(req.error);
                 };
-            }, function(err) {
-               reject(err) ;
-            });
+            }, reject);
         });
     }
 
@@ -446,7 +432,7 @@
     // the app's key/value store!
     function clear(callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 localStorage.clear();
 
@@ -455,7 +441,7 @@
                 }
 
                 resolve();
-            });
+            }, reject);
         });
     }
 
@@ -489,14 +475,14 @@
 
                     reject(e);
                 }
-            });
+            }, reject);
         });
     }
 
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var result;
                 try {
@@ -514,13 +500,13 @@
                     callback(result);
                 }
                 resolve(result);
-            });
+            }, reject);
         });
     }
 
     function keys(callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var length = localStorage.length;
                 var keys = [];
@@ -534,14 +520,14 @@
                 }
 
                 resolve(keys);
-            });
+            }, reject);
         });
     }
 
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var result = localStorage.length;
 
@@ -550,14 +536,14 @@
                 }
 
                 resolve(result);
-            });
+            }, reject);
         });
     }
 
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 localStorage.removeItem(keyPrefix + key);
 
@@ -566,7 +552,7 @@
                 }
 
                 resolve();
-            });
+            }, reject);
         });
     }
 
@@ -772,7 +758,7 @@
                         resolve(originalValue);
                     }
                 });
-            });
+            }, reject);
         });
     }
 
@@ -857,14 +843,14 @@
             }
         }
 
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
             // Open the database; the openDatabase API will automatically
             // create it for us if it doesn't exist.
             try {
                 db = openDatabase(dbInfo.name, dbInfo.version,
                                   dbInfo.description, dbInfo.size);
             } catch (e) {
-                return _this.setDriver('localStorageWrapper').then(resolve);
+                return _this.setDriver('localStorageWrapper').then(resolve, reject);
             }
 
             // Create our key/value table if it doesn't exist.
@@ -872,7 +858,9 @@
                 t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
                              ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
                     resolve();
-                }, null);
+                }, function(t, error) {
+                    reject(error);
+                });
             });
         });
     }
@@ -905,7 +893,7 @@
                         reject(error);
                     });
                 });
-            });
+            }, reject);
         });
     }
 
@@ -961,7 +949,7 @@
                         });
                     }
                 });
-            });
+            }, reject);
         });
     }
 
@@ -985,7 +973,7 @@
                         reject(error);
                     });
                 });
-            });
+            }, reject);
         });
     }
 
@@ -1010,7 +998,7 @@
                         reject(error);
                     });
                 });
-            });
+            }, reject);
         });
     }
 
@@ -1039,7 +1027,7 @@
                         reject(error);
                     });
                 });
-            });
+            }, reject);
         });
     }
 
@@ -1072,7 +1060,7 @@
                         reject(error);
                     });
                 });
-            });
+            }, reject);
         });
     }
 
@@ -1103,7 +1091,7 @@
                         reject(error);
                     });
                 });
-            });
+            }, reject);
         });
     }
 
@@ -1387,17 +1375,29 @@
 
         _driverSet: null,
 
-        setDriver: function(driverName, callback, errorCallback) {
+        setDriver: function(drivers, callback, errorCallback) {
             var self = this;
 
+            var isArray = Array.isArray || function(arg) {
+                return Object.prototype.toString.call(arg) === '[object Array]';
+            };
+
+            if (!isArray(drivers) && typeof drivers === 'string') {
+                drivers = [drivers];
+            }
+
             this._driverSet = new Promise(function(resolve, reject) {
-                if (!self.supports(driverName)) {
+                var driverName = self._getFirstSupportedDriver(drivers);
+
+                if (!driverName) {
+                    var error = new Error('No available storage method found.');
+                    self._driverSet = Promise.reject(error);
 
                     if (errorCallback) {
-                        errorCallback();
+                        errorCallback(error);
                     }
 
-                    reject(localForage);
+                    reject(error);
 
                     return;
                 }
@@ -1446,20 +1446,34 @@
             return this._driverSet;
         },
 
+        _getFirstSupportedDriver: function(drivers) {
+            if (drivers) {
+                for (var i = 0; i < drivers.length; i++) {
+                    var driver = drivers[i];
+
+                    if (this.supports(driver)) {
+                        return driver;
+                    }
+                }
+            }
+
+            return null;
+        },
+
         supports: function(driverName) {
             return !!driverSupport[driverName];
         },
 
         ready: function(callback) {
-            var ready = new Promise(function(resolve) {
+            var ready = new Promise(function(resolve, reject) {
                 localForage._driverSet.then(function() {
                     if (localForage._ready === null) {
                         localForage._ready = localForage._initStorage(
                             localForage._config);
                     }
 
-                    localForage._ready.then(resolve);
-                });
+                    localForage._ready.then(resolve, reject);
+                }, reject);
             });
 
             ready.then(callback, callback);
@@ -1476,6 +1490,11 @@
         }
     };
 
+    // Check to see if IndexedDB is available and if it is the latest
+    // implementation; it's our preferred backend library. We use "_spec_test"
+    // as the name of the database because it's not the one we'll operate on,
+    // but it's useful to make sure its using the right spec.
+    // See: https://github.com/mozilla/localForage/issues/128
     var driverSupport = (function(_this) {
         // Initialize IndexedDB; fall back to vendor-prefixed versions
         // if needed.
@@ -1511,30 +1530,7 @@
         localForage.LOCALSTORAGE
     ];
 
-    // Check to see if IndexedDB is available and if it is the latest
-    // implementation; it's our preferred backend library. We use "_spec_test"
-    // as the name of the database because it's not the one we'll operate on,
-    // but it's useful to make sure its using the right spec.
-    // See: https://github.com/mozilla/localForage/issues/128
-    var storageLibrary = (function(driverSupport, driverTestOrder) {
-        for (var i = 0; i < driverTestOrder.length; i++) {
-            var driverToTest = driverTestOrder[i];
-
-            if (driverSupport[driverTestOrder[i]]) {
-                return driverToTest;
-            }
-        }
-
-        return null;
-    })(driverSupport, driverTestOrder);
-
-    // Set the (default) driver, or report the error.
-    if (storageLibrary) {
-        localForage.setDriver(storageLibrary);
-    } else {
-        localForage._ready = Promise.reject(
-            new Error('No available storage method found.'));
-    }
+    localForage.setDriver(driverTestOrder);
 
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.

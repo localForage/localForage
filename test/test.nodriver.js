@@ -10,13 +10,17 @@ describe('When No Drivers Are Available', function() {
 
     it('agrees with Modernizr on storage drivers support', function() {
         expect(localforage.supports(localforage.INDEXEDDB)).to.be(false);
-        expect(localforage.supports(localforage.INDEXEDDB)).to.be(Modernizr.indexeddb);
+        expect(localforage.supports(localforage.INDEXEDDB))
+            .to.be(Modernizr.indexeddb);
 
-        expect(localforage.supports(localforage.LOCALSTORAGE)).to.be(false);
-        expect(localforage.supports(localforage.LOCALSTORAGE)).to.be(Modernizr.localstorage);
+        expect(localforage.supports(localforage.LOCALSTORAGE))
+            .to.be(false);
+        expect(localforage.supports(localforage.LOCALSTORAGE))
+            .to.be(Modernizr.localstorage);
 
         expect(localforage.supports(localforage.WEBSQL)).to.be(false);
-        expect(localforage.supports(localforage.WEBSQL)).to.be(Modernizr.websqldatabase);
+        expect(localforage.supports(localforage.WEBSQL))
+            .to.be(Modernizr.websqldatabase);
     });
 
     it('fails to load localForage [callback]', function(done) {
@@ -46,7 +50,8 @@ describe('When No Drivers Are Available', function() {
         it('fails to setDriver ' + driverName + ' [callback]', function(done) {
             localforage.setDriver(driverName, null, function(error) {
                 expect(error).to.be.an(Error);
-                expect(error.message).to.be('No available storage method found.');
+                expect(error.message).to
+                                     .be('No available storage method found.');
                 done();
             });
         });
@@ -54,7 +59,8 @@ describe('When No Drivers Are Available', function() {
         it('fails to setDriver ' + driverName + ' [promise]', function(done) {
             localforage.setDriver(driverName).then(null, function(error) {
                 expect(error).to.be.an(Error);
-                expect(error.message).to.be('No available storage method found.');
+                expect(error.message).to
+                                     .be('No available storage method found.');
                 done();
             });
         });

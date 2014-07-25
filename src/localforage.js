@@ -91,7 +91,6 @@
                 var driverName = self._getFirstSupportedDriver(drivers);
 
                 if (!driverName) {
-
                     var error = new Error('No available storage method found.');
                     self._driverSet = Promise.reject(error);
 
