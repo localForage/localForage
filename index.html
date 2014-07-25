@@ -332,14 +332,20 @@ i.e. before you call <code class="prettyprint">getItem()</code> or <code class="
 <h2 id="setdriver">setDriver</h2>
 <pre class="highlight javascript"><span class="c1">// Force localStorage to be the backend driver.
 </span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">(</span><span class="s1">'localStorageWrapper'</span><span class="p">);</span>
+
+<span class="c1">// Supply a list of drivers, in order of preference.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">([</span><span class="s1">'WebSQLStorage'</span><span class="p">,</span> <span class="s1">'localStorageWrapper'</span><span class="p">]);</span>
 </pre>
 <pre class="highlight coffeescript"><span class="c1"># Force localStorage to be the backend driver.
 </span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="s">"localStorageWrapper"</span>
+
+<span class="c1"># Supply a list of drivers, in order of preference.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="p">[</span><span class="s">"WebSQLStorage"</span><span class="p">,</span> <span class="s">"localStorageWrapper"</span><span class="p">]</span>
 </pre>
 
-<p><code class="prettyprint">setDriver(driverName)</code></p>
+<p><code class="prettyprint">setDriver(driverName)</code> or <code class="prettyprint">setDriver([driverName, nextDriverName])</code></p>
 
-<p>Force usage of a particular driver, if it is available.</p>
+<p>Force usage of a particular driver or drivers, if available.</p>
 
 <p>By default, localForage selects backend drivers for the datastore in this
 order:</p>
