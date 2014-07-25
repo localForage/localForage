@@ -63,6 +63,20 @@ module.exports = exports = function(grunt) {
                 }
             }
         },
+        es3_safe_recast: {
+            dist: {
+                files: [{
+                    src: ['dist/localforage.js'],
+                    dest: 'dist/localforage.js'
+                }]
+            },
+            nopromises: {
+                files: [{
+                    src: ['dist/localforage.nopromises.js'],
+                    dest: 'dist/localforage.nopromises.js'
+                }]
+            }
+        },
         jscs: {
             source: sourceFiles
         },
@@ -151,7 +165,7 @@ module.exports = exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
 
     grunt.registerTask('default', ['build', 'connect', 'watch']);
-    grunt.registerTask('build', ['concat', 'uglify']);
+    grunt.registerTask('build', ['concat', 'es3_safe_recast', 'uglify']);
     grunt.registerTask('publish', ['build', 'shell:publish-site']);
     grunt.registerTask('serve', ['build', 'connect:test', 'watch']);
     grunt.registerTask('site', ['shell:serve-site']);
