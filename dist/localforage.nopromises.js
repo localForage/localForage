@@ -132,14 +132,9 @@
                 var store = db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
 
-                // We use `['delete']` instead of `.delete` because IE 8 will
-                // throw a fit if it sees the reserved word "delete" in this
-                // scenario.
-                // See: https://github.com/mozilla/localForage/pull/67
-                //
-                // This can be removed once we no longer care about IE 8, for
-                // what that's worth.
-                var req = store['delete'](key);
+                // We use a Grunt task to make this safe for IE and some
+                // versions of Cordova when built.
+                var req = store["delete"](key);
                 req.onsuccess = function() {
 
                     deferCallback(callback);
@@ -316,7 +311,7 @@
                     }
 
                     keys.push(cursor.key);
-                    cursor.continue();
+                    cursor["continue"]();
                 };
 
                 req.onerror = function() {
