@@ -300,16 +300,24 @@ i.e. before you call `getItem()` or `length()`, etc.)
 ```javascript
 // Force localStorage to be the backend driver.
 localforage.setDriver('localStorageWrapper');
+
+// Supply a list of drivers, in order of preference.
+localforage.setDriver(['WebSQLStorage', 'localStorageWrapper']);
 ```
 
 ```coffeescript
 # Force localStorage to be the backend driver.
 localforage.setDriver "localStorageWrapper"
+
+# Supply a list of drivers, in order of preference.
+localforage.setDriver ["WebSQLStorage", "localStorageWrapper"]
 ```
 
 `setDriver(driverName)`
+- or -
+`setDriver([driverName, nextDriverName])`
 
-Force usage of a particular driver, if it is available.
+Force usage of a particular driver or drivers, if available.
 
 By default, localForage selects backend drivers for the datastore in this
 order:
