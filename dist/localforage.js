@@ -816,7 +816,10 @@ requireModule('promise/polyfill').polyfill();
                               .objectStore(dbInfo.storeName);
 
                 // We use a Grunt task to make this safe for IE and some
-                // versions of Cordova when built.
+                // versions of Android (including those used by Cordova).
+                // Normally IE won't like `.delete()` and will insist on
+                // using `['delete']()`, but we have a build step that
+                // fixes this for us now.
                 var req = store["delete"](key);
                 req.onsuccess = function() {
 
