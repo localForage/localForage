@@ -44,15 +44,36 @@ describe('When No Drivers Are Available', function() {
 
     DRIVERS.forEach(function(driverName) {
         it('fails to setDriver ' + driverName + ' [callback]', function(done) {
-            localforage.setDriver(driverName, null, function() {
+            localforage.setDriver(driverName, null, function(error) {
+                expect(error).to.be.an(Error);
+                expect(error.message).to.be('No available storage method found.');
                 done();
             });
         });
 
         it('fails to setDriver ' + driverName + ' [promise]', function(done) {
-            localforage.setDriver(driverName).then(null, function() {
+            localforage.setDriver(driverName).then(null, function(error) {
+                expect(error).to.be.an(Error);
+                expect(error.message).to.be('No available storage method found.');
                 done();
             });
         });
     });
+
+    it('fails to setDriver using array parameter [callback]', function(done) {
+        localforage.setDriver(DRIVERS, null, function(error) {
+            expect(error).to.be.an(Error);
+            expect(error.message).to.be('No available storage method found.');
+            done();
+        });
+    });
+
+    it('fails to setDriver using array parameter [promise]', function(done) {
+        localforage.setDriver(DRIVERS).then(null, function(error) {
+            expect(error).to.be.an(Error);
+            expect(error.message).to.be('No available storage method found.');
+            done();
+        });
+    });
+
 });
