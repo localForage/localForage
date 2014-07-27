@@ -49,10 +49,12 @@ IndexedDB or WebSQL support. Asynchronous storage is available in the current
 versions of all major browsers: Chrome, Firefox, IE, and Safari
 (including Safari Mobile).
 
-localForage supports both a callback-based and Promises-based API, so you can
-use whichever you prefer. At the current time, these docs use the callback API.
+**localForage offers a callback API as well as a fully ES6-compliant Promises
+API**, so you can use whichever you prefer.
 
-[Download localforage.min.js](http://mozilla.github.io/localForage/localforage.min.js)
+[Download localforage.min.js][download]
+
+[download]: https://mozilla.github.io/localForage/localforage.min.js
 
 # Installation
 
@@ -62,7 +64,7 @@ bower install localforage
 ```
 ``` html
 <script src="localforage.js"></script>
-<script>localforage.getItem('my alert').then(alert);</script>
+<script>localforage.getItem('my alert', alert);</script>
 ```
 
 To use localForage, [download the latest release](https://github.com/mozilla/localForage/releases) or install with [bower](http://bower.io/) (`bower install localforage`).
@@ -83,6 +85,10 @@ localforage.getItem('somekey', function(value) {
     // loaded from the offline store.
     console.log(value);
 });
+localforage.getItem('somekey').then(function(value) {
+    // The same code, but using ES6 Promises.
+    console.log(value);
+});
 ```
 
 ```coffeescript
@@ -90,6 +96,10 @@ localforage.getItem "somekey", (value) ->
   # Run this code once the value has been loaded
   # from the offline store.
   console.log value
+
+localforage.getItem("somekey").then (value) ->
+  # The same code, but using ES6 Promises.
+  console.log(value)
 ```
 
 `getItem(key, successCallback)`
