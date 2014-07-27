@@ -15,7 +15,7 @@ module.exports = exports = function(grunt) {
     grunt.initConfig({
         concat: {
             options: {
-                separator: '',
+                separator: ''
             },
             localforage: {
                 files: {
@@ -28,7 +28,7 @@ module.exports = exports = function(grunt) {
                     'dist/localforage.nopromises.js': [
                         'src/drivers/**/*.js',
                         'src/localforage.js'
-                    ],
+                    ]
                 },
                 options: {
                     banner:

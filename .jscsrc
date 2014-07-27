@@ -2,6 +2,7 @@
     "disallowSpacesInAnonymousFunctionExpression": {
         "beforeOpeningRoundBrace": true
     },
+    "disallowTrailingComma": true,
     "requireSpaceAfterKeywords": [
         "if",
         "else",
