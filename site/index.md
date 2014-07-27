@@ -49,12 +49,13 @@ IndexedDB or WebSQL support. Asynchronous storage is available in the current
 versions of all major browsers: Chrome, Firefox, IE, and Safari
 (including Safari Mobile).
 
-**localForage offers a callback API as well as a fully ES6-compliant Promises
-API**, so you can use whichever you prefer.
+**localForage offers a callback API as well as support for the
+[ES6 Promises API][]**, so you can use whichever you prefer.
 
 [Download localforage.min.js][download]
 
 [download]: https://mozilla.github.io/localForage/localforage.min.js
+[ES6 Promises API]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
 # Installation
 
