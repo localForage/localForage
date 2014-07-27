@@ -112,17 +112,17 @@ IndexedDB or WebSQL support. Asynchronous storage is available in the current
 versions of all major browsers: Chrome, Firefox, IE, and Safari
 (including Safari Mobile).</p>
 
-<p>localForage supports both a callback-based and Promises-based API, so you can
-use whichever you prefer. At the current time, these docs use the callback API.</p>
+<p><strong>localForage offers a callback API as well as support for the
+<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">ES6 Promises API</a></strong>, so you can use whichever you prefer.</p>
 
-<p><a href="http://mozilla.github.io/localForage/localforage.min.js">Download localforage.min.js</a></p>
+<p><a href="https://mozilla.github.io/localForage/localforage.min.js">Download localforage.min.js</a></p>
 
 <h1 id="installation">Installation</h1>
 <pre class="highlight shell"><span class="c"># Optional installation with bower:</span>
 bower install localforage
 </pre>
 <pre class="highlight html"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"localforage.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;script&gt;</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'my alert'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">alert</span><span class="p">);</span><span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'my alert'</span><span class="p">,</span> <span class="nx">alert</span><span class="p">);</span><span class="nt">&lt;/script&gt;</span>
 </pre>
 
 <p>To use localForage, <a href="https://github.com/mozilla/localForage/releases">download the latest release</a> or install with <a href="http://bower.io/">bower</a> (<code class="prettyprint">bower install localforage</code>).</p>
@@ -141,11 +141,19 @@ or wait for any <code class="prettyprint">onready</code> events.</p>
 </span>    <span class="c1">// loaded from the offline store.
 </span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 <span class="p">});</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// The same code, but using ES6 Promises.
+</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+<span class="p">});</span>
 </pre>
 <pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">getItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Run this code once the value has been loaded
 </span>  <span class="c1"># from the offline store.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">value</span>
+
+<span class="nx">localforage</span><span class="p">.</span><span class="na">getItem</span><span class="p">(</span><span class="s">"somekey"</span><span class="p">).</span><span class="na">then</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="c1"># The same code, but using ES6 Promises.
+</span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
 </pre>
 
 <p><code class="prettyprint">getItem(key, successCallback)</code></p>
