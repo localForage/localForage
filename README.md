@@ -29,7 +29,7 @@ localForage works in all modern browsers (IE 8 and above).
 _Asynchronous storage_ is available in all browsers **in bold**, with
 localStorage fallback in parentheses.
 
-* **Android Browser 2.1** 
+* **Android Browser 2.1**
 * **Blackberry 7**
 * **Chrome 23** (Chrome 4.0+ with localStorage)
 * **Chrome for Android 32**
@@ -132,23 +132,23 @@ For development, it can be easier to use the
 slower--but easier to debug--localStorage driver (mostly because localStorage
 can easily be inspected from the console). You can use the `setDriver()` method
 to change the driver localForage is using at any time.
-    
+
 ```javascript
 // If you aren't using JS modules, things are loaded synchronously.
 localforage.setDriver('localStorageWrapper');
-alert(localforage.driver);
+alert(localforage.driver());
   => 'localStorageWrapper'
 
 // If you're using modules, things load asynchronously, so you should use
 // callbacks or promises to ensure things have loaded.
 localforage.setDriver('localStorageWrapper', function() {
-    alert(localforage.driver);
+    alert(localforage.driver());
 });
   => 'localStorageWrapper'
 
 // The promises version:
 localforage.setDriver('localStorageWrapper').then(function() {
-    alert(localforage.driver);
+    alert(localforage.driver());
 });
   => 'localStorageWrapper'
 ```
