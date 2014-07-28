@@ -51,7 +51,7 @@ use asynchronous storage. Pretty slick!
 ## Support
 
 Lost? Need help? Try the
-[localForage API documentation](http://mozilla.github.io/localForage).
+[localForage API documentation](https://mozilla.github.io/localForage).
 
 If you're stuck using the library, running the tests, or want to contribute,
 to localForage, you can visit
@@ -124,7 +124,7 @@ JSON, as well as ArrayBuffers, Blobs, and TypedArrays. Check the
 All types are supported in every storage backend, though storage limits in
 localStorage make storing many large Blobs impossible.
 
-[api]: http://mozilla.github.io/localForage/#setitem
+[api]: https://mozilla.github.io/localForage/#setitem
 
 ## Driver Selection (i.e. forcing localStorage)
 
