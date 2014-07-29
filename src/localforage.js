@@ -5,10 +5,11 @@
     var Promise = (typeof module !== 'undefined' && module.exports) ?
                   require('promise') : this.Promise;
 
-    // Avoid those magic constants!
-    var MODULE_TYPE_DEFINE = 1;
-    var MODULE_TYPE_EXPORT = 2;
-    var MODULE_TYPE_WINDOW = 3;
+    var ModuleType = {
+        DEFINE: 1,
+        EXPORT: 2,
+        WINDOW: 3
+    };
 
     var DriverType = {
         INDEXEDDB: 'asyncStorage',
@@ -24,14 +25,14 @@
 
     // Attaching to window (i.e. no module loader) is the assumed,
     // simple default.
-    var moduleType = MODULE_TYPE_WINDOW;
+    var moduleType = ModuleType.WINDOW;
 
     // Find out what kind of module setup we have; if none, we'll just attach
     // localForage to the main window.
     if (typeof define === 'function' && define.amd) {
-        moduleType = MODULE_TYPE_DEFINE;
+        moduleType = ModuleType.DEFINE;
     } else if (typeof module !== 'undefined' && module.exports) {
-        moduleType = MODULE_TYPE_EXPORT;
+        moduleType = ModuleType.EXPORT;
     }
 
     // Check to see if IndexedDB is available and if it is the latest
@@ -153,7 +154,7 @@
 
                 // We allow localForage to be declared as a module or as a
                 // library available without AMD/require.js.
-                if (moduleType === MODULE_TYPE_DEFINE) {
+                if (moduleType === ModuleType.DEFINE) {
                     require([driverName], function(lib) {
                         self._extend(lib);
 
@@ -164,7 +165,7 @@
                     });
 
                     return;
-                } else if (moduleType === MODULE_TYPE_EXPORT) {
+                } else if (moduleType === ModuleType.EXPORT) {
                     // Making it browserify friendly
                     var driver;
                     switch (driverName) {
@@ -241,11 +242,11 @@
 
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
-    if (moduleType === MODULE_TYPE_DEFINE) {
+    if (moduleType === ModuleType.DEFINE) {
         define(function() {
             return localForage;
         });
-    } else if (moduleType === MODULE_TYPE_EXPORT) {
+    } else if (moduleType === ModuleType.EXPORT) {
         module.exports = localForage;
     } else {
         this.localforage = localForage;
