@@ -2237,6 +2237,10 @@ requireModule('promise/polyfill').polyfill();
         };
     }
 
+    // Add a stub for each driver API method that delays the call to the
+    // corresponding driver method until localForage is ready. These stubs will
+    // be replaced by the driver methods as soon as the driver is loaded, so
+    // there is no performance impact.
     for (var i = 0; i < LibraryMethods.length; i++) {
         callWhenReady(LibraryMethods[i]);
     }
