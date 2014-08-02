@@ -229,21 +229,53 @@
                         _this.msIndexedDB;
 
         var result = {};
+        var specTest = '_localforage_spec_test';
 
-        result[localForage.WEBSQL] = !!_this.openDatabase;
-
-        result[localForage.LOCALSTORAGE] = !!(function() {
+        result[localForage.LOCALSTORAGE] = (function() {
+            // Ref: https://github.com/Modernizr/Modernizr/blob/master/feature-detects/storage/localstorage.js
             try {
-                return (localStorage &&
-                        typeof localStorage.setItem === 'function');
+                localStorage.setItem(specTest, specTest);
+                localStorage.removeItem(specTest);
+                return true;
             } catch (e) {
                 return false;
             }
         })();
 
-        return (new Promise(function(resolve, reject) {
+        return Promise.all([(new Promise(function(resolve, reject) {
+            var openDatabase = _this.openDatabase;
+            var db = null;
+            var dbInfo = {};
+            var options = localForage._config;
+
+            if (!openDatabase) {
+                reject();
+            }
+
+            for (var i in options) {
+                dbInfo[i] = typeof(options[i]) !== 'string' ? options[i].toString() : options[i];
+            }
+
+            try {
+                db = openDatabase(dbInfo.name, dbInfo.version,
+                                  dbInfo.description, dbInfo.size);
+            } catch (e) {
+                reject();
+            }
+
+            db.transaction(function(t) {
+                // Attempt to create table is needed to detect lack of support
+                // in Safari Private Browsing mode.
+                t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
+                             ' (id INTEGER PRIMARY KEY, key unique, value)', [], resolve, reject);
+            });
+        })).then(function() {
+            result[localForage.WEBSQL] = true;
+        }, function() {
+            result[localForage.WEBSQL] = false;
+        }), (new Promise(function(resolve, reject) {
             if (indexedDB && typeof indexedDB.open === 'function') {
-                var request = indexedDB.open('_localforage_spec_test', 1);
+                var request = indexedDB.open(specTest, 1);
                 if (request.onupgradeneeded === null) {
                     // Async test is needed to detect lack of support in
                     // Firefox Private Browsing mode.
@@ -257,7 +289,7 @@
             result[localForage.INDEXEDDB] = true;
         }, function() {
             result[localForage.INDEXEDDB] = false;
-        }).then(function() {
+        })]).then(function() {
             driverSupport = result;
         });
     })(this);
