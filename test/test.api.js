@@ -1,4 +1,4 @@
-/* global after:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true, require:true */
+/* global afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true, require:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
@@ -29,17 +29,19 @@ describe('localForage API', function() {
 describe('localForage', function() {
     var appropriateDriver;
 
-    before(function() {
-        appropriateDriver =
-            (localforage.supports(localforage.WEBSQL) && localforage.WEBSQL) ||
-            (localforage.supports(localforage.INDEXEDDB) &&
-             localforage.INDEXEDDB) ||
-            (localforage.supports(localforage.localStorage) &&
-             localforage.localStorage);
+    before(function(done) {
+        localforage.ready().then(function() {
+            appropriateDriver =
+                (localforage.supports(localforage.WEBSQL) && localforage.WEBSQL) ||
+                (localforage.supports(localforage.INDEXEDDB) &&
+                 localforage.INDEXEDDB) ||
+                (localforage.supports(localforage.localStorage) &&
+                 localforage.localStorage);
+            done();
+        });
     });
 
-    it('automatically selects the most appropriate driver (' +
-       appropriateDriver + ')', function(done) {
+    it('automatically selects the most appropriate driver', function(done) {
         if (appropriateDriver) {
             localforage.ready().then(function() {
                 expect(localforage.driver()).to.be(appropriateDriver);
@@ -407,7 +409,7 @@ DRIVERS.forEach(function(driverName) {
 
         var _oldReady;
 
-        before(function(done) {
+        beforeEach(function(done) {
             _oldReady = localforage.ready;
             localforage.ready = function() {
                 return Promise.reject();
@@ -415,7 +417,7 @@ DRIVERS.forEach(function(driverName) {
             done();
         });
 
-        after(function(done) {
+        afterEach(function(done) {
             localforage.ready = _oldReady;
             _oldReady = null;
             done();

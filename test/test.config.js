@@ -66,7 +66,7 @@ describe('Config API', function() {
         expect(localforage.config('version')).to.be(2.0);
     });
 
-    it('uses the config values in ' + localforage.driver(), function(done) {
+    it('uses the config values in driver', function(done) {
         localforage.config({
             description: 'The offline datastore for my cool app',
             name: 'My Cool App',
