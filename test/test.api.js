@@ -55,6 +55,22 @@ describe('localForage', function() {
             });
         }
     });
+    
+    it('does not support object parameter to setDriver', function(done) {
+        var driverPreferedOrder = {
+            '0': localforage.INDEXEDDB,
+            '1': localforage.WEBSQL,
+            '2': localforage.LOCALSTORAGE,
+            length: 3
+        };
+
+        localforage.setDriver(driverPreferedOrder).then(null, function(error) {
+            expect(error).to.be.an(Error);
+            expect(error.message).to
+                                 .be('No available storage method found.');
+            done();
+        });
+    });
 });
 
 DRIVERS.forEach(function(driverName) {

@@ -79,11 +79,7 @@
         setDriver: function(drivers, callback, errorCallback) {
             var self = this;
 
-            var isArray = Array.isArray || function(arg) {
-                return Object.prototype.toString.call(arg) === '[object Array]';
-            };
-
-            if (!isArray(drivers) && typeof drivers === 'string') {
+            if (typeof drivers === 'string') {
                 drivers = [drivers];
             }
 
@@ -148,7 +144,11 @@
         },
 
         _getFirstSupportedDriver: function(drivers) {
-            if (drivers) {
+            var isArray = Array.isArray || function(arg) {
+                return Object.prototype.toString.call(arg) === '[object Array]';
+            };
+
+            if (drivers && isArray(drivers)) {
                 for (var i = 0; i < drivers.length; i++) {
                     var driver = drivers[i];
 
