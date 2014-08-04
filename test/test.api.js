@@ -31,9 +31,10 @@ describe('localForage', function() {
 
     before(function() {
         appropriateDriver =
-            (localforage.supports(localforage.WEBSQL) && localforage.WEBSQL) ||
             (localforage.supports(localforage.INDEXEDDB) &&
              localforage.INDEXEDDB) ||
+            (localforage.supports(localforage.WEBSQL) &&
+             localforage.WEBSQL) ||
             (localforage.supports(localforage.localStorage) &&
              localforage.localStorage);
     });
