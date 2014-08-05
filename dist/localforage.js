@@ -2076,6 +2076,8 @@ requireModule('promise/polyfill').polyfill();
             storeName: 'keyvaluepairs',
             version: 1.0
         },
+        _driverSet: null,
+        _ready: false,
 
         // Set any config values for localForage; can be called anytime before
         // the first API call (e.g. `getItem`, `setItem`).
@@ -2109,9 +2111,22 @@ requireModule('promise/polyfill').polyfill();
             return this._driver || null;
         },
 
-        _ready: false,
+        ready: function(callback) {
+            var ready = new Promise(function(resolve, reject) {
+                localForage._driverSet.then(function() {
+                    if (localForage._ready === null) {
+                        localForage._ready = localForage._initStorage(
+                            localForage._config);
+                    }
 
-        _driverSet: null,
+                    localForage._ready.then(resolve, reject);
+                }, reject);
+            });
+
+            ready.then(callback, callback);
+
+            return ready;
+        },
 
         setDriver: function(drivers, callback, errorCallback) {
             var self = this;
@@ -2180,6 +2195,18 @@ requireModule('promise/polyfill').polyfill();
             return this._driverSet;
         },
 
+        supports: function(driverName) {
+            return !!driverSupport[driverName];
+        },
+
+        _extend: function(libraryMethodsAndProperties) {
+            for (var i in libraryMethodsAndProperties) {
+                if (libraryMethodsAndProperties.hasOwnProperty(i)) {
+                    this[i] = libraryMethodsAndProperties[i];
+                }
+            }
+        },
+
         _getFirstSupportedDriver: function(drivers) {
             var isArray = Array.isArray || function(arg) {
                 return Object.prototype.toString.call(arg) === '[object Array]';
@@ -2196,35 +2223,6 @@ requireModule('promise/polyfill').polyfill();
             }
 
             return null;
-        },
-
-        supports: function(driverName) {
-            return !!driverSupport[driverName];
-        },
-
-        ready: function(callback) {
-            var ready = new Promise(function(resolve, reject) {
-                localForage._driverSet.then(function() {
-                    if (localForage._ready === null) {
-                        localForage._ready = localForage._initStorage(
-                            localForage._config);
-                    }
-
-                    localForage._ready.then(resolve, reject);
-                }, reject);
-            });
-
-            ready.then(callback, callback);
-
-            return ready;
-        },
-
-        _extend: function(libraryMethodsAndProperties) {
-            for (var i in libraryMethodsAndProperties) {
-                if (libraryMethodsAndProperties.hasOwnProperty(i)) {
-                    this[i] = libraryMethodsAndProperties[i];
-                }
-            }
         }
     };
 
