@@ -1,28 +1,13 @@
-/* global after:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true, require:true */
+/* global after:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
     localforage.WEBSQL
 ];
 
-var componentBuild = window.require && window.require.modules &&
-                     window.require.modules.localforage &&
-                     window.require.modules.localforage.component;
-
 describe('localForage API', function() {
     beforeEach(function(done) {
         localforage.clear(done);
-    });
-
-    // If this test is failing, you are likely missing the Promises polyfill,
-    // installed via bower. Read more here:
-    // https://github.com/mozilla/localForage#working-on-localforage
-    it('has Promises available', function() {
-        if (componentBuild) {
-            expect(require('promise')).to.be.a('function');
-        } else {
-            expect(Promise).to.be.a('function');
-        }
     });
 });
 

@@ -20,7 +20,7 @@ describe('When No Drivers Are Available', function() {
 
         expect(localforage.supports(localforage.WEBSQL)).to.be(false);
         expect(localforage.supports(localforage.WEBSQL))
-            .to.be(Modernizr.websqldatabase);
+            .to.be(window.openDatabase !== null);
     });
 
     it('fails to load localForage [callback]', function(done) {

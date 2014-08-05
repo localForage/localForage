@@ -7,7 +7,6 @@
   "eqnull": true,
   "esnext": false,
   "immed": true,
-  "latedef": true,
   "newcap": true,
   "noarg": true,
   "nonew": true,

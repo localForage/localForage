@@ -7,8 +7,7 @@ describe('Inside iFrames', function() {
         iFrame.name = 'iframe';
         iFrame.id = 'iframe';
         // TODO: Get this to be cross-origin.
-        iFrame.src = 'http://' + window.location.host +
-                     '/test/test.iframecontents.html';
+        iFrame.src = './test.iframecontents.html';
 
         window.document.body.appendChild(iFrame);
     });
