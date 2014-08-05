@@ -5,6 +5,7 @@ localForage's lifetime.
 
 ### Next Version
 
+* It is no longer necessary to queue commands using `ready()` when using RequireJS. ([723cc94e06](https://github.com/mozilla/localForage/commit/723cc94e06af4f5ba4c53fa65524ccd5f6c4432e))
 * `setDriver` now accepts an array of drivers to be used, in order of preference, instead of simply a string. The string option is still supported. (eg. now one can use `setDriver(['WebSQL', 'localStorage'])` instead of `setDriver('WebSQL')`)
 
 ### [0.9](https://github.com/mozilla/localForage/releases/tag/0.9.1)
