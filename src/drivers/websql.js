@@ -1,4 +1,8 @@
+// Exclude 'redefinition of {a}' from jshint as we are declaring a local var
+// that appears to conflict with the global namespace.
+// http://jslinterrors.com/redefinition-of-a
 /*jshint -W079 */
+/*jshint latedef:false */
 
 /*
  * Includes code from:

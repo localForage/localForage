@@ -1,3 +1,5 @@
+/*jshint latedef:false */
+
 var Promise = require('promise');
 
 /**
@@ -62,8 +64,8 @@ var localForage = module.exports = {
             // If localforage is ready and fully initialized, we can't set
             // any new configuration values. Instead, we return an error.
             if (this._ready) {
-                return new Error("Can't call config() after localforage " +
-                                 "has been used.");
+                return new Error('Can\'t call config() after localforage ' +
+                                 'has been used.');
             }
 
             for (var i in options) {

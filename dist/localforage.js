@@ -1,4 +1,6 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.localforage=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/*jshint latedef:false */
+
 var Promise = require('promise');
 
 /**
@@ -63,8 +65,8 @@ var localForage = module.exports = {
             // If localforage is ready and fully initialized, we can't set
             // any new configuration values. Instead, we return an error.
             if (this._ready) {
-                return new Error("Can't call config() after localforage " +
-                                 "has been used.");
+                return new Error('Can\'t call config() after localforage ' +
+                                 'has been used.');
             }
 
             for (var i in options) {
@@ -238,6 +240,7 @@ for (var i = 0; i < LibraryMethods.length; i++) {
 }
 
 localForage.setDriver(DEFAULT_DRIVER_ORDER);
+
 },{"./drivers/indexeddb":6,"./drivers/localstorage":7,"./drivers/websql":8,"promise":4}],2:[function(require,module,exports){
 // shim for using process in browser
 
@@ -710,7 +713,11 @@ module.exports = asap;
 
 }).call(this,require('_process'))
 },{"_process":2}],6:[function(require,module,exports){
+// Exclude 'redefinition of {a}' from jshint as we are declaring a local var
+// that appears to conflict with the global namespace.
+// http://jslinterrors.com/redefinition-of-a
 /*jshint -W079 */
+/*jshint latedef:false */
 
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
@@ -1057,8 +1064,12 @@ module.exports = {
     keys: keys
 };
 },{"promise":4}],7:[function(require,module,exports){
+// Exclude 'redefinition of {a}' from jshint as we are declaring a local var
+// that appears to conflict with the global namespace.
+// http://jslinterrors.com/redefinition-of-a
 /*jshint -W079 */
 /*jshint -W020 */
+/*jshint latedef:false */
 
 // If IndexedDB isn't available, we'll fall back to localStorage.
 // Note that this will have considerable performance and storage
@@ -1468,7 +1479,11 @@ module.exports = {
     keys: keys
 };
 },{"promise":4}],8:[function(require,module,exports){
+// Exclude 'redefinition of {a}' from jshint as we are declaring a local var
+// that appears to conflict with the global namespace.
+// http://jslinterrors.com/redefinition-of-a
 /*jshint -W079 */
+/*jshint latedef:false */
 
 /*
  * Includes code from:

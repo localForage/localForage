@@ -1,4 +1,4 @@
-/* global afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true, require:true */
+/* global afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,

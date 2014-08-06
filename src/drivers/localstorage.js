@@ -1,5 +1,9 @@
+// Exclude 'redefinition of {a}' from jshint as we are declaring a local var
+// that appears to conflict with the global namespace.
+// http://jslinterrors.com/redefinition-of-a
 /*jshint -W079 */
 /*jshint -W020 */
+/*jshint latedef:false */
 
 // If IndexedDB isn't available, we'll fall back to localStorage.
 // Note that this will have considerable performance and storage

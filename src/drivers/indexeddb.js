@@ -1,4 +1,8 @@
+// Exclude 'redefinition of {a}' from jshint as we are declaring a local var
+// that appears to conflict with the global namespace.
+// http://jslinterrors.com/redefinition-of-a
 /*jshint -W079 */
+/*jshint latedef:false */
 
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
