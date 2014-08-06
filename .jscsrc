@@ -19,5 +19,6 @@
     "requireSpacesInFunctionExpression": {
         "beforeOpeningCurlyBrace": true
     },
-    "requireLineFeedAtFileEnd": true
+    "requireLineFeedAtFileEnd": true,
+    "validateQuoteMarks": "'"
 }
