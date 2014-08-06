@@ -40,7 +40,12 @@ function runTests() {
 
 var require = this.require;
 if (require) {
-    require(['/dist/localforage.js'], function(localforage) {
+    requirejs.config({
+        paths: {
+            localforage: '/dist/localforage'
+        }
+    });
+    require(['localforage'], function(localforage) {
         window.localforage = localforage;
 
         require([

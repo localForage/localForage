@@ -18,8 +18,8 @@ beforeEach(function(done) {
     // and the API calls in the tests occur first in every test, such that the
     // callWhenReady API method stubs are called before RequireJS
     // asynchronously loads the drivers that replace them.
-    require.undef('/dist/localforage.js');
-    require(['/dist/localforage.js'], function(localforage) {
+    require.undef('localforage');
+    require(['localforage'], function(localforage) {
         localforage.setDriver(previousDriver);
         window.localforage = localforage;
         done();
