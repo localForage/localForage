@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>localForage require.js Tests!</title>
+    <link rel="stylesheet" type="text/css" href="../node_modules/mocha/mocha.css">
+  </head>
+  <body>
+    <div id="mocha"></div>
+
+    <!-- test harness -->
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/expect.js/index.js"></script>
+    <script src="../node_modules/ym-modernizr/dist/modernizr-build.js"></script>
+    <script src="../node_modules/requirejs/require.js"></script>
+
+    <!-- specs -->
+    <script>
+        mocha.setup('bdd');
+
+        beforeEach(function(done) {
+            var previousDriver = localforage.driver();
+
+            // The API method stubs inserted by callWhenReady must be tested before
+            // they are replaced by the driver, which happens as soon as it loads.
+            //
+            // To ensure that they work when the drivers are loaded asynchronously,
+            // we run the entire test suite (except for config tests), but undefine
+            // the localforage module and force it to reload before each test, so that
+            // it will be initialized again.
+            //
+            // This ensures that the synchronous parts of localforage initialization
+            // and the API calls in the tests occur first in every test, such that the
+            // callWhenReady API method stubs are called before RequireJS
+            // asynchronously loads the drivers that replace them.
+            require.undef('../dist/localforage.js');
+            require(['../dist/localforage.js'], function(localforage) {
+                localforage.setDriver(previousDriver);
+                window.localforage = localforage;
+                done();
+            });
+        });
+    </script>
+
+    <!-- run test -->
+    <script>
+        require(['../dist/localforage.js'], function(localforage) {
+            window.localforage = localforage;
+
+            require([
+                './test.api.js',
+                './test.datatypes.js',
+                './test.drivers.js',
+                './test.iframes.js',
+                './test.webworkers.js'
+            ], function() {
+                if (window.mochaPhantomJS) {
+                    mochaPhantomJS.run();
+                } else {
+                    mocha.run();
+                }
+            });
+        });
+    </script>
+  </body>
+</html>
+
+
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>localForage callWhenReady Tests!</title>
+
+    <link rel="stylesheet" type="text/css"
+          href="/bower_components/mocha/mocha.css">
+
+    <script src="/bower_components/assert/assert.js"></script>
+    <script src="/bower_components/mocha/mocha.js"></script>
+    
+    <script src="/bower_components/expect/index.js"></script>
+
+    <!-- require.js  -->
+    <script src="/bower_components/requirejs/require.js"></script>
+
+    <!-- Modernizr  -->
+    <script src="/bower_components/modernizr/modernizr.js"></script>
+
+    <!-- Apply "root" level beforeEach hook to run test suite against
+         callWhenReady API method stubs -->
+    <script src="/test/test.callwhenready.js"></script>
+
+    <!-- Test runner -->
+    <script>
+        // Skip irrelevant config tests by mapping them to API tests so that
+        // they will not be called.
+        requirejs.config({
+            map: {
+                '*': {
+                    '/test/test.config.js': '/test/test.api.js'
+                }
+            }
+        });
+    </script>
+    <script src="/test/runner.js"></script>
+  </head>
+  <body>
+    <div id="mocha"></div>
+  </body>
+</html>

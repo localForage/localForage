@@ -7,13 +7,38 @@ var indexeddb = require('./drivers/indexeddb');
 var localstorage = require('./drivers/localstorage');
 var websql = require('./drivers/websql');
 
+var DriverType = {
+    INDEXEDDB: 'asyncStorage',
+    LOCALSTORAGE: 'localStorageWrapper',
+    WEBSQL: 'webSQLStorage'
+};
+
+var DEFAULT_DRIVER_ORDER = [
+    DriverType.INDEXEDDB,
+    DriverType.WEBSQL,
+    DriverType.LOCALSTORAGE
+];
+
+/**
+ * Define library methods
+ */
+var LibraryMethods = [
+    'clear',
+    'getItem',
+    'key',
+    'keys',
+    'length',
+    'removeItem',
+    'setItem'
+];
+
 /**
  * Export
  */
 var localForage = module.exports = {
-    INDEXEDDB: 'asyncStorage',
-    LOCALSTORAGE: 'localStorageWrapper',
-    WEBSQL: 'webSQLStorage',
+    INDEXEDDB: DriverType.INDEXEDDB,
+    LOCALSTORAGE: DriverType.LOCALSTORAGE,
+    WEBSQL: DriverType.WEBSQL,
 
     _config: {
         description: '',
@@ -194,10 +219,21 @@ var driverSupport = (function(_this) {
     return result;
 })(window);
 
-var driverTestOrder = [
-    localForage.INDEXEDDB,
-    localForage.WEBSQL,
-    localForage.LOCALSTORAGE
-];
+function callWhenReady(libraryMethod) {
+    localForage[libraryMethod] = function() {
+        var _args = arguments;
+        return localForage.ready().then(function() {
+            return localForage[libraryMethod].apply(localForage, _args);
+        });
+    };
+}
 
-localForage.setDriver(driverTestOrder);
+// Add a stub for each driver API method that delays the call to the
+// corresponding driver method until localForage is ready. These stubs will
+// be replaced by the driver methods as soon as the driver is loaded, so
+// there is no performance impact.
+for (var i = 0; i < LibraryMethods.length; i++) {
+    callWhenReady(LibraryMethods[i]);
+}
+
+localForage.setDriver(DEFAULT_DRIVER_ORDER);

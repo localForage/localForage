@@ -184,25 +184,22 @@ means calling `config()` before using `getItem()`, `setItem()`, `removeItem()`,
 
 ## RequireJS
 
-You can use localForage with [RequireJS](http://requirejs.org/), but note that
-because of the way drivers are loaded using RequireJS, you'll want to make sure
-`localforage.ready`'s Promise has been fulfilled to ensure all of localForage
-is ready to use before you make set/get calls. Essentially, to use localForage
-with RequireJS, your code should look like this:
+You can use localForage with [RequireJS](http://requirejs.org/), and even though
+each driver will be loaded asynchronously with a `require()` call, you can use
+localForage without having to confirm that it's ready:
 
 ```javascript
 define(['localforage'], function(localforage) {
     // As a callback:
-    localforage.ready(function() {
-        localforage.setItem('mykey', 'myvalue', console.log);
-    });
+    localforage.setItem('mykey', 'myvalue', console.log);
 
     // With a Promise:
-    localforage.ready().then(function() {
-        localforage.setItem('mykey', 'myvalue').then(console.log);
-    });
+    localforage.setItem('mykey', 'myvalue').then(console.log);
 });
 ```
+
+In pre-1.0 versions you had to call `.ready()` to make sure the code was loaded,
+but this is no longer necessary.
 
 ## Web Workers
 

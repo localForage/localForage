@@ -68,6 +68,7 @@ gulp.task('mocha', function() {
             'test/test.main.html',
             'test/test.min.html',
             'test/test.nodriver.html',
+            'test/test.callwhenready.html',
             'test/test.require.html',
             'test/test.component.html'
         ])
