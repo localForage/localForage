@@ -33,36 +33,17 @@ gulp.task('browserify', function() {
             standalone: 'localforage'
         })
         .add('./src/localforage.js')
-        .bundle()
-        .pipe(source('localforage.js'))
-        .pipe(gulp.dest('./dist/'));
-});
-
-// ES3-ify
-gulp.task('es3ify', function() {
-    return browserify({
-            standalone: 'localforage'
-        })
-        .add('./src/localforage.js')
         .transform({}, es3ify)
         .bundle()
         .pipe(source('localforage.js'))
-        .pipe(rename({suffix: '.es3'}))
         .pipe(gulp.dest('./dist/'));
 });
 
 // Minify
-gulp.task('uglify-main', function() {
+gulp.task('uglify', function() {
     gulp.src('./dist/localforage.js')
         .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
-        .pipe(gulp.dest('./dist/'));
-});
-
-gulp.task('uglify-es3', function() {
-    gulp.src('./dist/localforage.es3.js')
-        .pipe(uglify())
-        .pipe(rename('localforage.es3.min.js'))
         .pipe(gulp.dest('./dist/'));
 });
 
@@ -107,6 +88,6 @@ gulp.task('component', function() {
 
 // ---------------------
 
-gulp.task('build', ['clean', 'browserify', 'es3ify', 'uglify-main', 'uglify-es3']);
+gulp.task('build', ['clean', 'browserify', 'uglify']);
 gulp.task('test', ['jscs', 'jshint', 'mocha']);
 gulp.task('publish', ['component']);

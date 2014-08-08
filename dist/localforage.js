@@ -848,7 +848,7 @@ function removeItem(key, callback) {
             // Normally IE won't like `.delete()` and will insist on
             // using `['delete']()`, but we have a build step that
             // fixes this for us now.
-            var req = store.delete(key);
+            var req = store["delete"](key);
             req.onsuccess = function() {
 
                 deferCallback(callback);
@@ -1025,7 +1025,7 @@ function keys(callback) {
                 }
 
                 keys.push(cursor.key);
-                cursor.continue();
+                cursor["continue"]();
             };
 
             req.onerror = function() {
