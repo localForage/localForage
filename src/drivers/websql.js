@@ -44,7 +44,7 @@ var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.
 
 // If WebSQL methods aren't available, we can stop now.
 if (!openDatabase) {
-    return;
+    openDatabase = null;
 }
 
 // Open the WebSQL database (automatically creates one if one didn't

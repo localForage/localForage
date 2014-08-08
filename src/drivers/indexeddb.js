@@ -21,7 +21,7 @@ var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
 
 // If IndexedDB isn't available, we get outta here!
 if (!indexedDB) {
-    return;
+    indexedDB = null;
 }
 
 // Open the IndexedDB database (automatically creates one if one didn't

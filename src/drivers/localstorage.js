@@ -23,17 +23,12 @@ var localStorage = null;
 // `if (window.chrome && window.chrome.runtime)` code.
 // See: https://github.com/mozilla/localForage/issues/68
 try {
-    // If localStorage isn't available, we get outta here!
-    // This should be inside a try catch
-    if (!window.localStorage || !('setItem' in window.localStorage)) {
-        return;
+    // If localStorage is available, initialize localStorage and create a 
+    // variable to use throughout the code.
+    if (window.localStorage && ('setItem' in window.localStorage)) {
+        localStorage = window.localStorage;
     }
-    // Initialize localStorage and create a variable to use throughout
-    // the code.
-    localStorage = window.localStorage;
-} catch (e) {
-    return;
-}
+} catch (e) {}
 
 // Config the localStorage backend, using options set in the config.
 function _initStorage(options) {
