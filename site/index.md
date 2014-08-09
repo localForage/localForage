@@ -146,7 +146,7 @@ request.addEventListener('readystatechange', function() {
 ```
 
 ```coffeescript
-localforage.getItem "somekey", "some value" (value) ->
+localforage.setItem "somekey", "some value", (value) ->
   # Do other things once the value has been saved.
   console.log value
 
