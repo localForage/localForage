@@ -3,20 +3,15 @@
   <head>
     <meta charset="utf-8">
     <title>localForage Tests!</title>
-
-    <link rel="stylesheet" type="text/css"
-          href="/bower_components/mocha/mocha.css">
-
-    <script src="/bower_components/assert/assert.js"></script>
-    <script src="/bower_components/mocha/mocha.js"></script>
-
-    <script src="/bower_components/expect/index.js"></script>
+    <link rel="stylesheet" type="text/css" href="../node_modules/mocha/mocha.css">
+  </head>
+  <body>
+    <div id="mocha"></div>
 
     <script>
         // Virtually remove support for the drivers.
         // This has to be done before localforage
         // and Modernizr execute.
-
         try {
             window.indexedDB.open = null;
         } catch (error) { }
@@ -30,19 +25,25 @@
         } catch (error) { }
     </script>
 
-    <!-- Modernizr  -->
-    <script src="/bower_components/modernizr/modernizr.js"></script>
-
-    <!-- Test runner -->
-    <script src="/test/runner.js"></script>
+    <!-- test harness -->
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/expect.js/index.js"></script>
+    <script src="../node_modules/ym-modernizr/dist/modernizr-build.js"></script>
 
     <!-- localForage -->
-    <script src="/dist/localforage.js"></script>
+    <script src="../dist/localforage.js"></script>
 
     <!-- specs -->
-    <script src="/test/test.nodriver.js"></script>
-  </head>
-  <body>
-    <div id="mocha"></div>
+    <script>mocha.setup('bdd')</script>
+    <script src="./test.nodriver.js"></script>
+
+    <!-- run test -->
+    <script>
+        if (window.mochaPhantomJS) {
+            mochaPhantomJS.run();
+        } else {
+            mocha.run();
+        }
+    </script>
   </body>
 </html>

@@ -1,425 +1,196 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.localforage=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/*jshint latedef:false */
-
-var Promise = require('promise');
-
 /**
- * Drivers
- */
-var indexeddb = require('./drivers/indexeddb');
-var localstorage = require('./drivers/localstorage');
-var websql = require('./drivers/websql');
-
-var DriverType = {
-    INDEXEDDB: 'asyncStorage',
-    LOCALSTORAGE: 'localStorageWrapper',
-    WEBSQL: 'webSQLStorage'
-};
-
-var DEFAULT_DRIVER_ORDER = [
-    DriverType.INDEXEDDB,
-    DriverType.WEBSQL,
-    DriverType.LOCALSTORAGE
-];
-
-/**
- * Define library methods
- */
-var LibraryMethods = [
-    'clear',
-    'getItem',
-    'key',
-    'keys',
-    'length',
-    'removeItem',
-    'setItem'
-];
-
-/**
- * Export
- */
-var localForage = module.exports = {
-    INDEXEDDB: DriverType.INDEXEDDB,
-    LOCALSTORAGE: DriverType.LOCALSTORAGE,
-    WEBSQL: DriverType.WEBSQL,
-
-    _config: {
-        description: '',
-        name: 'localforage',
-        // Default DB size is _JUST UNDER_ 5MB, as it's the highest size
-        // we can use without a prompt.
-        size: 4980736,
-        storeName: 'keyvaluepairs',
-        version: 1.0
-    },
-
-    // Set any config values for localForage; can be called anytime before
-    // the first API call (e.g. `getItem`, `setItem`).
-    // We loop through options so we don't overwrite existing config
-    // values.
-    config: function(options) {
-        // If the options argument is an object, we use it to set values.
-        // Otherwise, we return either a specified config value or all
-        // config values.
-        if (typeof(options) === 'object') {
-            // If localforage is ready and fully initialized, we can't set
-            // any new configuration values. Instead, we return an error.
-            if (this._ready) {
-                return new Error('Can\'t call config() after localforage ' +
-                                 'has been used.');
-            }
-
-            for (var i in options) {
-                this._config[i] = options[i];
-            }
-
-            return true;
-        } else if (typeof(options) === 'string') {
-            return this._config[options];
-        } else {
-            return this._config;
-        }
-    },
-
-    driver: function() {
-        return this._driver || null;
-    },
-
-    _ready: false,
-
-    _driverSet: null,
-
-    setDriver: function(drivers, callback, errorCallback) {
-        var self = this;
-
-        if (typeof drivers === 'string') {
-            drivers = [drivers];
-        }
-
-        this._driverSet = new Promise(function(resolve, reject) {
-            var driverName = self._getFirstSupportedDriver(drivers);
-
-            if (!driverName) {
-                var error = new Error('No available storage method found.');
-                self._driverSet = Promise.reject(error);
-
-                if (errorCallback) {
-                    errorCallback(error);
-                }
-
-                reject(error);
-
-                return;
-            }
-
-            self._ready = null;
-            
-            // Extend using appropriate driver
-            var driver;
-            switch (driverName) {
-                case self.INDEXEDDB:
-                    driver = indexeddb;
-                    break;
-                case self.LOCALSTORAGE:
-                    driver = localstorage;
-                    break;
-                case self.WEBSQL:
-                    driver = websql;
-            }
-
-            self._extend(driver);
-
-            // Return
-            if (callback) {
-                callback();
-            }
-
-            resolve();
-        });
-
-        return this._driverSet;
-    },
-
-    _getFirstSupportedDriver: function(drivers) {
-        var isArray = Array.isArray || function(arg) {
-            return Object.prototype.toString.call(arg) === '[object Array]';
-        };
-
-        if (drivers && isArray(drivers)) {
-            for (var i = 0; i < drivers.length; i++) {
-                var driver = drivers[i];
-
-                if (this.supports(driver)) {
-                    return driver;
-                }
-            }
-        }
-
-        return null;
-    },
-
-    supports: function(driverName) {
-        return !!driverSupport[driverName];
-    },
-
-    ready: function(callback) {
-        var ready = new Promise(function(resolve, reject) {
-            localForage._driverSet.then(function() {
-                if (localForage._ready === null) {
-                    localForage._ready = localForage._initStorage(
-                        localForage._config);
-                }
-
-                localForage._ready.then(resolve, reject);
-            }, reject);
-        });
-
-        ready.then(callback, callback);
-
-        return ready;
-    },
-
-    _extend: function(libraryMethodsAndProperties) {
-        for (var i in libraryMethodsAndProperties) {
-            if (libraryMethodsAndProperties.hasOwnProperty(i)) {
-                this[i] = libraryMethodsAndProperties[i];
-            }
-        }
-    }
-};
-
-// Check to see if IndexedDB is available and if it is the latest
-// implementation; it's our preferred backend library. We use "_spec_test"
-// as the name of the database because it's not the one we'll operate on,
-// but it's useful to make sure its using the right spec.
-// See: https://github.com/mozilla/localForage/issues/128
-var driverSupport = (function(_this) {
-    // Initialize IndexedDB; fall back to vendor-prefixed versions
-    // if needed.
-    var indexedDB = indexedDB || _this.indexedDB || _this.webkitIndexedDB ||
-                    _this.mozIndexedDB || _this.OIndexedDB ||
-                    _this.msIndexedDB;
-
-    var result = {};
-
-    result[localForage.WEBSQL] = !!_this.openDatabase;
-    result[localForage.INDEXEDDB] = !!(
-        indexedDB &&
-        typeof indexedDB.open === 'function' &&
-        indexedDB.open('_localforage_spec_test', 1)
-                 .onupgradeneeded === null
-    );
-
-    result[localForage.LOCALSTORAGE] = !!(function() {
-        try {
-            return (localStorage &&
-                    typeof localStorage.setItem === 'function');
-        } catch (e) {
-            return false;
-        }
-    })();
-
-    return result;
-})(window);
-
-function callWhenReady(libraryMethod) {
-    localForage[libraryMethod] = function() {
-        var _args = arguments;
-        return localForage.ready().then(function() {
-            return localForage[libraryMethod].apply(localForage, _args);
-        });
-    };
-}
-
-// Add a stub for each driver API method that delays the call to the
-// corresponding driver method until localForage is ready. These stubs will
-// be replaced by the driver methods as soon as the driver is loaded, so
-// there is no performance impact.
-for (var i = 0; i < LibraryMethods.length; i++) {
-    callWhenReady(LibraryMethods[i]);
-}
-
-localForage.setDriver(DEFAULT_DRIVER_ORDER);
-
-},{"./drivers/indexeddb":6,"./drivers/localstorage":7,"./drivers/websql":8,"promise":4}],2:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            var source = ev.source;
-            if ((source === window || source === null) && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}],3:[function(require,module,exports){
-'use strict';
-
-var asap = require('asap')
-
-module.exports = Promise
-function Promise(fn) {
-  if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new')
-  if (typeof fn !== 'function') throw new TypeError('not a function')
-  var state = null
-  var value = null
-  var deferreds = []
-  var self = this
-
-  this.then = function(onFulfilled, onRejected) {
-    return new Promise(function(resolve, reject) {
-      handle(new Handler(onFulfilled, onRejected, resolve, reject))
-    })
-  }
-
-  function handle(deferred) {
-    if (state === null) {
-      deferreds.push(deferred)
-      return
-    }
-    asap(function() {
-      var cb = state ? deferred.onFulfilled : deferred.onRejected
-      if (cb === null) {
-        (state ? deferred.resolve : deferred.reject)(value)
-        return
-      }
-      var ret
-      try {
-        ret = cb(value)
-      }
-      catch (e) {
-        deferred.reject(e)
-        return
-      }
-      deferred.resolve(ret)
-    })
-  }
-
-  function resolve(newValue) {
-    try { //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
-      if (newValue === self) throw new TypeError('A promise cannot be resolved with itself.')
-      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
-        var then = newValue.then
-        if (typeof then === 'function') {
-          doResolve(then.bind(newValue), resolve, reject)
-          return
-        }
-      }
-      state = true
-      value = newValue
-      finale()
-    } catch (e) { reject(e) }
-  }
-
-  function reject(newValue) {
-    state = false
-    value = newValue
-    finale()
-  }
-
-  function finale() {
-    for (var i = 0, len = deferreds.length; i < len; i++)
-      handle(deferreds[i])
-    deferreds = null
-  }
-
-  doResolve(fn, resolve, reject)
-}
-
-
-function Handler(onFulfilled, onRejected, resolve, reject){
-  this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null
-  this.onRejected = typeof onRejected === 'function' ? onRejected : null
-  this.resolve = resolve
-  this.reject = reject
-}
-
-/**
- * Take a potentially misbehaving resolver function and make sure
- * onFulfilled and onRejected are only called once.
+ * Require the module at `name`.
  *
- * Makes no guarantees about asynchrony.
+ * @param {String} name
+ * @return {Object} exports
+ * @api public
  */
-function doResolve(fn, onFulfilled, onRejected) {
-  var done = false;
-  try {
-    fn(function (value) {
-      if (done) return
-      done = true
-      onFulfilled(value)
-    }, function (reason) {
-      if (done) return
-      done = true
-      onRejected(reason)
-    })
-  } catch (ex) {
-    if (done) return
-    done = true
-    onRejected(ex)
+
+function require(name) {
+  var module = require.modules[name];
+  if (!module) throw new Error('failed to require "' + name + '"');
+
+  if (!('exports' in module) && typeof module.definition === 'function') {
+    module.client = module.component = true;
+    module.definition.call(this, module.exports = {}, module);
+    delete module.definition;
   }
+
+  return module.exports;
 }
 
-},{"asap":5}],4:[function(require,module,exports){
+/**
+ * Registered modules.
+ */
+
+require.modules = {};
+
+/**
+ * Register module at `name` with callback `definition`.
+ *
+ * @param {String} name
+ * @param {Function} definition
+ * @api private
+ */
+
+require.register = function (name, definition) {
+  require.modules[name] = {
+    definition: definition
+  };
+};
+
+/**
+ * Define a module's exports immediately with `exports`.
+ *
+ * @param {String} name
+ * @param {Generic} exports
+ * @api private
+ */
+
+require.define = function (name, exports) {
+  require.modules[name] = {
+    exports: exports
+  };
+};
+require.register("johntron~asap@master", function (exports, module) {
+"use strict";
+
+// Use the fastest possible means to execute a task in a future turn
+// of the event loop.
+
+// linked list of tasks (single, with head node)
+var head = {task: void 0, next: null};
+var tail = head;
+var flushing = false;
+var requestFlush = void 0;
+var hasSetImmediate = typeof setImmediate === "function";
+var domain;
+
+if (typeof global != 'undefined') {
+	// Avoid shims from browserify.
+	// The existence of `global` in browsers is guaranteed by browserify.
+	var process = global.process;
+}
+
+// Note that some fake-Node environments,
+// like the Mocha test runner, introduce a `process` global.
+var isNodeJS = !!process && ({}).toString.call(process) === "[object process]";
+
+function flush() {
+    /* jshint loopfunc: true */
+
+    while (head.next) {
+        head = head.next;
+        var task = head.task;
+        head.task = void 0;
+
+        try {
+            task();
+
+        } catch (e) {
+            if (isNodeJS) {
+                // In node, uncaught exceptions are considered fatal errors.
+                // Re-throw them to interrupt flushing!
+
+                // Ensure continuation if an uncaught exception is suppressed
+                // listening process.on("uncaughtException") or domain("error").
+                requestFlush();
+
+                throw e;
+
+            } else {
+                // In browsers, uncaught exceptions are not fatal.
+                // Re-throw them asynchronously to avoid slow-downs.
+                setTimeout(function () {
+                    throw e;
+                }, 0);
+            }
+        }
+    }
+
+    flushing = false;
+}
+
+if (isNodeJS) {
+    // Node.js
+    requestFlush = function () {
+        // Ensure flushing is not bound to any domain.
+        var currentDomain = process.domain;
+        if (currentDomain) {
+            domain = domain || (1,require)("domain");
+            domain.active = process.domain = null;
+        }
+
+        // Avoid tick recursion - use setImmediate if it exists.
+        if (flushing && hasSetImmediate) {
+            setImmediate(flush);
+        } else {
+            process.nextTick(flush);
+        }
+
+        if (currentDomain) {
+            domain.active = process.domain = currentDomain;
+        }
+    };
+
+} else if (hasSetImmediate) {
+    // In IE10, or https://github.com/NobleJS/setImmediate
+    requestFlush = function () {
+        setImmediate(flush);
+    };
+
+} else if (typeof MessageChannel !== "undefined") {
+    // modern browsers
+    // http://www.nonblocking.io/2011/06/windownexttick.html
+    var channel = new MessageChannel();
+    // At least Safari Version 6.0.5 (8536.30.1) intermittently cannot create
+    // working message ports the first time a page loads.
+    channel.port1.onmessage = function () {
+        requestFlush = requestPortFlush;
+        channel.port1.onmessage = flush;
+        flush();
+    };
+    var requestPortFlush = function () {
+        // Opera requires us to provide a message payload, regardless of
+        // whether we use it.
+        channel.port2.postMessage(0);
+    };
+    requestFlush = function () {
+        setTimeout(flush, 0);
+        requestPortFlush();
+    };
+
+} else {
+    // old browsers
+    requestFlush = function () {
+        setTimeout(flush, 0);
+    };
+}
+
+function asap(task) {
+    if (isNodeJS && process.domain) {
+        task = process.domain.bind(task);
+    }
+
+    tail = tail.next = {task: task, next: null};
+
+    if (!flushing) {
+        requestFlush();
+        flushing = true;
+    }
+};
+
+module.exports = asap;
+
+});
+
+require.register("then~promise@5.0.0", function (exports, module) {
 'use strict';
 
 //This file contains then/promise specific extensions to the core promise API
 
-var Promise = require('./core.js')
-var asap = require('asap')
+var Promise = require("then~promise@5.0.0/core.js")
+var asap = require("johntron~asap@master")
 
 module.exports = Promise
 
@@ -595,136 +366,331 @@ Promise.prototype['catch'] = function (onRejected) {
   return this.then(null, onRejected);
 }
 
-},{"./core.js":3,"asap":5}],5:[function(require,module,exports){
-(function (process){
+});
 
-// Use the fastest possible means to execute a task in a future turn
-// of the event loop.
+require.register("then~promise@5.0.0/core.js", function (exports, module) {
+'use strict';
 
-// linked list of tasks (single, with head node)
-var head = {task: void 0, next: null};
-var tail = head;
-var flushing = false;
-var requestFlush = void 0;
-var isNodeJS = false;
+var asap = require("johntron~asap@master")
 
-function flush() {
-    /* jshint loopfunc: true */
+module.exports = Promise
+function Promise(fn) {
+  if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new')
+  if (typeof fn !== 'function') throw new TypeError('not a function')
+  var state = null
+  var value = null
+  var deferreds = []
+  var self = this
 
-    while (head.next) {
-        head = head.next;
-        var task = head.task;
-        head.task = void 0;
-        var domain = head.domain;
+  this.then = function(onFulfilled, onRejected) {
+    return new Promise(function(resolve, reject) {
+      handle(new Handler(onFulfilled, onRejected, resolve, reject))
+    })
+  }
 
-        if (domain) {
-            head.domain = void 0;
-            domain.enter();
+  function handle(deferred) {
+    if (state === null) {
+      deferreds.push(deferred)
+      return
+    }
+    asap(function() {
+      var cb = state ? deferred.onFulfilled : deferred.onRejected
+      if (cb === null) {
+        (state ? deferred.resolve : deferred.reject)(value)
+        return
+      }
+      var ret
+      try {
+        ret = cb(value)
+      }
+      catch (e) {
+        deferred.reject(e)
+        return
+      }
+      deferred.resolve(ret)
+    })
+  }
+
+  function resolve(newValue) {
+    try { //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+      if (newValue === self) throw new TypeError('A promise cannot be resolved with itself.')
+      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+        var then = newValue.then
+        if (typeof then === 'function') {
+          doResolve(then.bind(newValue), resolve, reject)
+          return
+        }
+      }
+      state = true
+      value = newValue
+      finale()
+    } catch (e) { reject(e) }
+  }
+
+  function reject(newValue) {
+    state = false
+    value = newValue
+    finale()
+  }
+
+  function finale() {
+    for (var i = 0, len = deferreds.length; i < len; i++)
+      handle(deferreds[i])
+    deferreds = null
+  }
+
+  doResolve(fn, resolve, reject)
+}
+
+
+function Handler(onFulfilled, onRejected, resolve, reject){
+  this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null
+  this.onRejected = typeof onRejected === 'function' ? onRejected : null
+  this.resolve = resolve
+  this.reject = reject
+}
+
+/**
+ * Take a potentially misbehaving resolver function and make sure
+ * onFulfilled and onRejected are only called once.
+ *
+ * Makes no guarantees about asynchrony.
+ */
+function doResolve(fn, onFulfilled, onRejected) {
+  var done = false;
+  try {
+    fn(function (value) {
+      if (done) return
+      done = true
+      onFulfilled(value)
+    }, function (reason) {
+      if (done) return
+      done = true
+      onRejected(reason)
+    })
+  } catch (ex) {
+    if (done) return
+    done = true
+    onRejected(ex)
+  }
+}
+
+});
+
+require.register("localforage", function (exports, module) {
+var Promise = require("then~promise@5.0.0");
+
+/**
+ * Drivers
+ */
+var indexeddb = require("localforage/src/drivers/indexeddb.js");
+var localstorage = require("localforage/src/drivers/localstorage.js");
+var websql = require("localforage/src/drivers/websql.js");
+
+/**
+ * Export
+ */
+var localForage = module.exports = {
+    INDEXEDDB: 'asyncStorage',
+    LOCALSTORAGE: 'localStorageWrapper',
+    WEBSQL: 'webSQLStorage',
+
+    _config: {
+        description: '',
+        name: 'localforage',
+        // Default DB size is _JUST UNDER_ 5MB, as it's the highest size
+        // we can use without a prompt.
+        size: 4980736,
+        storeName: 'keyvaluepairs',
+        version: 1.0
+    },
+
+    // Set any config values for localForage; can be called anytime before
+    // the first API call (e.g. `getItem`, `setItem`).
+    // We loop through options so we don't overwrite existing config
+    // values.
+    config: function(options) {
+        // If the options argument is an object, we use it to set values.
+        // Otherwise, we return either a specified config value or all
+        // config values.
+        if (typeof(options) === 'object') {
+            // If localforage is ready and fully initialized, we can't set
+            // any new configuration values. Instead, we return an error.
+            if (this._ready) {
+                return new Error("Can't call config() after localforage " +
+                                 "has been used.");
+            }
+
+            for (var i in options) {
+                this._config[i] = options[i];
+            }
+
+            return true;
+        } else if (typeof(options) === 'string') {
+            return this._config[options];
+        } else {
+            return this._config;
+        }
+    },
+
+    driver: function() {
+        return this._driver || null;
+    },
+
+    _ready: false,
+
+    _driverSet: null,
+
+    setDriver: function(drivers, callback, errorCallback) {
+        var self = this;
+
+        if (typeof drivers === 'string') {
+            drivers = [drivers];
         }
 
-        try {
-            task();
+        this._driverSet = new Promise(function(resolve, reject) {
+            var driverName = self._getFirstSupportedDriver(drivers);
 
-        } catch (e) {
-            if (isNodeJS) {
-                // In node, uncaught exceptions are considered fatal errors.
-                // Re-throw them synchronously to interrupt flushing!
+            if (!driverName) {
+                var error = new Error('No available storage method found.');
+                self._driverSet = Promise.reject(error);
 
-                // Ensure continuation if the uncaught exception is suppressed
-                // listening "uncaughtException" events (as domains does).
-                // Continue in next event to avoid tick recursion.
-                if (domain) {
-                    domain.exit();
-                }
-                setTimeout(flush, 0);
-                if (domain) {
-                    domain.enter();
+                if (errorCallback) {
+                    errorCallback(error);
                 }
 
-                throw e;
+                reject(error);
 
-            } else {
-                // In browsers, uncaught exceptions are not fatal.
-                // Re-throw them asynchronously to avoid slow-downs.
-                setTimeout(function() {
-                   throw e;
-                }, 0);
+                return;
+            }
+
+            self._ready = null;
+            
+            // Extend using appropriate driver
+            var driver;
+            switch (driverName) {
+                case self.INDEXEDDB:
+                    driver = indexeddb;
+                    break;
+                case self.LOCALSTORAGE:
+                    driver = localstorage;
+                    break;
+                case self.WEBSQL:
+                    driver = websql;
+            }
+
+            self._extend(driver);
+
+            // Return
+            if (callback) {
+                callback();
+            }
+
+            resolve();
+        });
+
+        return this._driverSet;
+    },
+
+    _getFirstSupportedDriver: function(drivers) {
+        var isArray = Array.isArray || function(arg) {
+            return Object.prototype.toString.call(arg) === '[object Array]';
+        };
+
+        if (drivers && isArray(drivers)) {
+            for (var i = 0; i < drivers.length; i++) {
+                var driver = drivers[i];
+
+                if (this.supports(driver)) {
+                    return driver;
+                }
             }
         }
 
-        if (domain) {
-            domain.exit();
+        return null;
+    },
+
+    supports: function(driverName) {
+        return !!driverSupport[driverName];
+    },
+
+    ready: function(callback) {
+        var ready = new Promise(function(resolve, reject) {
+            localForage._driverSet.then(function() {
+                if (localForage._ready === null) {
+                    localForage._ready = localForage._initStorage(
+                        localForage._config);
+                }
+
+                localForage._ready.then(resolve, reject);
+            }, reject);
+        });
+
+        ready.then(callback, callback);
+
+        return ready;
+    },
+
+    _extend: function(libraryMethodsAndProperties) {
+        for (var i in libraryMethodsAndProperties) {
+            if (libraryMethodsAndProperties.hasOwnProperty(i)) {
+                this[i] = libraryMethodsAndProperties[i];
+            }
         }
-    }
-
-    flushing = false;
-}
-
-if (typeof process !== "undefined" && process.nextTick) {
-    // Node.js before 0.9. Note that some fake-Node environments, like the
-    // Mocha test runner, introduce a `process` global without a `nextTick`.
-    isNodeJS = true;
-
-    requestFlush = function () {
-        process.nextTick(flush);
-    };
-
-} else if (typeof setImmediate === "function") {
-    // In IE10, Node.js 0.9+, or https://github.com/NobleJS/setImmediate
-    if (typeof window !== "undefined") {
-        requestFlush = setImmediate.bind(window, flush);
-    } else {
-        requestFlush = function () {
-            setImmediate(flush);
-        };
-    }
-
-} else if (typeof MessageChannel !== "undefined") {
-    // modern browsers
-    // http://www.nonblocking.io/2011/06/windownexttick.html
-    var channel = new MessageChannel();
-    channel.port1.onmessage = flush;
-    requestFlush = function () {
-        channel.port2.postMessage(0);
-    };
-
-} else {
-    // old browsers
-    requestFlush = function () {
-        setTimeout(flush, 0);
-    };
-}
-
-function asap(task) {
-    tail = tail.next = {
-        task: task,
-        domain: isNodeJS && process.domain,
-        next: null
-    };
-
-    if (!flushing) {
-        flushing = true;
-        requestFlush();
     }
 };
 
-module.exports = asap;
+// Check to see if IndexedDB is available and if it is the latest
+// implementation; it's our preferred backend library. We use "_spec_test"
+// as the name of the database because it's not the one we'll operate on,
+// but it's useful to make sure its using the right spec.
+// See: https://github.com/mozilla/localForage/issues/128
+var driverSupport = (function(_this) {
+    // Initialize IndexedDB; fall back to vendor-prefixed versions
+    // if needed.
+    var indexedDB = indexedDB || _this.indexedDB || _this.webkitIndexedDB ||
+                    _this.mozIndexedDB || _this.OIndexedDB ||
+                    _this.msIndexedDB;
 
+    var result = {};
 
-}).call(this,require('_process'))
-},{"_process":2}],6:[function(require,module,exports){
-// Exclude 'redefinition of {a}' from jshint as we are declaring a local var
-// that appears to conflict with the global namespace.
-// http://jslinterrors.com/redefinition-of-a
-/*jshint -W079 */
-/*jshint latedef:false */
+    result[localForage.WEBSQL] = !!_this.openDatabase;
+    result[localForage.INDEXEDDB] = !!(
+        indexedDB &&
+        typeof indexedDB.open === 'function' &&
+        indexedDB.open('_localforage_spec_test', 1)
+                 .onupgradeneeded === null
+    );
 
+    result[localForage.LOCALSTORAGE] = !!(function() {
+        try {
+            return (localStorage &&
+                    typeof localStorage.setItem === 'function');
+        } catch (e) {
+            return false;
+        }
+    })();
+
+    return result;
+})(window);
+
+var driverTestOrder = [
+    localForage.INDEXEDDB,
+    localForage.WEBSQL,
+    localForage.LOCALSTORAGE
+];
+
+localForage.setDriver(driverTestOrder);
+
+});
+
+require.register("localforage/src/drivers/indexeddb.js", function (exports, module) {
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
 // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
 
 // Promises!
-var Promise = require('promise');
+var Promise = require("then~promise@5.0.0");
 
 var db = null;
 var dbInfo = {};
@@ -736,7 +702,7 @@ var indexedDB = indexedDB || window.indexedDB || window.webkitIndexedDB ||
 
 // If IndexedDB isn't available, we get outta here!
 if (!indexedDB) {
-    indexedDB = null;
+    return;
 }
 
 // Open the IndexedDB database (automatically creates one if one didn't
@@ -848,7 +814,7 @@ function removeItem(key, callback) {
             // Normally IE won't like `.delete()` and will insist on
             // using `['delete']()`, but we have a build step that
             // fixes this for us now.
-            var req = store["delete"](key);
+            var req = store.delete(key);
             req.onsuccess = function() {
 
                 deferCallback(callback);
@@ -1025,7 +991,7 @@ function keys(callback) {
                 }
 
                 keys.push(cursor.key);
-                cursor["continue"]();
+                cursor.continue();
             };
 
             req.onerror = function() {
@@ -1063,20 +1029,15 @@ module.exports = {
     key: key,
     keys: keys
 };
-},{"promise":4}],7:[function(require,module,exports){
-// Exclude 'redefinition of {a}' from jshint as we are declaring a local var
-// that appears to conflict with the global namespace.
-// http://jslinterrors.com/redefinition-of-a
-/*jshint -W079 */
-/*jshint -W020 */
-/*jshint latedef:false */
+});
 
+require.register("localforage/src/drivers/localstorage.js", function (exports, module) {
 // If IndexedDB isn't available, we'll fall back to localStorage.
 // Note that this will have considerable performance and storage
 // side-effects (all data will be serialized on save and only data that
 // can be converted to a string via `JSON.stringify()` will be saved).
 
-var Promise = require('promise');
+var Promise = require("then~promise@5.0.0");
 
 var keyPrefix = '';
 var dbInfo = {};
@@ -1089,12 +1050,17 @@ var localStorage = null;
 // `if (window.chrome && window.chrome.runtime)` code.
 // See: https://github.com/mozilla/localForage/issues/68
 try {
-    // If localStorage is available, initialize localStorage and create a 
-    // variable to use throughout the code.
-    if (window.localStorage && ('setItem' in window.localStorage)) {
-        localStorage = window.localStorage;
+    // If localStorage isn't available, we get outta here!
+    // This should be inside a try catch
+    if (!window.localStorage || !('setItem' in window.localStorage)) {
+        return;
     }
-} catch (e) {}
+    // Initialize localStorage and create a variable to use throughout
+    // the code.
+    localStorage = window.localStorage;
+} catch (e) {
+    return;
+}
 
 // Config the localStorage backend, using options set in the config.
 function _initStorage(options) {
@@ -1473,13 +1439,9 @@ module.exports = {
     key: key,
     keys: keys
 };
-},{"promise":4}],8:[function(require,module,exports){
-// Exclude 'redefinition of {a}' from jshint as we are declaring a local var
-// that appears to conflict with the global namespace.
-// http://jslinterrors.com/redefinition-of-a
-/*jshint -W079 */
-/*jshint latedef:false */
+});
 
+require.register("localforage/src/drivers/websql.js", function (exports, module) {
 /*
  * Includes code from:
  *
@@ -1490,7 +1452,7 @@ module.exports = {
  * Licensed under the MIT license.
  */
 
-var Promise = require('promise');
+var Promise = require("then~promise@5.0.0");
 
 // Sadly, the best way to save binary data in WebSQL is Base64 serializing
 // it, so this is how we store it to prevent very strange errors with less
@@ -1520,7 +1482,7 @@ var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.
 
 // If WebSQL methods aren't available, we can stop now.
 if (!openDatabase) {
-    openDatabase = null;
+    return;
 }
 
 // Open the WebSQL database (automatically creates one if one didn't
@@ -1977,5 +1939,6 @@ module.exports = {
     key: key,
     keys: keys
 };
-},{"promise":4}]},{},[1])(1)
 });
+
+require("localforage")
