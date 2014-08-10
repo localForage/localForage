@@ -246,7 +246,7 @@ DRIVERS.forEach(function(driverName) {
             it('saves binary data', function(done) {
                 var request = new XMLHttpRequest();
 
-                request.open('GET', './photo.jpg', true);
+                request.open('GET', '/test/photo.jpg', true);
                 request.responseType = 'arraybuffer';
 
                 // When the AJAX state changes, save the photo locally.

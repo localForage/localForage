@@ -3,40 +3,25 @@
   <head>
     <meta charset="utf-8">
     <title>localForage require.js Tests!</title>
-    <link rel="stylesheet" type="text/css" href="../node_modules/mocha/mocha.css">
+
+    <link rel="stylesheet" type="text/css"
+          href="/bower_components/mocha/mocha.css">
+
+    <script src="/bower_components/assert/assert.js"></script>
+    <script src="/bower_components/mocha/mocha.js"></script>
+    
+    <script src="/bower_components/expect/index.js"></script>
+
+    <!-- require.js  -->
+    <script src="/bower_components/requirejs/require.js"></script>
+
+    <!-- Modernizr  -->
+    <script src="/bower_components/modernizr/modernizr.js"></script>
+
+    <!-- Test runner -->
+    <script src="/test/runner.js"></script>
   </head>
   <body>
     <div id="mocha"></div>
-
-    <!-- test harness -->
-    <script src="../node_modules/mocha/mocha.js"></script>
-    <script src="../node_modules/expect.js/index.js"></script>
-    <script src="../node_modules/ym-modernizr/dist/modernizr-build.js"></script>
-    <script src="../node_modules/requirejs/require.js"></script>
-
-    <!-- specs -->
-    <script>mocha.setup('bdd')</script>
-
-    <!-- run test -->
-    <script>
-        require(['../dist/localforage.js'], function(localforage) {
-            window.localforage = localforage;
-
-            require([
-                './test.api.js',
-                './test.config.js',
-                './test.datatypes.js',
-                './test.drivers.js',
-                './test.iframes.js',
-                './test.webworkers.js'
-            ], function() {
-                if (window.mochaPhantomJS) {
-                    mochaPhantomJS.run();
-                } else {
-                    mocha.run();
-                }
-            });
-        });
-    </script>
   </body>
 </html>
