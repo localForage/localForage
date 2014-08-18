@@ -106,7 +106,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -162,7 +162,7 @@
                         });
                     }
                 });
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -186,7 +186,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -211,7 +211,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -240,7 +240,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -273,7 +273,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -304,7 +304,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
     }
 

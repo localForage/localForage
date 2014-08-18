@@ -74,7 +74,7 @@
                 }
 
                 resolve();
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -108,7 +108,7 @@
 
                     reject(e);
                 }
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -133,7 +133,7 @@
                     callback(result);
                 }
                 resolve(result);
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -153,7 +153,7 @@
                 }
 
                 resolve(keys);
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -169,7 +169,7 @@
                 }
 
                 resolve(result);
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -185,7 +185,7 @@
                 }
 
                 resolve();
-            }, reject);
+            }).catch(reject);
         });
     }
 
@@ -391,7 +391,7 @@
                         resolve(originalValue);
                     }
                 });
-            }, reject);
+            }).catch(reject);
         });
     }
 
