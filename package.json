@@ -42,5 +42,8 @@
   "licence": "Apache-2.0",
   "bugs": {
     "url": "http://github.com/mozilla/localForage/issues"
+  },
+  "dependencies": {
+    "promise": "^5.0.0"
   }
 }
