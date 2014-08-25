@@ -356,4 +356,4 @@
     } else {
         this.asyncStorage = asyncStorage;
     }
-}).call(this);
+}).call(window);

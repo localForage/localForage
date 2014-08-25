@@ -37,7 +37,7 @@
     "phantomjs": "^1.9.7-12",
     "uglify-js": "^2.3.x"
   },
-  "browser": "dist/localforage.js",
+  "browser": "src/localforage.js",
   "main": "dist/localforage.js",
   "licence": "Apache-2.0",
   "bugs": {

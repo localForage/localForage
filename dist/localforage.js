@@ -1045,7 +1045,7 @@ requireModule('promise/polyfill').polyfill();
     } else {
         this.asyncStorage = asyncStorage;
     }
-}).call(this);
+}).call(window);
 // If IndexedDB isn't available, we'll fall back to localStorage.
 // Note that this will have considerable performance and storage
 // side-effects (all data will be serialized on save and only data that
@@ -1465,7 +1465,7 @@ requireModule('promise/polyfill').polyfill();
     } else {
         this.localStorageWrapper = localStorageWrapper;
     }
-}).call(this);
+}).call(window);
 /*
  * Includes code from:
  *
@@ -1977,7 +1977,7 @@ requireModule('promise/polyfill').polyfill();
     } else {
         this.webSQLStorage = webSQLStorage;
     }
-}).call(this);
+}).call(window);
 (function() {
     'use strict';
 
@@ -2256,4 +2256,4 @@ requireModule('promise/polyfill').polyfill();
     } else {
         this.localforage = localForage;
     }
-}).call(this);
+}).call(window);
