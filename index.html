@@ -339,16 +339,16 @@ i.e. before you call <code class="prettyprint">getItem()</code> or <code class="
 
 <h2 id="setdriver">setDriver</h2>
 <pre class="highlight javascript"><span class="c1">// Force localStorage to be the backend driver.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">(</span><span class="s1">'localStorageWrapper'</span><span class="p">);</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">(</span><span class="s1">localforage.LOCALSTORAGE</span><span class="p">);</span>
 
 <span class="c1">// Supply a list of drivers, in order of preference.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">([</span><span class="s1">'WebSQLStorage'</span><span class="p">,</span> <span class="s1">'localStorageWrapper'</span><span class="p">]);</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">([</span><span class="s1">localforage.WEBSQL</span><span class="p">,</span> <span class="s1">localforage.INDEXEDDB</span><span class="p">]);</span>
 </pre>
 <pre class="highlight coffeescript"><span class="c1"># Force localStorage to be the backend driver.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="s">"localStorageWrapper"</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="s">localforage.LOCALSTORAGE</span>
 
 <span class="c1"># Supply a list of drivers, in order of preference.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="p">[</span><span class="s">"WebSQLStorage"</span><span class="p">,</span> <span class="s">"localStorageWrapper"</span><span class="p">]</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="p">[</span><span class="s">localforage.WEBSQL</span><span class="p">,</span> <span class="s">localforage.INDEXEDDB</span><span class="p">]</span>
 </pre>
 
 <p><code class="prettyprint">setDriver(driverName)</code><br>
@@ -366,7 +366,13 @@ order:</p>
 </ol>
 
 <p>If you would like to force usage of a particular driver you can use
-<code class="prettyprint">setDriver()</code>.</p>
+<code class="prettyprint">setDriver()</code> with one or more of the following parameters.</p>
+
+<ul>
+<li>localforage.INDEXEDDB</li>
+<li>localforage.WEBSQL</li>
+<li>localforage.LOCALSTORAGE</li>
+</ul>
 
 <p><aside class="notice">
   If the backend you&rsquo;re trying to load isn&rsquo;t available on the user&rsquo;s browser,
