@@ -310,18 +310,18 @@ i.e. before you call `getItem()` or `length()`, etc.)
 
 ```javascript
 // Force localStorage to be the backend driver.
-localforage.setDriver('localStorageWrapper');
+localforage.setDriver(localforage.LOCALSTORAGE);
 
 // Supply a list of drivers, in order of preference.
-localforage.setDriver(['WebSQLStorage', 'localStorageWrapper']);
+localforage.setDriver([localforage.WEBSQL, localforage.INDEXEDDB]);
 ```
 
 ```coffeescript
 # Force localStorage to be the backend driver.
-localforage.setDriver "localStorageWrapper"
+localforage.setDriver localforage.LOCALSTORAGE
 
 # Supply a list of drivers, in order of preference.
-localforage.setDriver ["WebSQLStorage", "localStorageWrapper"]
+localforage.setDriver [localforage.WEBSQL, localforage.INDEXEDDB]
 ```
 
 `setDriver(driverName)`<br>
@@ -337,7 +337,11 @@ order:
 3. localStorage
 
 If you would like to force usage of a particular driver you can use
-`setDriver()`.
+`setDriver()` with one or more of the following parameters.
+
+* localforage.INDEXEDDB
+* localforage.WEBSQL
+* localforage.LOCALSTORAGE
 
 <aside class="notice">
   If the backend you're trying to load isn't available on the user's browser,
