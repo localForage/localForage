@@ -162,10 +162,6 @@
                     var error = new Error('No available storage method found.');
                     self._driverSet = Promise.reject(error);
 
-                    if (errorCallback) {
-                        errorCallback(error);
-                    }
-
                     reject(error);
 
                     return;
@@ -179,9 +175,6 @@
                     require([driverName], function(lib) {
                         self._extend(lib);
 
-                        if (callback) {
-                            callback();
-                        }
                         resolve();
                     });
 
@@ -205,12 +198,10 @@
                     self._extend(_this[driverName]);
                 }
 
-                if (callback) {
-                    callback();
-                }
-
                 resolve();
             });
+
+            this._driverSet.then(callback, errorCallback);
 
             return this._driverSet;
         },

@@ -80,7 +80,7 @@
 
     function getItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     t.executeSql('SELECT * FROM ' + dbInfo.storeName +
@@ -93,26 +93,22 @@
                             result = _deserialize(result);
                         }
 
-                        if (callback) {
-                            callback(result);
-                        }
-
                         resolve(result);
                     }, function(t, error) {
-                        if (callback) {
-                            callback(null, error);
-                        }
 
                         reject(error);
                     });
                 });
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function setItem(key, value, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 // The localStorage API doesn't return undefined values in an
                 // "expected" way, so undefined is always cast to null in all
@@ -131,15 +127,9 @@
                         db.transaction(function(t) {
                             t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName +
                                          ' (key, value) VALUES (?, ?)', [key, value], function() {
-                                if (callback) {
-                                    callback(originalValue);
-                                }
 
                                 resolve(originalValue);
                             }, function(t, error) {
-                                if (callback) {
-                                    callback(null, error);
-                                }
 
                                 reject(error);
                             });
@@ -153,10 +143,6 @@
                                 // be called.
                                 //
                                 // TODO: Try to re-run the transaction.
-                                if (callback) {
-                                    callback(null, sqlError);
-                                }
-
                                 reject(sqlError);
                             }
                         });
@@ -164,62 +150,59 @@
                 });
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function removeItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName +
                                  ' WHERE key = ?', [key], function() {
-                        if (callback) {
-                            callback();
-                        }
 
                         resolve();
                     }, function(t, error) {
-                        if (callback) {
-                            callback(error);
-                        }
 
                         reject(error);
                     });
                 });
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Deletes every item in the table.
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName, [], function() {
-                        if (callback) {
-                            callback();
-                        }
 
                         resolve();
                     }, function(t, error) {
-                        if (callback) {
-                            callback(error);
-                        }
 
                         reject(error);
                     });
                 });
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Does a simple `COUNT(key)` to get the number of items stored in
     // localForage.
     function length(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     // Ahhh, SQL makes this one soooooo easy.
@@ -227,21 +210,17 @@
                                  dbInfo.storeName, [], function(t, results) {
                         var result = results.rows.item(0).c;
 
-                        if (callback) {
-                            callback(result);
-                        }
-
                         resolve(result);
                     }, function(t, error) {
-                        if (callback) {
-                            callback(null, error);
-                        }
 
                         reject(error);
                     });
                 });
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Return the key located at key index X; essentially gets the key from a
@@ -253,33 +232,29 @@
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName +
                                  ' WHERE id = ? LIMIT 1', [n + 1], function(t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;
 
-                        if (callback) {
-                            callback(result);
-                        }
-
                         resolve(result);
                     }, function(t, error) {
-                        if (callback) {
-                            callback(null, error);
-                        }
 
                         reject(error);
                     });
                 });
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function keys(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName, [],
@@ -291,21 +266,17 @@
                             keys.push(results.rows.item(i).key);
                         }
 
-                        if (callback) {
-                            callback(keys);
-                        }
-
                         resolve(keys);
                     }, function(t, error) {
-                        if (callback) {
-                            callback(null, error);
-                        }
 
                         reject(error);
                     });
                 });
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Converts a buffer to a string to store, serialized, in the backend
@@ -485,6 +456,14 @@
 
                 callback(null, e);
             }
+        }
+    }
+
+    function executeCallback(promise, callback) {
+        if (callback) {
+            promise.then(callback, function(error) {
+                callback(null, error);
+            });
         }
     }
 

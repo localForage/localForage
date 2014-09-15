@@ -49,7 +49,7 @@
 
     function getItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
@@ -61,25 +61,22 @@
                         value = null;
                     }
 
-                    deferCallback(callback,value);
-
                     resolve(value);
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
             }, reject);
         });
+
+        executeDeferedCallback(promise, callback);
+        return promise;
     }
 
     function setItem(key, value, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
@@ -104,24 +101,21 @@
                         value = null;
                     }
 
-                    deferCallback(callback, value);
-
                     resolve(value);
                 };
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
             }, reject);
         });
+
+        executeDeferedCallback(promise, callback);
+        return promise;
     }
 
     function removeItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
@@ -133,17 +127,10 @@
                 // fixes this for us now.
                 var req = store.delete(key);
                 req.onsuccess = function() {
-
-                    deferCallback(callback);
-
                     resolve();
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(req.error);
-                    }
-
                     reject(req.error);
                 };
 
@@ -153,77 +140,64 @@
                 req.onabort = function(event) {
                     var error = event.target.error;
                     if (error === 'QuotaExceededError') {
-                        if (callback) {
-                            callback(error);
-                        }
-
                         reject(error);
                     }
                 };
             }, reject);
         });
+    
+        executeDeferedCallback(promise, callback);
+        return promise;
     }
 
     function clear(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
                 var req = store.clear();
 
                 req.onsuccess = function() {
-                    deferCallback(callback);
-
                     resolve();
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
             }, reject);
         });
+
+        executeDeferedCallback(promise, callback);
+        return promise;
     }
 
     function length(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
                 var req = store.count();
 
                 req.onsuccess = function() {
-                    if (callback) {
-                        callback(req.result);
-                    }
-
                     resolve(req.result);
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function key(n, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             if (n < 0) {
-                if (callback) {
-                    callback(null);
-                }
-
                 resolve(null);
 
                 return;
@@ -239,10 +213,6 @@
                     var cursor = req.result;
                     if (!cursor) {
                         // this means there weren't enough keys
-                        if (callback) {
-                            callback(null);
-                        }
-
                         resolve(null);
 
                         return;
@@ -251,10 +221,6 @@
                     if (n === 0) {
                         // We have the first key, return it if that's what they
                         // wanted.
-                        if (callback) {
-                            callback(cursor.key);
-                        }
-
                         resolve(cursor.key);
                     } else {
                         if (!advanced) {
@@ -264,30 +230,25 @@
                             cursor.advance(n);
                         } else {
                             // When we get here, we've got the nth key.
-                            if (callback) {
-                                callback(cursor.key);
-                            }
-
                             resolve(cursor.key);
                         }
                     }
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function keys(callback) {
         var _this = this;
 
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
@@ -299,10 +260,6 @@
                     var cursor = req.result;
 
                     if (!cursor) {
-                        if (callback) {
-                            callback(keys);
-                        }
-
                         resolve(keys);
                         return;
                     }
@@ -312,14 +269,31 @@
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+    function executeCallback(promise, callback) {
+        if (callback) {
+            promise.then(callback, function(error) {
+                callback(null, error);
+            });
+        }
+    }
+
+    function executeDeferedCallback(promise, callback) {
+        if (callback) {
+            promise.then(function(result) {
+                deferCallback(callback, result);
+            }, function(error) {
+                    callback(null, error);
+            });
+        }
     }
 
     // Under Chrome the callback is called before the changes (save, clear)
