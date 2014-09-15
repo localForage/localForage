@@ -438,45 +438,21 @@ DRIVERS.forEach(function(driverName) {
             done();
         });
 
-        it('rejects getItem() promise', function(done) {
-            localforage.getItem().then(null, function(/*err*/) {
-                done();
-            });
-        });
+        var driverApiMethods = [
+            'getItem',
+            'setItem',
+            'clear',
+            'length',
+            'removeItem',
+            'key',
+            'keys'
+        ];
 
-        it('rejects setItem() promise', function(done) {
-            localforage.setItem().then(null, function(/*err*/) {
-                done();
-            });
-        });
-
-        it('rejects clear() promise', function(done) {
-            localforage.clear().then(null, function(/*err*/) {
-                done();
-            });
-        });
-
-        it('rejects length() promise', function(done) {
-            localforage.length().then(null, function(/*err*/) {
-                done();
-            });
-        });
-
-        it('rejects removeItem() promise', function(done) {
-            localforage.removeItem().then(null, function(/*err*/) {
-                done();
-            });
-        });
-
-        it('rejects key() promise', function(done) {
-            localforage.key().then(null, function(/*err*/) {
-                done();
-            });
-        });
-
-        it('rejects keys() promise', function(done) {
-            localforage.keys().then(null, function(/*err*/) {
-                done();
+        driverApiMethods.forEach(function(methodName) {
+            it('rejects ' + methodName + '() promise', function(done) {
+                localforage[methodName]().then(null, function(/*err*/) {
+                    done();
+                });
             });
         });
     });
