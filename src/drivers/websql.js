@@ -99,7 +99,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -148,7 +148,7 @@
                         });
                     }
                 });
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -169,7 +169,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -191,7 +191,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -216,7 +216,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -245,7 +245,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -272,7 +272,7 @@
                         reject(error);
                     });
                 });
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);

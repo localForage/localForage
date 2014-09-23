@@ -67,7 +67,7 @@
                 req.onerror = function() {
                     reject(req.error);
                 };
-            }, reject);
+            }).catch(reject);
         });
 
         executeDeferedCallback(promise, callback);
@@ -106,7 +106,7 @@
                 req.onerror = function() {
                     reject(req.error);
                 };
-            }, reject);
+            }).catch(reject);
         });
 
         executeDeferedCallback(promise, callback);
@@ -143,7 +143,7 @@
                         reject(error);
                     }
                 };
-            }, reject);
+            }).catch(reject);
         });
     
         executeDeferedCallback(promise, callback);
@@ -165,7 +165,7 @@
                 req.onerror = function() {
                     reject(req.error);
                 };
-            }, reject);
+            }).catch(reject);
         });
 
         executeDeferedCallback(promise, callback);
@@ -187,7 +187,7 @@
                 req.onerror = function() {
                     reject(req.error);
                 };
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -238,7 +238,7 @@
                 req.onerror = function() {
                     reject(req.error);
                 };
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -271,7 +271,7 @@
                 req.onerror = function() {
                     reject(req.error);
                 };
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);

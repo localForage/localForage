@@ -70,7 +70,7 @@
                 localStorage.clear();
 
                 resolve();
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -99,7 +99,7 @@
                 } catch (e) {
                     reject(e);
                 }
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -124,7 +124,7 @@
                 }
 
                 resolve(result);
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -143,7 +143,7 @@
                 }
 
                 resolve(keys);
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -158,7 +158,7 @@
                 var result = localStorage.length;
 
                 resolve(result);
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -173,7 +173,7 @@
                 localStorage.removeItem(keyPrefix + key);
 
                 resolve();
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -370,7 +370,7 @@
                         resolve(originalValue);
                     }
                 });
-            }, reject);
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);

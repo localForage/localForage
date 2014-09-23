@@ -140,7 +140,7 @@
                     }
 
                     localForage._ready.then(resolve, reject);
-                }, reject);
+                }).catch(reject);
             });
 
             ready.then(callback, callback);
