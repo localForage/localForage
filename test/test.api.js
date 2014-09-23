@@ -419,6 +419,72 @@ DRIVERS.forEach(function(driverName) {
         });
     });
 
+    describe(driverName + ' driver when the callback throws an Error', function() {
+        'use strict';
+        
+        var testObj = {
+            throwFunc: function() {
+                testObj.throwFuncCalls++;
+                throw new Error('Thrown test error');
+            },
+            throwFuncCalls: 0
+        };
+
+        beforeEach(function(done) {
+            testObj.throwFuncCalls = 0;
+            done();
+        });
+
+        it('resolves the promise of getItem()', function(done) {
+            localforage.getItem('key', testObj.throwFunc).then(function() {
+                expect(testObj.throwFuncCalls).to.be(1);
+                done();
+            });
+        });
+
+        it('resolves the promise of setItem()', function(done) {
+            localforage.setItem('key', 'test', testObj.throwFunc).then(function() {
+                expect(testObj.throwFuncCalls).to.be(1);
+                done();
+            });
+        });
+
+        it('resolves the promise of clear()', function(done) {
+            localforage.clear(testObj.throwFunc).then(function() {
+                expect(testObj.throwFuncCalls).to.be(1);
+                done();
+            });
+        });
+
+        it('resolves the promise of length()', function(done) {
+            localforage.length(testObj.throwFunc).then(function() {
+                expect(testObj.throwFuncCalls).to.be(1);
+                done();
+            });
+        });
+
+        it('resolves the promise of removeItem()', function(done) {
+            localforage.removeItem('key', testObj.throwFunc).then(function() {
+                expect(testObj.throwFuncCalls).to.be(1);
+                done();
+            });
+        });
+
+        it('resolves the promise of key()', function(done) {
+            localforage.key('key', testObj.throwFunc).then(function() {
+                expect(testObj.throwFuncCalls).to.be(1);
+                done();
+            });
+        });
+
+        it('resolves the promise of keys()', function(done) {
+            localforage.keys(testObj.throwFunc).then(function() {
+                expect(testObj.throwFuncCalls).to.be(1);
+                done();
+            });
+        });
+    });
+
     describe(driverName + ' driver when ready() gets rejected', function() {
         'use strict';
 

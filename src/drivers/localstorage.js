@@ -65,17 +65,16 @@
     // the app's key/value store!
     function clear(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 localStorage.clear();
-
-                if (callback) {
-                    callback();
-                }
 
                 resolve();
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Retrieve an item from the store. Unlike the original async_storage
@@ -83,7 +82,7 @@
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 try {
                     var result = localStorage.getItem(keyPrefix + key);
@@ -96,26 +95,21 @@
                         result = _deserialize(result);
                     }
 
-                    if (callback) {
-                        callback(result);
-                    }
-
                     resolve(result);
                 } catch (e) {
-                    if (callback) {
-                        callback(null, e);
-                    }
-
                     reject(e);
                 }
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var result;
                 try {
@@ -129,17 +123,17 @@
                     result = result.substring(keyPrefix.length);
                 }
 
-                if (callback) {
-                    callback(result);
-                }
                 resolve(result);
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function keys(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var length = localStorage.length;
                 var keys = [];
@@ -148,45 +142,42 @@
                     keys.push(localStorage.key(i).substring(keyPrefix.length));
                 }
 
-                if (callback) {
-                    callback(keys);
-                }
-
                 resolve(keys);
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var result = localStorage.length;
-
-                if (callback) {
-                    callback(result);
-                }
 
                 resolve(result);
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 localStorage.removeItem(keyPrefix + key);
-
-                if (callback) {
-                    callback();
-                }
 
                 resolve();
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Deserialize data we've inserted into a value column/field. We place
@@ -350,7 +341,7 @@
     // saved, or something like that.
     function setItem(key, value, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 // Convert undefined values to null.
                 // https://github.com/mozilla/localForage/pull/42
@@ -363,10 +354,6 @@
 
                 _serialize(value, function(value, error) {
                     if (error) {
-                        if (callback) {
-                            callback(null, error);
-                        }
-
                         reject(error);
                     } else {
                         try {
@@ -376,23 +363,26 @@
                             // TODO: Make this a specific error/event.
                             if (e.name === 'QuotaExceededError' ||
                                 e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-                                if (callback) {
-                                    callback(null, e);
-                                }
-
                                 reject(e);
                             }
                         }
-
-                        if (callback) {
-                            callback(originalValue);
-                        }
-
+                        
                         resolve(originalValue);
                     }
                 });
             }, reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+    function executeCallback(promise, callback) {
+        if (callback) {
+            promise.then(callback, function(error) {
+                callback(null, error);
+            });
+        }
     }
 
     var localStorageWrapper = {
