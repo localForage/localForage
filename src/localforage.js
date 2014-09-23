@@ -267,4 +267,4 @@
     } else {
         this.localforage = localForage;
     }
-}).call(this);
+}).call(window);

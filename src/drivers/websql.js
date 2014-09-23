@@ -488,4 +488,4 @@
     } else {
         this.webSQLStorage = webSQLStorage;
     }
-}).call(this);
+}).call(window);

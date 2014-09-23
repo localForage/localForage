@@ -407,4 +407,4 @@
     } else {
         this.localStorageWrapper = localStorageWrapper;
     }
-}).call(this);
+}).call(window);
