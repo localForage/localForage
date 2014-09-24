@@ -60,12 +60,16 @@
         var result = {};
 
         result[DriverType.WEBSQL] = !!_this.openDatabase;
-        result[DriverType.INDEXEDDB] = !!(
-            indexedDB &&
-            typeof indexedDB.open === 'function' &&
-            indexedDB.open('_localforage_spec_test', 1)
-                     .onupgradeneeded === null
-        );
+        result[DriverType.INDEXEDDB] = !!(function() {
+            try {
+                return (indexedDB &&
+                        typeof indexedDB.open === 'function' &&
+                        indexedDB.open('_localforage_spec_test', 1)
+                        .onupgradeneeded === null);
+            } catch (e) {
+                return false;
+            }
+        })();
 
         result[DriverType.LOCALSTORAGE] = !!(function() {
             try {
