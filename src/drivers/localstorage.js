@@ -5,8 +5,6 @@
 (function() {
     'use strict';
 
-    var keyPrefix = '';
-    var dbInfo = {};
     // Promises!
     var Promise = (typeof module !== 'undefined' && module.exports) ?
                   require('promise') : this.Promise;
@@ -32,15 +30,16 @@
 
     // Config the localStorage backend, using options set in the config.
     function _initStorage(options) {
+        var dbInfo = {};
         if (options) {
             for (var i in options) {
                 dbInfo[i] = options[i];
             }
         }
 
-        keyPrefix = dbInfo.name + '/';
+        dbInfo.keyPrefix = dbInfo.name + '/';
 
-        return Promise.resolve();
+        return Promise.resolve(dbInfo);
     }
 
     var SERIALIZED_MARKER = '__lfsc__:';
@@ -85,7 +84,8 @@
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 try {
-                    var result = localStorage.getItem(keyPrefix + key);
+                    var dbInfo = _this._dbInfo;
+                    var result = localStorage.getItem(dbInfo.keyPrefix + key);
 
                     // If a result was found, parse it from the serialized
                     // string into a JS object. If result isn't truthy, the key
@@ -111,6 +111,7 @@
         var _this = this;
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
+                var dbInfo = _this._dbInfo;
                 var result;
                 try {
                     result = localStorage.key(n);
@@ -120,7 +121,7 @@
 
                 // Remove the prefix from the key, if a key is found.
                 if (result) {
-                    result = result.substring(keyPrefix.length);
+                    result = result.substring(dbInfo.keyPrefix.length);
                 }
 
                 resolve(result);
@@ -135,11 +136,12 @@
         var _this = this;
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
+                var dbInfo = _this._dbInfo;
                 var length = localStorage.length;
                 var keys = [];
 
                 for (var i = 0; i < length; i++) {
-                    keys.push(localStorage.key(i).substring(keyPrefix.length));
+                    keys.push(localStorage.key(i).substring(dbInfo.keyPrefix.length));
                 }
 
                 resolve(keys);
@@ -170,7 +172,8 @@
         var _this = this;
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                localStorage.removeItem(keyPrefix + key);
+                var dbInfo = _this._dbInfo;
+                localStorage.removeItem(dbInfo.keyPrefix + key);
 
                 resolve();
             }).catch(reject);
@@ -357,7 +360,8 @@
                         reject(error);
                     } else {
                         try {
-                            localStorage.setItem(keyPrefix + key, value);
+                            var dbInfo = _this._dbInfo;
+                            localStorage.setItem(dbInfo.keyPrefix + key, value);
                         } catch (e) {
                             // localStorage capacity exceeded.
                             // TODO: Make this a specific error/event.

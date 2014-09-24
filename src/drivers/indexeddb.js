@@ -9,9 +9,6 @@
     var Promise = (typeof module !== 'undefined' && module.exports) ?
                   require('promise') : this.Promise;
 
-    var db = null;
-    var dbInfo = {};
-
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
     var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
                     this.mozIndexedDB || this.OIndexedDB ||
@@ -25,6 +22,10 @@
     // Open the IndexedDB database (automatically creates one if one didn't
     // previously exist), using any options set in the config.
     function _initStorage(options) {
+        var dbInfo = {
+            db: null
+        };
+
         if (options) {
             for (var i in options) {
                 dbInfo[i] = options[i];
@@ -41,8 +42,8 @@
                 openreq.result.createObjectStore(dbInfo.storeName);
             };
             openreq.onsuccess = function() {
-                db = openreq.result;
-                resolve();
+                dbInfo.db = openreq.result;
+                resolve(dbInfo);
             };
         });
     }
@@ -51,7 +52,8 @@
         var _this = this;
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readonly')
+                var dbInfo = _this._dbInfo;
+                var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
                 var req = store.get(key);
 
@@ -78,7 +80,8 @@
         var _this = this;
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readwrite')
+                var dbInfo = _this._dbInfo;
+                var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
 
                 // The reason we don't _save_ null is because IE 10 does
@@ -117,7 +120,8 @@
         var _this = this;
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readwrite')
+                var dbInfo = _this._dbInfo;
+                var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
 
                 // We use a Grunt task to make this safe for IE and some
@@ -154,7 +158,8 @@
         var _this = this;
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readwrite')
+                var dbInfo = _this._dbInfo;
+                var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
                 var req = store.clear();
 
@@ -176,7 +181,8 @@
         var _this = this;
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readonly')
+                var dbInfo = _this._dbInfo;
+                var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
                 var req = store.count();
 
@@ -204,7 +210,8 @@
             }
 
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readonly')
+                var dbInfo = _this._dbInfo;
+                var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
 
                 var advanced = false;
@@ -250,7 +257,8 @@
 
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                var store = db.transaction(dbInfo.storeName, 'readonly')
+                var dbInfo = _this._dbInfo;
+                var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
 
                 var req = store.openCursor();

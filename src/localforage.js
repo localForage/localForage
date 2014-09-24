@@ -124,6 +124,7 @@
         this._config = extend({}, DefaultConfig, options);
         this._driverSet = null;
         this._ready = false;
+        this._dbInfo = null;
 
         // Add a stub for each driver API method that delays the call to the
         // corresponding driver method until localForage is ready. These stubs will
@@ -175,8 +176,10 @@
         var ready = new Promise(function(resolve, reject) {
             self._driverSet.then(function() {
                 if (self._ready === null) {
-                    self._ready = self._initStorage(
-                        self._config);
+                    self._ready = self._initStorage(self._config)
+                        .then(function(dbInfo) {
+                            self._dbInfo = dbInfo;
+                        });
                 }
 
                 self._ready.then(resolve, reject);
@@ -205,6 +208,7 @@
                 return;
             }
 
+            self._dbInfo = null;
             self._ready = null;
 
             // We allow localForage to be declared as a module or as a
