@@ -116,6 +116,7 @@ DRIVERS.forEach(function(driverName) {
             expect(localforage.key).to.be.a('function');
             expect(localforage.setDriver).to.be.a('function');
             expect(localforage.ready).to.be.a('function');
+            expect(localforage.createInstance).to.be.a('function');
         });
 
         // Make sure we don't support bogus drivers.
@@ -382,6 +383,79 @@ DRIVERS.forEach(function(driverName) {
                 expect(length).to.be(1);
 
                 done();
+            });
+        });
+    });
+
+    
+    describe(driverName + ' driver instance', function() {
+        'use strict';
+        var localforage2 = null;
+        var Promise;
+
+        before(function(done) {
+            Promise = window.Promise || require('promise');
+
+            localforage2 = localforage.createInstance({
+                name: 'storage2',
+                storeName: 'storagename2'
+            });
+
+            Promise.all([
+                localforage.setDriver(driverName),
+                localforage2.setDriver(driverName)
+            ])
+            .then(function() {
+                done();
+            });
+        });
+
+        beforeEach(function(done) {
+            Promise.all([
+                localforage.clear(),
+                localforage2.clear()
+            ]).then(function() {
+                done();
+            });
+        });
+
+        it('is not be able to access values of other instances', function(done) {
+            Promise.all([
+                localforage.setItem('key1', 'value1a'),
+                localforage2.setItem('key2', 'value2a')
+            ]).then(function() {
+                return Promise.all([
+                    localforage.getItem('key2').then(function(value) {
+                        expect(value).to.be(null);
+                    }),
+                    localforage2.getItem('key1').then(function(value) {
+                        expect(value).to.be(null);
+                    })
+                ]);
+            }).then(function() {
+                done();
+            }, function(errors) {
+                done(new Error(errors));
+            });
+        });
+
+        it('retrieves the proper value when using the same key with other instances', function(done) {
+            Promise.all([
+                localforage.setItem('key', 'value1'),
+                localforage2.setItem('key', 'value2')
+            ]).then(function() {
+                return Promise.all([
+                    localforage.getItem('key').then(function(value) {
+                        expect(value).to.be('value1');
+                    }),
+                    localforage2.getItem('key').then(function(value) {
+                        expect(value).to.be('value2');
+                    })
+                ]);
+            }).then(function() {
+                done();
+            }, function(errors) {
+                done(new Error(errors));
             });
         });
     });
