@@ -2,7 +2,7 @@
   "name": "localforage",
   "version": "0.9.2",
   "main": [
-    "dist/localforage.min.js"
+    "dist/localforage.js"
   ],
   "ignore": [
     ".travis.yml",
