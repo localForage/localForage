@@ -98,7 +98,7 @@
             // we can use without a prompt.
             size: 4980736,
             storeName: 'keyvaluepairs',
-            version: 1.0
+            version: '1.0'
         },
         _driverSet: null,
         _ready: false,

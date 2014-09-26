@@ -18,7 +18,7 @@ describe('Config API', function() {
         expect(localforage.config('name')).to.be('localforage');
         expect(localforage.config('size')).to.be(4980736);
         expect(localforage.config('storeName')).to.be('keyvaluepairs');
-        expect(localforage.config('version')).to.be(1.0);
+        expect(localforage.config('version')).to.be('1.0');
     });
 
     it('returns error if API call was already made', function(done) {
@@ -27,7 +27,7 @@ describe('Config API', function() {
                 description: '123',
                 name: 'My Cool App',
                 storeName: 'storeFront',
-                version: 2.0
+                version: '2.0'
             });
 
             var error = "Error: Can't call config() after localforage " +
@@ -43,7 +43,7 @@ describe('Config API', function() {
             expect(localforage.config('name')).to.not.be('My Cool App');
             expect(localforage.config('size')).to.be(4980736);
             expect(localforage.config('storeName')).to.be('keyvaluepairs');
-            expect(localforage.config('version')).to.be(1.0);
+            expect(localforage.config('version')).to.be('1.0');
 
             done();
         });
@@ -54,7 +54,7 @@ describe('Config API', function() {
             description: 'The offline datastore for my cool app',
             name: 'My Cool App',
             storeName: 'storeFront',
-            version: 2.0
+            version: '2.0'
         });
 
         expect(localforage.config('description')).to.not.be('');
@@ -63,7 +63,7 @@ describe('Config API', function() {
         expect(localforage.config('name')).to.be('My Cool App');
         expect(localforage.config('size')).to.be(4980736);
         expect(localforage.config('storeName')).to.be('storeFront');
-        expect(localforage.config('version')).to.be(2.0);
+        expect(localforage.config('version')).to.be('2.0');
     });
 
     it('uses the config values in ' + localforage.driver(), function(done) {
@@ -71,7 +71,7 @@ describe('Config API', function() {
             description: 'The offline datastore for my cool app',
             name: 'My Cool App',
             storeName: 'storeFront',
-            version: 2.0
+            version: '2.0'
         });
 
         localforage.setItem('some key', 'some value').then(function(value) {
@@ -80,7 +80,7 @@ describe('Config API', function() {
                                  window.webkitIndexedDB ||
                                  window.mozIndexedDB || window.OIndexedDB ||
                                  window.msIndexedDB);
-                var req = indexedDB.open('My Cool App', 2.0);
+                var req = indexedDB.open('My Cool App', '2.0');
 
                 req.onsuccess = function() {
                     var dbValue = req.result
@@ -91,7 +91,7 @@ describe('Config API', function() {
                     done();
                 };
             } else if (localforage.driver() === localforage.WEBSQL) {
-                window.openDatabase('My Cool App', (2.0).toString(),
+                window.openDatabase('My Cool App', '2.0',
                                     '', 4980736).transaction(function(t) {
                     t.executeSql('SELECT * FROM storeFront WHERE key = ? ' +
                                  'LIMIT 1', ['some key'],
