@@ -53,7 +53,8 @@
 
         if (options) {
             for (var i in options) {
-                dbInfo[i] = typeof(options[i]) !== 'string' ? options[i].toString() : options[i];
+                dbInfo[i] = typeof(options[i]) !== 'string' ?
+                            options[i].toString() : options[i];
             }
         }
 
@@ -75,7 +76,8 @@
             // Create our key/value table if it doesn't exist.
             dbInfo.db.transaction(function(t) {
                 t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
-                             ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
+                             ' (id INTEGER PRIMARY KEY, key unique, value)', [],
+                             function() {
                     _this._dbInfo = dbInfo;
                     resolve();
                 }, function(t, error) {
@@ -100,8 +102,10 @@
                 var dbInfo = _this._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('SELECT * FROM ' + dbInfo.storeName +
-                                 ' WHERE key = ? LIMIT 1', [key], function(t, results) {
-                        var result = results.rows.length ? results.rows.item(0).value : null;
+                                 ' WHERE key = ? LIMIT 1', [key],
+                                 function(t, results) {
+                        var result = results.rows.length ?
+                                     results.rows.item(0).value : null;
 
                         // Check to see if this is serialized content we need to
                         // unpack.
@@ -150,12 +154,12 @@
                     } else {
                         var dbInfo = _this._dbInfo;
                         dbInfo.db.transaction(function(t) {
-                            t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName +
-                                         ' (key, value) VALUES (?, ?)', [key, value], function() {
-
+                            t.executeSql('INSERT OR REPLACE INTO ' +
+                                         dbInfo.storeName +
+                                         ' (key, value) VALUES (?, ?)',
+                                         [key, value], function() {
                                 resolve(originalValue);
                             }, function(t, error) {
-
                                 reject(error);
                             });
                         }, function(sqlError) { // The transaction failed; check
@@ -214,15 +218,15 @@
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         var _this = this;
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var dbInfo = _this._dbInfo;
                 dbInfo.db.transaction(function(t) {
-                    t.executeSql('DELETE FROM ' + dbInfo.storeName, [], function() {
-
+                    t.executeSql('DELETE FROM ' + dbInfo.storeName, [],
+                                 function() {
                         resolve();
                     }, function(t, error) {
-
                         reject(error);
                     });
                 });
@@ -237,6 +241,7 @@
     // localForage.
     function length(callback) {
         var _this = this;
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var dbInfo = _this._dbInfo;
@@ -268,17 +273,18 @@
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
         var _this = this;
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var dbInfo = _this._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName +
-                                 ' WHERE id = ? LIMIT 1', [n + 1], function(t, results) {
-                        var result = results.rows.length ? results.rows.item(0).key : null;
-
+                                 ' WHERE id = ? LIMIT 1', [n + 1],
+                                 function(t, results) {
+                        var result = results.rows.length ?
+                                     results.rows.item(0).key : null;
                         resolve(result);
                     }, function(t, error) {
-
                         reject(error);
                     });
                 });
@@ -291,16 +297,16 @@
 
     function keys(callback) {
         var _this = this;
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var dbInfo = _this._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName, [],
                                  function(t, results) {
-                        var length = results.rows.length;
                         var keys = [];
 
-                        for (var i = 0; i < length; i++) {
+                        for (var i = 0; i < results.rows.length; i++) {
                             keys.push(results.rows.item(i).key);
                         }
 
@@ -499,8 +505,10 @@
 
     function executeCallback(promise, callback) {
         if (callback) {
-            promise.then(callback, function(error) {
-                callback(null, error);
+            promise.then(function(result) {
+                callback(null, result);
+            }, function(error) {
+                callback(error);
             });
         }
     }

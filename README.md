@@ -92,6 +92,20 @@ alert(value);
 localforage.getItem('key', alert);
 ```
 
+Note that callbacks in localForage are Node-style (error argument first) since
+`0.9.3`. This means if you're using callbacks, your code should look like this:
+
+```javascript
+// Use err as your first argument.
+localforage.getItem('key', function(err, value) {
+    if (err) {
+        console.error('Oh noes!');
+    }
+
+    alert(value);
+});
+```
+
 You can store any type in localForage; you aren't limited to strings like in
 localStorage. Even if localStorage is your storage backend, localForage
 automatically does `JSON.parse()` and `JSON.stringify()` when getting/setting
@@ -109,6 +123,18 @@ function doSomethingElse(value) {
 
 // With localForage, we allow promises:
 localforage.setItem('key', 'value').then(doSomethingElse);
+```
+
+Note that with Promises, `err` is not the first argument to your function.
+Instead, you handle an error with the rejection part of the Promise:
+
+```javascript
+// A full setItem() call with Promises.
+localforage.setItem('key', 'value').then(function(value) {
+    alert(value + ' was set!');
+}, function(error) {
+    console.error(error);
+});
 ```
 
 localForage relies on native [ES6 Promises](http://www.promisejs.org/), but

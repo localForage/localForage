@@ -351,7 +351,7 @@
                     this.console.error("Couldn't convert value into a JSON string: ", value);
                 }
 
-                callback(null, e);
+                callback(e);
             }
         }
     }
@@ -409,8 +409,10 @@
 
     function executeCallback(promise, callback) {
         if (callback) {
-            promise.then(callback, function(error) {
-                callback(null, error);
+            promise.then(function(result) {
+                callback(null, result);
+            }, function(error) {
+                callback(error);
             });
         }
     }

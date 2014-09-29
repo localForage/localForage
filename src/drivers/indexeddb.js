@@ -182,6 +182,7 @@
 
     function clear(callback) {
         var _this = this;
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var dbInfo = _this._dbInfo;
@@ -205,6 +206,7 @@
 
     function length(callback) {
         var _this = this;
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var dbInfo = _this._dbInfo;
@@ -228,6 +230,7 @@
 
     function key(n, callback) {
         var _this = this;
+
         var promise = new Promise(function(resolve, reject) {
             if (n < 0) {
                 resolve(null);
@@ -314,8 +317,10 @@
 
     function executeCallback(promise, callback) {
         if (callback) {
-            promise.then(callback, function(error) {
-                callback(null, error);
+            promise.then(function(result) {
+                callback(null, result);
+            }, function(error) {
+                callback(error);
             });
         }
     }
@@ -325,7 +330,7 @@
             promise.then(function(result) {
                 deferCallback(callback, result);
             }, function(error) {
-                    callback(null, error);
+                callback(error);
             });
         }
     }
@@ -335,10 +340,10 @@
     // call stack to be empty.
     // For more info : https://github.com/mozilla/localForage/issues/175
     // Pull request : https://github.com/mozilla/localForage/pull/178
-    function deferCallback(callback, value) {
+    function deferCallback(callback, result) {
         if (callback) {
             return setTimeout(function() {
-                return callback(value);
+                return callback(null, result);
             }, 0);
         }
     }
