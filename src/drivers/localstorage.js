@@ -82,6 +82,12 @@
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 try {
@@ -168,6 +174,12 @@
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 localStorage.removeItem(keyPrefix + key);
@@ -341,6 +353,12 @@
     // saved, or something like that.
     function setItem(key, value, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 // Convert undefined values to null.
@@ -366,7 +384,7 @@
                                 reject(e);
                             }
                         }
-                        
+
                         resolve(originalValue);
                     }
                 });

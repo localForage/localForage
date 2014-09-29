@@ -56,7 +56,7 @@ describe('localForage', function() {
             });
         }
     });
-    
+
     it('does not support object parameter to setDriver', function(done) {
         var driverPreferedOrder = {
             '0': localforage.INDEXEDDB,
@@ -384,6 +384,59 @@ DRIVERS.forEach(function(driverName) {
                 done();
             });
         });
+
+        // Deal with non-string keys, see issue #250
+        // https://github.com/mozilla/localForage/issues/250
+        it('casts an undefined key to a String', function(done) {
+            localforage.setItem(undefined, 'goodness!').then(function(value) {
+                expect(value).to.be('goodness!');
+
+                return localforage.getItem(undefined);
+            }).then(function(value) {
+                expect(value).to.be('goodness!');
+
+                return localforage.removeItem(undefined);
+            }).then(function() {
+                return localforage.length();
+            }).then(function(length) {
+                expect(length).to.be(0);
+                done();
+            });
+        });
+
+        it('casts a null key to a String', function(done) {
+            localforage.setItem(null, 'goodness!').then(function(value) {
+                expect(value).to.be('goodness!');
+
+                return localforage.getItem(null);
+            }).then(function(value) {
+                expect(value).to.be('goodness!');
+
+                return localforage.removeItem(null);
+            }).then(function() {
+                return localforage.length();
+            }).then(function(length) {
+                expect(length).to.be(0);
+                done();
+            });
+        });
+
+        it('casts a float key to a String', function(done) {
+            localforage.setItem(537.35737, 'goodness!').then(function(value) {
+                expect(value).to.be('goodness!');
+
+                return localforage.getItem(537.35737);
+            }).then(function(value) {
+                expect(value).to.be('goodness!');
+
+                return localforage.removeItem(537.35737);
+            }).then(function() {
+                return localforage.length();
+            }).then(function(length) {
+                expect(length).to.be(0);
+                done();
+            });
+        });
     });
 
     describe(driverName + ' driver', function() {
@@ -421,7 +474,7 @@ DRIVERS.forEach(function(driverName) {
 
     describe(driverName + ' driver when the callback throws an Error', function() {
         'use strict';
-        
+
         var testObj = {
             throwFunc: function() {
                 testObj.throwFuncCalls++;

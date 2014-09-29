@@ -80,6 +80,12 @@
 
     function getItem(key, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
@@ -108,6 +114,12 @@
 
     function setItem(key, value, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 // The localStorage API doesn't return undefined values in an
@@ -157,6 +169,12 @@
 
     function removeItem(key, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
