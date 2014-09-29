@@ -153,7 +153,7 @@
             // any new configuration values. Instead, we return an error.
             if (this._ready) {
                 return new Error("Can't call config() after localforage " +
-                                 "has been used.");
+                                 'has been used.');
             }
 
             for (var i in options) {

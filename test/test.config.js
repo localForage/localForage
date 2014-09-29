@@ -31,7 +31,7 @@ describe('Config API', function() {
             });
 
             var error = "Error: Can't call config() after localforage " +
-                        "has been used.";
+                        'has been used.';
 
             expect(configResult).to.not.be(true);
             expect(configResult.toString()).to.be(error);

@@ -340,9 +340,9 @@
         }
 
         if ((bytes.length % 3) === 2) {
-            base64String = base64String.substring(0, base64String.length - 1) + "=";
+            base64String = base64String.substring(0, base64String.length - 1) + '=';
         } else if (bytes.length % 3 === 1) {
-            base64String = base64String.substring(0, base64String.length - 2) + "==";
+            base64String = base64String.substring(0, base64String.length - 2) + '==';
         }
 
         return base64String;
@@ -377,9 +377,9 @@
         var p = 0;
         var encoded1, encoded2, encoded3, encoded4;
 
-        if (serializedString[serializedString.length - 1] === "=") {
+        if (serializedString[serializedString.length - 1] === '=') {
             bufferLength--;
-            if (serializedString[serializedString.length - 2] === "=") {
+            if (serializedString[serializedString.length - 2] === '=') {
                 bufferLength--;
             }
         }
@@ -474,12 +474,12 @@
                 } else if (valueString === '[object Float64Array]') {
                     marker += TYPE_FLOAT64ARRAY;
                 } else {
-                    callback(new Error("Failed to get type for BinaryArray"));
+                    callback(new Error('Failed to get type for BinaryArray'));
                 }
             }
 
             callback(marker + _bufferToString(buffer));
-        } else if (valueString === "[object Blob]") {
+        } else if (valueString === '[object Blob]') {
             // Conver the blob to a binaryArray and then to a string.
             var fileReader = new FileReader();
 
