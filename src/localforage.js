@@ -157,6 +157,10 @@
             }
 
             for (var i in options) {
+                if (i === 'storeName') {
+                    options[i] = options[i].replace(/\W/g, '_');
+                }
+
                 this._config[i] = options[i];
             }
 
