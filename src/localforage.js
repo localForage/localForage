@@ -176,10 +176,7 @@
         var ready = new Promise(function(resolve, reject) {
             self._driverSet.then(function() {
                 if (self._ready === null) {
-                    self._ready = self._initStorage(self._config)
-                        .then(function(dbInfo) {
-                            self._dbInfo = dbInfo;
-                        });
+                    self._ready = self._initStorage(self._config);
                 }
 
                 self._ready.then(resolve, reject);

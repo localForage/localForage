@@ -30,6 +30,7 @@
 
     // Config the localStorage backend, using options set in the config.
     function _initStorage(options) {
+        var _this = this;
         var dbInfo = {};
         if (options) {
             for (var i in options) {
@@ -39,7 +40,8 @@
 
         dbInfo.keyPrefix = dbInfo.name + '/';
 
-        return Promise.resolve(dbInfo);
+        _this._dbInfo = dbInfo;
+        return Promise.resolve();
     }
 
     var SERIALIZED_MARKER = '__lfsc__:';

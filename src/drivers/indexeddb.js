@@ -22,6 +22,7 @@
     // Open the IndexedDB database (automatically creates one if one didn't
     // previously exist), using any options set in the config.
     function _initStorage(options) {
+        var _this = this;
         var dbInfo = {
             db: null
         };
@@ -43,7 +44,8 @@
             };
             openreq.onsuccess = function() {
                 dbInfo.db = openreq.result;
-                resolve(dbInfo);
+                _this._dbInfo = dbInfo;
+                resolve();
             };
         });
     }

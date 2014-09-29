@@ -64,14 +64,20 @@
                 dbInfo.db = openDatabase(dbInfo.name, dbInfo.version,
                                   dbInfo.description, dbInfo.size);
             } catch (e) {
-                return _this.setDriver('localStorageWrapper').then(resolve, reject);
+                return _this.setDriver('localStorageWrapper')
+                    .then(function() {
+                        return _this._initStorage(options);
+                    })
+                    .then(resolve)
+                    .catch(reject);
             }
 
             // Create our key/value table if it doesn't exist.
             dbInfo.db.transaction(function(t) {
                 t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
                              ' (id INTEGER PRIMARY KEY, key unique, value)', [], function() {
-                    resolve(dbInfo);
+                    _this._dbInfo = dbInfo;
+                    resolve();
                 }, function(t, error) {
                     reject(error);
                 });
