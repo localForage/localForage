@@ -398,6 +398,11 @@ DRIVERS.forEach(function(driverName) {
 
             localforage2 = localforage.createInstance({
                 name: 'storage2',
+                // We need a small value here
+                // otherwise local PhantomJS test
+                // will fail with SECURITY_ERR.
+                // TravisCI seem to work fine though.
+                size: 1024,
                 storeName: 'storagename2'
             });
 
