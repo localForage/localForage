@@ -122,7 +122,7 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('has an empty length by default', function(done) {
-            localforage.length(function(error, length) {
+            localforage.length(function(err, length) {
                 expect(length).to.be(0);
                 done();
             });
