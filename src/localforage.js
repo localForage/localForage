@@ -127,9 +127,9 @@
         this._dbInfo = null;
 
         // Add a stub for each driver API method that delays the call to the
-        // corresponding driver method until localForage is ready. These stubs will
-        // be replaced by the driver methods as soon as the driver is loaded, so
-        // there is no performance impact.
+        // corresponding driver method until localForage is ready. These stubs
+        // will be replaced by the driver methods as soon as the driver is
+        // loaded, so there is no performance impact.
         for (var i = 0; i < LibraryMethods.length; i++) {
             callWhenReady(this, LibraryMethods[i]);
         }
@@ -140,6 +140,7 @@
     LocalForage.prototype.INDEXEDDB = DriverType.INDEXEDDB;
     LocalForage.prototype.LOCALSTORAGE = DriverType.LOCALSTORAGE;
     LocalForage.prototype.WEBSQL = DriverType.WEBSQL;
+
     // Set any config values for localForage; can be called anytime before
     // the first API call (e.g. `getItem`, `setItem`).
     // We loop through options so we don't overwrite existing config
@@ -153,7 +154,7 @@
             // any new configuration values. Instead, we return an error.
             if (this._ready) {
                 return new Error("Can't call config() after localforage " +
-                                 "has been used.");
+                                 'has been used.');
             }
 
             for (var i in options) {
@@ -171,9 +172,11 @@
             return this._config;
         }
     };
+
     LocalForage.prototype.driver = function() {
         return this._driver || null;
     };
+
     LocalForage.prototype.ready = function(callback) {
         var self = this;
 
@@ -190,7 +193,9 @@
         ready.then(callback, callback);
         return ready;
     };
-    LocalForage.prototype.setDriver = function(drivers, callback, errorCallback) {
+
+    LocalForage.prototype.setDriver = function(drivers, callback,
+                                               errorCallback) {
         var self = this;
 
         if (typeof drivers === 'string') {
@@ -247,12 +252,15 @@
         this._driverSet.then(callback, errorCallback);
         return this._driverSet;
     };
+
     LocalForage.prototype.supports = function(driverName) {
         return !!driverSupport[driverName];
     };
+
     LocalForage.prototype._extend = function(libraryMethodsAndProperties) {
         extend(this, libraryMethodsAndProperties);
     };
+
     LocalForage.prototype._getFirstSupportedDriver = function(drivers) {
         var isArray = Array.isArray || function(arg) {
             return Object.prototype.toString.call(arg) === '[object Array]';
@@ -270,6 +278,7 @@
 
         return null;
     };
+
     LocalForage.prototype.createInstance = function(options) {
         return new LocalForage(options);
     };

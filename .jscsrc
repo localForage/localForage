@@ -3,6 +3,7 @@
         "beforeOpeningRoundBrace": true
     },
     "disallowTrailingComma": true,
+    "requireLineFeedAtFileEnd": true,
     "requireSpaceAfterKeywords": [
         "if",
         "else",
@@ -18,5 +19,9 @@
     "requireSpacesInConditionalExpression": true,
     "requireSpacesInFunctionExpression": {
         "beforeOpeningCurlyBrace": true
+    },
+    "validateQuoteMarks": {
+        "escape": true,
+        "mark": "'"
     }
 }

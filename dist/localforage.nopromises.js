@@ -529,7 +529,8 @@
                 var keys = [];
 
                 for (var i = 0; i < length; i++) {
-                    keys.push(localStorage.key(i).substring(dbInfo.keyPrefix.length));
+                    keys.push(localStorage.key(i)
+                                          .substring(dbInfo.keyPrefix.length));
                 }
 
                 resolve(keys);
@@ -674,7 +675,8 @@
         //
         // TODO: See why those tests fail and use a better solution.
         if (value && (value.toString() === '[object ArrayBuffer]' ||
-                      value.buffer && value.buffer.toString() === '[object ArrayBuffer]')) {
+                      value.buffer &&
+                      value.buffer.toString() === '[object ArrayBuffer]')) {
             // Convert binary arrays to a string and prefix the string with
             // a special marker.
             var buffer;
@@ -705,12 +707,12 @@
                 } else if (valueString === '[object Float64Array]') {
                     marker += TYPE_FLOAT64ARRAY;
                 } else {
-                    callback(new Error("Failed to get type for BinaryArray"));
+                    callback(new Error('Failed to get type for BinaryArray'));
                 }
             }
 
             callback(marker + _bufferToString(buffer));
-        } else if (valueString === "[object Blob]") {
+        } else if (valueString === '[object Blob]') {
             // Conver the blob to a binaryArray and then to a string.
             var fileReader = new FileReader();
 
@@ -725,9 +727,8 @@
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                if (this.console && this.console.error) {
-                    this.console.error("Couldn't convert value into a JSON string: ", value);
-                }
+                window.console.error("Couldn't convert value into a JSON " +
+                                     'string: ', value);
 
                 callback(e);
             }
@@ -856,7 +857,8 @@
     var TYPE_UINT32ARRAY = 'ui32';
     var TYPE_FLOAT32ARRAY = 'fl32';
     var TYPE_FLOAT64ARRAY = 'fl64';
-    var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
+    var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH +
+                                        TYPE_ARRAYBUFFER.length;
 
     // If WebSQL methods aren't available, we can stop now.
     if (!openDatabase) {
@@ -1157,9 +1159,9 @@
         }
 
         if ((bytes.length % 3) === 2) {
-            base64String = base64String.substring(0, base64String.length - 1) + "=";
+            base64String = base64String.substring(0, base64String.length - 1) + '=';
         } else if (bytes.length % 3 === 1) {
-            base64String = base64String.substring(0, base64String.length - 2) + "==";
+            base64String = base64String.substring(0, base64String.length - 2) + '==';
         }
 
         return base64String;
@@ -1177,7 +1179,8 @@
         // If we haven't marked this string as being specially serialized (i.e.
         // something other than serialized JSON), we can just return it and be
         // done with it.
-        if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
+        if (value.substring(0,
+                            SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
             return JSON.parse(value);
         }
 
@@ -1185,7 +1188,8 @@
         // TypedArray. First we separate out the type of data we're dealing
         // with from the data itself.
         var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);
-        var type = value.substring(SERIALIZED_MARKER_LENGTH, TYPE_SERIALIZED_MARKER_LENGTH);
+        var type = value.substring(SERIALIZED_MARKER_LENGTH,
+                                   TYPE_SERIALIZED_MARKER_LENGTH);
 
         // Fill the string into a ArrayBuffer.
         var bufferLength = serializedString.length * 0.75;
@@ -1194,9 +1198,9 @@
         var p = 0;
         var encoded1, encoded2, encoded3, encoded4;
 
-        if (serializedString[serializedString.length - 1] === "=") {
+        if (serializedString[serializedString.length - 1] === '=') {
             bufferLength--;
-            if (serializedString[serializedString.length - 2] === "=") {
+            if (serializedString[serializedString.length - 2] === '=') {
                 bufferLength--;
             }
         }
@@ -1260,7 +1264,8 @@
         //
         // TODO: See why those tests fail and use a better solution.
         if (value && (value.toString() === '[object ArrayBuffer]' ||
-                      value.buffer && value.buffer.toString() === '[object ArrayBuffer]')) {
+                      value.buffer &&
+                      value.buffer.toString() === '[object ArrayBuffer]')) {
             // Convert binary arrays to a string and prefix the string with
             // a special marker.
             var buffer;
@@ -1291,12 +1296,12 @@
                 } else if (valueString === '[object Float64Array]') {
                     marker += TYPE_FLOAT64ARRAY;
                 } else {
-                    callback(new Error("Failed to get type for BinaryArray"));
+                    callback(new Error('Failed to get type for BinaryArray'));
                 }
             }
 
             callback(marker + _bufferToString(buffer));
-        } else if (valueString === "[object Blob]") {
+        } else if (valueString === '[object Blob]') {
             // Conver the blob to a binaryArray and then to a string.
             var fileReader = new FileReader();
 
@@ -1311,9 +1316,8 @@
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                if (this.console && this.console.error) {
-                    this.console.error("Couldn't convert value into a JSON string: ", value);
-                }
+                window.console.error("Couldn't convert value into a JSON " +
+                                     'string: ', value);
 
                 callback(null, e);
             }
@@ -1481,9 +1485,9 @@
         this._dbInfo = null;
 
         // Add a stub for each driver API method that delays the call to the
-        // corresponding driver method until localForage is ready. These stubs will
-        // be replaced by the driver methods as soon as the driver is loaded, so
-        // there is no performance impact.
+        // corresponding driver method until localForage is ready. These stubs
+        // will be replaced by the driver methods as soon as the driver is
+        // loaded, so there is no performance impact.
         for (var i = 0; i < LibraryMethods.length; i++) {
             callWhenReady(this, LibraryMethods[i]);
         }
@@ -1494,6 +1498,7 @@
     LocalForage.prototype.INDEXEDDB = DriverType.INDEXEDDB;
     LocalForage.prototype.LOCALSTORAGE = DriverType.LOCALSTORAGE;
     LocalForage.prototype.WEBSQL = DriverType.WEBSQL;
+
     // Set any config values for localForage; can be called anytime before
     // the first API call (e.g. `getItem`, `setItem`).
     // We loop through options so we don't overwrite existing config
@@ -1507,7 +1512,7 @@
             // any new configuration values. Instead, we return an error.
             if (this._ready) {
                 return new Error("Can't call config() after localforage " +
-                                 "has been used.");
+                                 'has been used.');
             }
 
             for (var i in options) {
@@ -1525,9 +1530,11 @@
             return this._config;
         }
     };
+
     LocalForage.prototype.driver = function() {
         return this._driver || null;
     };
+
     LocalForage.prototype.ready = function(callback) {
         var self = this;
 
@@ -1544,7 +1551,9 @@
         ready.then(callback, callback);
         return ready;
     };
-    LocalForage.prototype.setDriver = function(drivers, callback, errorCallback) {
+
+    LocalForage.prototype.setDriver = function(drivers, callback,
+                                               errorCallback) {
         var self = this;
 
         if (typeof drivers === 'string') {
@@ -1601,12 +1610,15 @@
         this._driverSet.then(callback, errorCallback);
         return this._driverSet;
     };
+
     LocalForage.prototype.supports = function(driverName) {
         return !!driverSupport[driverName];
     };
+
     LocalForage.prototype._extend = function(libraryMethodsAndProperties) {
         extend(this, libraryMethodsAndProperties);
     };
+
     LocalForage.prototype._getFirstSupportedDriver = function(drivers) {
         var isArray = Array.isArray || function(arg) {
             return Object.prototype.toString.call(arg) === '[object Array]';
@@ -1624,6 +1636,7 @@
 
         return null;
     };
+
     LocalForage.prototype.createInstance = function(options) {
         return new LocalForage(options);
     };
