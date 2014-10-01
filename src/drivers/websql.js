@@ -87,6 +87,14 @@
 
     function getItem(key, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var dbInfo = _this._dbInfo;
@@ -116,6 +124,14 @@
 
     function setItem(key, value, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 // The localStorage API doesn't return undefined values in an
@@ -166,6 +182,14 @@
 
     function removeItem(key, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var dbInfo = _this._dbInfo;

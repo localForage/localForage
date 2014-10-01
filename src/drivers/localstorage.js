@@ -83,6 +83,14 @@
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 try {
@@ -172,6 +180,14 @@
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var dbInfo = _this._dbInfo;
@@ -346,6 +362,14 @@
     // saved, or something like that.
     function setItem(key, value, callback) {
         var _this = this;
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 // Convert undefined values to null.
@@ -372,7 +396,7 @@
                                 reject(e);
                             }
                         }
-                        
+
                         resolve(originalValue);
                     }
                 });

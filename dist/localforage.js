@@ -738,7 +738,15 @@ requireModule('promise/polyfill').polyfill();
 
     function getItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
@@ -750,25 +758,30 @@ requireModule('promise/polyfill').polyfill();
                         value = null;
                     }
 
-                    deferCallback(callback,value);
-
                     resolve(value);
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeDeferedCallback(promise, callback);
+        return promise;
     }
 
     function setItem(key, value, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
@@ -793,24 +806,29 @@ requireModule('promise/polyfill').polyfill();
                         value = null;
                     }
 
-                    deferCallback(callback, value);
-
                     resolve(value);
                 };
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeDeferedCallback(promise, callback);
+        return promise;
     }
 
     function removeItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
@@ -822,17 +840,10 @@ requireModule('promise/polyfill').polyfill();
                 // fixes this for us now.
                 var req = store["delete"](key);
                 req.onsuccess = function() {
-
-                    deferCallback(callback);
-
                     resolve();
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(req.error);
-                    }
-
                     reject(req.error);
                 };
 
@@ -842,77 +853,64 @@ requireModule('promise/polyfill').polyfill();
                 req.onabort = function(event) {
                     var error = event.target.error;
                     if (error === 'QuotaExceededError') {
-                        if (callback) {
-                            callback(error);
-                        }
-
                         reject(error);
                     }
                 };
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeDeferedCallback(promise, callback);
+        return promise;
     }
 
     function clear(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
                 var req = store.clear();
 
                 req.onsuccess = function() {
-                    deferCallback(callback);
-
                     resolve();
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeDeferedCallback(promise, callback);
+        return promise;
     }
 
     function length(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
                 var req = store.count();
 
                 req.onsuccess = function() {
-                    if (callback) {
-                        callback(req.result);
-                    }
-
                     resolve(req.result);
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function key(n, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             if (n < 0) {
-                if (callback) {
-                    callback(null);
-                }
-
                 resolve(null);
 
                 return;
@@ -928,10 +926,6 @@ requireModule('promise/polyfill').polyfill();
                     var cursor = req.result;
                     if (!cursor) {
                         // this means there weren't enough keys
-                        if (callback) {
-                            callback(null);
-                        }
-
                         resolve(null);
 
                         return;
@@ -940,10 +934,6 @@ requireModule('promise/polyfill').polyfill();
                     if (n === 0) {
                         // We have the first key, return it if that's what they
                         // wanted.
-                        if (callback) {
-                            callback(cursor.key);
-                        }
-
                         resolve(cursor.key);
                     } else {
                         if (!advanced) {
@@ -953,30 +943,25 @@ requireModule('promise/polyfill').polyfill();
                             cursor.advance(n);
                         } else {
                             // When we get here, we've got the nth key.
-                            if (callback) {
-                                callback(cursor.key);
-                            }
-
                             resolve(cursor.key);
                         }
                     }
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function keys(callback) {
         var _this = this;
 
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var store = db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
@@ -988,10 +973,6 @@ requireModule('promise/polyfill').polyfill();
                     var cursor = req.result;
 
                     if (!cursor) {
-                        if (callback) {
-                            callback(keys);
-                        }
-
                         resolve(keys);
                         return;
                     }
@@ -1001,14 +982,31 @@ requireModule('promise/polyfill').polyfill();
                 };
 
                 req.onerror = function() {
-                    if (callback) {
-                        callback(null, req.error);
-                    }
-
                     reject(req.error);
                 };
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+    function executeCallback(promise, callback) {
+        if (callback) {
+            promise.then(callback, function(error) {
+                callback(null, error);
+            });
+        }
+    }
+
+    function executeDeferedCallback(promise, callback) {
+        if (callback) {
+            promise.then(function(result) {
+                deferCallback(callback, result);
+            }, function(error) {
+                    callback(null, error);
+            });
+        }
     }
 
     // Under Chrome the callback is called before the changes (save, clear)
@@ -1113,17 +1111,16 @@ requireModule('promise/polyfill').polyfill();
     // the app's key/value store!
     function clear(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 localStorage.clear();
 
-                if (callback) {
-                    callback();
-                }
-
                 resolve();
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Retrieve an item from the store. Unlike the original async_storage
@@ -1131,7 +1128,15 @@ requireModule('promise/polyfill').polyfill();
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 try {
                     var result = localStorage.getItem(keyPrefix + key);
@@ -1144,26 +1149,21 @@ requireModule('promise/polyfill').polyfill();
                         result = _deserialize(result);
                     }
 
-                    if (callback) {
-                        callback(result);
-                    }
-
                     resolve(result);
                 } catch (e) {
-                    if (callback) {
-                        callback(null, e);
-                    }
-
                     reject(e);
                 }
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var result;
                 try {
@@ -1177,17 +1177,17 @@ requireModule('promise/polyfill').polyfill();
                     result = result.substring(keyPrefix.length);
                 }
 
-                if (callback) {
-                    callback(result);
-                }
                 resolve(result);
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function keys(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var length = localStorage.length;
                 var keys = [];
@@ -1196,45 +1196,50 @@ requireModule('promise/polyfill').polyfill();
                     keys.push(localStorage.key(i).substring(keyPrefix.length));
                 }
 
-                if (callback) {
-                    callback(keys);
-                }
-
                 resolve(keys);
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 var result = localStorage.length;
 
-                if (callback) {
-                    callback(result);
-                }
-
                 resolve(result);
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 localStorage.removeItem(keyPrefix + key);
 
-                if (callback) {
-                    callback();
-                }
-
                 resolve();
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Deserialize data we've inserted into a value column/field. We place
@@ -1398,7 +1403,15 @@ requireModule('promise/polyfill').polyfill();
     // saved, or something like that.
     function setItem(key, value, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 // Convert undefined values to null.
                 // https://github.com/mozilla/localForage/pull/42
@@ -1411,10 +1424,6 @@ requireModule('promise/polyfill').polyfill();
 
                 _serialize(value, function(value, error) {
                     if (error) {
-                        if (callback) {
-                            callback(null, error);
-                        }
-
                         reject(error);
                     } else {
                         try {
@@ -1424,23 +1433,26 @@ requireModule('promise/polyfill').polyfill();
                             // TODO: Make this a specific error/event.
                             if (e.name === 'QuotaExceededError' ||
                                 e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-                                if (callback) {
-                                    callback(null, e);
-                                }
-
                                 reject(e);
                             }
-                        }
-
-                        if (callback) {
-                            callback(originalValue);
                         }
 
                         resolve(originalValue);
                     }
                 });
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+    function executeCallback(promise, callback) {
+        if (callback) {
+            promise.then(callback, function(error) {
+                callback(null, error);
+            });
+        }
     }
 
     var localStorageWrapper = {
@@ -1548,7 +1560,15 @@ requireModule('promise/polyfill').polyfill();
 
     function getItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     t.executeSql('SELECT * FROM ' + dbInfo.storeName +
@@ -1561,26 +1581,30 @@ requireModule('promise/polyfill').polyfill();
                             result = _deserialize(result);
                         }
 
-                        if (callback) {
-                            callback(result);
-                        }
-
                         resolve(result);
                     }, function(t, error) {
-                        if (callback) {
-                            callback(null, error);
-                        }
 
                         reject(error);
                     });
                 });
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function setItem(key, value, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 // The localStorage API doesn't return undefined values in an
                 // "expected" way, so undefined is always cast to null in all
@@ -1599,15 +1623,9 @@ requireModule('promise/polyfill').polyfill();
                         db.transaction(function(t) {
                             t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName +
                                          ' (key, value) VALUES (?, ?)', [key, value], function() {
-                                if (callback) {
-                                    callback(originalValue);
-                                }
 
                                 resolve(originalValue);
                             }, function(t, error) {
-                                if (callback) {
-                                    callback(null, error);
-                                }
 
                                 reject(error);
                             });
@@ -1621,73 +1639,74 @@ requireModule('promise/polyfill').polyfill();
                                 // be called.
                                 //
                                 // TODO: Try to re-run the transaction.
-                                if (callback) {
-                                    callback(null, sqlError);
-                                }
-
                                 reject(sqlError);
                             }
                         });
                     }
                 });
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function removeItem(key, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+
+        // Cast the key to a string, as that's all we can set as a key.
+        if (typeof key !== 'string') {
+            window.console.warn(key +
+                                ' used as a key, but it is not a string.');
+            key = String(key);
+        }
+
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName +
                                  ' WHERE key = ?', [key], function() {
-                        if (callback) {
-                            callback();
-                        }
 
                         resolve();
                     }, function(t, error) {
-                        if (callback) {
-                            callback(error);
-                        }
 
                         reject(error);
                     });
                 });
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Deletes every item in the table.
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName, [], function() {
-                        if (callback) {
-                            callback();
-                        }
 
                         resolve();
                     }, function(t, error) {
-                        if (callback) {
-                            callback(error);
-                        }
 
                         reject(error);
                     });
                 });
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Does a simple `COUNT(key)` to get the number of items stored in
     // localForage.
     function length(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     // Ahhh, SQL makes this one soooooo easy.
@@ -1695,21 +1714,17 @@ requireModule('promise/polyfill').polyfill();
                                  dbInfo.storeName, [], function(t, results) {
                         var result = results.rows.item(0).c;
 
-                        if (callback) {
-                            callback(result);
-                        }
-
                         resolve(result);
                     }, function(t, error) {
-                        if (callback) {
-                            callback(null, error);
-                        }
 
                         reject(error);
                     });
                 });
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Return the key located at key index X; essentially gets the key from a
@@ -1721,33 +1736,29 @@ requireModule('promise/polyfill').polyfill();
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName +
                                  ' WHERE id = ? LIMIT 1', [n + 1], function(t, results) {
                         var result = results.rows.length ? results.rows.item(0).key : null;
 
-                        if (callback) {
-                            callback(result);
-                        }
-
                         resolve(result);
                     }, function(t, error) {
-                        if (callback) {
-                            callback(null, error);
-                        }
 
                         reject(error);
                     });
                 });
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     function keys(callback) {
         var _this = this;
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
                 db.transaction(function(t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName, [],
@@ -1759,21 +1770,17 @@ requireModule('promise/polyfill').polyfill();
                             keys.push(results.rows.item(i).key);
                         }
 
-                        if (callback) {
-                            callback(keys);
-                        }
-
                         resolve(keys);
                     }, function(t, error) {
-                        if (callback) {
-                            callback(null, error);
-                        }
 
                         reject(error);
                     });
                 });
-            }, reject);
+            })["catch"](reject);
         });
+
+        executeCallback(promise, callback);
+        return promise;
     }
 
     // Converts a buffer to a string to store, serialized, in the backend
@@ -1956,6 +1963,14 @@ requireModule('promise/polyfill').polyfill();
         }
     }
 
+    function executeCallback(promise, callback) {
+        if (callback) {
+            promise.then(callback, function(error) {
+                callback(null, error);
+            });
+        }
+    }
+
     var webSQLStorage = {
         _driver: 'webSQLStorage',
         _initStorage: _initStorage,
@@ -2040,12 +2055,16 @@ requireModule('promise/polyfill').polyfill();
         var result = {};
 
         result[DriverType.WEBSQL] = !!_this.openDatabase;
-        result[DriverType.INDEXEDDB] = !!(
-            indexedDB &&
-            typeof indexedDB.open === 'function' &&
-            indexedDB.open('_localforage_spec_test', 1)
-                     .onupgradeneeded === null
-        );
+        result[DriverType.INDEXEDDB] = !!(function() {
+            try {
+                return (indexedDB &&
+                        typeof indexedDB.open === 'function' &&
+                        indexedDB.open('_localforage_spec_test', 1)
+                        .onupgradeneeded === null);
+            } catch (e) {
+                return false;
+            }
+        })();
 
         result[DriverType.LOCALSTORAGE] = !!(function() {
             try {
@@ -2120,7 +2139,7 @@ requireModule('promise/polyfill').polyfill();
                     }
 
                     localForage._ready.then(resolve, reject);
-                }, reject);
+                })["catch"](reject);
             });
 
             ready.then(callback, callback);
@@ -2142,10 +2161,6 @@ requireModule('promise/polyfill').polyfill();
                     var error = new Error('No available storage method found.');
                     self._driverSet = Promise.reject(error);
 
-                    if (errorCallback) {
-                        errorCallback(error);
-                    }
-
                     reject(error);
 
                     return;
@@ -2159,9 +2174,6 @@ requireModule('promise/polyfill').polyfill();
                     require([driverName], function(lib) {
                         self._extend(lib);
 
-                        if (callback) {
-                            callback();
-                        }
                         resolve();
                     });
 
@@ -2185,12 +2197,10 @@ requireModule('promise/polyfill').polyfill();
                     self._extend(_this[driverName]);
                 }
 
-                if (callback) {
-                    callback();
-                }
-
                 resolve();
             });
+
+            this._driverSet.then(callback, errorCallback);
 
             return this._driverSet;
         },
