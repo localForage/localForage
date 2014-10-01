@@ -17,11 +17,14 @@ To use localForage, just drop a single JavaScript file into your page:
 ```
 
 Download the [latest localForage from GitHub](https://github.com/mozilla/localForage/releases/latest), or install with
-[bower](http://bower.io):
+[npm](https://www.npmjs.org/) or [bower](http://bower.io):
 
 ```bash
+npm install localforage
 bower install localforage
 ```
+
+localForage is compatible with [browserify](http://browserify.org/).
 
 ## Supported Browsers/Platforms
 
