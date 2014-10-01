@@ -62,8 +62,8 @@
             // Open the database; the openDatabase API will automatically
             // create it for us if it doesn't exist.
             try {
-                dbInfo.db = openDatabase(dbInfo.name, dbInfo.version,
-                                  dbInfo.description, dbInfo.size);
+                dbInfo.db = openDatabase(dbInfo.name, String(dbInfo.version),
+                                         dbInfo.description, dbInfo.size);
             } catch (e) {
                 return _this.setDriver('localStorageWrapper')
                     .then(function() {

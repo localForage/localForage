@@ -66,6 +66,19 @@ describe('Config API', function() {
         expect(localforage.config('version')).to.be(2.0);
     });
 
+    it('converts bad config values across drivers', function() {
+        localforage.config({
+            name: 'My Cool App',
+            // https://github.com/mozilla/localForage/issues/247
+            storeName: 'my store&front-v1',
+            version: 2.0
+        });
+
+        expect(localforage.config('name')).to.be('My Cool App');
+        expect(localforage.config('storeName')).to.be('my_store_front_v1');
+        expect(localforage.config('version')).to.be(2.0);
+    });
+
     it('uses the config values in ' + localforage.driver(), function(done) {
         localforage.config({
             description: 'The offline datastore for my cool app',
@@ -91,8 +104,8 @@ describe('Config API', function() {
                     done();
                 };
             } else if (localforage.driver() === localforage.WEBSQL) {
-                window.openDatabase('My Cool App', (2.0).toString(),
-                                    '', 4980736).transaction(function(t) {
+                window.openDatabase('My Cool App', String(2.0), '',
+                                    4980736).transaction(function(t) {
                     t.executeSql('SELECT * FROM storeFront WHERE key = ? ' +
                                  'LIMIT 1', ['some key'],
                                  function(t, results) {

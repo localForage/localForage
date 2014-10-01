@@ -1565,8 +1565,8 @@ requireModule('promise/polyfill').polyfill();
             // Open the database; the openDatabase API will automatically
             // create it for us if it doesn't exist.
             try {
-                dbInfo.db = openDatabase(dbInfo.name, dbInfo.version,
-                                  dbInfo.description, dbInfo.size);
+                dbInfo.db = openDatabase(dbInfo.name, String(dbInfo.version),
+                                         dbInfo.description, dbInfo.size);
             } catch (e) {
                 return _this.setDriver("localStorageWrapper").then(function() {
     return _this._initStorage(options);
@@ -2194,6 +2194,10 @@ requireModule('promise/polyfill').polyfill();
             }
 
             for (var i in options) {
+                if (i === 'storeName') {
+                    options[i] = options[i].replace(/\W/g, '_');
+                }
+
                 this._config[i] = options[i];
             }
 

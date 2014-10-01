@@ -392,7 +392,9 @@ values can be set:
     The name of the datastore. In IndexedDB this is the
     <code>dataStore</code>, in WebSQL this is the name of the key/value
     table in the database. In localStorage, this is used as a key prefix for
-    all keys stored in localStorage.<br>
+    all keys stored in localStorage. <strong>Must be alphanumeric,
+    with underscores.</strong> Any non-alphanumeric characters will be converted
+    to underscores.<br>
     Default: <code>'keyvaluepairs'</code>
   </dd>
   <dt>version</dt>
