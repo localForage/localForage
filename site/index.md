@@ -81,7 +81,7 @@ These APIs deal with getting and setting data in the offline store.
 ## getItem
 
 ```javascript
-localforage.getItem('somekey', function(value) {
+localforage.getItem('somekey', function(err, value) {
     // Run this code once the value has been
     // loaded from the offline store.
     console.log(value);
@@ -93,7 +93,7 @@ localforage.getItem('somekey').then(function(value) {
 ```
 
 ```coffeescript
-localforage.getItem "somekey", (value) ->
+localforage.getItem "somekey", (err, value) ->
   # Run this code once the value has been loaded
   # from the offline store.
   console.log value
@@ -118,13 +118,13 @@ If the key does not exist, `getItem()` will return `null`.
 ## setItem
 
 ```javascript
-localforage.setItem('somekey', 'some value', function(value) {
+localforage.setItem('somekey', 'some value', function(err, value) {
     // Do other things once the value has been saved.
     console.log(value);
 });
 
 // Unlike localStorage, you can store non-strings.
-localforage.setItem('my array', [1, 2, 'three'], function(value) {
+localforage.setItem('my array', [1, 2, 'three'], function(err, value) {
     // This will output `1`.
     console.log(value[0]);
 });
@@ -146,12 +146,12 @@ request.addEventListener('readystatechange', function() {
 ```
 
 ```coffeescript
-localforage.setItem "somekey", "some value", (value) ->
+localforage.setItem "somekey", "some value", (err, value) ->
   # Do other things once the value has been saved.
   console.log value
 
 # Unlike localStorage, you can store non-strings.
-localforage.setItem "my array", [1, 2, "three"], (value) ->
+localforage.setItem "my array", [1, 2, "three"], (err, value) ->
   # This will output `1`.
   console.log value[0]
 
@@ -241,14 +241,14 @@ Removes every key from the database, returning it to a blank slate.
 ## length
 
 ```javascript
-localforage.length(function(numberOfKeys) {
+localforage.length(function(err, numberOfKeys) {
     // Outputs the length of the database.
     console.log(numberOfKeys);
 });
 ```
 
 ```coffeescript
-localforage.length (numberOfKeys) ->
+localforage.length (err, numberOfKeys) ->
   # Outputs the length of the database.
   console.log numberOfKeys
 ```
@@ -260,14 +260,14 @@ Gets the number of keys in the offline store (i.e. its "length").
 ## key
 
 ```javascript
-localforage.key(2, function(keyName) {
+localforage.key(2, function(err, keyName) {
     // Name of the key.
     console.log(keyName);
 });
 ```
 
 ```coffeescript
-localforage.key 2, (keyName) ->
+localforage.key 2, (err, keyName) ->
   # Name of the key.
   console.log keyName
 ```
@@ -284,14 +284,14 @@ Get the name of a key based on its ID.
 ## keys
 
 ```javascript
-localforage.keys(function(keys) {
+localforage.keys(function(err, keys) {
     // An array of all the key names.
     console.log(keys);
 });
 ```
 
 ```coffeescript
-localforage.keys (keys) ->
+localforage.keys (err, keys) ->
   # An array of all the key names.
   console.log keys
 ```

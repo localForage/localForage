@@ -10,10 +10,6 @@ var componentBuild = window.require && window.require.modules &&
                      window.require.modules.localforage.component;
 
 describe('localForage API', function() {
-    beforeEach(function(done) {
-        localforage.clear(done);
-    });
-
     // If this test is failing, you are likely missing the Promises polyfill,
     // installed via bower. Read more here:
     // https://github.com/mozilla/localForage#working-on-localforage
@@ -35,26 +31,22 @@ describe('localForage', function() {
              localforage.INDEXEDDB) ||
             (localforage.supports(localforage.WEBSQL) &&
              localforage.WEBSQL) ||
-            (localforage.supports(localforage.localStorage) &&
+            (localforage.supports(localforage.LOCALSTORAGE) &&
              localforage.localStorage);
     });
 
     it('automatically selects the most appropriate driver (' +
        appropriateDriver + ')', function(done) {
-        if (appropriateDriver) {
-            localforage.ready().then(function() {
-                expect(localforage.driver()).to.be(appropriateDriver);
-                done();
-            });
-        } else {
-            localforage.ready().then(null, function(error) {
-                expect(error).to.be.an(Error);
-                expect(error.message).to
-                                     .be('No available storage method found.');
-                expect(localforage.driver()).to.be(null);
-                done();
-            });
-        }
+        localforage.ready().then(function() {
+            expect(localforage.driver()).to.be(appropriateDriver);
+            done();
+        }, function(error) {
+            expect(error).to.be.an(Error);
+            expect(error.message).to
+                                 .be('No available storage method found.');
+            expect(localforage.driver()).to.be(null);
+            done();
+        });
     });
 
     it('does not support object parameter to setDriver', function(done) {
@@ -130,7 +122,7 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('has an empty length by default', function(done) {
-            localforage.length(function(length) {
+            localforage.length(function(err, length) {
                 expect(length).to.be(0);
                 done();
             });
@@ -141,7 +133,7 @@ DRIVERS.forEach(function(driverName) {
         // browsers.
         // https://github.com/mozilla/localForage/pull/42
         it('returns null for undefined key [callback]', function(done) {
-            localforage.getItem('key', function(value) {
+            localforage.getItem('key', function(err, value) {
                 expect(value).to.be(null);
                 done();
             });
@@ -154,10 +146,10 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('saves an item [callback]', function(done) {
-            localforage.setItem('office', 'Initech', function(setValue) {
+            localforage.setItem('office', 'Initech', function(err, setValue) {
                 expect(setValue).to.be('Initech');
 
-                localforage.getItem('office', function(value) {
+                localforage.getItem('office', function(err, value) {
                     expect(value).to.be(setValue);
                     done();
                 });
@@ -175,14 +167,16 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('saves an item over an existing key [callback]', function(done) {
-            localforage.setItem('4th floor', 'Mozilla', function(setValue) {
+            localforage.setItem('4th floor', 'Mozilla',
+                                function(err, setValue) {
                 expect(setValue).to.be('Mozilla');
 
-                localforage.setItem('4th floor', 'Quora', function(newValue) {
+                localforage.setItem('4th floor', 'Quora',
+                                    function(err, newValue) {
                     expect(newValue).to.not.be(setValue);
                     expect(newValue).to.be('Quora');
 
-                    localforage.getItem('4th floor', function(value) {
+                    localforage.getItem('4th floor', function(err, value) {
                         expect(value).to.not.be(setValue);
                         expect(value).to.be(newValue);
                         done();
@@ -208,7 +202,7 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('returns null when saving undefined [callback]', function(done) {
-            localforage.setItem('undef', undefined, function(setValue) {
+            localforage.setItem('undef', undefined, function(err, setValue) {
                 expect(setValue).to.be(null);
 
                 done();
@@ -223,7 +217,7 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('returns null for a non-existant key [callback]', function(done) {
-            localforage.getItem('undef', function(value) {
+            localforage.getItem('undef', function(err, value) {
                 expect(value).to.be(null);
 
                 done();
@@ -248,7 +242,7 @@ DRIVERS.forEach(function(driverName) {
         // And returning `undefined` here would break compatibility with
         // localStorage fallback. Maybe in the future we won't care...
         it('returns null from an undefined key [callback]', function(done) {
-            localforage.key(0, function(key) {
+            localforage.key(0, function(err, key) {
                 expect(key).to.be(null);
 
                 done();
@@ -264,7 +258,7 @@ DRIVERS.forEach(function(driverName) {
 
         it('returns key name [callback]', function(done) {
             localforage.setItem('office', 'Initech').then(function() {
-                localforage.key(0, function(key) {
+                localforage.key(0, function(err, key) {
                     expect(key).to.be('office');
 
                     done();
@@ -285,11 +279,12 @@ DRIVERS.forEach(function(driverName) {
             localforage.setItem('office', 'Initech', function() {
                 localforage.setItem('otherOffice', 'Initrode', function() {
                     localforage.removeItem('office', function() {
-                        localforage.getItem('office', function(emptyValue) {
+                        localforage.getItem('office',
+                                            function(err, emptyValue) {
                             expect(emptyValue).to.be(null);
 
                             localforage.getItem('otherOffice',
-                                                function(value) {
+                                                function(err, value) {
                                 expect(value).to.be('Initrode');
 
                                 done();
@@ -320,14 +315,14 @@ DRIVERS.forEach(function(driverName) {
         it('removes all items [callback]', function(done) {
             localforage.setItem('office', 'Initech', function() {
                 localforage.setItem('otherOffice', 'Initrode', function() {
-                    localforage.length(function(length) {
+                    localforage.length(function(err, length) {
                         expect(length).to.be(2);
 
                         localforage.clear(function() {
-                            localforage.getItem('office', function(value) {
+                            localforage.getItem('office', function(err, value) {
                                 expect(value).to.be(null);
 
-                                localforage.length(function(length) {
+                                localforage.length(function(err, length) {
                                     expect(length).to.be(0);
 
                                     done();
@@ -361,10 +356,10 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('has a length after saving an item [callback]', function(done) {
-            localforage.length(function(length) {
+            localforage.length(function(err, length) {
                 expect(length).to.be(0);
                 localforage.setItem('rapper', 'Black Thought', function() {
-                    localforage.length(function(length) {
+                    localforage.length(function(err, length) {
                         expect(length).to.be(1);
 
                         done();
