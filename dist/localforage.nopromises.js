@@ -1,6 +1,6 @@
 /*!
     localForage -- Offline Storage, Improved
-    Version 0.9.3
+    Version 1.0.0
     http://mozilla.github.io/localForage
     (c) 2013-2014 Mozilla, Apache License 2.0
 */
@@ -1646,7 +1646,7 @@
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
     if (moduleType === ModuleType.DEFINE) {
-        define(function() {
+        define('localforage', function() {
             return localForage;
         });
     } else if (moduleType === ModuleType.EXPORT) {
