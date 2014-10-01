@@ -288,7 +288,7 @@
     // We allow localForage to be declared as a module or as a library
     // available without AMD/require.js.
     if (moduleType === ModuleType.DEFINE) {
-        define(function() {
+        define('localforage', function() {
             return localForage;
         });
     } else if (moduleType === ModuleType.EXPORT) {
