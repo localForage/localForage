@@ -161,19 +161,19 @@ to change the driver localForage is using at any time.
 
 ```javascript
 // If you aren't using JS modules, things are loaded synchronously.
-localforage.setDriver('localStorageWrapper');
+localforage.setDriver(localforage.LOCALSTORAGE);
 alert(localforage.driver());
   => 'localStorageWrapper'
 
 // If you're using modules, things load asynchronously, so you should use
 // callbacks or promises to ensure things have loaded.
-localforage.setDriver('localStorageWrapper', function() {
+localforage.setDriver(LOCALSTORAGE, function() {
     alert(localforage.driver());
 });
   => 'localStorageWrapper'
 
 // The promises version:
-localforage.setDriver('localStorageWrapper').then(function() {
+localforage.setDriver(LOCALSTORAGE).then(function() {
     alert(localforage.driver());
 });
   => 'localStorageWrapper'
