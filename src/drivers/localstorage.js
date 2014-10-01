@@ -151,7 +151,8 @@
                 var keys = [];
 
                 for (var i = 0; i < length; i++) {
-                    keys.push(localStorage.key(i).substring(dbInfo.keyPrefix.length));
+                    keys.push(localStorage.key(i)
+                                          .substring(dbInfo.keyPrefix.length));
                 }
 
                 resolve(keys);
@@ -296,7 +297,8 @@
         //
         // TODO: See why those tests fail and use a better solution.
         if (value && (value.toString() === '[object ArrayBuffer]' ||
-                      value.buffer && value.buffer.toString() === '[object ArrayBuffer]')) {
+                      value.buffer &&
+                      value.buffer.toString() === '[object ArrayBuffer]')) {
             // Convert binary arrays to a string and prefix the string with
             // a special marker.
             var buffer;
@@ -347,9 +349,8 @@
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                if (this.console && this.console.error) {
-                    this.console.error("Couldn't convert value into a JSON string: ", value);
-                }
+                window.console.error("Couldn't convert value into a JSON " +
+                                     'string: ', value);
 
                 callback(e);
             }
