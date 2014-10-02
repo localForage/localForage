@@ -136,7 +136,7 @@ or wait for any <code class="prettyprint">onready</code> events.</p>
 <p>These APIs deal with getting and setting data in the offline store.</p>
 
 <h2 id="getitem">getItem</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Run this code once the value has been
 </span>    <span class="c1">// loaded from the offline store.
 </span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
@@ -146,7 +146,7 @@ or wait for any <code class="prettyprint">onready</code> events.</p>
 </span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 <span class="p">});</span>
 </pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">getItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">getItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Run this code once the value has been loaded
 </span>  <span class="c1"># from the offline store.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">value</span>
@@ -169,13 +169,13 @@ If the key does not exist, <code class="prettyprint">getItem()</code> will retur
 </aside></p>
 
 <h2 id="setitem">setItem</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="s1">'some value'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="s1">'some value'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Do other things once the value has been saved.
 </span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 <span class="p">});</span>
 
 <span class="c1">// Unlike localStorage, you can store non-strings.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'my array'</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'three'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'my array'</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'three'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// This will output `1`.
 </span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
 <span class="p">});</span>
@@ -195,12 +195,12 @@ If the key does not exist, <code class="prettyprint">getItem()</code> will retur
     <span class="p">}</span>
 <span class="p">});</span>
 </pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">getItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="s">"some value"</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="s">"some value"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Do other things once the value has been saved.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">value</span>
 
 <span class="c1"># Unlike localStorage, you can store non-strings.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"my array"</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s">"three"</span><span class="p">],</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"my array"</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s">"three"</span><span class="p">],</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># This will output `1`.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -282,12 +282,12 @@ objects:</p>
 </aside></p>
 
 <h2 id="length">length</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">length</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">numberOfKeys</span><span class="p">)</span> <span class="p">{</span>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">length</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">numberOfKeys</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Outputs the length of the database.
 </span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numberOfKeys</span><span class="p">);</span>
 <span class="p">});</span>
 </pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">length</span> <span class="p">(</span><span class="nx">numberOfKeys</span><span class="p">)</span> <span class="o">-&gt;</span>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">length</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">numberOfKeys</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Outputs the length of the database.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">numberOfKeys</span>
 </pre>
@@ -297,12 +297,12 @@ objects:</p>
 <p>Gets the number of keys in the offline store (i.e. its &ldquo;length&rdquo;).</p>
 
 <h2 id="key">key</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">key</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">keyName</span><span class="p">)</span> <span class="p">{</span>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">key</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keyName</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Name of the key.
 </span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">keyName</span><span class="p">);</span>
 <span class="p">});</span>
 </pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">key</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="nx">keyName</span><span class="p">)</span> <span class="o">-&gt;</span>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">key</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keyName</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Name of the key.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">keyName</span>
 </pre>
@@ -317,12 +317,12 @@ objects:</p>
 </aside></p>
 
 <h2 id="keys">keys</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">)</span> <span class="p">{</span>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keys</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// An array of all the key names.
 </span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">keys</span><span class="p">);</span>
 <span class="p">});</span>
 </pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">keys</span> <span class="p">(</span><span class="nx">keys</span><span class="p">)</span> <span class="o">-&gt;</span>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">keys</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keys</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># An array of all the key names.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">keys</span>
 </pre>
@@ -339,16 +339,16 @@ i.e. before you call <code class="prettyprint">getItem()</code> or <code class="
 
 <h2 id="setdriver">setDriver</h2>
 <pre class="highlight javascript"><span class="c1">// Force localStorage to be the backend driver.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">(</span><span class="s1">localforage.LOCALSTORAGE</span><span class="p">);</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">(</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">LOCALSTORAGE</span><span class="p">);</span>
 
 <span class="c1">// Supply a list of drivers, in order of preference.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">([</span><span class="s1">localforage.WEBSQL</span><span class="p">,</span> <span class="s1">localforage.INDEXEDDB</span><span class="p">]);</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">([</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">WEBSQL</span><span class="p">,</span> <span class="nx">localforage</span><span class="p">.</span><span class="nx">INDEXEDDB</span><span class="p">]);</span>
 </pre>
 <pre class="highlight coffeescript"><span class="c1"># Force localStorage to be the backend driver.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="s">localforage.LOCALSTORAGE</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="nx">localforage</span><span class="p">.</span><span class="na">LOCALSTORAGE</span>
 
 <span class="c1"># Supply a list of drivers, in order of preference.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="p">[</span><span class="s">localforage.WEBSQL</span><span class="p">,</span> <span class="s">localforage.INDEXEDDB</span><span class="p">]</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="p">[</span><span class="nx">localforage</span><span class="p">.</span><span class="na">WEBSQL</span><span class="p">,</span> <span class="nx">localforage</span><span class="p">.</span><span class="na">INDEXEDDB</span><span class="p">]</span>
 </pre>
 
 <p><code class="prettyprint">setDriver(driverName)</code><br>
@@ -419,7 +419,9 @@ values can be set:</p>
     The name of the datastore. In IndexedDB this is the
     <code>dataStore</code>, in WebSQL this is the name of the key/value
     table in the database. In localStorage, this is used as a key prefix for
-    all keys stored in localStorage.<br>
+    all keys stored in localStorage. <strong>Must be alphanumeric,
+    with underscores.</strong> Any non-alphanumeric characters will be converted
+    to underscores.<br>
     Default: <code>'keyvaluepairs'</code>
   </dd>
   <dt>version</dt>
