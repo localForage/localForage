@@ -170,13 +170,13 @@ alert(localforage.driver());
 
 // If you're using modules, things load asynchronously, so you should use
 // callbacks or promises to ensure things have loaded.
-localforage.setDriver(LOCALSTORAGE, function() {
+localforage.setDriver(localforage.LOCALSTORAGE, function() {
     alert(localforage.driver());
 });
   => 'localStorageWrapper'
 
 // The promises version:
-localforage.setDriver(LOCALSTORAGE).then(function() {
+localforage.setDriver(localforage.LOCALSTORAGE).then(function() {
     alert(localforage.driver());
 });
   => 'localStorageWrapper'
