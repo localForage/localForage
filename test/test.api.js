@@ -83,6 +83,7 @@ DRIVERS.forEach(function(driverName) {
         });
 
         beforeEach(function(done) {
+            localStorage.clear();
             localforage.clear(done);
         });
 
@@ -354,6 +355,22 @@ DRIVERS.forEach(function(driverName) {
                 done();
             });
         });
+
+        if (driverName === localforage.LOCALSTORAGE) {
+            it('removes only own items upon clear', function(done) {
+                localStorage.setItem('local', 'forage');
+
+                localforage.setItem('office', 'Initech').then(function() {
+                    return localforage.clear();
+                }).then(function() {
+                    expect(localStorage.getItem('local')).to.be('forage');
+
+                    localStorage.clear();
+
+                    done();
+                });
+            });
+        }
 
         it('has a length after saving an item [callback]', function(done) {
             localforage.length(function(err, length) {
