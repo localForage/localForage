@@ -1,6 +1,6 @@
 /*!
     localForage -- Offline Storage, Improved
-    Version 1.0.0
+    Version 1.0.1
     http://mozilla.github.io/localForage
     (c) 2013-2014 Mozilla, Apache License 2.0
 */
@@ -1131,7 +1131,7 @@ requireModule('promise/polyfill').polyfill();
             _this.ready().then(function() {
                 var keyPrefix = _this._dbInfo.keyPrefix;
 
-                for (var i = localStorage.length-1; i >= 0; i--) {
+                for (var i = localStorage.length - 1; i >= 0; i--) {
                     var key = localStorage.key(i);
 
                     if (key.indexOf(keyPrefix) === 0) {
