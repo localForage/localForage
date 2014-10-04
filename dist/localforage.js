@@ -1129,7 +1129,15 @@ requireModule('promise/polyfill').polyfill();
         var _this = this;
         var promise = new Promise(function(resolve, reject) {
             _this.ready().then(function() {
-                localStorage.clear();
+                var keyPrefix = _this._dbInfo.keyPrefix;
+
+                for (var i = localStorage.length-1; i >= 0; i--) {
+                    var key = localStorage.key(i);
+
+                    if (key.indexOf(keyPrefix) === 0) {
+                        localStorage.removeItem(key);
+                    }
+                }
 
                 resolve();
             })["catch"](reject);
