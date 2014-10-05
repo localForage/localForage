@@ -20,6 +20,7 @@
     "requireSpacesInFunctionExpression": {
         "beforeOpeningCurlyBrace": true
     },
+    "safeContextKeyword": ["globalObject", "self"],
     "validateQuoteMarks": {
         "escape": true,
         "mark": "'"

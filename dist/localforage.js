@@ -711,7 +711,7 @@ requireModule('promise/polyfill').polyfill();
     // Open the IndexedDB database (automatically creates one if one didn't
     // previously exist), using any options set in the config.
     function _initStorage(options) {
-        var _this = this;
+        var self = this;
         var dbInfo = {
             db: null
         };
@@ -733,14 +733,14 @@ requireModule('promise/polyfill').polyfill();
             };
             openreq.onsuccess = function() {
                 dbInfo.db = openreq.result;
-                _this._dbInfo = dbInfo;
+                self._dbInfo = dbInfo;
                 resolve();
             };
         });
     }
 
     function getItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -750,8 +750,8 @@ requireModule('promise/polyfill').polyfill();
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
                 var req = store.get(key);
@@ -776,7 +776,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function setItem(key, value, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -786,8 +786,8 @@ requireModule('promise/polyfill').polyfill();
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
 
@@ -824,7 +824,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function removeItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -834,8 +834,8 @@ requireModule('promise/polyfill').polyfill();
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
 
@@ -870,11 +870,11 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function clear(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
                 var req = store.clear();
@@ -894,11 +894,11 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function length(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
                 var req = store.count();
@@ -918,7 +918,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function key(n, callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
             if (n < 0) {
@@ -927,8 +927,8 @@ requireModule('promise/polyfill').polyfill();
                 return;
             }
 
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
 
@@ -971,11 +971,11 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function keys(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
 
@@ -1091,7 +1091,7 @@ requireModule('promise/polyfill').polyfill();
 
     // Config the localStorage backend, using options set in the config.
     function _initStorage(options) {
-        var _this = this;
+        var self = this;
         var dbInfo = {};
         if (options) {
             for (var i in options) {
@@ -1101,7 +1101,7 @@ requireModule('promise/polyfill').polyfill();
 
         dbInfo.keyPrefix = dbInfo.name + '/';
 
-        _this._dbInfo = dbInfo;
+        self._dbInfo = dbInfo;
         return Promise.resolve();
     }
 
@@ -1126,10 +1126,10 @@ requireModule('promise/polyfill').polyfill();
     // Remove all keys from the datastore, effectively destroying all data in
     // the app's key/value store!
     function clear(callback) {
-        var _this = this;
+        var self = this;
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var keyPrefix = _this._dbInfo.keyPrefix;
+            self.ready().then(function() {
+                var keyPrefix = self._dbInfo.keyPrefix;
 
                 for (var i = localStorage.length - 1; i >= 0; i--) {
                     var key = localStorage.key(i);
@@ -1151,7 +1151,7 @@ requireModule('promise/polyfill').polyfill();
     // library in Gaia, we don't modify return values at all. If a key's value
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -1161,9 +1161,9 @@ requireModule('promise/polyfill').polyfill();
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
+            self.ready().then(function() {
                 try {
-                    var dbInfo = _this._dbInfo;
+                    var dbInfo = self._dbInfo;
                     var result = localStorage.getItem(dbInfo.keyPrefix + key);
 
                     // If a result was found, parse it from the serialized
@@ -1187,10 +1187,10 @@ requireModule('promise/polyfill').polyfill();
 
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
-        var _this = this;
+        var self = this;
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var result;
                 try {
                     result = localStorage.key(n);
@@ -1212,10 +1212,10 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function keys(callback) {
-        var _this = this;
+        var self = this;
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var length = localStorage.length;
                 var keys = [];
 
@@ -1234,9 +1234,9 @@ requireModule('promise/polyfill').polyfill();
 
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
-        var _this = this;
+        var self = this;
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
+            self.ready().then(function() {
                 var result = localStorage.length;
 
                 resolve(result);
@@ -1249,7 +1249,7 @@ requireModule('promise/polyfill').polyfill();
 
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -1259,8 +1259,8 @@ requireModule('promise/polyfill').polyfill();
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 localStorage.removeItem(dbInfo.keyPrefix + key);
 
                 resolve();
@@ -1431,7 +1431,7 @@ requireModule('promise/polyfill').polyfill();
     // in case you want to operate on that value only after you're sure it
     // saved, or something like that.
     function setItem(key, value, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -1441,7 +1441,7 @@ requireModule('promise/polyfill').polyfill();
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
+            self.ready().then(function() {
                 // Convert undefined values to null.
                 // https://github.com/mozilla/localForage/pull/42
                 if (value === undefined) {
@@ -1456,7 +1456,7 @@ requireModule('promise/polyfill').polyfill();
                         reject(error);
                     } else {
                         try {
-                            var dbInfo = _this._dbInfo;
+                            var dbInfo = self._dbInfo;
                             localStorage.setItem(dbInfo.keyPrefix + key, value);
                         } catch (e) {
                             // localStorage capacity exceeded.
@@ -1559,7 +1559,7 @@ requireModule('promise/polyfill').polyfill();
     // Open the WebSQL database (automatically creates one if one didn't
     // previously exist), using any options set in the config.
     function _initStorage(options) {
-        var _this = this;
+        var self = this;
         var dbInfo = {
             db: null
         };
@@ -1578,8 +1578,8 @@ requireModule('promise/polyfill').polyfill();
                 dbInfo.db = openDatabase(dbInfo.name, String(dbInfo.version),
                                          dbInfo.description, dbInfo.size);
             } catch (e) {
-                return _this.setDriver("localStorageWrapper").then(function() {
-    return _this._initStorage(options);
+                return self.setDriver("localStorageWrapper").then(function() {
+    return self._initStorage(options);
 }).then(resolve)["catch"](reject);
             }
 
@@ -1588,7 +1588,7 @@ requireModule('promise/polyfill').polyfill();
                 t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
                              ' (id INTEGER PRIMARY KEY, key unique, value)', [],
                              function() {
-                    _this._dbInfo = dbInfo;
+                    self._dbInfo = dbInfo;
                     resolve();
                 }, function(t, error) {
                     reject(error);
@@ -1598,7 +1598,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function getItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -1608,8 +1608,8 @@ requireModule('promise/polyfill').polyfill();
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('SELECT * FROM ' + dbInfo.storeName +
                                  ' WHERE key = ? LIMIT 1', [key],
@@ -1637,7 +1637,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function setItem(key, value, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -1647,7 +1647,7 @@ requireModule('promise/polyfill').polyfill();
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
+            self.ready().then(function() {
                 // The localStorage API doesn't return undefined values in an
                 // "expected" way, so undefined is always cast to null in all
                 // drivers. See: https://github.com/mozilla/localForage/pull/42
@@ -1662,7 +1662,7 @@ requireModule('promise/polyfill').polyfill();
                     if (error) {
                         reject(error);
                     } else {
-                        var dbInfo = _this._dbInfo;
+                        var dbInfo = self._dbInfo;
                         dbInfo.db.transaction(function(t) {
                             t.executeSql('INSERT OR REPLACE INTO ' +
                                          dbInfo.storeName +
@@ -1695,7 +1695,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function removeItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -1705,8 +1705,8 @@ requireModule('promise/polyfill').polyfill();
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName +
                                  ' WHERE key = ?', [key], function() {
@@ -1727,11 +1727,11 @@ requireModule('promise/polyfill').polyfill();
     // Deletes every item in the table.
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName, [],
                                  function() {
@@ -1750,11 +1750,11 @@ requireModule('promise/polyfill').polyfill();
     // Does a simple `COUNT(key)` to get the number of items stored in
     // localForage.
     function length(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     // Ahhh, SQL makes this one soooooo easy.
                     t.executeSql('SELECT COUNT(key) as c FROM ' +
@@ -1782,11 +1782,11 @@ requireModule('promise/polyfill').polyfill();
     // procedure for the `setItem()` SQL would solve this problem?
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName +
                                  ' WHERE id = ? LIMIT 1', [n + 1],
@@ -1806,11 +1806,11 @@ requireModule('promise/polyfill').polyfill();
     }
 
     function keys(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName, [],
                                  function(t, results) {
@@ -2109,16 +2109,16 @@ requireModule('promise/polyfill').polyfill();
     // as the name of the database because it's not the one we'll operate on,
     // but it's useful to make sure its using the right spec.
     // See: https://github.com/mozilla/localForage/issues/128
-    var driverSupport = (function(_this) {
+    var driverSupport = (function(self) {
         // Initialize IndexedDB; fall back to vendor-prefixed versions
         // if needed.
-        var indexedDB = indexedDB || _this.indexedDB || _this.webkitIndexedDB ||
-                        _this.mozIndexedDB || _this.OIndexedDB ||
-                        _this.msIndexedDB;
+        var indexedDB = indexedDB || self.indexedDB || self.webkitIndexedDB ||
+                        self.mozIndexedDB || self.OIndexedDB ||
+                        self.msIndexedDB;
 
         var result = {};
 
-        result[DriverType.WEBSQL] = !!_this.openDatabase;
+        result[DriverType.WEBSQL] = !!self.openDatabase;
         result[DriverType.INDEXEDDB] = !!(function() {
             try {
                 return (indexedDB &&
@@ -2165,9 +2165,7 @@ requireModule('promise/polyfill').polyfill();
         };
     }
 
-    // The actual localForage object that we expose as a module or via a
-    // global. It's extended by pulling in one of our other libraries.
-    var _this = this;
+    var globalObject = this;
 
     function LocalForage(options) {
         this._config = extend({}, DefaultConfig, options);
@@ -2292,7 +2290,7 @@ requireModule('promise/polyfill').polyfill();
 
                 self._extend(driver);
             } else {
-                self._extend(_this[driverName]);
+                self._extend(globalObject[driverName]);
             }
 
             resolve();
@@ -2332,6 +2330,8 @@ requireModule('promise/polyfill').polyfill();
         return new LocalForage(options);
     };
 
+    // The actual localForage object that we expose as a module or via a
+    // global. It's extended by pulling in one of our other libraries.
     var localForage = new LocalForage();
 
     // We allow localForage to be declared as a module or as a library
