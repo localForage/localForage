@@ -1,28 +1,28 @@
 {
-  "asi": false,
-  "bitwise": true,
-  "browser": true,
-  "curly": true,
-  "eqeqeq": true,
-  "eqnull": true,
-  "esnext": false,
-  "immed": true,
-  "latedef": true,
-  "newcap": true,
-  "noarg": true,
-  "nonew": true,
-  "quotmark": false,
-  "strict": false,
-  "trailing": false,
-  "undef": true,
-  "unused": true,
+    "asi": false,
+    "bitwise": true,
+    "browser": true,
+    "curly": true,
+    "eqeqeq": true,
+    "eqnull": true,
+    "esnext": false,
+    "immed": true,
+    "latedef": true,
+    "newcap": true,
+    "noarg": true,
+    "nonew": true,
+    "quotmark": false,
+    "strict": false,
+    "trailing": false,
+    "undef": true,
+    "unused": true,
 
-  "validthis": true,
+    "validthis": true,
 
-  "globals": {
-    "define": true,
-    "localforage": true,
-    "module": true,
-    "require": true
-  }
+    "globals": {
+      "define": true,
+      "localforage": true,
+      "module": true,
+      "require": true
+    }
 }
