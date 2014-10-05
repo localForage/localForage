@@ -47,7 +47,7 @@
     // Open the WebSQL database (automatically creates one if one didn't
     // previously exist), using any options set in the config.
     function _initStorage(options) {
-        var _this = this;
+        var self = this;
         var dbInfo = {
             db: null
         };
@@ -66,9 +66,9 @@
                 dbInfo.db = openDatabase(dbInfo.name, String(dbInfo.version),
                                          dbInfo.description, dbInfo.size);
             } catch (e) {
-                return _this.setDriver('localStorageWrapper')
+                return self.setDriver('localStorageWrapper')
                     .then(function() {
-                        return _this._initStorage(options);
+                        return self._initStorage(options);
                     })
                     .then(resolve)
                     .catch(reject);
@@ -79,7 +79,7 @@
                 t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
                              ' (id INTEGER PRIMARY KEY, key unique, value)', [],
                              function() {
-                    _this._dbInfo = dbInfo;
+                    self._dbInfo = dbInfo;
                     resolve();
                 }, function(t, error) {
                     reject(error);
@@ -89,7 +89,7 @@
     }
 
     function getItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -99,8 +99,8 @@
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('SELECT * FROM ' + dbInfo.storeName +
                                  ' WHERE key = ? LIMIT 1', [key],
@@ -128,7 +128,7 @@
     }
 
     function setItem(key, value, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -138,7 +138,7 @@
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
+            self.ready().then(function() {
                 // The localStorage API doesn't return undefined values in an
                 // "expected" way, so undefined is always cast to null in all
                 // drivers. See: https://github.com/mozilla/localForage/pull/42
@@ -153,7 +153,7 @@
                     if (error) {
                         reject(error);
                     } else {
-                        var dbInfo = _this._dbInfo;
+                        var dbInfo = self._dbInfo;
                         dbInfo.db.transaction(function(t) {
                             t.executeSql('INSERT OR REPLACE INTO ' +
                                          dbInfo.storeName +
@@ -186,7 +186,7 @@
     }
 
     function removeItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -196,8 +196,8 @@
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName +
                                  ' WHERE key = ?', [key], function() {
@@ -218,11 +218,11 @@
     // Deletes every item in the table.
     // TODO: Find out if this resets the AUTO_INCREMENT number.
     function clear(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName, [],
                                  function() {
@@ -241,11 +241,11 @@
     // Does a simple `COUNT(key)` to get the number of items stored in
     // localForage.
     function length(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     // Ahhh, SQL makes this one soooooo easy.
                     t.executeSql('SELECT COUNT(key) as c FROM ' +
@@ -273,11 +273,11 @@
     // procedure for the `setItem()` SQL would solve this problem?
     // TODO: Don't change ID on `setItem()`.
     function key(n, callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName +
                                  ' WHERE id = ? LIMIT 1', [n + 1],
@@ -297,11 +297,11 @@
     }
 
     function keys(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('SELECT key FROM ' + dbInfo.storeName, [],
                                  function(t, results) {

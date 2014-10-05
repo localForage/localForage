@@ -60,16 +60,16 @@
     // as the name of the database because it's not the one we'll operate on,
     // but it's useful to make sure its using the right spec.
     // See: https://github.com/mozilla/localForage/issues/128
-    var driverSupport = (function(_this) {
+    var driverSupport = (function(self) {
         // Initialize IndexedDB; fall back to vendor-prefixed versions
         // if needed.
-        var indexedDB = indexedDB || _this.indexedDB || _this.webkitIndexedDB ||
-                        _this.mozIndexedDB || _this.OIndexedDB ||
-                        _this.msIndexedDB;
+        var indexedDB = indexedDB || self.indexedDB || self.webkitIndexedDB ||
+                        self.mozIndexedDB || self.OIndexedDB ||
+                        self.msIndexedDB;
 
         var result = {};
 
-        result[DriverType.WEBSQL] = !!_this.openDatabase;
+        result[DriverType.WEBSQL] = !!self.openDatabase;
         result[DriverType.INDEXEDDB] = !!(function() {
             try {
                 return (indexedDB &&
@@ -116,9 +116,7 @@
         };
     }
 
-    // The actual localForage object that we expose as a module or via a
-    // global. It's extended by pulling in one of our other libraries.
-    var _this = this;
+    var globalObject = this;
 
     function LocalForage(options) {
         this._config = extend({}, DefaultConfig, options);
@@ -243,7 +241,7 @@
 
                 self._extend(driver);
             } else {
-                self._extend(_this[driverName]);
+                self._extend(globalObject[driverName]);
             }
 
             resolve();
@@ -283,6 +281,8 @@
         return new LocalForage(options);
     };
 
+    // The actual localForage object that we expose as a module or via a
+    // global. It's extended by pulling in one of our other libraries.
     var localForage = new LocalForage();
 
     // We allow localForage to be declared as a module or as a library
