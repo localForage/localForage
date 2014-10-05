@@ -116,8 +116,6 @@
         };
     }
 
-    // The actual localForage object that we expose as a module or via a
-    // global. It's extended by pulling in one of our other libraries.
     var globalObject = this;
 
     function LocalForage(options) {
@@ -283,6 +281,8 @@
         return new LocalForage(options);
     };
 
+    // The actual localForage object that we expose as a module or via a
+    // global. It's extended by pulling in one of our other libraries.
     var localForage = new LocalForage();
 
     // We allow localForage to be declared as a module or as a library
