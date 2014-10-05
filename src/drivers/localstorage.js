@@ -30,7 +30,7 @@
 
     // Config the localStorage backend, using options set in the config.
     function _initStorage(options) {
-        var _this = this;
+        var self = this;
         var dbInfo = {};
         if (options) {
             for (var i in options) {
@@ -40,7 +40,7 @@
 
         dbInfo.keyPrefix = dbInfo.name + '/';
 
-        _this._dbInfo = dbInfo;
+        self._dbInfo = dbInfo;
         return Promise.resolve();
     }
 
@@ -65,10 +65,10 @@
     // Remove all keys from the datastore, effectively destroying all data in
     // the app's key/value store!
     function clear(callback) {
-        var _this = this;
+        var self = this;
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var keyPrefix = _this._dbInfo.keyPrefix;
+            self.ready().then(function() {
+                var keyPrefix = self._dbInfo.keyPrefix;
 
                 for (var i = localStorage.length - 1; i >= 0; i--) {
                     var key = localStorage.key(i);
@@ -90,7 +90,7 @@
     // library in Gaia, we don't modify return values at all. If a key's value
     // is `undefined`, we pass that value to the callback function.
     function getItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -100,9 +100,9 @@
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
+            self.ready().then(function() {
                 try {
-                    var dbInfo = _this._dbInfo;
+                    var dbInfo = self._dbInfo;
                     var result = localStorage.getItem(dbInfo.keyPrefix + key);
 
                     // If a result was found, parse it from the serialized
@@ -126,10 +126,10 @@
 
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
-        var _this = this;
+        var self = this;
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var result;
                 try {
                     result = localStorage.key(n);
@@ -151,10 +151,10 @@
     }
 
     function keys(callback) {
-        var _this = this;
+        var self = this;
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var length = localStorage.length;
                 var keys = [];
 
@@ -173,9 +173,9 @@
 
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
-        var _this = this;
+        var self = this;
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
+            self.ready().then(function() {
                 var result = localStorage.length;
 
                 resolve(result);
@@ -188,7 +188,7 @@
 
     // Remove an item from the store, nice and simple.
     function removeItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -198,8 +198,8 @@
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 localStorage.removeItem(dbInfo.keyPrefix + key);
 
                 resolve();
@@ -370,7 +370,7 @@
     // in case you want to operate on that value only after you're sure it
     // saved, or something like that.
     function setItem(key, value, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -380,7 +380,7 @@
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
+            self.ready().then(function() {
                 // Convert undefined values to null.
                 // https://github.com/mozilla/localForage/pull/42
                 if (value === undefined) {
@@ -395,7 +395,7 @@
                         reject(error);
                     } else {
                         try {
-                            var dbInfo = _this._dbInfo;
+                            var dbInfo = self._dbInfo;
                             localStorage.setItem(dbInfo.keyPrefix + key, value);
                         } catch (e) {
                             // localStorage capacity exceeded.

@@ -22,7 +22,7 @@
     // Open the IndexedDB database (automatically creates one if one didn't
     // previously exist), using any options set in the config.
     function _initStorage(options) {
-        var _this = this;
+        var self = this;
         var dbInfo = {
             db: null
         };
@@ -44,14 +44,14 @@
             };
             openreq.onsuccess = function() {
                 dbInfo.db = openreq.result;
-                _this._dbInfo = dbInfo;
+                self._dbInfo = dbInfo;
                 resolve();
             };
         });
     }
 
     function getItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -61,8 +61,8 @@
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
                 var req = store.get(key);
@@ -87,7 +87,7 @@
     }
 
     function setItem(key, value, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -97,8 +97,8 @@
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
 
@@ -135,7 +135,7 @@
     }
 
     function removeItem(key, callback) {
-        var _this = this;
+        var self = this;
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
@@ -145,8 +145,8 @@
         }
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
 
@@ -181,11 +181,11 @@
     }
 
     function clear(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
                               .objectStore(dbInfo.storeName);
                 var req = store.clear();
@@ -205,11 +205,11 @@
     }
 
     function length(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
                 var req = store.count();
@@ -229,7 +229,7 @@
     }
 
     function key(n, callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
             if (n < 0) {
@@ -238,8 +238,8 @@
                 return;
             }
 
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
 
@@ -282,11 +282,11 @@
     }
 
     function keys(callback) {
-        var _this = this;
+        var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            _this.ready().then(function() {
-                var dbInfo = _this._dbInfo;
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                               .objectStore(dbInfo.storeName);
 
