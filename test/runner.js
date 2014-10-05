@@ -1,11 +1,9 @@
 // Run before window.onload to make sure the specs have access to describe()
 // and other mocha methods. All feels very hacky though :-/
-var mocha = this.mocha;
-
-mocha.setup('bdd');
+this.mocha.setup('bdd');
 
 function runTests() {
-    var runner = mocha.run();
+    var runner = this.mocha.run();
 
     var failedTests = [];
 
@@ -38,6 +36,18 @@ function runTests() {
     runner.on('fail', logFailure);
 }
 
+if (!Array.prototype.forEach) {
+    Array.prototype.forEach = function(callback, thisArg) {
+        if (typeof(callback) !== "function") {
+            throw new TypeError(callback + " is not a function!");
+        }
+        var len = this.length;
+        for (var i = 0; i < len; i++) {
+            callback.call(thisArg, this[i], i, this)
+        }
+    }
+}
+
 var require = this.require;
 if (require) {
     requirejs.config({
@@ -57,6 +67,8 @@ if (require) {
             '/test/test.webworkers.js'
         ], runTests);
     });
-} else {
+} else if (this.addEventListener) {
     this.addEventListener('load', runTests);
+} else if (this.attachEvent) {
+    this.attachEvent('onload', runTests);
 }

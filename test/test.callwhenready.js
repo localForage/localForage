@@ -1,7 +1,5 @@
 /* global beforeEach:true */
-var mocha = this.mocha;
-
-mocha.setup('bdd');
+this.mocha.setup('bdd');
 
 beforeEach(function(done) {
     var previousDriver = localforage.driver();
