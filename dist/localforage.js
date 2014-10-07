@@ -2133,7 +2133,8 @@ requireModule('promise/polyfill').polyfill();
         result[DriverType.LOCALSTORAGE] = !!(function() {
             try {
                 return (localStorage &&
-                        typeof localStorage.setItem === 'function');
+                        ('setItem' in localStorage) &&
+                        (localStorage.setItem));
             } catch (e) {
                 return false;
             }

@@ -32,7 +32,7 @@ describe('localForage', function() {
             (localforage.supports(localforage.WEBSQL) &&
              localforage.WEBSQL) ||
             (localforage.supports(localforage.LOCALSTORAGE) &&
-             localforage.localStorage);
+             localforage.LOCALSTORAGE);
     });
 
     it('automatically selects the most appropriate driver (' +
