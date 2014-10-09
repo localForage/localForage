@@ -1437,6 +1437,21 @@
 
         result[DriverType.WEBSQL] = !!self.openDatabase;
         result[DriverType.INDEXEDDB] = !!(function() {
+            // We mimic PouchDB here; just UA test for Safari (which, as of
+            // iOS 8/Yosemite, doesn't properly support IndexedDB).
+            // IndexedDB support is broken and different from Blink's.
+            // This is faster than the test case (and it's sync), so we just
+            // do this. *SIGH*
+            // http://bl.ocks.org/nolanlawson/raw/c83e9039edf2278047e9/
+            //
+            // We test for openDatabase because IE Mobile identifies itself
+            // as Safari. Oh the lulz...
+            if (typeof self.openDatabase !== 'undefined' && self.navigator &&
+                self.navigator.userAgent &&
+                /Safari/.test(navigator.userAgent) &&
+                !/Chrome/.test(navigator.userAgent)) {
+                return false;
+            }
             try {
                 return (indexedDB &&
                         typeof indexedDB.open === 'function' &&
@@ -1626,6 +1641,8 @@
         extend(this, libraryMethodsAndProperties);
     };
 
+    // Used to determine which driver we should use as the backend for this
+    // instance of localForage.
     LocalForage.prototype._getFirstSupportedDriver = function(drivers) {
         var isArray = Array.isArray || function(arg) {
             return Object.prototype.toString.call(arg) === '[object Array]';
