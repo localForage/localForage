@@ -89,8 +89,9 @@
             try {
                 return (indexedDB &&
                         typeof indexedDB.open === 'function' &&
-                        indexedDB.open('_localforage_spec_test', 1)
-                        .onupgradeneeded === null);
+                        // some Samsung/HTC Android 4.0-4.3 devices
+                        // have older IndexedDB specs
+                        typeof IDBKeyRange === 'function';
             } catch (e) {
                 return false;
             }
