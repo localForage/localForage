@@ -87,11 +87,13 @@
                 return false;
             }
             try {
-                return (indexedDB &&
-                        typeof indexedDB.open === 'function' &&
-                        // some Samsung/HTC Android 4.0-4.3 devices
-                        // have older IndexedDB specs
-                        typeof IDBKeyRange === 'function';
+                return indexedDB &&
+                       typeof indexedDB.open === 'function' &&
+                       // Some Samsung/HTC Android 4.0-4.3 devices
+                       // have older IndexedDB specs; if this isn't available
+                       // their IndexedDB is too old for us to use.
+                       // (Replaces the onupgradeneeded test.)
+                       typeof IDBKeyRange === 'function';
             } catch (e) {
                 return false;
             }
