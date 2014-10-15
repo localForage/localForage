@@ -451,9 +451,8 @@ DRIVERS.forEach(function(driverName) {
             });
         });
     });
-
     
-    describe(driverName + ' driver instance', function() {
+    describe(driverName + ' driver multiple instances', function() {
         'use strict';
         var localforage2 = null;
         var Promise;
@@ -663,6 +662,34 @@ DRIVERS.forEach(function(driverName) {
                 localforage[methodName]().then(null, function(/*err*/) {
                     done();
                 });
+            });
+        });
+    });
+});
+
+DRIVERS.forEach(function(driverName) {
+    describe(driverName + ' driver instance', function() {
+        it('creates a new instance and sets the driver', function(done) {
+            var localforage2 = localforage.createInstance({
+                name: 'storage2',
+                driver: driverName,
+                // We need a small value here
+                // otherwise local PhantomJS test
+                // will fail with SECURITY_ERR.
+                // TravisCI seem to work fine though.
+                size: 1024,
+                storeName: 'storagename2'
+            });
+
+            // since config actually uses setDriver which is async,
+            // and since driver() and supports() are not defered (are sync),
+            // we have to wait till an async method returns
+            localforage2.length().then(function() {
+                expect(localforage2.driver()).to.be(driverName);
+                done();
+            }, function() {
+                expect(localforage2.driver()).to.be(null);
+                done();
             });
         });
     });

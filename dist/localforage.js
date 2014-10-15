@@ -2084,6 +2084,7 @@ requireModule('promise/polyfill').polyfill();
 
     var DefaultConfig = {
         description: '',
+        driver: DefaultDriverOrder.slice(),
         name: 'localforage',
         // Default DB size is _JUST UNDER_ 5MB, as it's the highest size
         // we can use without a prompt.
@@ -2161,13 +2162,21 @@ requireModule('promise/polyfill').polyfill();
         return result;
     })(this);
 
+    var isArray = Array.isArray || function(arg) {
+        return Object.prototype.toString.call(arg) === '[object Array]';
+    };
+
     function extend(/*...*/) {
         for (var i = 1; i < arguments.length; i++) {
             var arg = arguments[i];
             if (arg) {
                 for (var key in arg) {
                     if (arg.hasOwnProperty(key)) {
-                        arguments[0][key] = arg[key];
+                        if (isArray(arg[key])) {
+                            arguments[0][key] = arg[key].slice();
+                        } else {
+                            arguments[0][key] = arg[key];
+                        }
                     }
                 }
             }
@@ -2200,7 +2209,7 @@ requireModule('promise/polyfill').polyfill();
             callWhenReady(this, LibraryMethods[i]);
         }
 
-        this.setDriver(DefaultDriverOrder);
+        this.setDriver(this._config.driver);
     }
 
     LocalForage.prototype.INDEXEDDB = DriverType.INDEXEDDB;
@@ -2229,6 +2238,12 @@ requireModule('promise/polyfill').polyfill();
                 }
 
                 this._config[i] = options[i];
+            }
+
+            // after all config options are set and
+            // the driver option is used, try setting it
+            if ('driver' in options && options.driver) {
+                this.setDriver(this._config.driver);
             }
 
             return true;
@@ -2315,6 +2330,11 @@ requireModule('promise/polyfill').polyfill();
             resolve();
         });
 
+        function setDriverToConfig() {
+            self._config.driver = self.driver();
+        }
+        this._driverSet.then(setDriverToConfig, setDriverToConfig);
+
         this._driverSet.then(callback, errorCallback);
         return this._driverSet;
     };
@@ -2330,10 +2350,6 @@ requireModule('promise/polyfill').polyfill();
     // Used to determine which driver we should use as the backend for this
     // instance of localForage.
     LocalForage.prototype._getFirstSupportedDriver = function(drivers) {
-        var isArray = Array.isArray || function(arg) {
-            return Object.prototype.toString.call(arg) === '[object Array]';
-        };
-
         if (drivers && isArray(drivers)) {
             for (var i = 0; i < drivers.length; i++) {
                 var driver = drivers[i];
