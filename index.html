@@ -387,11 +387,42 @@ order:</p>
 </span><span class="nx">localforage</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
     <span class="na">name</span><span class="p">:</span> <span class="s1">'Hipster PDA App'</span>
 <span class="p">});</span>
+
+<span class="c1">// This will force localStorage as the storage
+// driver even if another is available. You can
+// use this instead of `setDriver()`.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+    <span class="na">driver</span><span class="p">:</span> <span class="nx">localforage</span><span class="p">.</span><span class="nx">LOCALSTORAGE</span><span class="p">,</span>
+    <span class="na">name</span><span class="p">:</span> <span class="s1">'I-heart-localStorage'</span>
+<span class="p">});</span>
+
+<span class="c1">// This will use a different driver order.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+    <span class="na">driver</span><span class="p">:</span> <span class="p">[</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">WEBSQL</span><span class="p">,</span>
+             <span class="nx">localforage</span><span class="p">.</span><span class="nx">INDEXEDDB</span><span class="p">,</span>
+             <span class="nx">localforage</span><span class="p">.</span><span class="nx">LOCALSTORAGE</span><span class="p">],</span>
+    <span class="na">name</span><span class="p">:</span> <span class="s1">'WebSQL-Rox'</span>
+<span class="p">});</span>
 </pre>
 <pre class="highlight coffeescript"><span class="c1"># This will rename the database from "localforage"
 # to "Hipster PDA App".
 </span><span class="nx">localforage</span><span class="p">.</span><span class="na">config</span>
   <span class="na">name</span><span class="o">:</span> <span class="s">"Hipster PDA App"</span>
+
+
+<span class="c1"># This will force localStorage as the storage
+# driver even if another is available. You can
+# use this instead of `setDriver()`.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">config</span>
+  <span class="na">driver</span><span class="o">:</span> <span class="nx">localforage</span><span class="p">.</span><span class="na">LOCALSTORAGE</span>
+  <span class="na">name</span><span class="o">:</span> <span class="s">"I-heart-localStorage"</span>
+
+<span class="c1"># This will use a different driver order.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">config</span>
+  <span class="na">driver</span><span class="o">:</span> <span class="p">[</span><span class="nx">localforage</span><span class="p">.</span><span class="na">WEBSQL</span><span class="p">,</span>
+           <span class="nx">localforage</span><span class="p">.</span><span class="na">INDEXEDDB</span><span class="p">,</span>
+           <span class="nx">localforage</span><span class="p">.</span><span class="na">LOCALSTORAGE</span><span class="p">]</span>
+  <span class="na">name</span><span class="o">:</span> <span class="s">"WebSQL-Rox"</span>
 </pre>
 
 <p><code class="prettyprint">config(options)</code></p>
@@ -403,6 +434,11 @@ changes, so you can call <code class="prettyprint">config()</code> then <code cl
 values can be set:</p>
 
 <dl>
+  <dt>driver</dt>
+  <dd>
+    The preferred driver(s) to use. Same format as what is passed to `setDriver()`, above.<br>
+    Default: <code>[localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE]</code>
+  </dd>
   <dt>name</dt>
   <dd>
     The name of the database. May appear during storage limit prompts.
