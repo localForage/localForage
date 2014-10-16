@@ -358,6 +358,22 @@ If you would like to force usage of a particular driver you can use
 localforage.config({
     name: 'Hipster PDA App'
 });
+
+// This will force localStorage as the storage
+// driver even if another is available. You can
+// use this instead of `setDriver()`.
+localforage.config({
+    driver: localforage.LOCALSTORAGE,
+    name: 'I-heart-localStorage'
+});
+
+// This will use a different driver order.
+localforage.config({
+    driver: [localforage.WEBSQL,
+             localforage.INDEXEDDB,
+             localforage.LOCALSTORAGE],
+    name: 'WebSQL-Rox'
+});
 ```
 
 ```coffeescript
@@ -365,6 +381,21 @@ localforage.config({
 # to "Hipster PDA App".
 localforage.config
   name: "Hipster PDA App"
+
+
+# This will force localStorage as the storage
+# driver even if another is available. You can
+# use this instead of `setDriver()`.
+localforage.config
+  driver: localforage.LOCALSTORAGE
+  name: "I-heart-localStorage"
+
+# This will use a different driver order.
+localforage.config
+  driver: [localforage.WEBSQL,
+           localforage.INDEXEDDB,
+           localforage.LOCALSTORAGE]
+  name: "WebSQL-Rox"
 ```
 
 `config(options)`
@@ -376,6 +407,11 @@ changes, so you can call `config()` then `setDriver()`. The following config
 values can be set:
 
 <dl>
+  <dt>driver</dt>
+  <dd>
+    The preferred driver(s) to use. Same format as what is passed to `setDriver()`, above.<br>
+    Default: <code>[localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE]</code>
+  </dd>
   <dt>name</dt>
   <dd>
     The name of the database. May appear during storage limit prompts.
