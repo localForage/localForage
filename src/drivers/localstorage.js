@@ -159,8 +159,9 @@
                 var keys = [];
 
                 for (var i = 0; i < length; i++) {
-                    keys.push(localStorage.key(i)
-                                          .substring(dbInfo.keyPrefix.length));
+                    if (localStorage.key(i).indexOf(dbInfo.keyPrefix) === 0) {
+                        keys.push(localStorage.key(i).substring(dbInfo.keyPrefix.length));
+                    }
                 }
 
                 resolve(keys);
@@ -175,10 +176,8 @@
     function length(callback) {
         var self = this;
         var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var result = localStorage.length;
-
-                resolve(result);
+            self.keys().then(function(keys) {
+                resolve(keys.length);
             }).catch(reject);
         });
 
