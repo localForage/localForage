@@ -209,7 +209,7 @@ localforage.config({
 
 **Note:** you must call `config()` _before_ you interact with your data. This
 means calling `config()` before using `getItem()`, `setItem()`, `removeItem()`,
-`clear()`, `key()`, or `length()`.
+`clear()`, `key()`, `keys()` or `length()`.
 
 ## RequireJS
 
