@@ -43,9 +43,9 @@ if (!Array.prototype.forEach) {
         }
         var len = this.length;
         for (var i = 0; i < len; i++) {
-            callback.call(thisArg, this[i], i, this)
+            callback.call(thisArg, this[i], i, this);
         }
-    }
+    };
 }
 
 var require = this.require;

@@ -1,6 +1,11 @@
 /* global describe:true, expect:true, it:true, dummyStorageDriver:true */
 describe('When Custom Drivers are used', function() {
     'use strict';
+    var errorMessage = 'Custom driver not compliant; see ' +
+                       'https://mozilla.github.io/localForage/#definedriver';
+    var nameErrorMessage = function(driverName) {
+        return 'Custom driver name already in use: ' + driverName;
+    };
 
     it('fails to define a no-name custom driver', function(done) {
         localforage.defineDriver({
@@ -14,7 +19,7 @@ describe('When Custom Drivers are used', function() {
             keys: function() {}
         }, null,  function(err) {
             expect(err).to.be.an(Error);
-            expect(err.message).to.be('Custom driver not complian.');
+            expect(err.message).to.be(errorMessage);
             done();
         });
     });
@@ -31,12 +36,13 @@ describe('When Custom Drivers are used', function() {
             keys: function() {}
         }).then(null, function(err) {
             expect(err).to.be.an(Error);
-            expect(err.message).to.be('Custom driver not complian.');
+            expect(err.message).to.be(errorMessage);
             done();
         });
     });
 
-    it('fails to define a custom driver with overlapping driver name', function(done) {
+    it('fails to define a custom driver with overlapping driver name',
+       function(done) {
         localforage.defineDriver({
             _driver: localforage.INDEXEDDB,
             _initStorage: function() {},
@@ -49,12 +55,13 @@ describe('When Custom Drivers are used', function() {
             keys: function() {}
         }, null,  function(err) {
             expect(err).to.be.an(Error);
-            expect(err.message).to.be('Custom driver not complian.');
+            expect(err.message).to.be(nameErrorMessage(localforage.INDEXEDDB));
             done();
         });
     });
 
-    it('fails to define a custom driver with overlapping driver name [promise]', function(done) {
+    it('fails to define a custom driver with overlapping driver name [promise]',
+       function(done) {
         localforage.defineDriver({
             _driver: localforage.INDEXEDDB,
             _initStorage: function() {},
@@ -67,7 +74,7 @@ describe('When Custom Drivers are used', function() {
             keys: function() {}
         }).then(null, function(err) {
             expect(err).to.be.an(Error);
-            expect(err.message).to.be('Custom driver not complian.');
+            expect(err.message).to.be(nameErrorMessage(localforage.INDEXEDDB));
             done();
         });
     });
@@ -82,12 +89,13 @@ describe('When Custom Drivers are used', function() {
             clear: function() {}
         }, null,  function(err) {
             expect(err).to.be.an(Error);
-            expect(err.message).to.be('Custom driver not complian.');
+            expect(err.message).to.be(errorMessage);
             done();
         });
     });
 
-    it('fails to define a custom driver with missing methods [promise]', function(done) {
+    it('fails to define a custom driver with missing methods [promise]',
+       function(done) {
         localforage.defineDriver({
             _driver: 'missingMethodsDriver',
             _initStorage: function() {},
@@ -97,7 +105,7 @@ describe('When Custom Drivers are used', function() {
             clear: function() {}
         }).then(null, function(err) {
             expect(err).to.be.an(Error);
-            expect(err.message).to.be('Custom driver not complian.');
+            expect(err.message).to.be(errorMessage);
             done();
         });
     });
@@ -136,9 +144,11 @@ describe('When Custom Drivers are used', function() {
         localforage.defineDriver(dummyStorageDriver, function() {
             localforage.setDriver(dummyStorageDriver._driver, function(err) {
                 expect(err).to.be(undefined);
-                localforage.setItem('testCallbackKey', 'testCallbackValue', function(err) {
+                localforage.setItem('testCallbackKey', 'testCallbackValue',
+                                    function(err) {
                     expect(err).to.be(null);
-                    localforage.getItem('testCallbackKey', function(err, value) {
+                    localforage.getItem('testCallbackKey',
+                                        function(err, value) {
                         expect(err).to.be(null);
                         expect(value).to.be('testCallbackValue');
                         done();

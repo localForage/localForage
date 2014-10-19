@@ -5,13 +5,15 @@
     var Promise = (typeof module !== 'undefined' && module.exports) ?
                   require('promise') : this.Promise;
 
+    // Custom drivers are stored here when `defineDriver()` is called.
+    // They are shared across all instances of localForage.
+    var CustomDrivers = {};
+
     var DriverType = {
         INDEXEDDB: 'asyncStorage',
         LOCALSTORAGE: 'localStorageWrapper',
         WEBSQL: 'webSQLStorage'
     };
-
-    var CustomDrivers = {};
 
     var DefaultDriverOrder = [
         DriverType.INDEXEDDB,
@@ -115,22 +117,23 @@
         return result;
     })(this);
 
-    var isLibraryDriver = function(driverName) {
-        for (var driver in DriverType) {
-            if (DriverType.hasOwnProperty(driver) && DriverType[driver] === driverName) {
-                return true;
-            }
-        }
-        return false;
-    };
-
     var isArray = Array.isArray || function(arg) {
         return Object.prototype.toString.call(arg) === '[object Array]';
     };
 
-    function extend(/*...*/) {
+    function callWhenReady(localForageInstance, libraryMethod) {
+        localForageInstance[libraryMethod] = function() {
+            var _args = arguments;
+            return localForageInstance.ready().then(function() {
+                return localForageInstance[libraryMethod].apply(localForageInstance, _args);
+            });
+        };
+    }
+
+    function extend() {
         for (var i = 1; i < arguments.length; i++) {
             var arg = arguments[i];
+
             if (arg) {
                 for (var key in arg) {
                     if (arg.hasOwnProperty(key)) {
@@ -143,16 +146,19 @@
                 }
             }
         }
+
         return arguments[0];
     }
 
-    function callWhenReady(localForageInstance, libraryMethod) {
-        localForageInstance[libraryMethod] = function() {
-            var _args = arguments;
-            return localForageInstance.ready().then(function() {
-                return localForageInstance[libraryMethod].apply(localForageInstance, _args);
-            });
-        };
+    function isLibraryDriver(driverName) {
+        for (var driver in DriverType) {
+            if (DriverType.hasOwnProperty(driver) &&
+                DriverType[driver] === driverName) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     var globalObject = this;
@@ -216,24 +222,38 @@
         }
     };
 
+    // Used to define a custom driver, shared across all instances of
+    // localForage.
     LocalForage.prototype.defineDriver = function(driverObject, callback,
-                                               errorCallback) {
+                                                  errorCallback) {
         var defineDriver = new Promise(function(resolve, reject) {
             try {
                 var driverName = driverObject._driver;
-                var complianceError = new Error('Custom driver not complian.');
+                var complianceError = new Error(
+                    'Custom driver not compliant; see ' +
+                    'https://mozilla.github.io/localForage/#definedriver'
+                );
+                var namingError = new Error(
+                    'Custom driver name already in use: ' + driverObject._driver
+                );
 
-                // A driver name should be defined and
-                // not overlap with the library defined drivers
-                if (!driverObject._driver || isLibraryDriver(driverObject._driver)) {
+                // A driver name should be defined and not overlap with the
+                // library-defined, default drivers.
+                if (!driverObject._driver) {
                     reject(complianceError);
+                    return;
+                }
+                if (isLibraryDriver(driverObject._driver)) {
+                    reject(namingError);
                     return;
                 }
 
                 var customDriverMethods = LibraryMethods.concat('_initStorage');
                 for (var i = 0; i < customDriverMethods.length; i++) {
                     var customDriverMethod = customDriverMethods[i];
-                    if (!customDriverMethod || !driverObject[customDriverMethod] || typeof driverObject[customDriverMethod] !== 'function') {
+                    if (!customDriverMethod ||
+                        !driverObject[customDriverMethod] ||
+                        typeof driverObject[customDriverMethod] !== 'function') {
                         reject(complianceError);
                         return;
                     }

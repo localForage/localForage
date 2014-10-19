@@ -450,3 +450,85 @@ values can be set:
   Unlike most of the localForage API, the <code>config</code> method is
   synchronous.
 </aside>
+
+# Custom Driver API
+
+You can write your own, custom driver for localForage since **version 1.1**.
+
+## defineDriver
+
+```javascript
+// Implement the driver here.
+var myCustomDriver = {
+    _driver: 'customDriverUniqueName',
+    _initStorage: function(options) {
+        // Custom implementation here...
+    },
+    clear: function(callback) {
+        // Custom implementation here...
+    },
+    getItem: function(key, callback) {
+        // Custom implementation here...
+    },
+    key: function(n, callback) {
+        // Custom implementation here...
+    },
+    keys: function(callback) {
+        // Custom implementation here...
+    },
+    length: function(callback) {
+        // Custom implementation here...
+    },
+    removeItem: function(key, callback) {
+        // Custom implementation here...
+    },
+    setItem: function(key, value, callback) {
+        // Custom implementation here...
+    }
+}
+
+// Add the driver to localForage.
+localforage.defineDriver(myCustomDriver);
+```
+
+```coffeescript
+# Implement the driver here.
+myCustomDriver =
+  _driver: 'customDriverUniqueName'
+  _initStorage: (options) ->
+    # Custom implementation here...
+  clear: (callback) ->
+    # Custom implementation here...
+  getItem: (key, callback) ->
+    # Custom implementation here...
+  key: (n, callback) ->
+    # Custom implementation here...
+  keys: (callback) ->
+    # Custom implementation here...
+  length: (callback) ->
+    # Custom implementation here...
+  removeItem: (key, callback) ->
+    # Custom implementation here...
+  setItem: (key, value, callback) ->
+    # Custom implementation here...
+
+# Add the driver to localForage.
+localforage.defineDriver(myCustomDriver)
+```
+
+You'll want to make sure you accept a `callback` argument and that you pass
+the same arguments to callbacks as the default drivers do. You'll also want to
+resolve or reject promises. Check any of the [default drivers][] for an idea
+of how to implement your own, custom driver.
+
+The custom implementation may contain a `_support` property that is either
+boolean (`true`/`false`) or returns a `Promise` that resolves to a boolean
+value. If `_support` is omitted, then `true` is the default value. You can
+use this to make sure the browser in use supports your custom driver.
+
+<aside class="notice">
+  These drivers are available to every instance of localForage on the page,
+  regardless of which instance you use to add the implementation.
+</aside>
+
+[default drivers]: https://github.com/mozilla/localForage/tree/master/src/drivers
