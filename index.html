@@ -478,6 +478,82 @@ values can be set:</p>
   synchronous.
 </aside></p>
 
+<h1 id="custom-driver-api">Custom Driver API</h1>
+
+<p>You can write your own, custom driver for localForage since <strong>version 1.1</strong>.</p>
+
+<h2 id="definedriver">defineDriver</h2>
+<pre class="highlight javascript"><span class="c1">// Implement the driver here.
+</span><span class="kd">var</span> <span class="nx">myCustomDriver</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">_driver</span><span class="p">:</span> <span class="s1">'customDriverUniqueName'</span><span class="p">,</span>
+    <span class="na">_initStorage</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Custom implementation here...
+</span>    <span class="p">},</span>
+    <span class="na">clear</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Custom implementation here...
+</span>    <span class="p">},</span>
+    <span class="na">getItem</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Custom implementation here...
+</span>    <span class="p">},</span>
+    <span class="na">key</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">n</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Custom implementation here...
+</span>    <span class="p">},</span>
+    <span class="na">keys</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Custom implementation here...
+</span>    <span class="p">},</span>
+    <span class="na">length</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Custom implementation here...
+</span>    <span class="p">},</span>
+    <span class="na">removeItem</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Custom implementation here...
+</span>    <span class="p">},</span>
+    <span class="na">setItem</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Custom implementation here...
+</span>    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Add the driver to localForage.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">defineDriver</span><span class="p">(</span><span class="nx">myCustomDriver</span><span class="p">);</span>
+</pre>
+<pre class="highlight coffeescript"><span class="c1"># Implement the driver here.
+</span><span class="nx">myCustomDriver</span> <span class="o">=</span>
+  <span class="na">_driver</span><span class="o">:</span> <span class="s">'customDriverUniqueName'</span>
+  <span class="na">_initStorage</span><span class="o">:</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="c1"># Custom implementation here...
+</span>  <span class="na">clear</span><span class="o">:</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="c1"># Custom implementation here...
+</span>  <span class="na">getItem</span><span class="o">:</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="c1"># Custom implementation here...
+</span>  <span class="na">key</span><span class="o">:</span> <span class="p">(</span><span class="nx">n</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="c1"># Custom implementation here...
+</span>  <span class="na">keys</span><span class="o">:</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="c1"># Custom implementation here...
+</span>  <span class="na">length</span><span class="o">:</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="c1"># Custom implementation here...
+</span>  <span class="na">removeItem</span><span class="o">:</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="c1"># Custom implementation here...
+</span>  <span class="na">setItem</span><span class="o">:</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="c1"># Custom implementation here...
+</span>
+<span class="c1"># Add the driver to localForage.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">defineDriver</span><span class="p">(</span><span class="nx">myCustomDriver</span><span class="p">)</span>
+</pre>
+
+<p>You&rsquo;ll want to make sure you accept a <code class="prettyprint">callback</code> argument and that you pass
+the same arguments to callbacks as the default drivers do. You&rsquo;ll also want to
+resolve or reject promises. Check any of the <a href="https://github.com/mozilla/localForage/tree/master/src/drivers">default drivers</a> for an idea
+of how to implement your own, custom driver.</p>
+
+<p>The custom implementation may contain a <code class="prettyprint">_support</code> property that is either
+boolean (<code class="prettyprint">true</code>/<code class="prettyprint">false</code>) or returns a <code class="prettyprint">Promise</code> that resolves to a boolean
+value. If <code class="prettyprint">_support</code> is omitted, then <code class="prettyprint">true</code> is the default value. You can
+use this to make sure the browser in use supports your custom driver.</p>
+
+<p><aside class="notice">
+  These drivers are available to every instance of localForage on the page,
+  regardless of which instance you use to add the implementation.
+</aside></p>
+
         
       </div>
       <div class="dark-box">
