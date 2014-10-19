@@ -3,7 +3,7 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
-### Next
+### [1.1](https://github.com/mozilla/localForage/releases/tag/1.1.0)
 * Custom drivers can be created using `defineDriver()`. ([#282](https://github.com/mozilla/localForage/pull/282); fixes [#267](https://github.com/mozilla/localForage/pull/267))
 
 ### [1.0.3](https://github.com/mozilla/localForage/releases/tag/1.0.3)
