@@ -3,10 +3,17 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
-### Next Version
+### Next
+* Custom drivers can be created using `defineDriver()`. ([#282](https://github.com/mozilla/localForage/pull/282); fixes [#267](https://github.com/mozilla/localForage/pull/267))
+
+### [1.0.3](https://github.com/mozilla/localForage/releases/tag/1.0.3)
+* `config()` accepts a new option: `driver`, so users can set the driver during config rather than using `setDriver()`. ([#273](https://github.com/mozilla/localForage/pull/273); fixes [#168](https://github.com/mozilla/localForage/pull/168))
+
+### [1.0](https://github.com/mozilla/localForage/releases/tag/1.0.0)
 
 * It is no longer necessary to queue commands using `ready()` when using RequireJS. ([723cc94e06](https://github.com/mozilla/localForage/commit/723cc94e06af4f5ba4c53fa65524ccd5f6c4432e))
 * `setDriver` now accepts an array of drivers to be used, in order of preference, instead of simply a string. The string option is still supported. (eg. now one can use `setDriver(['WebSQL', 'localStorage'])` instead of `setDriver('WebSQL')`)
+* node-style, error-first argument method signatures are used for callbacks. Promises don't use error-first method signatures; instead they supply an error to the promise's `reject()` function.
 
 ### [0.9](https://github.com/mozilla/localForage/releases/tag/0.9.1)
 
