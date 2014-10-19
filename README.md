@@ -251,6 +251,11 @@ If you have a driver you'd like listed, please
 [open an issue](https://github.com/mozilla/localForage/issues/new) to have it
 added to this list.
 
+## Custom Drivers
+
+You can create your own driver if you want; see the
+[`defineDriver`](https://mozilla.github.io/localForage/#definedriver) API docs.
+
 # Working on localForage
 
 You'll need [node/npm](http://nodejs.org/),
