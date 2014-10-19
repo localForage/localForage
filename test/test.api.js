@@ -99,6 +99,7 @@ DRIVERS.forEach(function(driverName) {
         it('has the localForage API', function() {
             expect(localforage._initStorage).to.be.a('function');
             expect(localforage.config).to.be.a('function');
+            expect(localforage.defineDriver).to.be.a('function');
             expect(localforage.driver).to.be.a('function');
             expect(localforage.supports).to.be.a('function');
             expect(localforage.getItem).to.be.a('function');

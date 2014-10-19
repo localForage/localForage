@@ -1376,6 +1376,8 @@
         WEBSQL: 'webSQLStorage'
     };
 
+    var CustomDrivers = {};
+
     var DefaultDriverOrder = [
         DriverType.INDEXEDDB,
         DriverType.WEBSQL,
@@ -1478,6 +1480,15 @@
         return result;
     })(this);
 
+    var isLibraryDriver = function(driverName) {
+        for (var driver in DriverType) {
+            if (DriverType.hasOwnProperty(driver) && DriverType[driver] === driverName) {
+                return true;
+            }
+        }
+        return false;
+    };
+
     var isArray = Array.isArray || function(arg) {
         return Object.prototype.toString.call(arg) === '[object Array]';
     };
@@ -1570,6 +1581,52 @@
         }
     };
 
+    LocalForage.prototype.defineDriver = function(driverObject, callback,
+                                               errorCallback) {
+        var defineDriver = new Promise(function(resolve, reject) {
+            try {
+                var driverName = driverObject._driver;
+                var complianceError = new Error('Custom driver not complian.');
+
+                // A driver name should be defined and
+                // not overlap with the library defined drivers
+                if (!driverObject._driver || isLibraryDriver(driverObject._driver)) {
+                    reject(complianceError);
+                    return;
+                }
+
+                var customDriverMethods = LibraryMethods.concat('_initStorage');
+                for (var i = 0; i < customDriverMethods.length; i++) {
+                    var customDriverMethod = customDriverMethods[i];
+                    if (!customDriverMethod || !driverObject[customDriverMethod] || typeof driverObject[customDriverMethod] !== 'function') {
+                        reject(complianceError);
+                        return;
+                    }
+                }
+
+                var supportPromise = Promise.resolve(true);
+                if ('_support'  in driverObject) {
+                    if (driverObject._support && typeof driverObject._support === 'function') {
+                        supportPromise = driverObject._support();
+                    } else {
+                        supportPromise = Promise.resolve(!!driverObject._support);
+                    }
+                }
+
+                supportPromise.then(function(supportResult) {
+                    driverSupport[driverName] = supportResult;
+                    CustomDrivers[driverName] = driverObject;
+                    resolve();
+                }, reject);
+            } catch (e) {
+                reject(e);
+            }
+        });
+
+        defineDriver.then(callback, errorCallback);
+        return defineDriver;
+    };
+
     LocalForage.prototype.driver = function() {
         return this._driver || null;
     };
@@ -1601,46 +1658,52 @@
 
         this._driverSet = new Promise(function(resolve, reject) {
             var driverName = self._getFirstSupportedDriver(drivers);
+            var error = new Error('No available storage method found.');
 
             if (!driverName) {
-                var error = new Error('No available storage method found.');
                 self._driverSet = Promise.reject(error);
-
                 reject(error);
-
                 return;
             }
 
             self._dbInfo = null;
             self._ready = null;
 
-            // We allow localForage to be declared as a module or as a
-            // library available without AMD/require.js.
-            if (moduleType === ModuleType.DEFINE) {
-                require([driverName], function(lib) {
-                    self._extend(lib);
+            if (isLibraryDriver(driverName)) {
+                // We allow localForage to be declared as a module or as a
+                // library available without AMD/require.js.
+                if (moduleType === ModuleType.DEFINE) {
+                    require([driverName], function(lib) {
+                        self._extend(lib);
 
-                    resolve();
-                });
+                        resolve();
+                    });
 
-                return;
-            } else if (moduleType === ModuleType.EXPORT) {
-                // Making it browserify friendly
-                var driver;
-                switch (driverName) {
-                    case self.INDEXEDDB:
-                        driver = require('./drivers/indexeddb');
-                        break;
-                    case self.LOCALSTORAGE:
-                        driver = require('./drivers/localstorage');
-                        break;
-                    case self.WEBSQL:
-                        driver = require('./drivers/websql');
+                    return;
+                } else if (moduleType === ModuleType.EXPORT) {
+                    // Making it browserify friendly
+                    var driver;
+                    switch (driverName) {
+                        case self.INDEXEDDB:
+                            driver = require('./drivers/indexeddb');
+                            break;
+                        case self.LOCALSTORAGE:
+                            driver = require('./drivers/localstorage');
+                            break;
+                        case self.WEBSQL:
+                            driver = require('./drivers/websql');
+                    }
+
+                    self._extend(driver);
+                } else {
+                    self._extend(globalObject[driverName]);
                 }
-
-                self._extend(driver);
+            } else if (CustomDrivers[driverName]) {
+                self._extend(CustomDrivers[driverName]);
             } else {
-                self._extend(globalObject[driverName]);
+                self._driverSet = Promise.reject(error);
+                reject(error);
+                return;
             }
 
             resolve();
