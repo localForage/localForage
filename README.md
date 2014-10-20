@@ -192,13 +192,14 @@ choice" will continue to be used.
 
 ## Configuration
 
-You can set database information, by giving the `window.localForageConfig`
-variable a hash of options. Available options are `name`, `storeName`,
-`version`, and `description`.
+You can set database information with the `config()` method.
+Available options are `driver`, `name`, `storeName`, `version`, and
+`description`.
 
 Example:
 ```javascript
 localforage.config({
+    driver      : localforage.WEBSQL, // Force WebSQL; same as using setDriver()
     name        : 'myApp',
     version     : 1.0,
     size        : 4980736, // Size of database, in bytes. WebSQL-only for now.
