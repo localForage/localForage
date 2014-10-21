@@ -94,6 +94,35 @@
         return promise;
     }
 
+    function iterate(callback) {
+        var self = this;
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                try {
+                    var db = self._dbInfo.db;
+
+                    for (var key in db) {
+                        var result = db[key];
+
+                        if (result) {
+                            result = _deserialize(result);
+                        }
+
+                        callback(result, key);
+                    }
+
+                    resolve();
+                } catch (e) {
+                    reject(e);
+                }
+            }).catch(reject);
+        });
+
+        executeCallback(promise, callback);
+        return promise;
+    }
+
     function key(n, callback) {
         var self = this;
         var promise = new Promise(function(resolve, reject) {
@@ -379,6 +408,7 @@
         _driver: 'dummyStorageDriver',
         _initStorage: _initStorage,
         // _supports: function() { return true; }
+        iterate: iterate,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,

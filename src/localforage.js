@@ -24,6 +24,7 @@
     var LibraryMethods = [
         'clear',
         'getItem',
+        'iterate',
         'key',
         'keys',
         'length',

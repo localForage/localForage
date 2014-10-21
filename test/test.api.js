@@ -88,6 +88,7 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('has a localStorage API', function() {
+            expect(localforage.iterate).to.be.a('function');
             expect(localforage.getItem).to.be.a('function');
             expect(localforage.setItem).to.be.a('function');
             expect(localforage.clear).to.be.a('function');
@@ -102,6 +103,7 @@ DRIVERS.forEach(function(driverName) {
             expect(localforage.defineDriver).to.be.a('function');
             expect(localforage.driver).to.be.a('function');
             expect(localforage.supports).to.be.a('function');
+            expect(localforage.iterate).to.be.a('function');
             expect(localforage.getItem).to.be.a('function');
             expect(localforage.setItem).to.be.a('function');
             expect(localforage.clear).to.be.a('function');
@@ -140,6 +142,7 @@ DRIVERS.forEach(function(driverName) {
                 done();
             });
         });
+
         it('returns null for undefined key [promise]', function(done) {
             localforage.getItem('key').then(function(value) {
                 expect(value).to.be(null);

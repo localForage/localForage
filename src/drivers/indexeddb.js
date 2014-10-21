@@ -56,7 +56,7 @@
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
             window.console.warn(key +
-                                ' used as a key, but it is not a string.');
+                ' used as a key, but it is not a string.');
             key = String(key);
         }
 
@@ -64,7 +64,7 @@
             self.ready().then(function() {
                 var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
-                              .objectStore(dbInfo.storeName);
+                    .objectStore(dbInfo.storeName);
                 var req = store.get(key);
 
                 req.onsuccess = function() {
@@ -74,6 +74,38 @@
                     }
 
                     resolve(value);
+                };
+
+                req.onerror = function() {
+                    reject(req.error);
+                };
+            }).catch(reject);
+        });
+
+        executeDeferedCallback(promise, callback);
+        return promise;
+    }
+
+    // Iterate over all items stored in indexeddb
+    function iterate(callback) {
+        var self = this;
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
+                var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
+                    .objectStore(dbInfo.storeName);
+                var req = store.openCursor();
+
+                req.onsuccess = function() {
+                    var cursor = req.result;
+
+                    if (cursor) {
+                        callback(cursor.value, cursor.key);
+                        cursor.continue();
+                    } else {
+                        resolve();
+                    }
                 };
 
                 req.onerror = function() {
@@ -351,6 +383,7 @@
     var asyncStorage = {
         _driver: 'asyncStorage',
         _initStorage: _initStorage,
+        iterate: iterate,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,

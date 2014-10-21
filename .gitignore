@@ -8,6 +8,9 @@ test/localforage.component.js
 # Logs + Sauce Labs Tests
 *.log
 
+#WebStorm files
+.idea
+
 ### Ruby Stuff for slate docs
 *.gem
 *.rbc

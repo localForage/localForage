@@ -10,6 +10,7 @@ describe('When Custom Drivers are used', function() {
     it('fails to define a no-name custom driver', function(done) {
         localforage.defineDriver({
             _initStorage: function() {},
+            iterate: function() {},
             getItem: function() {},
             setItem: function() {},
             removeItem: function() {},
@@ -27,6 +28,7 @@ describe('When Custom Drivers are used', function() {
     it('fails to define a no-name custom driver [promise]', function(done) {
         localforage.defineDriver({
             _initStorage: function() {},
+            iterate: function() {},
             getItem: function() {},
             setItem: function() {},
             removeItem: function() {},
@@ -46,6 +48,7 @@ describe('When Custom Drivers are used', function() {
         localforage.defineDriver({
             _driver: localforage.INDEXEDDB,
             _initStorage: function() {},
+            iterate: function() {},
             getItem: function() {},
             setItem: function() {},
             removeItem: function() {},
@@ -65,6 +68,7 @@ describe('When Custom Drivers are used', function() {
         localforage.defineDriver({
             _driver: localforage.INDEXEDDB,
             _initStorage: function() {},
+            iterate: function() {},
             getItem: function() {},
             setItem: function() {},
             removeItem: function() {},
@@ -83,6 +87,7 @@ describe('When Custom Drivers are used', function() {
         localforage.defineDriver({
             _driver: 'missingMethodsDriver',
             _initStorage: function() {},
+            iterate: function() {},
             getItem: function() {},
             setItem: function() {},
             removeItem: function() {},
@@ -99,6 +104,7 @@ describe('When Custom Drivers are used', function() {
         localforage.defineDriver({
             _driver: 'missingMethodsDriver',
             _initStorage: function() {},
+            iterate: function() {},
             getItem: function() {},
             setItem: function() {},
             removeItem: function() {},

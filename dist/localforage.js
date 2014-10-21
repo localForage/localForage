@@ -745,7 +745,7 @@ requireModule('promise/polyfill').polyfill();
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
             window.console.warn(key +
-                                ' used as a key, but it is not a string.');
+                ' used as a key, but it is not a string.');
             key = String(key);
         }
 
@@ -753,7 +753,7 @@ requireModule('promise/polyfill').polyfill();
             self.ready().then(function() {
                 var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
-                              .objectStore(dbInfo.storeName);
+                    .objectStore(dbInfo.storeName);
                 var req = store.get(key);
 
                 req.onsuccess = function() {
@@ -763,6 +763,38 @@ requireModule('promise/polyfill').polyfill();
                     }
 
                     resolve(value);
+                };
+
+                req.onerror = function() {
+                    reject(req.error);
+                };
+            })["catch"](reject);
+        });
+
+        executeDeferedCallback(promise, callback);
+        return promise;
+    }
+
+    // Iterate over all items stored in indexeddb
+    function iterate(callback) {
+        var self = this;
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
+                var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
+                    .objectStore(dbInfo.storeName);
+                var req = store.openCursor();
+
+                req.onsuccess = function() {
+                    var cursor = req.result;
+
+                    if (cursor) {
+                        callback(cursor.value, cursor.key);
+                        cursor["continue"]();
+                    } else {
+                        resolve();
+                    }
                 };
 
                 req.onerror = function() {
@@ -1040,6 +1072,7 @@ requireModule('promise/polyfill').polyfill();
     var asyncStorage = {
         _driver: 'asyncStorage',
         _initStorage: _initStorage,
+        iterate: iterate,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
@@ -1156,7 +1189,7 @@ requireModule('promise/polyfill').polyfill();
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
             window.console.warn(key +
-                                ' used as a key, but it is not a string.');
+                ' used as a key, but it is not a string.');
             key = String(key);
         }
 
@@ -1175,6 +1208,44 @@ requireModule('promise/polyfill').polyfill();
                     }
 
                     resolve(result);
+                } catch (e) {
+                    reject(e);
+                }
+            })["catch"](reject);
+        });
+
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+    // Iterate over all items in the store.
+    function iterate(callback) {
+        var self = this;
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                try {
+                    var keyPrefix = self._dbInfo.keyPrefix;
+                    var keyPrefixLength = keyPrefix.length;
+
+                    var length = localStorage.length;
+
+                    for (var i = 0; i < length; i++) {
+                        var key = localStorage.key(i);
+                        var result = localStorage.getItem(key);
+
+                        // If a result was found, parse it from the serialized
+                        // string into a JS object. If result isn't truthy, the key
+                        // is likely undefined and we'll pass it straight to the
+                        // callback.
+                        if (result) {
+                            result = _deserialize(result);
+                        }
+
+                        callback(result, key.substring(keyPrefixLength));
+                    }
+
+                    resolve();
                 } catch (e) {
                     reject(e);
                 }
@@ -1490,6 +1561,7 @@ requireModule('promise/polyfill').polyfill();
         _driver: 'localStorageWrapper',
         _initStorage: _initStorage,
         // Default API, from Gaia/localStorage.
+        iterate: iterate,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
@@ -1627,6 +1699,46 @@ requireModule('promise/polyfill').polyfill();
 
                         reject(error);
                     });
+                });
+            })["catch"](reject);
+        });
+
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+    function iterate(callback) {
+        var self = this;
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
+
+                dbInfo.db.transaction(function(t) {
+                    t.executeSql('SELECT * FROM ' + dbInfo.storeName, [],
+                        function(t, results) {
+                            var rows = results.rows;
+                            var length = rows.length;
+                            var itemFn = results.rows.item;
+
+                            for (var i = 0; i < length; i++) {
+                                var item = itemFn(i);
+                                var result = item.value;
+
+                                // Check to see if this is serialized content we need to
+                                // unpack.
+                                if (result) {
+                                    result = _deserialize(result);
+                                }
+
+                                callback(result, item.key);
+                            }
+
+                            resolve();
+                        }, function(t, error) {
+
+                            reject(error);
+                        });
                 });
             })["catch"](reject);
         });
@@ -2027,6 +2139,7 @@ requireModule('promise/polyfill').polyfill();
     var webSQLStorage = {
         _driver: 'webSQLStorage',
         _initStorage: _initStorage,
+        iterate: iterate,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
@@ -2072,6 +2185,7 @@ requireModule('promise/polyfill').polyfill();
     var LibraryMethods = [
         'clear',
         'getItem',
+        'iterate',
         'key',
         'keys',
         'length',

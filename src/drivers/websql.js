@@ -127,6 +127,46 @@
         return promise;
     }
 
+    function iterate(callback) {
+        var self = this;
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
+
+                dbInfo.db.transaction(function(t) {
+                    t.executeSql('SELECT * FROM ' + dbInfo.storeName, [],
+                        function(t, results) {
+                            var rows = results.rows;
+                            var length = rows.length;
+                            var itemFn = results.rows.item;
+
+                            for (var i = 0; i < length; i++) {
+                                var item = itemFn(i);
+                                var result = item.value;
+
+                                // Check to see if this is serialized content we need to
+                                // unpack.
+                                if (result) {
+                                    result = _deserialize(result);
+                                }
+
+                                callback(result, item.key);
+                            }
+
+                            resolve();
+                        }, function(t, error) {
+
+                            reject(error);
+                        });
+                });
+            }).catch(reject);
+        });
+
+        executeCallback(promise, callback);
+        return promise;
+    }
+
     function setItem(key, value, callback) {
         var self = this;
 
@@ -519,6 +559,7 @@
     var webSQLStorage = {
         _driver: 'webSQLStorage',
         _initStorage: _initStorage,
+        iterate: iterate,
         getItem: getItem,
         setItem: setItem,
         removeItem: removeItem,
