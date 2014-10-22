@@ -1,6 +1,6 @@
 /*!
     localForage -- Offline Storage, Improved
-    Version 1.1.0
+    Version 1.1.1
     http://mozilla.github.io/localForage
     (c) 2013-2014 Mozilla, Apache License 2.0
 */
@@ -1452,8 +1452,8 @@
             // as Safari. Oh the lulz...
             if (typeof self.openDatabase !== 'undefined' && self.navigator &&
                 self.navigator.userAgent &&
-                /Safari/.test(navigator.userAgent) &&
-                !/Chrome/.test(navigator.userAgent)) {
+                /Safari/.test(self.navigator.userAgent) &&
+                !/Chrome/.test(self.navigator.userAgent)) {
                 return false;
             }
             try {
@@ -1463,7 +1463,7 @@
                        // have older IndexedDB specs; if this isn't available
                        // their IndexedDB is too old for us to use.
                        // (Replaces the onupgradeneeded test.)
-                       typeof IDBKeyRange === 'function';
+                       typeof self.IDBKeyRange !== 'undefined';
             } catch (e) {
                 return false;
             }
@@ -1471,9 +1471,9 @@
 
         result[DriverType.LOCALSTORAGE] = !!(function() {
             try {
-                return (localStorage &&
-                        ('setItem' in localStorage) &&
-                        (localStorage.setItem));
+                return (self.localStorage &&
+                        ('setItem' in self.localStorage) &&
+                        (self.localStorage.setItem));
             } catch (e) {
                 return false;
             }
