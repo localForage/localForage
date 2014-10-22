@@ -247,12 +247,12 @@ objects:</p>
 </aside></p>
 
 <h2 id="removeitem">removeItem</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Run this code once the key has been removed.
 </span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Key is cleared!'</span><span class="p">);</span>
 <span class="p">});</span>
 </pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">removeItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="o">-&gt;</span>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">removeItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Run this code once the key has been removed.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Key is cleared!"</span>
 </pre>
@@ -262,12 +262,12 @@ objects:</p>
 <p>Removes the value of a key from the offline store.</p>
 
 <h2 id="clear">clear</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">clear</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">clear</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Run this code once the database has been entirely deleted.
 </span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Database is now empty.'</span><span class="p">);</span>
 <span class="p">});</span>
 </pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">clear</span> <span class="o">-&gt;</span>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">clear</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Run this code once the database has been entirely deleted.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Database is now empty."</span>
 </pre>
