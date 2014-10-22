@@ -243,10 +243,10 @@ DRIVERS.forEach(function(driverName) {
 
         // Skip binary data tests if Array Buffer isn't supported.
         if (typeof ArrayBuffer !== 'undefined') {
-            it('saves binary data', function(done) {
+            var runBinaryTest = function(url, done) {
                 var request = new XMLHttpRequest();
 
-                request.open('GET', '/test/photo.jpg', true);
+                request.open('GET', url, true);
                 request.responseType = 'arraybuffer';
 
                 // When the AJAX state changes, save the photo locally.
@@ -273,7 +273,15 @@ DRIVERS.forEach(function(driverName) {
                     }
                 };
 
-                request.send();
+                request.send();                
+            };
+
+            it('saves binary data', function(done) {
+                runBinaryTest('/test/photo.jpg', done);
+            });
+
+            it('saves odd length binary data', function(done) {
+                runBinaryTest('/test/photo2.jpg', done);
             });
         } else {
             it.skip('saves binary data (ArrayBuffer type does not exist)');
