@@ -127,7 +127,7 @@
         return promise;
     }
 
-    function iterate(callback) {
+    function iterate(iterator, callback) {
         var self = this;
 
         var promise = new Promise(function(resolve, reject) {
@@ -139,24 +139,26 @@
                         function(t, results) {
                             var rows = results.rows;
                             var length = rows.length;
-                            var itemFn = results.rows.item;
 
                             for (var i = 0; i < length; i++) {
-                                var item = itemFn(i);
+                                var item = rows.item(i);
                                 var result = item.value;
 
-                                // Check to see if this is serialized content we need to
-                                // unpack.
+                                // Check to see if this is serialized content we need to unpack.
                                 if (result) {
                                     result = _deserialize(result);
                                 }
 
-                                callback(result, item.key);
+                                result = iterator(result, item.key);
+
+                                if (result !== void(0)) { // void(0) prevents problems with redefinition of undefined
+                                    resolve(result);
+                                    return;
+                                }
                             }
 
                             resolve();
                         }, function(t, error) {
-
                             reject(error);
                         });
                 });

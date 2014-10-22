@@ -125,7 +125,7 @@
     }
 
     // Iterate over all items in the store.
-    function iterate(callback) {
+    function iterate(iterator, callback) {
         var self = this;
 
         var promise = new Promise(function(resolve, reject) {
@@ -133,22 +133,26 @@
                 try {
                     var keyPrefix = self._dbInfo.keyPrefix;
                     var keyPrefixLength = keyPrefix.length;
-
                     var length = localStorage.length;
 
                     for (var i = 0; i < length; i++) {
                         var key = localStorage.key(i);
-                        var result = localStorage.getItem(key);
+                        var value = localStorage.getItem(key);
 
                         // If a result was found, parse it from the serialized
                         // string into a JS object. If result isn't truthy, the key
                         // is likely undefined and we'll pass it straight to the
-                        // callback.
-                        if (result) {
-                            result = _deserialize(result);
+                        // iterator.
+                        if (value) {
+                            value = _deserialize(value);
                         }
 
-                        callback(result, key.substring(keyPrefixLength));
+                        value = iterator(value, key.substring(keyPrefixLength));
+
+                        if (value !== void(0)) {
+                            resolve(value);
+                            return;
+                        }
                     }
 
                     resolve();

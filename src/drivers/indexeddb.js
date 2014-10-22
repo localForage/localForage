@@ -86,8 +86,8 @@
         return promise;
     }
 
-    // Iterate over all items stored in indexeddb
-    function iterate(callback) {
+    // Iterate over all items stored in database
+    function iterate(iterator, callback) {
         var self = this;
 
         var promise = new Promise(function(resolve, reject) {
@@ -95,14 +95,20 @@
                 var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                     .objectStore(dbInfo.storeName);
+
                 var req = store.openCursor();
 
                 req.onsuccess = function() {
                     var cursor = req.result;
 
                     if (cursor) {
-                        callback(cursor.value, cursor.key);
-                        cursor.continue();
+                        var result = iterator(cursor.value, cursor.key);
+
+                        if (result !== void(0)) {
+                            resolve(result);
+                        } else {
+                            cursor.continue();
+                        }
                     } else {
                         resolve();
                     }
@@ -115,6 +121,7 @@
         });
 
         executeDeferedCallback(promise, callback);
+
         return promise;
     }
 

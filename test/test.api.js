@@ -132,6 +132,114 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
+        it('should simply iterate [callback]', function(done) {
+            localforage.setItem('officeX', 'InitechX', function(err, setValue) {
+                expect(setValue).to.be('InitechX');
+
+                localforage.getItem('officeX', function(err, value) {
+                    expect(value).to.be(setValue);
+
+                    localforage.setItem('officeY', 'InitechY', function(err, setValue) {
+                        expect(setValue).to.be('InitechY');
+
+                        localforage.getItem('officeY', function(err, value) {
+                            expect(value).to.be(setValue);
+
+                            var accumulator = { };
+
+                            localforage.iterate(function(value, key) {
+                                accumulator[key] = value;
+                            }, function() {
+                                expect(accumulator.officeX).to.be('InitechX');
+                                expect(accumulator.officeY).to.be('InitechY');
+                                done();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+
+        it('should simply iterate [promise]', function(done) {
+            var accumulator = { };
+
+            localforage.setItem('officeX', 'InitechX').then(function(setValue) {
+                expect(setValue).to.be('InitechX');
+                return localforage.getItem('officeX');
+            }).then(function(value) {
+                expect(value).to.be('InitechX');
+                return localforage.setItem('officeY', 'InitechY');
+            }).then(function(setValue) {
+                expect(setValue).to.be('InitechY');
+                return localforage.getItem('officeY');
+            }).then(function(value) {
+                expect(value).to.be('InitechY');
+
+                return localforage.iterate(function(value, key) { accumulator[key] = value; });
+            }).then(function() {
+                expect(accumulator.officeX).to.be('InitechX');
+                expect(accumulator.officeY).to.be('InitechY');
+            }).then(function() {
+                return localforage.iterate(function() {
+                    return 'By returning non undefined value you break further iterate execution';
+                });
+            }).then(function(result) {
+                expect(result).to.be('By returning non undefined value you break further iterate execution');
+                done();
+            });
+        });
+
+        it('should break iteration on non undefined return value [callback]', function(done) {
+            localforage.setItem('officeX', 'InitechX', function(err, setValue) {
+                expect(setValue).to.be('InitechX');
+
+                localforage.getItem('officeX', function(err, value) {
+                    expect(value).to.be(setValue);
+
+                    localforage.setItem('officeY', 'InitechY', function(err, setValue) {
+                        expect(setValue).to.be('InitechY');
+
+                        localforage.getItem('officeY', function(err, value) {
+                            expect(value).to.be(setValue);
+
+                            var breakCondition = 'Returning some value different from undefined would break the ' +
+                                'cycle, eventually it will get into the promise or callback as a result of' +
+                                'iterate iteration';
+
+                            localforage.iterate(function() { // Loop is broken within first iteration
+                                return breakCondition; // returning non undefined value will break the cycle
+                            }, function(err, loopResult) {
+                                expect(loopResult).to.be(breakCondition); // The value that broken the cycle is returned as a result
+
+                                done();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+
+        it('should break iteration on non undefined return value [promise]', function(done) {
+            localforage.setItem('officeX', 'InitechX').then(function(setValue) {
+                expect(setValue).to.be('InitechX');
+                return localforage.getItem('officeX');
+            }).then(function(value) {
+                expect(value).to.be('InitechX');
+                return localforage.setItem('officeY', 'InitechY');
+            }).then(function(setValue) {
+                expect(setValue).to.be('InitechY');
+                return localforage.getItem('officeY');
+            }).then(function(value) {
+                expect(value).to.be('InitechY');
+                return localforage.iterate(function() {
+                    return 'By returning non undefined value you break further iterate execution';
+                });
+            }).then(function(result) {
+                expect(result).to.be('By returning non undefined value you break further iterate execution');
+                done();
+            });
+        });
+
         // Because localStorage doesn't support saving the `undefined` type, we
         // always return `null` so that localForage is consistent across
         // browsers.
@@ -160,6 +268,7 @@ DRIVERS.forEach(function(driverName) {
                 });
             });
         });
+
         it('saves an item [promise]', function(done) {
             localforage.setItem('office', 'Initech').then(function(setValue) {
                 expect(setValue).to.be('Initech');

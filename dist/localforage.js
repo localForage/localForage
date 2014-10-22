@@ -775,8 +775,8 @@ requireModule('promise/polyfill').polyfill();
         return promise;
     }
 
-    // Iterate over all items stored in indexeddb
-    function iterate(callback) {
+    // Iterate over all items stored in database
+    function iterate(iterator, callback) {
         var self = this;
 
         var promise = new Promise(function(resolve, reject) {
@@ -784,14 +784,20 @@ requireModule('promise/polyfill').polyfill();
                 var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
                     .objectStore(dbInfo.storeName);
+
                 var req = store.openCursor();
 
                 req.onsuccess = function() {
                     var cursor = req.result;
 
                     if (cursor) {
-                        callback(cursor.value, cursor.key);
-                        cursor["continue"]();
+                        var result = iterator(cursor.value, cursor.key);
+
+                        if (result !== void(0)) {
+                            resolve(result);
+                        } else {
+                            cursor["continue"]();
+                        }
                     } else {
                         resolve();
                     }
@@ -804,6 +810,7 @@ requireModule('promise/polyfill').polyfill();
         });
 
         executeDeferedCallback(promise, callback);
+
         return promise;
     }
 
@@ -1219,7 +1226,7 @@ requireModule('promise/polyfill').polyfill();
     }
 
     // Iterate over all items in the store.
-    function iterate(callback) {
+    function iterate(iterator, callback) {
         var self = this;
 
         var promise = new Promise(function(resolve, reject) {
@@ -1227,22 +1234,26 @@ requireModule('promise/polyfill').polyfill();
                 try {
                     var keyPrefix = self._dbInfo.keyPrefix;
                     var keyPrefixLength = keyPrefix.length;
-
                     var length = localStorage.length;
 
                     for (var i = 0; i < length; i++) {
                         var key = localStorage.key(i);
-                        var result = localStorage.getItem(key);
+                        var value = localStorage.getItem(key);
 
                         // If a result was found, parse it from the serialized
                         // string into a JS object. If result isn't truthy, the key
                         // is likely undefined and we'll pass it straight to the
-                        // callback.
-                        if (result) {
-                            result = _deserialize(result);
+                        // iterator.
+                        if (value) {
+                            value = _deserialize(value);
                         }
 
-                        callback(result, key.substring(keyPrefixLength));
+                        value = iterator(value, key.substring(keyPrefixLength));
+
+                        if (value !== void(0)) {
+                            resolve(value);
+                            return;
+                        }
                     }
 
                     resolve();
@@ -1707,7 +1718,7 @@ requireModule('promise/polyfill').polyfill();
         return promise;
     }
 
-    function iterate(callback) {
+    function iterate(iterator, callback) {
         var self = this;
 
         var promise = new Promise(function(resolve, reject) {
@@ -1719,24 +1730,26 @@ requireModule('promise/polyfill').polyfill();
                         function(t, results) {
                             var rows = results.rows;
                             var length = rows.length;
-                            var itemFn = results.rows.item;
 
                             for (var i = 0; i < length; i++) {
-                                var item = itemFn(i);
+                                var item = rows.item(i);
                                 var result = item.value;
 
-                                // Check to see if this is serialized content we need to
-                                // unpack.
+                                // Check to see if this is serialized content we need to unpack.
                                 if (result) {
                                     result = _deserialize(result);
                                 }
 
-                                callback(result, item.key);
+                                result = iterator(result, item.key);
+
+                                if (result !== void(0)) { // void(0) prevents problems with redefinition of undefined
+                                    resolve(result);
+                                    return;
+                                }
                             }
 
                             resolve();
                         }, function(t, error) {
-
                             reject(error);
                         });
                 });
