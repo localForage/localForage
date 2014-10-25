@@ -300,6 +300,108 @@ localforage.keys (err, keys) ->
 
 Get the list of all keys in the datastore.
 
+## iterate
+
+```javascript
+localforage.iterate(function(value, key) {
+    // Resulting pair
+    console.log([key, value]);
+}, function () {
+    console.log('Iteration has completed');
+});
+
+// The same code, but using ES6 Promises.
+localforage.iterate(function(value, key) {
+    // Resulting pair
+    console.log([key, value]);
+}).then(function () {
+    console.log('Iteration has completed');
+});
+
+// Early exit
+var iterations = 0;
+localforage.iterate(function(value, key) {
+    if (iterations < 3) {
+        console.log([key, value]);
+    } else {
+        return [key, value];
+    }
+    iterations++;
+}, function (result) {
+    console.log('Iteration has completed, last iterated pair:');
+    console.log(result);
+});
+
+// The same code for early exit, but using ES6 Promises.
+var iterations = 0;
+localforage.iterate(function(value, key) {
+    if (iterations < 3) {
+        console.log([key, value]);
+    } else {
+        return [key, value];
+    }
+    iterations++;
+}).then(function (result) {
+    console.log('Iteration has completed, last iterated pair:');
+    console.log(result);
+});
+```
+
+```coffeescript
+localforage.iterate ((value, key) ->
+  # Resulting pair
+  console.log [key, value]
+  return
+), ->
+  console.log "Iteration has completed"
+
+# The same code, but using ES6 Promises.
+localforage.iterate((value, key) ->
+  # Resulting pair
+  console.log [key, value]
+  return
+).then ->
+  console.log "Iteration has completed"
+
+# Early exit
+iterations = 0
+localforage.iterate ((value, key) ->
+  if iterations < 3
+    console.log [key, value]
+    iterations++
+    return
+  else
+    return [key, value]
+), (result) ->
+  console.log "Iteration has completed, last iterated pair:"
+  console.log result
+
+
+# The same code for early exit, but using ES6 Promises.
+iterations = 0
+localforage.iterate((value, key) ->
+  if iterations < 3
+    console.log [key, value]
+    iterations++
+    return
+  else
+    return [key, value]
+).then (result) ->
+  console.log "Iteration has completed, last iterated pair:"
+  console.log result
+```
+
+`iterate(iteratorFn, successCallback)`
+
+Iterate over all value/key pairs in datastore.
+
+<aside class="notice">
+  Iterate supports early exit by returning non `undefined` value inside
+  `iteratorFn` callback. Resulting value will be passed to `successCallback`
+  as the result of iteration.
+</aside>
+
+
 # Settings API
 
 These methods allow driver selection and database configuration. These methods
