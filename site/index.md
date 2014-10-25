@@ -198,14 +198,14 @@ objects:
 ## removeItem
 
 ```javascript
-localforage.removeItem('somekey', function() {
+localforage.removeItem('somekey', function(err) {
     // Run this code once the key has been removed.
     console.log('Key is cleared!');
 });
 ```
 
 ```coffeescript
-localforage.removeItem "somekey", ->
+localforage.removeItem "somekey", (err) ->
   # Run this code once the key has been removed.
   console.log "Key is cleared!"
 ```
@@ -217,14 +217,14 @@ Removes the value of a key from the offline store.
 ## clear
 
 ```javascript
-localforage.clear(function() {
+localforage.clear(function(err) {
     // Run this code once the database has been entirely deleted.
     console.log('Database is now empty.');
 });
 ```
 
 ```coffeescript
-localforage.clear ->
+localforage.clear (err) ->
   # Run this code once the database has been entirely deleted.
   console.log "Database is now empty."
 ```
