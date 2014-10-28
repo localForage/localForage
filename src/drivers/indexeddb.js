@@ -56,7 +56,7 @@
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
             window.console.warn(key +
-                ' used as a key, but it is not a string.');
+                                ' used as a key, but it is not a string.');
             key = String(key);
         }
 
@@ -86,7 +86,7 @@
         return promise;
     }
 
-    // Iterate over all items stored in database
+    // Iterate over all items stored in database.
     function iterate(iterator, callback) {
         var self = this;
 
@@ -94,7 +94,7 @@
             self.ready().then(function() {
                 var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
-                    .objectStore(dbInfo.storeName);
+                                     .objectStore(dbInfo.storeName);
 
                 var req = store.openCursor();
 

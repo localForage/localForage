@@ -95,7 +95,7 @@
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
             window.console.warn(key +
-                ' used as a key, but it is not a string.');
+                                ' used as a key, but it is not a string.');
             key = String(key);
         }
 
@@ -140,9 +140,9 @@
                         var value = localStorage.getItem(key);
 
                         // If a result was found, parse it from the serialized
-                        // string into a JS object. If result isn't truthy, the key
-                        // is likely undefined and we'll pass it straight to the
-                        // iterator.
+                        // string into a JS object. If result isn't truthy, the
+                        // key is likely undefined and we'll pass it straight
+                        // to the iterator.
                         if (value) {
                             value = _deserialize(value);
                         }

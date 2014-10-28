@@ -745,7 +745,7 @@ requireModule('promise/polyfill').polyfill();
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
             window.console.warn(key +
-                ' used as a key, but it is not a string.');
+                                ' used as a key, but it is not a string.');
             key = String(key);
         }
 
@@ -775,7 +775,7 @@ requireModule('promise/polyfill').polyfill();
         return promise;
     }
 
-    // Iterate over all items stored in database
+    // Iterate over all items stored in database.
     function iterate(iterator, callback) {
         var self = this;
 
@@ -783,7 +783,7 @@ requireModule('promise/polyfill').polyfill();
             self.ready().then(function() {
                 var dbInfo = self._dbInfo;
                 var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
-                    .objectStore(dbInfo.storeName);
+                                     .objectStore(dbInfo.storeName);
 
                 var req = store.openCursor();
 
@@ -1196,7 +1196,7 @@ requireModule('promise/polyfill').polyfill();
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
             window.console.warn(key +
-                ' used as a key, but it is not a string.');
+                                ' used as a key, but it is not a string.');
             key = String(key);
         }
 
@@ -1241,9 +1241,9 @@ requireModule('promise/polyfill').polyfill();
                         var value = localStorage.getItem(key);
 
                         // If a result was found, parse it from the serialized
-                        // string into a JS object. If result isn't truthy, the key
-                        // is likely undefined and we'll pass it straight to the
-                        // iterator.
+                        // string into a JS object. If result isn't truthy, the
+                        // key is likely undefined and we'll pass it straight
+                        // to the iterator.
                         if (value) {
                             value = _deserialize(value);
                         }
@@ -1735,14 +1735,17 @@ requireModule('promise/polyfill').polyfill();
                                 var item = rows.item(i);
                                 var result = item.value;
 
-                                // Check to see if this is serialized content we need to unpack.
+                                // Check to see if this is serialized content
+                                // we need to unpack.
                                 if (result) {
                                     result = _deserialize(result);
                                 }
 
                                 result = iterator(result, item.key);
 
-                                if (result !== void(0)) { // void(0) prevents problems with redefinition of undefined
+                                // void(0) prevents problems with redefinition
+                                // of `undefined`.
+                                if (result !== void(0)) {
                                     resolve(result);
                                     return;
                                 }

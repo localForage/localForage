@@ -144,14 +144,17 @@
                                 var item = rows.item(i);
                                 var result = item.value;
 
-                                // Check to see if this is serialized content we need to unpack.
+                                // Check to see if this is serialized content
+                                // we need to unpack.
                                 if (result) {
                                     result = _deserialize(result);
                                 }
 
                                 result = iterator(result, item.key);
 
-                                if (result !== void(0)) { // void(0) prevents problems with redefinition of undefined
+                                // void(0) prevents problems with redefinition
+                                // of `undefined`.
+                                if (result !== void(0)) {
                                     resolve(result);
                                     return;
                                 }

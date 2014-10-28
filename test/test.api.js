@@ -88,7 +88,6 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('has a localStorage API', function() {
-            expect(localforage.iterate).to.be.a('function');
             expect(localforage.getItem).to.be.a('function');
             expect(localforage.setItem).to.be.a('function');
             expect(localforage.clear).to.be.a('function');
@@ -132,20 +131,21 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        it('should simply iterate [callback]', function(done) {
+        it('should iterate [callback]', function(done) {
             localforage.setItem('officeX', 'InitechX', function(err, setValue) {
                 expect(setValue).to.be('InitechX');
 
                 localforage.getItem('officeX', function(err, value) {
                     expect(value).to.be(setValue);
 
-                    localforage.setItem('officeY', 'InitechY', function(err, setValue) {
+                    localforage.setItem('officeY', 'InitechY',
+                                        function(err, setValue) {
                         expect(setValue).to.be('InitechY');
 
                         localforage.getItem('officeY', function(err, value) {
                             expect(value).to.be(setValue);
 
-                            var accumulator = { };
+                            var accumulator = {};
 
                             localforage.iterate(function(value, key) {
                                 accumulator[key] = value;
@@ -160,8 +160,9 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        it('should simply iterate [promise]', function(done) {
-            var accumulator = { };
+        it('should iterate [promise]', function(done) {
+            var accumulator = {};
+            var message = 'Return defined value to break further iteration';
 
             localforage.setItem('officeX', 'InitechX').then(function(setValue) {
                 expect(setValue).to.be('InitechX');
@@ -175,41 +176,47 @@ DRIVERS.forEach(function(driverName) {
             }).then(function(value) {
                 expect(value).to.be('InitechY');
 
-                return localforage.iterate(function(value, key) { accumulator[key] = value; });
+                return localforage.iterate(function(value, key) {
+                    accumulator[key] = value;
+                });
             }).then(function() {
                 expect(accumulator.officeX).to.be('InitechX');
                 expect(accumulator.officeY).to.be('InitechY');
             }).then(function() {
                 return localforage.iterate(function() {
-                    return 'By returning non undefined value you break further iterate execution';
+                    return message;
                 });
             }).then(function(result) {
-                expect(result).to.be('By returning non undefined value you break further iterate execution');
+                expect(result).to.be(message);
                 done();
             });
         });
 
-        it('should break iteration on non undefined return value [callback]', function(done) {
+        it('should break iteration with defined return value [callback]',
+           function(done) {
+            var breakCondition = 'Some value!';
+
             localforage.setItem('officeX', 'InitechX', function(err, setValue) {
                 expect(setValue).to.be('InitechX');
 
                 localforage.getItem('officeX', function(err, value) {
                     expect(value).to.be(setValue);
 
-                    localforage.setItem('officeY', 'InitechY', function(err, setValue) {
+                    localforage.setItem('officeY', 'InitechY',
+                                        function(err, setValue) {
                         expect(setValue).to.be('InitechY');
 
                         localforage.getItem('officeY', function(err, value) {
                             expect(value).to.be(setValue);
 
-                            var breakCondition = 'Returning some value different from undefined would break the ' +
-                                'cycle, eventually it will get into the promise or callback as a result of' +
-                                'iterate iteration';
-
-                            localforage.iterate(function() { // Loop is broken within first iteration
-                                return breakCondition; // returning non undefined value will break the cycle
+                            // Loop is broken within first iteration.
+                            localforage.iterate(function() {
+                                // Returning defined value will break the cycle.
+                                return breakCondition;
                             }, function(err, loopResult) {
-                                expect(loopResult).to.be(breakCondition); // The value that broken the cycle is returned as a result
+                                // The value that broken the cycle is returned
+                                // as a result.
+                                expect(loopResult).to.be(breakCondition);
 
                                 done();
                             });
@@ -219,7 +226,10 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        it('should break iteration on non undefined return value [promise]', function(done) {
+        it('should break iteration with defined return value [promise]',
+           function(done) {
+            var breakCondition = 'Some value!';
+
             localforage.setItem('officeX', 'InitechX').then(function(setValue) {
                 expect(setValue).to.be('InitechX');
                 return localforage.getItem('officeX');
@@ -232,10 +242,10 @@ DRIVERS.forEach(function(driverName) {
             }).then(function(value) {
                 expect(value).to.be('InitechY');
                 return localforage.iterate(function() {
-                    return 'By returning non undefined value you break further iterate execution';
+                    return breakCondition;
                 });
             }).then(function(result) {
-                expect(result).to.be('By returning non undefined value you break further iterate execution');
+                expect(result).to.be(breakCondition);
                 done();
             });
         });
@@ -564,7 +574,7 @@ DRIVERS.forEach(function(driverName) {
             });
         });
     });
-    
+
     describe(driverName + ' driver multiple instances', function() {
         'use strict';
         var localforage2 = null;
