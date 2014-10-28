@@ -3,6 +3,9 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### Next Version
+* Iterate through the entire database using `iterate()`. ([#283](https://github.com/mozilla/localForage/pull/283); fixes [#186](https://github.com/mozilla/localForage/pull/186))
+
 ### [1.1](https://github.com/mozilla/localForage/releases/tag/1.1.0)
 * Custom drivers can be created using `defineDriver()`. ([#282](https://github.com/mozilla/localForage/pull/282); fixes [#267](https://github.com/mozilla/localForage/pull/267))
 
