@@ -77,7 +77,7 @@ exactly the same as the
 ```javascript
 // In localStorage, we would do:
 localStorage.setItem('key', JSON.stringify('value'));
-doSomethingElse();f
+doSomethingElse();
 
 // With localForage, we use callbacks:
 localforage.setItem('key', 'value', doSomethingElse);
@@ -90,6 +90,9 @@ Similarly, please don't expect a return value from calls to
 // Synchronous; slower!
 var value = JSON.parse(localStorage.getItem('key'));
 alert(value);
+
+// Async, fast, and non-blocking!
+localforage.getItem('key', function(err, value) { alert(value) });
 
 ```
 
