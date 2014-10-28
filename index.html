@@ -331,6 +331,117 @@ objects:</p>
 
 <p>Get the list of all keys in the datastore.</p>
 
+<h2 id="iterate">iterate</h2>
+<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Resulting key/value pair -- this callback
+</span>    <span class="c1">// will be executed for every item in the
+</span>    <span class="c1">// database.
+</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]);</span>
+<span class="p">},</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Iteration has completed'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// The same code, but using ES6 Promises.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Resulting key/value pair -- this callback
+</span>    <span class="c1">// will be executed for every item in the
+</span>    <span class="c1">// database.
+</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]);</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Iteration has completed'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// Exit the iteration early:
+</span><span class="kd">var</span> <span class="nx">iterations</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">iterations</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">];</span>
+    <span class="p">}</span>
+
+    <span class="nx">iterations</span><span class="o">++</span><span class="p">;</span>
+<span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Iteration has completed, last iterated pair:'</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// The same code for early exit, but using ES6 Promises.
+</span><span class="kd">var</span> <span class="nx">iterations</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">iterations</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">];</span>
+    <span class="p">}</span>
+
+    <span class="nx">iterations</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Iteration has completed, last iterated pair:'</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="c1"># Resulting key/value pair -- this callback
+</span>  <span class="c1"># will be executed for every item in the
+</span>  <span class="c1"># database.
+</span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
+  <span class="k">return</span>
+<span class="p">,</span> <span class="o">-&gt;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Iteration has completed"</span>
+
+<span class="c1"># The same code, but using ES6 Promises.
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="c1"># Resulting key/value pair -- this callback
+</span>  <span class="c1"># will be executed for every item in the
+</span>  <span class="c1"># database.
+</span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
+  <span class="k">return</span>
+<span class="p">.</span><span class="na">then</span> <span class="o">-&gt;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Iteration has completed"</span>
+
+<span class="c1"># Exit the iteration early:
+</span><span class="nx">iterations</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="k">if</span> <span class="nx">iterations</span> <span class="o">&lt;</span> <span class="mi">3</span>
+    <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
+
+    <span class="nx">iterations</span><span class="o">++</span>
+    <span class="k">return</span>
+  <span class="k">else</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
+<span class="p">),</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Iteration has completed, last iterated pair:"</span>
+  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">result</span>
+
+<span class="c1"># The same code for early exit, but using ES6 Promises.
+</span><span class="nx">iterations</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span><span class="p">((</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="k">if</span> <span class="nx">iterations</span> <span class="o">&lt;</span> <span class="mi">3</span>
+    <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
+
+    <span class="nx">iterations</span><span class="o">++</span>
+    <span class="k">return</span>
+  <span class="k">else</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
+<span class="p">).</span><span class="na">then</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Iteration has completed, last iterated pair:"</span>
+  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">result</span>
+</pre>
+
+<p><code class="prettyprint">iterate(iteratorCallback, successCallback)</code></p>
+
+<p>Iterate over all value/key pairs in datastore.</p>
+
+<p><aside class="notice">
+  <code>iterate</code> supports early exit by returning non <code class="prettyprint">undefined</code>
+  value inside <code class="prettyprint">iteratorCallback</code> callback. Resulting value will be passed
+  to <code class="prettyprint">successCallback</code> as the result of iteration.</p>
+
+<p>This means if you&rsquo;re using CoffeeScript, you&rsquo;ll need to manually <code class="prettyprint">return</code>
+  nothing to keep iterating through each key/value pair.
+</aside></p>
+
 <h1 id="settings-api">Settings API</h1>
 
 <p>These methods allow driver selection and database configuration. These methods
