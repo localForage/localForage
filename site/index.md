@@ -304,21 +304,25 @@ Get the list of all keys in the datastore.
 
 ```javascript
 localforage.iterate(function(value, key) {
-    // Resulting pair
+    // Resulting key/value pair -- this callback
+    // will be executed for every item in the
+    // database.
     console.log([key, value]);
-}, function () {
+}, function() {
     console.log('Iteration has completed');
 });
 
 // The same code, but using ES6 Promises.
 localforage.iterate(function(value, key) {
-    // Resulting pair
+    // Resulting key/value pair -- this callback
+    // will be executed for every item in the
+    // database.
     console.log([key, value]);
-}).then(function () {
+}).then(function() {
     console.log('Iteration has completed');
 });
 
-// Early exit
+// Exit the iteration early:
 var iterations = 0;
 localforage.iterate(function(value, key) {
     if (iterations < 3) {
@@ -326,8 +330,9 @@ localforage.iterate(function(value, key) {
     } else {
         return [key, value];
     }
+
     iterations++;
-}, function (result) {
+}, function(result) {
     console.log('Iteration has completed, last iterated pair:');
     console.log(result);
 });
@@ -340,34 +345,40 @@ localforage.iterate(function(value, key) {
     } else {
         return [key, value];
     }
+
     iterations++;
-}).then(function (result) {
+}).then(function(result) {
     console.log('Iteration has completed, last iterated pair:');
     console.log(result);
 });
 ```
 
 ```coffeescript
-localforage.iterate ((value, key) ->
-  # Resulting pair
+localforage.iterate (value, key) ->
+  # Resulting key/value pair -- this callback
+  # will be executed for every item in the
+  # database.
   console.log [key, value]
   return
-), ->
+, ->
   console.log "Iteration has completed"
 
 # The same code, but using ES6 Promises.
-localforage.iterate((value, key) ->
-  # Resulting pair
+localforage.iterate (value, key) ->
+  # Resulting key/value pair -- this callback
+  # will be executed for every item in the
+  # database.
   console.log [key, value]
   return
-).then ->
+.then ->
   console.log "Iteration has completed"
 
-# Early exit
+# Exit the iteration early:
 iterations = 0
-localforage.iterate ((value, key) ->
+localforage.iterate (value, key) ->
   if iterations < 3
     console.log [key, value]
+
     iterations++
     return
   else
@@ -376,12 +387,12 @@ localforage.iterate ((value, key) ->
   console.log "Iteration has completed, last iterated pair:"
   console.log result
 
-
 # The same code for early exit, but using ES6 Promises.
 iterations = 0
 localforage.iterate((value, key) ->
   if iterations < 3
     console.log [key, value]
+
     iterations++
     return
   else
@@ -391,16 +402,18 @@ localforage.iterate((value, key) ->
   console.log result
 ```
 
-`iterate(iteratorFn, successCallback)`
+`iterate(iteratorCallback, successCallback)`
 
 Iterate over all value/key pairs in datastore.
 
 <aside class="notice">
-  Iterate supports early exit by returning non `undefined` value inside
-  `iteratorFn` callback. Resulting value will be passed to `successCallback`
-  as the result of iteration.
-</aside>
+  <code>iterate</code> supports early exit by returning non `undefined`
+  value inside `iteratorCallback` callback. Resulting value will be passed
+  to `successCallback` as the result of iteration.
 
+  This means if you're using CoffeeScript, you'll need to manually `return`
+  nothing to keep iterating through each key/value pair.
+</aside>
 
 # Settings API
 
