@@ -77,7 +77,7 @@ exactly the same as the
 ```javascript
 // In localStorage, we would do:
 localStorage.setItem('key', JSON.stringify('value'));
-doSomethingElse();
+doSomethingElse();f
 
 // With localForage, we use callbacks:
 localforage.setItem('key', 'value', doSomethingElse);
@@ -102,7 +102,7 @@ localforage.getItem('key', function(err, value) {
     if (err) {
         console.error('Oh noes!');
     } else {
-      alert(value);
+        alert(value);
     }
 });
 ```
