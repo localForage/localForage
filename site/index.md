@@ -65,7 +65,7 @@ bower install localforage
 ```
 ``` html
 <script src="localforage.js"></script>
-<script>localforage.getItem('my alert', alert);</script>
+<script>localforage.getItem('somekey', function(err, val) { alert(val) });</script>
 ```
 
 To use localForage, [download the latest release](https://github.com/mozilla/localForage/releases) or install with [bower](http://bower.io/) (`bower install localforage`).
