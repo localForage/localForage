@@ -92,7 +92,8 @@ var value = JSON.parse(localStorage.getItem('key'));
 alert(value);
 
 // Async, fast, and non-blocking!
-localforage.getItem('key', alert);
+localforage.getItem('key', function(err, value) { alert(value) });
+
 ```
 
 Note that callbacks in localForage are Node-style (error argument first) since
@@ -103,9 +104,9 @@ Note that callbacks in localForage are Node-style (error argument first) since
 localforage.getItem('key', function(err, value) {
     if (err) {
         console.error('Oh noes!');
+    } else {
+        alert(value);
     }
-
-    alert(value);
 });
 ```
 
