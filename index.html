@@ -122,7 +122,7 @@ versions of all major browsers: Chrome, Firefox, IE, and Safari
 bower install localforage
 </pre>
 <pre class="highlight html"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"localforage.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;script&gt;</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'my alert'</span><span class="p">,</span> <span class="nx">alert</span><span class="p">);</span><span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span> <span class="nx">alert</span><span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">});</span><span class="nt">&lt;/script&gt;</span>
 </pre>
 
 <p>To use localForage, <a href="https://github.com/mozilla/localForage/releases">download the latest release</a> or install with <a href="http://bower.io/">bower</a> (<code class="prettyprint">bower install localforage</code>).</p>
