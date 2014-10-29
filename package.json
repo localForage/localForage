@@ -19,7 +19,7 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "component": "^1.0.0",
+    "component": "^1.0.0-rc7",
     "cors": "^2.3.1",
     "grunt": "^0.4.2",
     "grunt-contrib-concat": "^0.3.0",
