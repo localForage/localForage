@@ -19,12 +19,12 @@
         localforage.setItem(key, value, function() {
           console.log('Saved: ' + value);
 
-          localforage.getItem(key, function(readValue) {
+          localforage.getItem(key, function(err, readValue) {
             console.log('Read: ', readValue);
           });
 
           // Since this key hasn't been set yet, we'll get a null value
-          localforage.getItem(UNKNOWN_KEY, function(readValue) {
+          localforage.getItem(UNKNOWN_KEY, function(err, readValue) {
             console.log('Result of reading ' + UNKNOWN_KEY, readValue);
           });
         });
