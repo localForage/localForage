@@ -3,7 +3,7 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
-### Next Version
+### [1.2](https://github.com/mozilla/localForage/releases/tag/1.2.0)
 * Iterate through the entire database using `iterate()`. ([#283](https://github.com/mozilla/localForage/pull/283); fixes [#186](https://github.com/mozilla/localForage/pull/186))
 
 ### [1.1](https://github.com/mozilla/localForage/releases/tag/1.1.0)
