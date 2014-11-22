@@ -14,7 +14,8 @@
     "LICENSE",
     "docs*",
     "examples*",
-    "test*"
+    "test*",
+    "site*"
   ],
   "dependencies": {},
   "devDependencies": {
