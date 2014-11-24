@@ -48,15 +48,12 @@ localStorage fallback in parentheses.
 
 Different browsers have [different storage limits](http://www.html5rocks.com/en/tutorials/offline/quota-research/#toc-overview), so plan accordingly.
 
-Note that, thanks to WebSQL support, apps packaged with Phonegap will also
-use asynchronous storage. Pretty slick!
-
 ## Support
 
 Lost? Need help? Try the
 [localForage API documentation](https://mozilla.github.io/localForage).
 
-If you're stuck using the library, running the tests, or want to contribute,
+If you're stuck using the library, running the tests, or want to contribute
 to localForage, you can visit
 [irc.mozilla.org](https://wiki.mozilla.org/IRC) and head to the `#apps`
 channel to ask questions about localForage.
@@ -70,8 +67,8 @@ is usually online from 8am-10pm Eastern Time.
 
 ## Callbacks
 
-Because localForage uses async storage, it has an async API. It's otherwise
-exactly the same as the
+Because localForage uses async storage, it has an async API.
+It's otherwise exactly the same as the
 [localStorage API](https://hacks.mozilla.org/2009/06/localstorage/).
 
 ```javascript
@@ -96,7 +93,7 @@ localforage.getItem('key', function(err, value) { alert(value) });
 
 ```
 
-Note that callbacks in localForage are Node-style (error argument first) since
+Callbacks in localForage are Node-style (error argument first) since version
 `0.9.3`. This means if you're using callbacks, your code should look like this:
 
 ```javascript
@@ -129,7 +126,7 @@ function doSomethingElse(value) {
 localforage.setItem('key', 'value').then(doSomethingElse);
 ```
 
-Note that with Promises, `err` is not the first argument to your function.
+When using Promises, `err` is **not** the first argument passed to a function.
 Instead, you handle an error with the rejection part of the Promise:
 
 ```javascript
