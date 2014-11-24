@@ -90,7 +90,6 @@ alert(value);
 
 // Async, fast, and non-blocking!
 localforage.getItem('key', function(err, value) { alert(value) });
-
 ```
 
 Callbacks in localForage are Node-style (error argument first) since version
