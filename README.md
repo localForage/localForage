@@ -51,7 +51,7 @@ Different browsers have [different storage limits](http://www.html5rocks.com/en/
 ## Support
 
 Lost? Need help? Try the
-[localForage API documentation](https://mozilla.github.io/localForage).
+[localForage API documentation](http://mozilla.github.io/localForage).
 
 If you're stuck using the library, running the tests, or want to contribute
 to localForage, you can visit
