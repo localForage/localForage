@@ -34,9 +34,9 @@ localStorage fallback in parentheses.
 
 * **Android Browser 2.1**
 * **Blackberry 7**
-* **Chrome 23** (Chrome 4.0+ with localStorage)
+* **Chrome 23**
 * **Chrome for Android 32**
-* **Firefox 10** (Firefox 3.5+ with localStorage)
+* **Firefox 18**
 * **Firefox for Android 25**
 * **Firefox OS 1.0**
 * **IE 10** (IE 8+ with localStorage)
