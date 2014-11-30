@@ -755,6 +755,11 @@ DRIVERS.forEach(function(driverName) {
         'use strict';
 
         var _oldReady;
+        var Promise;
+
+        before(function() {
+            Promise = window.Promise || require('promise');
+        });
 
         beforeEach(function(done) {
             _oldReady = localforage.ready;
