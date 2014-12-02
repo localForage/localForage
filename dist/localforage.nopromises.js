@@ -144,8 +144,8 @@
         var promise = new Promise(function(resolve, reject) {
             self.ready().then(function() {
                 var dbInfo = self._dbInfo;
-                var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
-                              .objectStore(dbInfo.storeName);
+                var transaction = dbInfo.db.transaction(dbInfo.storeName, 'readwrite');
+                var store = transaction.objectStore(dbInfo.storeName);
 
                 // The reason we don't _save_ null is because IE 10 does
                 // not support saving the `null` type in IndexedDB. How
@@ -156,7 +156,7 @@
                 }
 
                 var req = store.put(value, key);
-                req.onsuccess = function() {
+                transaction.oncomplete = function() {
                     // Cast to undefined so the value passed to
                     // callback/promise is the same as what one would get out
                     // of `getItem()` later. This leads to some weirdness
@@ -169,7 +169,7 @@
 
                     resolve(value);
                 };
-                req.onerror = function() {
+                transaction.onabort = transaction.onerror = function() {
                     reject(req.error);
                 };
             })["catch"](reject);
@@ -192,8 +192,8 @@
         var promise = new Promise(function(resolve, reject) {
             self.ready().then(function() {
                 var dbInfo = self._dbInfo;
-                var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
-                              .objectStore(dbInfo.storeName);
+                var transaction = dbInfo.db.transaction(dbInfo.storeName, 'readwrite');
+                var store = transaction.objectStore(dbInfo.storeName);
 
                 // We use a Grunt task to make this safe for IE and some
                 // versions of Android (including those used by Cordova).
@@ -201,18 +201,18 @@
                 // using `['delete']()`, but we have a build step that
                 // fixes this for us now.
                 var req = store["delete"](key);
-                req.onsuccess = function() {
+                transaction.oncomplete = function() {
                     resolve();
                 };
 
-                req.onerror = function() {
+                transaction.onerror = function() {
                     reject(req.error);
                 };
 
                 // The request will be aborted if we've exceeded our storage
                 // space. In this case, we will reject with a specific
                 // "QuotaExceededError".
-                req.onabort = function(event) {
+                transaction.onabort = function(event) {
                     var error = event.target.error;
                     if (error === 'QuotaExceededError') {
                         reject(error);
@@ -231,15 +231,15 @@
         var promise = new Promise(function(resolve, reject) {
             self.ready().then(function() {
                 var dbInfo = self._dbInfo;
-                var store = dbInfo.db.transaction(dbInfo.storeName, 'readwrite')
-                              .objectStore(dbInfo.storeName);
+                var transaction = dbInfo.db.transaction(dbInfo.storeName, 'readwrite');
+                var store = transaction.objectStore(dbInfo.storeName);
                 var req = store.clear();
 
-                req.onsuccess = function() {
+                transaction.oncomplete = function() {
                     resolve();
                 };
 
-                req.onerror = function() {
+                transaction.onabort = transaction.onerror = function() {
                     reject(req.error);
                 };
             })["catch"](reject);
@@ -484,20 +484,16 @@
     // the app's key/value store!
     function clear(callback) {
         var self = this;
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var keyPrefix = self._dbInfo.keyPrefix;
+        var promise = self.ready().then(function() {
+            var keyPrefix = self._dbInfo.keyPrefix;
 
-                for (var i = localStorage.length - 1; i >= 0; i--) {
-                    var key = localStorage.key(i);
+            for (var i = localStorage.length - 1; i >= 0; i--) {
+                var key = localStorage.key(i);
 
-                    if (key.indexOf(keyPrefix) === 0) {
-                        localStorage.removeItem(key);
-                    }
+                if (key.indexOf(keyPrefix) === 0) {
+                    localStorage.removeItem(key);
                 }
-
-                resolve();
-            })["catch"](reject);
+            }
         });
 
         executeCallback(promise, callback);
@@ -517,25 +513,19 @@
             key = String(key);
         }
 
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                try {
-                    var dbInfo = self._dbInfo;
-                    var result = localStorage.getItem(dbInfo.keyPrefix + key);
+        var promise = self.ready().then(function() {
+            var dbInfo = self._dbInfo;
+            var result = localStorage.getItem(dbInfo.keyPrefix + key);
 
-                    // If a result was found, parse it from the serialized
-                    // string into a JS object. If result isn't truthy, the key
-                    // is likely undefined and we'll pass it straight to the
-                    // callback.
-                    if (result) {
-                        result = _deserialize(result);
-                    }
+            // If a result was found, parse it from the serialized
+            // string into a JS object. If result isn't truthy, the key
+            // is likely undefined and we'll pass it straight to the
+            // callback.
+            if (result) {
+                result = _deserialize(result);
+            }
 
-                    resolve(result);
-                } catch (e) {
-                    reject(e);
-                }
-            })["catch"](reject);
+            return result;
         });
 
         executeCallback(promise, callback);
@@ -546,38 +536,29 @@
     function iterate(iterator, callback) {
         var self = this;
 
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                try {
-                    var keyPrefix = self._dbInfo.keyPrefix;
-                    var keyPrefixLength = keyPrefix.length;
-                    var length = localStorage.length;
+        var promise = self.ready().then(function() {
+            var keyPrefix = self._dbInfo.keyPrefix;
+            var keyPrefixLength = keyPrefix.length;
+            var length = localStorage.length;
 
-                    for (var i = 0; i < length; i++) {
-                        var key = localStorage.key(i);
-                        var value = localStorage.getItem(key);
+            for (var i = 0; i < length; i++) {
+                var key = localStorage.key(i);
+                var value = localStorage.getItem(key);
 
-                        // If a result was found, parse it from the serialized
-                        // string into a JS object. If result isn't truthy, the
-                        // key is likely undefined and we'll pass it straight
-                        // to the iterator.
-                        if (value) {
-                            value = _deserialize(value);
-                        }
-
-                        value = iterator(value, key.substring(keyPrefixLength));
-
-                        if (value !== void(0)) {
-                            resolve(value);
-                            return;
-                        }
-                    }
-
-                    resolve();
-                } catch (e) {
-                    reject(e);
+                // If a result was found, parse it from the serialized
+                // string into a JS object. If result isn't truthy, the
+                // key is likely undefined and we'll pass it straight
+                // to the iterator.
+                if (value) {
+                    value = _deserialize(value);
                 }
-            })["catch"](reject);
+
+                value = iterator(value, key.substring(keyPrefixLength));
+
+                if (value !== void(0)) {
+                    return value;
+                }
+            }
         });
 
         executeCallback(promise, callback);
@@ -587,23 +568,21 @@
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
         var self = this;
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var dbInfo = self._dbInfo;
-                var result;
-                try {
-                    result = localStorage.key(n);
-                } catch (error) {
-                    result = null;
-                }
+        var promise = self.ready().then(function() {
+            var dbInfo = self._dbInfo;
+            var result;
+            try {
+                result = localStorage.key(n);
+            } catch (error) {
+                result = null;
+            }
 
-                // Remove the prefix from the key, if a key is found.
-                if (result) {
-                    result = result.substring(dbInfo.keyPrefix.length);
-                }
+            // Remove the prefix from the key, if a key is found.
+            if (result) {
+                result = result.substring(dbInfo.keyPrefix.length);
+            }
 
-                resolve(result);
-            })["catch"](reject);
+            return result;
         });
 
         executeCallback(promise, callback);
@@ -612,20 +591,18 @@
 
     function keys(callback) {
         var self = this;
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var dbInfo = self._dbInfo;
-                var length = localStorage.length;
-                var keys = [];
+        var promise = self.ready().then(function() {
+            var dbInfo = self._dbInfo;
+            var length = localStorage.length;
+            var keys = [];
 
-                for (var i = 0; i < length; i++) {
-                    if (localStorage.key(i).indexOf(dbInfo.keyPrefix) === 0) {
-                        keys.push(localStorage.key(i).substring(dbInfo.keyPrefix.length));
-                    }
+            for (var i = 0; i < length; i++) {
+                if (localStorage.key(i).indexOf(dbInfo.keyPrefix) === 0) {
+                    keys.push(localStorage.key(i).substring(dbInfo.keyPrefix.length));
                 }
+            }
 
-                resolve(keys);
-            })["catch"](reject);
+            return keys;
         });
 
         executeCallback(promise, callback);
@@ -635,10 +612,8 @@
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
         var self = this;
-        var promise = new Promise(function(resolve, reject) {
-            self.keys().then(function(keys) {
-                resolve(keys.length);
-            })["catch"](reject);
+        var promise = self.keys().then(function(keys) {
+            return keys.length;
         });
 
         executeCallback(promise, callback);
@@ -656,13 +631,9 @@
             key = String(key);
         }
 
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var dbInfo = self._dbInfo;
-                localStorage.removeItem(dbInfo.keyPrefix + key);
-
-                resolve();
-            })["catch"](reject);
+        var promise = self.ready().then(function() {
+            var dbInfo = self._dbInfo;
+            localStorage.removeItem(dbInfo.keyPrefix + key);
         });
 
         executeCallback(promise, callback);
@@ -838,37 +809,35 @@
             key = String(key);
         }
 
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                // Convert undefined values to null.
-                // https://github.com/mozilla/localForage/pull/42
-                if (value === undefined) {
-                    value = null;
-                }
+        var promise = self.ready().then(function() {
+            // Convert undefined values to null.
+            // https://github.com/mozilla/localForage/pull/42
+            if (value === undefined) {
+                value = null;
+            }
 
-                // Save the original value to pass to the callback.
-                var originalValue = value;
+            // Save the original value to pass to the callback.
+            var originalValue = value;
 
-                _serialize(value, function(value, error) {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        try {
-                            var dbInfo = self._dbInfo;
-                            localStorage.setItem(dbInfo.keyPrefix + key, value);
-                        } catch (e) {
-                            // localStorage capacity exceeded.
-                            // TODO: Make this a specific error/event.
-                            if (e.name === 'QuotaExceededError' ||
-                                e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-                                reject(e);
-                            }
+            _serialize(value, function(value, error) {
+                if (error) {
+                    throw error;
+                } else {
+                    try {
+                        var dbInfo = self._dbInfo;
+                        localStorage.setItem(dbInfo.keyPrefix + key, value);
+                    } catch (e) {
+                        // localStorage capacity exceeded.
+                        // TODO: Make this a specific error/event.
+                        if (e.name === 'QuotaExceededError' ||
+                            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                            throw e;
                         }
-
-                        resolve(originalValue);
                     }
-                });
-            })["catch"](reject);
+                }
+            });
+
+            return originalValue;
         });
 
         executeCallback(promise, callback);
