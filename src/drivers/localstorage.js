@@ -307,9 +307,12 @@
     // instructs the `setItem()` callback/promise to be executed). This is how
     // we store binary data with localStorage.
     function _serialize(value, callback) {
-        var valueString = '';
+        var valueString;
+
         if (value) {
             valueString = value.toString();
+        } else {
+            valueString = '';
         }
 
         // Cannot use `value instanceof ArrayBuffer` or such here, as these
@@ -369,7 +372,7 @@
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                window.console.error("Couldn't convert value into a JSON " +
+                window.console.error('Couldn\'t convert value into a JSON ' +
                                      'string: ', value);
 
                 callback(e);
@@ -391,35 +394,131 @@
             key = String(key);
         }
 
-        var promise = self.ready().then(function() {
-            // Convert undefined values to null.
-            // https://github.com/mozilla/localForage/pull/42
-            if (value === undefined) {
-                value = null;
-            }
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                // Convert undefined values to null.
+                // https://github.com/mozilla/localForage/pull/42
+                if (value === undefined) {
+                    value = null;
+                }
 
-            // Save the original value to pass to the callback.
-            var originalValue = value;
+                // Save the original value to pass to the callback.
+                var originalValue = value;
 
-            _serialize(value, function(value, error) {
-                if (error) {
-                    throw error;
-                } else {
-                    try {
-                        var dbInfo = self._dbInfo;
-                        localStorage.setItem(dbInfo.keyPrefix + key, value);
-                    } catch (e) {
-                        // localStorage capacity exceeded.
-                        // TODO: Make this a specific error/event.
-                        if (e.name === 'QuotaExceededError' ||
-                            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-                            throw e;
+                // _serialize has asynchronous nature when dealing with [object Blob],
+                // so in that case just returning a value will exit prematurely, _serialize
+                // should be wrapped into promise in order to work properly in all cases
+                _serialize(value, function(value, error) {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        try {
+                            var dbInfo = self._dbInfo;
+
+                            localStorage.setItem(dbInfo.keyPrefix + key, value);
+
+                            resolve(originalValue);
+                        } catch (e) {
+                            // WARNING: If e.name
+
+                            // localStorage capacity exceeded.
+                            // TODO: Make this a specific error/event.
+                            //if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                            //    throw e;
+                            //}
+                            // Why are we
+                            reject(e);
                         }
                     }
-                }
-            });
+                }, function(error) {
+                    reject(error);
+                });
+            }).catch(reject);
+        });
 
-            return originalValue;
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+    // Bulk save implementation
+    function setItems(items, keyFn, valueFn, callback) {
+        var self = this;
+
+        keyFn = keyFn || function(value, key) { return String(key); };
+        valueFn = valueFn || function(value) { return value; }; // Accepts both (value, key)
+
+        if (typeof keyFn === 'string') {
+            keyFn = (function(propertyName) {
+                return function(object) {
+                    return object[propertyName];
+                };
+            })(keyFn);
+        }
+
+        if (typeof valueFn === 'string') {
+            valueFn = (function(propertyName) {
+                return function(object) {
+                    // The reason we don't _save_ null is because IE 10 does
+                    // not support saving the `null` type in IndexedDB. How
+                    // ironic, given the bug below!
+                    // See: https://github.com/mozilla/localForage/issues/161
+                    return object[propertyName] || undefined;
+                };
+            })(valueFn);
+        }
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                if (Object.prototype.toString.call(items) === '[object Array]') {
+                    var count = items.length;
+                    var resolving = true;
+                    var successfullCalls = 0;
+
+                    // According to:
+                    // http://stackoverflow.com/questions/10031605/optimizing-websql-local-database-population/10031717#10031717
+                    for (var index = 0; resolving && index < count; index++) { // Stop in case error occured
+                        /*jshint -W083 */
+                        (function(item, index) { // This is required due to async nature of _serialize (captures current index)
+                        /*jshint +W083 */
+
+                            // _serialize has asynchronous nature when dealing with [object Blob],
+                            // so in that case just returning a value will exit prematurely, _serialize
+                            // should be wrapped into promise in order to work properly in all cases
+                            _serialize(valueFn(item, index), function(serialized, error) {
+                                if (error) {
+                                    resolving = false;
+                                    reject(error);
+                                } else {
+                                    try {
+                                        var dbInfo = self._dbInfo;
+                                        localStorage.setItem(dbInfo.keyPrefix + keyFn(item, index), serialized);
+                                        successfullCalls++;
+
+                                        if (successfullCalls === count) { // This will never get executed if an error occured
+                                            resolve(items);
+                                        }
+                                    }
+                                    catch (e) {
+                                        // localStorage capacity exceeded.
+                                        // TODO: Make this a specific error/event.
+                                        //if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                                        //    throw e;
+                                        //}
+
+                                        // WARNING: Handling only some errors may cause a situation when promise is
+                                        // never resolved, nor rejected. Each error should result with promise reject.
+                                        reject(e);
+                                    }
+                                }
+                            });
+                        })(items[index], index);
+                    }
+
+                    if (count === 0) {
+                        resolve(items);
+                    }
+                }
+            }).catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -443,6 +542,7 @@
         iterate: iterate,
         getItem: getItem,
         setItem: setItem,
+        setItems: setItems,
         removeItem: removeItem,
         clear: clear,
         length: length,

@@ -29,7 +29,8 @@
         'keys',
         'length',
         'removeItem',
-        'setItem'
+        'setItem',
+        'setItems'
     ];
 
     var ModuleType = {

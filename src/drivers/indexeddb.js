@@ -13,7 +13,7 @@
     var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
                     this.mozIndexedDB || this.OIndexedDB ||
                     this.msIndexedDB;
-
+    
     // If IndexedDB isn't available, we get outta here!
     if (!indexedDB) {
         return;
@@ -82,7 +82,7 @@
             }).catch(reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -120,7 +120,7 @@
             }).catch(reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
 
         return promise;
     }
@@ -131,7 +131,7 @@
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
             window.console.warn(key +
-                                ' used as a key, but it is not a string.');
+            ' used as a key, but it is not a string.');
             key = String(key);
         }
 
@@ -169,7 +169,103 @@
             }).catch(reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+
+    function setItems(items, valueFn, keyFn, callback) { // Warning: for the purpose of optimization, 'items' object should not change until bulk operation is completed, when such behaviour is necessary just clone 'items' before saving
+        var self = this;
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
+                var transaction = dbInfo.db.transaction(dbInfo.storeName, 'readwrite');
+                var store = transaction.objectStore(dbInfo.storeName);
+
+                keyFn = keyFn || function(value, key) { return String(key); };
+                valueFn = valueFn || function(value) { return value; }; // Accepts both (value, key)
+
+                if (typeof keyFn === 'string') {
+                    keyFn = (function(propertyName) {
+                        return function(object) {
+                            return object[propertyName];
+                        };
+                    })(keyFn);
+                }
+
+                if (typeof valueFn === 'string') {
+                    valueFn = (function(propertyName) {
+                        return function(object) {
+                            // The reason we don't _save_ null is because IE 10 does
+                            // not support saving the `null` type in IndexedDB. How
+                            // ironic, given the bug below!
+                            // See: https://github.com/mozilla/localForage/issues/161
+                            return object[propertyName] || undefined;
+                        };
+                    })(valueFn);
+                }
+                
+                var putNext;
+
+                // http://stackoverflow.com/questions/4775722/check-if-object-is-array
+                if (Object.prototype.toString.call(items) === '[object Array]') {
+                    var key = 0;
+                    var itemsLength = items.length;
+
+                    putNext = function() {
+                        if (key < itemsLength) {
+                            var value = items[key];
+                            store.put(valueFn(value, key), keyFn(value, key)).onsuccess = putNext;
+
+                            // No need to catch individual errors during loop, since it can be done once on transaction level
+                            //req.onerror = function() { reject(req.error) };
+                            ++key;
+                        } else {   // complete
+                            // iteration complete, wait for transaction to fire onsuccess
+                        }
+                    };
+                } else { // It should be object
+                    var i = 0;
+                    var keys = (Object.keys || function(hash) {
+                        // There's no way to perform async iteration over object other than convert it to array or use an array it's keys
+                        var result = [];
+                        for (var key in hash) {
+                            if (hash.hasOwnProperty(key)) {
+                                result.push(key);
+                            }
+                        }
+                        return result;
+                    })(items);
+                    var keysLength = keys.length;
+
+                    putNext = function() {
+                        if (i < keysLength) {
+                            var key = keys[i];
+                            var value = items[key];
+                            store.put(valueFn(value, key), keyFn(value, key)).onsuccess = putNext;
+                            // No need to catch individual during loop, since it can be done once on transaction level
+                            //req.onerror = function() { reject(req.error) };
+                            ++i;
+                        } else {
+                            // iteration complete, wait for transaction to fire onsuccess
+                        }
+                    };
+                }
+
+                transaction.oncomplete = function() {
+                    resolve(items);
+                };
+
+                transaction.onabort = transaction.onerror = function(event) {
+                    reject(event.target);
+                };
+
+                putNext();
+            }).catch(reject);
+        });
+
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -205,7 +301,7 @@
 
                 // The request will be aborted if we've exceeded our storage
                 // space. In this case, we will reject with a specific
-                // "QuotaExceededError".
+                // 'QuotaExceededError'.
                 transaction.onabort = function(event) {
                     var error = event.target.error;
                     if (error === 'QuotaExceededError') {
@@ -215,7 +311,7 @@
             }).catch(reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -239,7 +335,7 @@
             }).catch(reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -364,28 +460,28 @@
         }
     }
 
-    function executeDeferedCallback(promise, callback) {
-        if (callback) {
-            promise.then(function(result) {
-                deferCallback(callback, result);
-            }, function(error) {
-                callback(error);
-            });
-        }
-    }
+    //function executeDeferedCallback(promise, callback) {
+    //    if (callback) {
+    //        promise.then(function(result) {
+    //            deferCallback(callback, result);
+    //        }, function(error) {
+    //            callback(error);
+    //        });
+    //    }
+    //}
 
     // Under Chrome the callback is called before the changes (save, clear)
     // are actually made. So we use a defer function which wait that the
     // call stack to be empty.
     // For more info : https://github.com/mozilla/localForage/issues/175
     // Pull request : https://github.com/mozilla/localForage/pull/178
-    function deferCallback(callback, result) {
-        if (callback) {
-            return setTimeout(function() {
-                return callback(null, result);
-            }, 0);
-        }
-    }
+    //function deferCallback(callback, result) {
+    //    if (callback) {
+    //        return setTimeout(function() {
+    //            return callback(null, result);
+    //        }, 0);
+    //    }
+    //}
 
     var asyncStorage = {
         _driver: 'asyncStorage',
@@ -393,6 +489,7 @@
         iterate: iterate,
         getItem: getItem,
         setItem: setItem,
+        setItems: setItems,
         removeItem: removeItem,
         clear: clear,
         length: length,

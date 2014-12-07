@@ -778,6 +778,8 @@ DRIVERS.forEach(function(driverName) {
         var driverApiMethods = [
             'getItem',
             'setItem',
+            'setItems',
+            'iterate',
             'clear',
             'length',
             'removeItem',
