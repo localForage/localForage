@@ -249,6 +249,75 @@
         return promise;
     }
 
+    function setItems(items, valueFn, keyFn, callback) {
+        var self = this;
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                var self = this;
+
+                keyFn = keyFn || function(value, key) { return String(key); };
+                valueFn = valueFn || function(value) { return value; }; // Accepts both (value, key)
+
+                if (typeof keyFn === 'string') {
+                    keyFn = (function(propertyName) {
+                        return function(object) {
+                            return object[propertyName];
+                        };
+                    })(keyFn);
+                }
+
+                if (typeof valueFn === 'string') {
+                    valueFn = (function(propertyName) {
+                        return function(object) {
+                            // The reason we don't _save_ null is because IE 10 does
+                            // not support saving the `null` type in IndexedDB. How
+                            // ironic, given the bug below!
+                            // See: https://github.com/mozilla/localForage/issues/161
+                            return object[propertyName] || undefined;
+                        };
+                    })(valueFn);
+                }
+
+                var count = 0;
+                var successes = 0;
+                var completed = false;
+
+                for (var i in items) {
+                    count++;
+                    (function(value, key) {
+                        _serialize(value, function(value, error) {
+                            if (error) {
+                                reject(error);
+                            } else {
+                                try {
+                                    var db = self._dbInfo.db;
+                                    db[key] = value;
+                                    successes++;
+
+                                    if (completed && successes === count) {
+                                        resolve(items);
+                                    }
+                                } catch (e) {
+                                    reject(e);
+                                }
+                            }
+                        });
+                    })(items[i], i);
+                }
+
+                completed = true;
+
+                if (count === successes) {
+                    resolve(items)
+                }
+            }).catch(reject);
+        });
+
+        executeCallback(promise, callback);
+        return promise;
+    }
+
     // _serialize just like in LocalStorage
     function _serialize(value, callback) {
         var valueString = '';
@@ -411,6 +480,7 @@
         iterate: iterate,
         getItem: getItem,
         setItem: setItem,
+        setItems: setItems,
         removeItem: removeItem,
         clear: clear,
         length: length,

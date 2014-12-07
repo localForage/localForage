@@ -185,7 +185,7 @@
         var promise = new Promise(function(resolve, reject) {
             self.ready().then(function() {
                 // The localStorage API doesn't return undefined values in an
-                // "expected" way, so undefined is always cast to null in all
+                // 'expected' way, so undefined is always cast to null in all
                 // drivers. See: https://github.com/mozilla/localForage/pull/42
                 if (value === undefined) {
                     value = null;
@@ -221,6 +221,94 @@
                                 reject(sqlError);
                             }
                         });
+                    }
+                });
+            }).catch(reject);
+        });
+
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+    function setItems(items, valueFn, keyFn, callback) {
+        var self = this;
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                keyFn = keyFn || function(value, key) { return String(key); };
+                valueFn = valueFn || function(value) { return value; }; // Accepts both (value, key)
+
+                if (typeof keyFn === 'string') {
+                    keyFn = (function(propertyName) {
+                        return function(object) {
+                            return object[propertyName];
+                        };
+                    })(keyFn);
+                }
+
+                if (typeof valueFn === 'string') {
+                    valueFn = (function(propertyName) {
+                        return function(object) {
+                            // The reason we don't _save_ null is because IE 10 does
+                            // not support saving the `null` type in IndexedDB. How
+                            // ironic, given the bug below!
+                            // See: https://github.com/mozilla/localForage/issues/161
+                            return object[propertyName] || undefined;
+                        };
+                    })(valueFn);
+                }
+
+                var resolving = true;
+
+                var dbInfo = self._dbInfo;
+                dbInfo.db.transaction(function(t) {
+                    var query = 'INSERT OR REPLACE INTO ' + dbInfo.storeName + ' (key, value) VALUES (?, ?)';
+
+                    if (Object.prototype.toString.call(items) === '[object Array]') {
+                        var count = items.length;
+                        // According to:
+                        // http://stackoverflow.com/questions/10031605/optimizing-websql-local-database-population/10031717#10031717
+                        for (var index = 0; index < count; index++) {
+                            /*jshint -W083 */
+                            (function(item, index) { // This is required due to async nature of _serialize
+                            /*jshint +W083 */
+                                // _serialize has asynchronous nature when dealing with [object Blob],
+                                // so in that case just returning a value will exit prematurely, _serialize
+                                // should be wrapped into promise in order to work properly in all cases
+                                _serialize(valueFn(item, index), function(value, error) {
+                                    if (error) {
+                                        reject(error);
+                                    } else {
+                                        t.executeSql(query, [keyFn(item, index), value], undefined, function(error) { resolving = false; reject(error); });
+                                    }
+                                });
+                            })(items[index], index);
+                        }
+                    } else {
+                        // According to:
+                        // http://stackoverflow.com/questions/10031605/optimizing-websql-local-database-population/10031717#10031717
+                        for (var key in items) {
+                            if (items.hasOwnProperty(key)) {
+                                (function(item, key) { // This is required due to async nature of _serialize
+                                    _serialize(valueFn(item, key), function(value, error) {
+                                        if (error) {
+                                            reject(error);
+                                        } else {
+                                            t.executeSql(query, [keyFn(item, key), value], undefined, function(error) { resolving = false; reject(error); });
+                                        }
+                                    });
+                                })(items[key], key);
+                            }
+                        }
+                    }
+                }, function(sqlError) { // Transaction failed
+                    // To be sure that we reject if an error occured only on a transaction level,
+                    // otherwise, the promise will never resolve
+                    reject(sqlError);
+                    resolving = false;
+                }, function() {
+                    if (resolving) {
+                        resolve(items);
                     }
                 });
             }).catch(reject);
@@ -543,7 +631,7 @@
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                window.console.error("Couldn't convert value into a JSON " +
+                window.console.error('Couldn\'t convert value into a JSON ' +
                                      'string: ', value);
 
                 callback(null, e);
@@ -567,6 +655,7 @@
         iterate: iterate,
         getItem: getItem,
         setItem: setItem,
+        setItems: setItems,
         removeItem: removeItem,
         clear: clear,
         length: length,

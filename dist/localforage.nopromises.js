@@ -19,7 +19,7 @@
     var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
                     this.mozIndexedDB || this.OIndexedDB ||
                     this.msIndexedDB;
-
+    
     // If IndexedDB isn't available, we get outta here!
     if (!indexedDB) {
         return;
@@ -88,7 +88,7 @@
             })["catch"](reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -126,7 +126,7 @@
             })["catch"](reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
 
         return promise;
     }
@@ -137,7 +137,7 @@
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
             window.console.warn(key +
-                                ' used as a key, but it is not a string.');
+            ' used as a key, but it is not a string.');
             key = String(key);
         }
 
@@ -175,7 +175,103 @@
             })["catch"](reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+
+    function setItems(items, valueFn, keyFn, callback) { // Warning: for the purpose of optimization, 'items' object should not change until bulk operation is completed, when such behaviour is necessary just clone 'items' before saving
+        var self = this;
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                var dbInfo = self._dbInfo;
+                var transaction = dbInfo.db.transaction(dbInfo.storeName, 'readwrite');
+                var store = transaction.objectStore(dbInfo.storeName);
+
+                keyFn = keyFn || function(value, key) { return String(key); };
+                valueFn = valueFn || function(value) { return value; }; // Accepts both (value, key)
+
+                if (typeof keyFn === 'string') {
+                    keyFn = (function(propertyName) {
+                        return function(object) {
+                            return object[propertyName];
+                        };
+                    })(keyFn);
+                }
+
+                if (typeof valueFn === 'string') {
+                    valueFn = (function(propertyName) {
+                        return function(object) {
+                            // The reason we don't _save_ null is because IE 10 does
+                            // not support saving the `null` type in IndexedDB. How
+                            // ironic, given the bug below!
+                            // See: https://github.com/mozilla/localForage/issues/161
+                            return object[propertyName] || undefined;
+                        };
+                    })(valueFn);
+                }
+                
+                var putNext;
+
+                // http://stackoverflow.com/questions/4775722/check-if-object-is-array
+                if (Object.prototype.toString.call(items) === '[object Array]') {
+                    var key = 0;
+                    var itemsLength = items.length;
+
+                    putNext = function() {
+                        if (key < itemsLength) {
+                            var value = items[key];
+                            store.put(valueFn(value, key), keyFn(value, key)).onsuccess = putNext;
+
+                            // No need to catch individual errors during loop, since it can be done once on transaction level
+                            //req.onerror = function() { reject(req.error) };
+                            ++key;
+                        } else {   // complete
+                            // iteration complete, wait for transaction to fire onsuccess
+                        }
+                    };
+                } else { // It should be object
+                    var i = 0;
+                    var keys = (Object.keys || function(hash) {
+                        // There's no way to perform async iteration over object other than convert it to array or use an array it's keys
+                        var result = [];
+                        for (var key in hash) {
+                            if (hash.hasOwnProperty(key)) {
+                                result.push(key);
+                            }
+                        }
+                        return result;
+                    })(items);
+                    var keysLength = keys.length;
+
+                    putNext = function() {
+                        if (i < keysLength) {
+                            var key = keys[i];
+                            var value = items[key];
+                            store.put(valueFn(value, key), keyFn(value, key)).onsuccess = putNext;
+                            // No need to catch individual during loop, since it can be done once on transaction level
+                            //req.onerror = function() { reject(req.error) };
+                            ++i;
+                        } else {
+                            // iteration complete, wait for transaction to fire onsuccess
+                        }
+                    };
+                }
+
+                transaction.oncomplete = function() {
+                    resolve(items);
+                };
+
+                transaction.onabort = transaction.onerror = function(event) {
+                    reject(event.target);
+                };
+
+                putNext();
+            })["catch"](reject);
+        });
+
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -211,7 +307,7 @@
 
                 // The request will be aborted if we've exceeded our storage
                 // space. In this case, we will reject with a specific
-                // "QuotaExceededError".
+                // 'QuotaExceededError'.
                 transaction.onabort = function(event) {
                     var error = event.target.error;
                     if (error === 'QuotaExceededError') {
@@ -221,7 +317,7 @@
             })["catch"](reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -245,7 +341,7 @@
             })["catch"](reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -370,28 +466,28 @@
         }
     }
 
-    function executeDeferedCallback(promise, callback) {
-        if (callback) {
-            promise.then(function(result) {
-                deferCallback(callback, result);
-            }, function(error) {
-                callback(error);
-            });
-        }
-    }
+    //function executeDeferedCallback(promise, callback) {
+    //    if (callback) {
+    //        promise.then(function(result) {
+    //            deferCallback(callback, result);
+    //        }, function(error) {
+    //            callback(error);
+    //        });
+    //    }
+    //}
 
     // Under Chrome the callback is called before the changes (save, clear)
     // are actually made. So we use a defer function which wait that the
     // call stack to be empty.
     // For more info : https://github.com/mozilla/localForage/issues/175
     // Pull request : https://github.com/mozilla/localForage/pull/178
-    function deferCallback(callback, result) {
-        if (callback) {
-            return setTimeout(function() {
-                return callback(null, result);
-            }, 0);
-        }
-    }
+    //function deferCallback(callback, result) {
+    //    if (callback) {
+    //        return setTimeout(function() {
+    //            return callback(null, result);
+    //        }, 0);
+    //    }
+    //}
 
     var asyncStorage = {
         _driver: 'asyncStorage',
@@ -399,6 +495,7 @@
         iterate: iterate,
         getItem: getItem,
         setItem: setItem,
+        setItems: setItems,
         removeItem: removeItem,
         clear: clear,
         length: length,
@@ -725,9 +822,12 @@
     // instructs the `setItem()` callback/promise to be executed). This is how
     // we store binary data with localStorage.
     function _serialize(value, callback) {
-        var valueString = '';
+        var valueString;
+
         if (value) {
             valueString = value.toString();
+        } else {
+            valueString = '';
         }
 
         // Cannot use `value instanceof ArrayBuffer` or such here, as these
@@ -787,7 +887,7 @@
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                window.console.error("Couldn't convert value into a JSON " +
+                window.console.error('Couldn\'t convert value into a JSON ' +
                                      'string: ', value);
 
                 callback(e);
@@ -809,35 +909,131 @@
             key = String(key);
         }
 
-        var promise = self.ready().then(function() {
-            // Convert undefined values to null.
-            // https://github.com/mozilla/localForage/pull/42
-            if (value === undefined) {
-                value = null;
-            }
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                // Convert undefined values to null.
+                // https://github.com/mozilla/localForage/pull/42
+                if (value === undefined) {
+                    value = null;
+                }
 
-            // Save the original value to pass to the callback.
-            var originalValue = value;
+                // Save the original value to pass to the callback.
+                var originalValue = value;
 
-            _serialize(value, function(value, error) {
-                if (error) {
-                    throw error;
-                } else {
-                    try {
-                        var dbInfo = self._dbInfo;
-                        localStorage.setItem(dbInfo.keyPrefix + key, value);
-                    } catch (e) {
-                        // localStorage capacity exceeded.
-                        // TODO: Make this a specific error/event.
-                        if (e.name === 'QuotaExceededError' ||
-                            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-                            throw e;
+                // _serialize has asynchronous nature when dealing with [object Blob],
+                // so in that case just returning a value will exit prematurely, _serialize
+                // should be wrapped into promise in order to work properly in all cases
+                _serialize(value, function(value, error) {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        try {
+                            var dbInfo = self._dbInfo;
+
+                            localStorage.setItem(dbInfo.keyPrefix + key, value);
+
+                            resolve(originalValue);
+                        } catch (e) {
+                            // WARNING: If e.name
+
+                            // localStorage capacity exceeded.
+                            // TODO: Make this a specific error/event.
+                            //if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                            //    throw e;
+                            //}
+                            // Why are we
+                            reject(e);
                         }
                     }
-                }
-            });
+                }, function(error) {
+                    reject(error);
+                });
+            })["catch"](reject);
+        });
 
-            return originalValue;
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+    // Bulk save implementation
+    function setItems(items, keyFn, valueFn, callback) {
+        var self = this;
+
+        keyFn = keyFn || function(value, key) { return String(key); };
+        valueFn = valueFn || function(value) { return value; }; // Accepts both (value, key)
+
+        if (typeof keyFn === 'string') {
+            keyFn = (function(propertyName) {
+                return function(object) {
+                    return object[propertyName];
+                };
+            })(keyFn);
+        }
+
+        if (typeof valueFn === 'string') {
+            valueFn = (function(propertyName) {
+                return function(object) {
+                    // The reason we don't _save_ null is because IE 10 does
+                    // not support saving the `null` type in IndexedDB. How
+                    // ironic, given the bug below!
+                    // See: https://github.com/mozilla/localForage/issues/161
+                    return object[propertyName] || undefined;
+                };
+            })(valueFn);
+        }
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                if (Object.prototype.toString.call(items) === '[object Array]') {
+                    var count = items.length;
+                    var resolving = true;
+                    var successfullCalls = 0;
+
+                    // According to:
+                    // http://stackoverflow.com/questions/10031605/optimizing-websql-local-database-population/10031717#10031717
+                    for (var index = 0; resolving && index < count; index++) { // Stop in case error occured
+                        /*jshint -W083 */
+                        (function(item, index) { // This is required due to async nature of _serialize (captures current index)
+                        /*jshint +W083 */
+
+                            // _serialize has asynchronous nature when dealing with [object Blob],
+                            // so in that case just returning a value will exit prematurely, _serialize
+                            // should be wrapped into promise in order to work properly in all cases
+                            _serialize(valueFn(item, index), function(serialized, error) {
+                                if (error) {
+                                    resolving = false;
+                                    reject(error);
+                                } else {
+                                    try {
+                                        var dbInfo = self._dbInfo;
+                                        localStorage.setItem(dbInfo.keyPrefix + keyFn(item, index), serialized);
+                                        successfullCalls++;
+
+                                        if (successfullCalls === count) { // This will never get executed if an error occured
+                                            resolve(items);
+                                        }
+                                    }
+                                    catch (e) {
+                                        // localStorage capacity exceeded.
+                                        // TODO: Make this a specific error/event.
+                                        //if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                                        //    throw e;
+                                        //}
+
+                                        // WARNING: Handling only some errors may cause a situation when promise is
+                                        // never resolved, nor rejected. Each error should result with promise reject.
+                                        reject(e);
+                                    }
+                                }
+                            });
+                        })(items[index], index);
+                    }
+
+                    if (count === 0) {
+                        resolve(items);
+                    }
+                }
+            })["catch"](reject);
         });
 
         executeCallback(promise, callback);
@@ -861,6 +1057,7 @@
         iterate: iterate,
         getItem: getItem,
         setItem: setItem,
+        setItems: setItems,
         removeItem: removeItem,
         clear: clear,
         length: length,
@@ -1062,7 +1259,7 @@
         var promise = new Promise(function(resolve, reject) {
             self.ready().then(function() {
                 // The localStorage API doesn't return undefined values in an
-                // "expected" way, so undefined is always cast to null in all
+                // 'expected' way, so undefined is always cast to null in all
                 // drivers. See: https://github.com/mozilla/localForage/pull/42
                 if (value === undefined) {
                     value = null;
@@ -1098,6 +1295,94 @@
                                 reject(sqlError);
                             }
                         });
+                    }
+                });
+            })["catch"](reject);
+        });
+
+        executeCallback(promise, callback);
+        return promise;
+    }
+
+    function setItems(items, valueFn, keyFn, callback) {
+        var self = this;
+
+        var promise = new Promise(function(resolve, reject) {
+            self.ready().then(function() {
+                keyFn = keyFn || function(value, key) { return String(key); };
+                valueFn = valueFn || function(value) { return value; }; // Accepts both (value, key)
+
+                if (typeof keyFn === 'string') {
+                    keyFn = (function(propertyName) {
+                        return function(object) {
+                            return object[propertyName];
+                        };
+                    })(keyFn);
+                }
+
+                if (typeof valueFn === 'string') {
+                    valueFn = (function(propertyName) {
+                        return function(object) {
+                            // The reason we don't _save_ null is because IE 10 does
+                            // not support saving the `null` type in IndexedDB. How
+                            // ironic, given the bug below!
+                            // See: https://github.com/mozilla/localForage/issues/161
+                            return object[propertyName] || undefined;
+                        };
+                    })(valueFn);
+                }
+
+                var resolving = true;
+
+                var dbInfo = self._dbInfo;
+                dbInfo.db.transaction(function(t) {
+                    var query = 'INSERT OR REPLACE INTO ' + dbInfo.storeName + ' (key, value) VALUES (?, ?)';
+
+                    if (Object.prototype.toString.call(items) === '[object Array]') {
+                        var count = items.length;
+                        // According to:
+                        // http://stackoverflow.com/questions/10031605/optimizing-websql-local-database-population/10031717#10031717
+                        for (var index = 0; index < count; index++) {
+                            /*jshint -W083 */
+                            (function(item, index) { // This is required due to async nature of _serialize
+                            /*jshint +W083 */
+                                // _serialize has asynchronous nature when dealing with [object Blob],
+                                // so in that case just returning a value will exit prematurely, _serialize
+                                // should be wrapped into promise in order to work properly in all cases
+                                _serialize(valueFn(item, index), function(value, error) {
+                                    if (error) {
+                                        reject(error);
+                                    } else {
+                                        t.executeSql(query, [keyFn(item, index), value], undefined, function(error) { resolving = false; reject(error); });
+                                    }
+                                });
+                            })(items[index], index);
+                        }
+                    } else {
+                        // According to:
+                        // http://stackoverflow.com/questions/10031605/optimizing-websql-local-database-population/10031717#10031717
+                        for (var key in items) {
+                            if (items.hasOwnProperty(key)) {
+                                (function(item, key) { // This is required due to async nature of _serialize
+                                    _serialize(valueFn(item, key), function(value, error) {
+                                        if (error) {
+                                            reject(error);
+                                        } else {
+                                            t.executeSql(query, [keyFn(item, key), value], undefined, function(error) { resolving = false; reject(error); });
+                                        }
+                                    });
+                                })(items[key], key);
+                            }
+                        }
+                    }
+                }, function(sqlError) { // Transaction failed
+                    // To be sure that we reject if an error occured only on a transaction level,
+                    // otherwise, the promise will never resolve
+                    reject(sqlError);
+                    resolving = false;
+                }, function() {
+                    if (resolving) {
+                        resolve(items);
                     }
                 });
             })["catch"](reject);
@@ -1420,7 +1705,7 @@
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                window.console.error("Couldn't convert value into a JSON " +
+                window.console.error('Couldn\'t convert value into a JSON ' +
                                      'string: ', value);
 
                 callback(null, e);
@@ -1444,6 +1729,7 @@
         iterate: iterate,
         getItem: getItem,
         setItem: setItem,
+        setItems: setItems,
         removeItem: removeItem,
         clear: clear,
         length: length,
@@ -1492,7 +1778,8 @@
         'keys',
         'length',
         'removeItem',
-        'setItem'
+        'setItem',
+        'setItems'
     ];
 
     var ModuleType = {

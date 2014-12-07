@@ -13,6 +13,7 @@ describe('When Custom Drivers are used', function() {
             iterate: function() {},
             getItem: function() {},
             setItem: function() {},
+            setItems: function() {},
             removeItem: function() {},
             clear: function() {},
             length: function() {},
@@ -31,6 +32,7 @@ describe('When Custom Drivers are used', function() {
             iterate: function() {},
             getItem: function() {},
             setItem: function() {},
+            setItems: function() {},
             removeItem: function() {},
             clear: function() {},
             length: function() {},
@@ -51,6 +53,7 @@ describe('When Custom Drivers are used', function() {
             iterate: function() {},
             getItem: function() {},
             setItem: function() {},
+            setItems: function() {},
             removeItem: function() {},
             clear: function() {},
             length: function() {},
@@ -71,6 +74,7 @@ describe('When Custom Drivers are used', function() {
             iterate: function() {},
             getItem: function() {},
             setItem: function() {},
+            setItems: function() {},
             removeItem: function() {},
             clear: function() {},
             length: function() {},
@@ -90,6 +94,7 @@ describe('When Custom Drivers are used', function() {
             iterate: function() {},
             getItem: function() {},
             setItem: function() {},
+            setItems: function() {},
             removeItem: function() {},
             clear: function() {}
         }, null,  function(err) {
@@ -107,6 +112,7 @@ describe('When Custom Drivers are used', function() {
             iterate: function() {},
             getItem: function() {},
             setItem: function() {},
+            setItems: function() {},
             removeItem: function() {},
             clear: function() {}
         }).then(null, function(err) {
@@ -117,12 +123,14 @@ describe('When Custom Drivers are used', function() {
     });
 
     it('defines a compliant custom driver', function(done) {
+        this.timeout(10000000);
         localforage.defineDriver(dummyStorageDriver, function() {
             done();
         });
     });
 
     it('defines a compliant custom driver [promise]', function(done) {
+        this.timeout(10000000);
         localforage.defineDriver(dummyStorageDriver).then(function() {
             done();
         });
