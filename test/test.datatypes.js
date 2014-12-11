@@ -241,9 +241,9 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        // Skip binary data tests if Array Buffer isn't supported.
+        // Skip binary (ArrayBuffer) data tests if Array Buffer isn't supported.
         if (typeof ArrayBuffer !== 'undefined') {
-            it('saves binary data', function(done) {
+            it('saves binary (ArrayBuffer) data', function(done) {
                 var request = new XMLHttpRequest();
 
                 request.open('GET', '/test/photo.jpg', true);
@@ -276,7 +276,43 @@ DRIVERS.forEach(function(driverName) {
                 request.send();
             });
         } else {
-            it.skip('saves binary data (ArrayBuffer type does not exist)');
+            it.skip('saves binary (ArrayBuffer) data (ArrayBuffer type does not exist)');
+        }
+
+        // This does not run on PhantomJS < 2.0.
+        // https://github.com/ariya/phantomjs/issues/11013
+        // Skip binary(Blob) data tests if Blob isn't supported.
+        if (typeof Blob === 'function') {
+            it('saves binary (Blob) data', function(done) {
+                var fileParts = ['<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>'];
+                var mimeString = 'text\/html';
+
+                var testBlob = new Blob(fileParts, { 'type' : mimeString });
+
+                localforage.setItem('blob', testBlob, function(err, blob) {
+                    expect(err).to.be(null);
+                    expect(blob.toString())
+                        .to.be('[object Blob]');
+                    expect(blob.size)
+                        .to.be(testBlob.size);
+                    expect(blob.type)
+                        .to.be(testBlob.type);
+                }).then(function() {
+                    localforage.getItem('blob', function(err, blob) {
+                        expect(err).to.be(null);
+                        expect(blob.toString())
+                            .to.be('[object Blob]');
+                        expect(blob.size)
+                            .to.be(testBlob.size);
+                        // TODO: localForage does not restore the mimeString!?
+                        // expect(blob.type)
+                        //     .to.be(testBlob.type);
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip('saves binary (Blob) data (Blob type does not exist)');
         }
     });
 
