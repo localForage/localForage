@@ -819,25 +819,27 @@
             // Save the original value to pass to the callback.
             var originalValue = value;
 
-            _serialize(value, function(value, error) {
-                if (error) {
-                    throw error;
-                } else {
-                    try {
-                        var dbInfo = self._dbInfo;
-                        localStorage.setItem(dbInfo.keyPrefix + key, value);
-                    } catch (e) {
-                        // localStorage capacity exceeded.
-                        // TODO: Make this a specific error/event.
-                        if (e.name === 'QuotaExceededError' ||
-                            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-                            throw e;
+            return new Promise(function(resolve, reject) {
+                _serialize(value, function(value, error) {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        try {
+                            var dbInfo = self._dbInfo;
+                            localStorage.setItem(dbInfo.keyPrefix + key, value);
+                            resolve(originalValue);
+                        } catch (e) {
+                            // localStorage capacity exceeded.
+                            // TODO: Make this a specific error/event.
+                            if (e.name === 'QuotaExceededError' ||
+                                e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                                reject(e);
+                            }
+                            reject(e);
                         }
                     }
-                }
+                });
             });
-
-            return originalValue;
         });
 
         executeCallback(promise, callback);
