@@ -60,18 +60,24 @@
         }
 
         return new Promise(function(resolve, reject) {
+            function switchToLocalStorage() {
+                return self.setDriver('localStorageWrapper').then(function() {
+                    return self._initStorage(options);
+                }).then(resolve).catch(reject);
+            }
+
             // Open the database; the openDatabase API will automatically
             // create it for us if it doesn't exist.
             try {
                 dbInfo.db = openDatabase(dbInfo.name, String(dbInfo.version),
                                          dbInfo.description, dbInfo.size);
             } catch (e) {
-                return self.setDriver('localStorageWrapper')
-                    .then(function() {
-                        return self._initStorage(options);
-                    })
-                    .then(resolve)
-                    .catch(reject);
+                return switchToLocalStorage();
+            }
+
+            // Prevent travis failing tests?
+            if (!dbInfo || !dbInfo.db || !dbInfo.db.transaction) {
+                return switchToLocalStorage();
             }
 
             // Create our key/value table if it doesn't exist.
