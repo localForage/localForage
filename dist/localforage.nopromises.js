@@ -942,8 +942,10 @@
         }
 
         return new Promise(function(resolve, reject) {
+            // This is called if we have to switch to using localStorage
+            // because the openDatabase call fails.
             function switchToLocalStorage() {
-                return self.setDriver('localStorageWrapper').then(function() {
+                return self.setDriver(self.LOCALSTORAGE).then(function() {
                     return self._initStorage(options);
                 }).then(resolve)["catch"](reject);
             }
@@ -957,7 +959,12 @@
                 return switchToLocalStorage();
             }
 
-            // Prevent travis failing tests?
+            // This VERY silly looking code that shouldn't be called is
+            // mostly here to prevent Travis CI from failing tests, but if it
+            // can get here it must mean there is a code path here even if
+            // `openDatabase()` failed.
+            // TODO: This is kind of a hack, but it works. A better solution
+            // or an explanation would be welcome <3
             if (!dbInfo || !dbInfo.db || !dbInfo.db.transaction) {
                 return switchToLocalStorage();
             }
