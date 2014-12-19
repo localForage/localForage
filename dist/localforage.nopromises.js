@@ -948,7 +948,7 @@
                 dbInfo.db = openDatabase(dbInfo.name, String(dbInfo.version),
                                          dbInfo.description, dbInfo.size);
             } catch (e) {
-                return self.setDriver("localStorageWrapper").then(function() {
+                return self.setDriver(self.LOCALSTORAGE).then(function() {
     return self._initStorage(options);
 }).then(resolve)["catch"](reject);
             }

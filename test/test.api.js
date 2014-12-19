@@ -84,7 +84,9 @@ DRIVERS.forEach(function(driverName) {
 
         beforeEach(function(done) {
             localStorage.clear();
-            localforage.clear(done);
+            localforage.ready().then(function() {
+                localforage.clear(done);
+            });
         });
 
         it('has a localStorage API', function() {
