@@ -786,12 +786,13 @@ requireModule('promise/polyfill').polyfill();
                                      .objectStore(dbInfo.storeName);
 
                 var req = store.openCursor();
+                var iterationNumber = 1;
 
                 req.onsuccess = function() {
                     var cursor = req.result;
 
                     if (cursor) {
-                        var result = iterator(cursor.value, cursor.key);
+                        var result = iterator(cursor.value, cursor.key, iterationNumber++);
 
                         if (result !== void(0)) {
                             resolve(result);
@@ -1236,7 +1237,7 @@ requireModule('promise/polyfill').polyfill();
                     value = _deserialize(value);
                 }
 
-                value = iterator(value, key.substring(keyPrefixLength));
+                value = iterator(value, key.substring(keyPrefixLength), i + 1);
 
                 if (value !== void(0)) {
                     return value;
@@ -1712,7 +1713,7 @@ requireModule('promise/polyfill').polyfill();
                                     result = _deserialize(result);
                                 }
 
-                                result = iterator(result, item.key);
+                                result = iterator(result, item.key, i + 1);
 
                                 // void(0) prevents problems with redefinition
                                 // of `undefined`.

@@ -135,7 +135,7 @@
                     value = _deserialize(value);
                 }
 
-                value = iterator(value, key.substring(keyPrefixLength));
+                value = iterator(value, key.substring(keyPrefixLength), i + 1);
 
                 if (value !== void(0)) {
                     return value;

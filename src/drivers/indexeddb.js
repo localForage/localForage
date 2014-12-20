@@ -97,12 +97,13 @@
                                      .objectStore(dbInfo.storeName);
 
                 var req = store.openCursor();
+                var iterationNumber = 1;
 
                 req.onsuccess = function() {
                     var cursor = req.result;
 
                     if (cursor) {
-                        var result = iterator(cursor.value, cursor.key);
+                        var result = iterator(cursor.value, cursor.key, iterationNumber++);
 
                         if (result !== void(0)) {
                             resolve(result);
