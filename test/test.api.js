@@ -148,13 +148,20 @@ DRIVERS.forEach(function(driverName) {
                             expect(value).to.be(setValue);
 
                             var accumulator = {};
+                            var iterationNumbers = [];
 
-                            localforage.iterate(function(value, key) {
+                            localforage.iterate(function(value, key, iterationNumber) {
                                 accumulator[key] = value;
+                                iterationNumbers.push(iterationNumber);
                             }, function() {
-                                expect(accumulator.officeX).to.be('InitechX');
-                                expect(accumulator.officeY).to.be('InitechY');
-                                done();
+                                try {
+                                    expect(accumulator.officeX).to.be('InitechX');
+                                    expect(accumulator.officeY).to.be('InitechY');
+                                    expect(iterationNumbers).to.eql([1, 2]);
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
                             });
                         });
                     });
@@ -162,11 +169,11 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        it('should iterate [promise]', function(done) {
+        it('should iterate [promise]', function() {
             var accumulator = {};
-            var message = 'Return defined value to break further iteration';
+            var iterationNumbers = [];
 
-            localforage.setItem('officeX', 'InitechX').then(function(setValue) {
+            return localforage.setItem('officeX', 'InitechX').then(function(setValue) {
                 expect(setValue).to.be('InitechX');
                 return localforage.getItem('officeX');
             }).then(function(value) {
@@ -178,19 +185,14 @@ DRIVERS.forEach(function(driverName) {
             }).then(function(value) {
                 expect(value).to.be('InitechY');
 
-                return localforage.iterate(function(value, key) {
+                return localforage.iterate(function(value, key, iterationNumber) {
                     accumulator[key] = value;
+                    iterationNumbers.push(iterationNumber);
                 });
             }).then(function() {
                 expect(accumulator.officeX).to.be('InitechX');
                 expect(accumulator.officeY).to.be('InitechY');
-            }).then(function() {
-                return localforage.iterate(function() {
-                    return message;
-                });
-            }).then(function(result) {
-                expect(result).to.be(message);
-                done();
+                expect(iterationNumbers).to.eql([1, 2]);
             });
         });
 

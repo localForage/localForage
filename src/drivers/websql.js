@@ -147,7 +147,7 @@
                                     result = _deserialize(result);
                                 }
 
-                                result = iterator(result, item.key);
+                                result = iterator(result, item.key, i + 1);
 
                                 // void(0) prevents problems with redefinition
                                 // of `undefined`.
