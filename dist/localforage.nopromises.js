@@ -463,6 +463,8 @@
         return Promise.resolve();
     }
 
+    var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
     var SERIALIZED_MARKER = '__lfsc__:';
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
 
@@ -665,13 +667,7 @@
         var type = value.substring(SERIALIZED_MARKER_LENGTH,
                                    TYPE_SERIALIZED_MARKER_LENGTH);
 
-        // Fill the string into a ArrayBuffer.
-        // 2 bytes for each char.
-        var buffer = new ArrayBuffer(serializedString.length * 2);
-        var bufferView = new Uint16Array(buffer);
-        for (var i = serializedString.length - 1; i >= 0; i--) {
-            bufferView[i] = serializedString.charCodeAt(i);
-        }
+        var buffer = _stringToBuffer(serializedString);
 
         // Return the right type based on the code/type set during
         // serialization.
@@ -703,23 +699,61 @@
         }
     }
 
-    // Converts a buffer to a string to store, serialized, in the backend
-    // storage library.
-    function _bufferToString(buffer) {
-        var str = '';
-        var uint16Array = new Uint16Array(buffer);
+    function _stringToBuffer(serializedString) {
+        // Fill the string into a ArrayBuffer.
+        var bufferLength = serializedString.length * 0.75;
+        var len = serializedString.length;
+        var i;
+        var p = 0;
+        var encoded1, encoded2, encoded3, encoded4;
 
-        try {
-            str = String.fromCharCode.apply(null, uint16Array);
-        } catch (e) {
-            // This is a fallback implementation in case the first one does
-            // not work. This is required to get the phantomjs passing...
-            for (var i = 0; i < uint16Array.length; i++) {
-                str += String.fromCharCode(uint16Array[i]);
+        if (serializedString[serializedString.length - 1] === '=') {
+            bufferLength--;
+            if (serializedString[serializedString.length - 2] === '=') {
+                bufferLength--;
             }
         }
 
-        return str;
+        var buffer = new ArrayBuffer(bufferLength);
+        var bytes = new Uint8Array(buffer);
+
+        for (i = 0; i < len; i+=4) {
+            encoded1 = BASE_CHARS.indexOf(serializedString[i]);
+            encoded2 = BASE_CHARS.indexOf(serializedString[i+1]);
+            encoded3 = BASE_CHARS.indexOf(serializedString[i+2]);
+            encoded4 = BASE_CHARS.indexOf(serializedString[i+3]);
+
+            /*jslint bitwise: true */
+            bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+            bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+            bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+        }
+        return buffer;
+    }
+
+    // Converts a buffer to a string to store, serialized, in the backend
+    // storage library.
+    function _bufferToString(buffer) {
+        // base64-arraybuffer
+        var bytes = new Uint8Array(buffer);
+        var base64String = '';
+        var i;
+
+        for (i = 0; i < bytes.length; i += 3) {
+            /*jslint bitwise: true */
+            base64String += BASE_CHARS[bytes[i] >> 2];
+            base64String += BASE_CHARS[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+            base64String += BASE_CHARS[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+            base64String += BASE_CHARS[bytes[i + 2] & 63];
+        }
+
+        if ((bytes.length % 3) === 2) {
+            base64String = base64String.substring(0, base64String.length - 1) + '=';
+        } else if (bytes.length % 3 === 1) {
+            base64String = base64String.substring(0, base64String.length - 2) + '==';
+        }
+
+        return base64String;
     }
 
     // Serialize a value, afterwards executing a callback (which usually
@@ -791,7 +825,7 @@
                 window.console.error("Couldn't convert value into a JSON " +
                                      'string: ', value);
 
-                callback(e);
+                callback(null, e);
             }
         }
     }
