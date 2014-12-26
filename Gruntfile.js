@@ -22,10 +22,12 @@ module.exports = exports = function(grunt) {
                     'dist/localforage.js': [
                         // https://github.com/jakearchibald/es6-promise
                         'bower_components/es6-promise/promise.js',
+                        'src/utils/**/*.js',
                         'src/drivers/**/*.js',
                         'src/localforage.js'
                     ],
                     'dist/localforage.nopromises.js': [
+                        'src/utils/**/*.js',
                         'src/drivers/**/*.js',
                         'src/localforage.js'
                     ]

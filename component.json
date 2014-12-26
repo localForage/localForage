@@ -6,6 +6,7 @@
   },
   "scripts": [
     "src/localforage.js",
+    "src/utils/serializer.js",
     "src/drivers/indexeddb.js",
     "src/drivers/localstorage.js",
     "src/drivers/websql.js"
