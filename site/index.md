@@ -303,7 +303,7 @@ Get the list of all keys in the datastore.
 ## iterate
 
 ```javascript
-localforage.iterate(function(value, key) {
+localforage.iterate(function(value, key, iterationNumber) {
     // Resulting key/value pair -- this callback
     // will be executed for every item in the
     // database.
@@ -313,7 +313,7 @@ localforage.iterate(function(value, key) {
 });
 
 // The same code, but using ES6 Promises.
-localforage.iterate(function(value, key) {
+localforage.iterate(function(value, key, iterationNumber) {
     // Resulting key/value pair -- this callback
     // will be executed for every item in the
     // database.
@@ -323,30 +323,24 @@ localforage.iterate(function(value, key) {
 });
 
 // Exit the iteration early:
-var iterations = 0;
-localforage.iterate(function(value, key) {
-    if (iterations < 3) {
+localforage.iterate(function(value, key, iterationNumber) {
+    if (iterationNumber < 3) {
         console.log([key, value]);
     } else {
         return [key, value];
     }
-
-    iterations++;
 }, function(result) {
     console.log('Iteration has completed, last iterated pair:');
     console.log(result);
 });
 
 // The same code for early exit, but using ES6 Promises.
-var iterations = 0;
-localforage.iterate(function(value, key) {
-    if (iterations < 3) {
+localforage.iterate(function(value, key, iterationNumber) {
+    if (iterationNumber < 3) {
         console.log([key, value]);
     } else {
         return [key, value];
     }
-
-    iterations++;
 }).then(function(result) {
     console.log('Iteration has completed, last iterated pair:');
     console.log(result);
@@ -354,7 +348,7 @@ localforage.iterate(function(value, key) {
 ```
 
 ```coffeescript
-localforage.iterate (value, key) ->
+localforage.iterate (value, key, iterationNumber) ->
   # Resulting key/value pair -- this callback
   # will be executed for every item in the
   # database.
@@ -364,7 +358,7 @@ localforage.iterate (value, key) ->
   console.log "Iteration has completed"
 
 # The same code, but using ES6 Promises.
-localforage.iterate (value, key) ->
+localforage.iterate (value, key, iterationNumber) ->
   # Resulting key/value pair -- this callback
   # will be executed for every item in the
   # database.
@@ -374,12 +368,9 @@ localforage.iterate (value, key) ->
   console.log "Iteration has completed"
 
 # Exit the iteration early:
-iterations = 0
-localforage.iterate (value, key) ->
-  if iterations < 3
+localforage.iterate (value, key, iterationNumber) ->
+  if iterationNumber < 3
     console.log [key, value]
-
-    iterations++
     return
   else
     return [key, value]
@@ -388,12 +379,9 @@ localforage.iterate (value, key) ->
   console.log result
 
 # The same code for early exit, but using ES6 Promises.
-iterations = 0
-localforage.iterate((value, key) ->
-  if iterations < 3
+localforage.iterate((value, key, iterationNumber) ->
+  if iterationNumber < 3
     console.log [key, value]
-
-    iterations++
     return
   else
     return [key, value]
@@ -405,6 +393,12 @@ localforage.iterate((value, key) ->
 `iterate(iteratorCallback, successCallback)`
 
 Iterate over all value/key pairs in datastore.
+
+`iteratorCallback` is called once for each pair, with the following arguments:
+
+1. value
+2. key
+3. iterationNumber - one-based number
 
 <aside class="notice">
   <code>iterate</code> supports early exit by returning non `undefined`
