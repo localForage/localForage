@@ -1,8 +1,8 @@
 /*!
     localForage -- Offline Storage, Improved
     Version 1.2.0
-    http://mozilla.github.io/localForage
-    (c) 2013-2014 Mozilla, Apache License 2.0
+    https://mozilla.github.io/localForage
+    (c) 2013-2015 Mozilla, Apache License 2.0
 */
 (function() {
 var define, requireModule, require, requirejs;

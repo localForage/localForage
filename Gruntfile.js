@@ -12,6 +12,13 @@ var sourceFiles = [
 module.exports = exports = function(grunt) {
     'use strict';
 
+    var BANNER = '/*!\n' +
+                 '    localForage -- Offline Storage, Improved\n' +
+                 '    Version ' + grunt.file.readJSON('package.json').version + '\n' +
+                 '    https://mozilla.github.io/localForage\n' +
+                 '    (c) 2013-2015 Mozilla, Apache License 2.0\n' +
+                 '*/\n';
+
     grunt.initConfig({
         concat: {
             options: {
@@ -33,13 +40,7 @@ module.exports = exports = function(grunt) {
                     ]
                 },
                 options: {
-                    banner:
-                        '/*!\n' +
-                        '    localForage -- Offline Storage, Improved\n' +
-                        '    Version 1.2.0\n' +
-                        '    http://mozilla.github.io/localForage\n' +
-                        '    (c) 2013-2014 Mozilla, Apache License 2.0\n' +
-                        '*/\n'
+                    banner: BANNER
                 }
             }
         },
@@ -146,6 +147,9 @@ module.exports = exports = function(grunt) {
                         'dist/localforage.nopromises.js'
                     ],
                     'site/localforage.min.js': ['dist/localforage.js']
+                },
+                options: {
+                    banner: BANNER
                 }
             }
         },
