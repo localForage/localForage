@@ -3,6 +3,7 @@
         "beforeOpeningRoundBrace": true
     },
     "disallowTrailingComma": true,
+    "requireBlocksOnNewline": true,
     "requireLineFeedAtFileEnd": true,
     "requireSpaceAfterKeywords": [
         "if",
