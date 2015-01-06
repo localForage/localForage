@@ -1,9 +1,8 @@
 # localForage [![Build Status](https://secure.travis-ci.org/mozilla/localForage.png?branch=master)](http://travis-ci.org/mozilla/localForage)
 
-localForage is a fast and simple storage library for JavaScript. Using
-localForage improves the offline experience of your web app by using
-asynchronous storage (IndexedDB or WebSQL) with a simple,
-`localStorage`-like API.
+localForage is a fast and simple storage library for JavaScript. localForage
+improves the offline experience of your web app by using asynchronous storage
+(IndexedDB or WebSQL) with a simple, `localStorage`-like API.
 
 localForage uses localStorage in browsers with no IndexedDB or
 WebSQL support. See below for detailed compatibility info.
