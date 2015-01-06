@@ -37,6 +37,7 @@ describe('localForage', function() {
 
     it('automatically selects the most appropriate driver (' +
        appropriateDriver + ')', function(done) {
+        this.timeout(10000);
         localforage.ready().then(function() {
             expect(localforage.driver()).to.be(appropriateDriver);
             done();
