@@ -1,13 +1,12 @@
 # localForage [![Build Status](https://secure.travis-ci.org/mozilla/localForage.png?branch=master)](http://travis-ci.org/mozilla/localForage)
 
-localForage is a JavaScript library that improves the offline experience of
-your web app by using asynchronous storage (via IndexedDB or WebSQL
-where available) with a simple, `localStorage`-like API.
+localForage is a fast and simple storage library for JavaScript. Using
+localForage improves the offline experience of your web app by using
+asynchronous storage (IndexedDB or WebSQL) with a simple,
+`localStorage`-like API.
 
 localForage uses localStorage in browsers with no IndexedDB or
-WebSQL support. Asynchronous storage is available in the current
-versions of all major browsers: Chrome, Firefox, IE, and Safari
-(including Safari Mobile). See below for detailed compatibility info.
+WebSQL support. See below for detailed compatibility info.
 
 To use localForage, just drop a single JavaScript file into your page:
 
@@ -17,10 +16,15 @@ To use localForage, just drop a single JavaScript file into your page:
 ```
 
 Download the [latest localForage from GitHub](https://github.com/mozilla/localForage/releases/latest), or install with
-[npm](https://www.npmjs.org/) or [bower](http://bower.io):
+[npm](https://www.npmjs.org/):
 
 ```bash
 npm install localforage
+```
+
+or [bower](http://bower.io):
+
+```bash
 bower install localforage
 ```
 
@@ -28,7 +32,7 @@ localForage is compatible with [browserify](http://browserify.org/).
 
 ## Supported Browsers/Platforms
 
-localForage works in all modern browsers (IE 8 and above).
+localForage works in *all* modern browsers (IE 8 and above).
 _Asynchronous storage_ is available in all browsers **in bold**, with
 localStorage fallback in parentheses.
 
@@ -51,7 +55,7 @@ Different browsers have [different storage limits](http://www.html5rocks.com/en/
 ## Support
 
 Lost? Need help? Try the
-[localForage API documentation](http://mozilla.github.io/localForage).
+[localForage API documentation](https://mozilla.github.io/localForage).
 
 If you're stuck using the library, running the tests, or want to contribute
 to localForage, you can visit
@@ -152,45 +156,10 @@ localStorage make storing many large Blobs impossible.
 
 [api]: https://mozilla.github.io/localForage/#setitem
 
-## Driver Selection (i.e. forcing localStorage)
-
-For development, it can be easier to use the
-slower--but easier to debug--localStorage driver (mostly because localStorage
-can easily be inspected from the console). You can use the `setDriver()` method
-to change the driver localForage is using at any time.
-
-```javascript
-// If you aren't using JS modules, things are loaded synchronously.
-localforage.setDriver(localforage.LOCALSTORAGE);
-alert(localforage.driver());
-  => 'localStorageWrapper'
-
-// If you're using modules, things load asynchronously, so you should use
-// callbacks or promises to ensure things have loaded.
-localforage.setDriver(localforage.LOCALSTORAGE, function() {
-    alert(localforage.driver());
-});
-  => 'localStorageWrapper'
-
-// The promises version:
-localforage.setDriver(localforage.LOCALSTORAGE).then(function() {
-    alert(localforage.driver());
-});
-  => 'localStorageWrapper'
-```
-
-You can actually force any available driver with this method, but given that
-the best driver will be selected automatically when the library is loaded, this
-method is mostly useful in forcing localStorage.
-
-Note that trying to load a driver unavailable on the current browser (like
-trying to load WebSQL in Gecko) will fail and the previously loaded "best
-choice" will continue to be used.
-
 ## Configuration
 
 You can set database information with the `config()` method.
-Available options are `driver`, `name`, `storeName`, `version`, and
+Available options are `driver`, `name`, `storeName`, `version`, `size`, and
 `description`.
 
 Example:
@@ -211,9 +180,7 @@ means calling `config()` before using `getItem()`, `setItem()`, `removeItem()`,
 
 ## RequireJS
 
-You can use localForage with [RequireJS](http://requirejs.org/), and even though
-each driver will be loaded asynchronously with a `require()` call, you can use
-localForage without having to confirm that it's ready:
+You can use localForage with [RequireJS](http://requirejs.org/):
 
 ```javascript
 define(['localforage'], function(localforage) {
@@ -224,9 +191,6 @@ define(['localforage'], function(localforage) {
     localforage.setItem('mykey', 'myvalue').then(console.log);
 });
 ```
-
-In pre-1.0 versions you had to call `.ready()` to make sure the code was loaded,
-but this is no longer necessary.
 
 ## Web Workers
 
@@ -253,6 +217,10 @@ added to this list.
 
 You can create your own driver if you want; see the
 [`defineDriver`](https://mozilla.github.io/localForage/#definedriver) API docs.
+
+There is a [list of custom drivers on the wiki][custom drivers].
+
+[custom drivers]: https://github.com/mozilla/localForage/wiki/Custom-Drivers
 
 # Working on localForage
 
@@ -282,15 +250,10 @@ directly: `grunt test`). Your code must also pass the
 
 localForage is designed to run in the browser, so the tests explicitly require
 a browser environment. Local tests are run on a headless WebKit (using
-[PhantomJS](http://phantomjs.org)), but cross-browser tests are run using
-[Sauce Labs](https://saucelabs.com/).
-
-If you have Sauce Labs credentials on your machine, localForage will attempt
-to connect to Sauce Labs to run the tests on Sauce Labs as well. To skip
-Sauce Labs tests, run `grunt test:local`.
+[PhantomJS](http://phantomjs.org)).
 
 When you submit a pull request, tests will be run against all browsers that
-localForage supports.
+localForage supports on Travis CI using [Sauce Labs](https://saucelabs.com/).
 
 # License
 
@@ -299,5 +262,5 @@ This program is free software; it is distributed under an
 
 ---
 
-Copyright (c) 2013-2014 [Mozilla](https://mozilla.org)
+Copyright (c) 2013-2015 [Mozilla](https://mozilla.org)
 ([Contributors](https://github.com/mozilla/localForage/graphs/contributors)).
