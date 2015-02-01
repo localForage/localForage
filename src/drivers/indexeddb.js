@@ -401,12 +401,12 @@
         keys: keys
     };
 
-    if (typeof define === 'function' && define.amd) {
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = asyncStorage;
+    } else if (typeof define === 'function' && define.amd) {
         define('asyncStorage', function() {
             return asyncStorage;
         });
-    } else if (typeof module !== 'undefined' && module.exports) {
-        module.exports = asyncStorage;
     } else {
         this.asyncStorage = asyncStorage;
     }

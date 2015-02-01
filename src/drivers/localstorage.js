@@ -43,10 +43,10 @@
 
     // Find out what kind of module setup we have; if none, we'll just attach
     // localForage to the main window.
-    if (typeof define === 'function' && define.amd) {
-        moduleType = ModuleType.DEFINE;
-    } else if (typeof module !== 'undefined' && module.exports) {
+    if (typeof module !== 'undefined' && module.exports) {
         moduleType = ModuleType.EXPORT;
+    } else if (typeof define === 'function' && define.amd) {
+        moduleType = ModuleType.DEFINE;
     }
 
     // Config the localStorage backend, using options set in the config.
@@ -317,12 +317,12 @@
         keys: keys
     };
 
-    if (moduleType === ModuleType.DEFINE) {
+    if (moduleType === ModuleType.EXPORT) {
+        module.exports = localStorageWrapper;
+    } else if (moduleType === ModuleType.DEFINE) {
         define('localStorageWrapper', function() {
             return localStorageWrapper;
         });
-    } else if (moduleType === ModuleType.EXPORT) {
-        module.exports = localStorageWrapper;
     } else {
         this.localStorageWrapper = localStorageWrapper;
     }
