@@ -1,6 +1,6 @@
 /*!
     localForage -- Offline Storage, Improved
-    Version 1.2.1
+    Version 1.2.2
     https://mozilla.github.io/localForage
     (c) 2013-2015 Mozilla, Apache License 2.0
 */
@@ -907,12 +907,12 @@ requireModule('promise/polyfill').polyfill();
         bufferToString: bufferToString
     };
 
-    if (typeof define === 'function' && define.amd) {
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = localforageSerializer;
+    } else if (typeof define === 'function' && define.amd) {
         define('localforageSerializer', function() {
             return localforageSerializer;
         });
-    } else if (typeof module !== 'undefined' && module.exports) {
-        module.exports = localforageSerializer;
     } else {
         this.localforageSerializer = localforageSerializer;
     }
@@ -1320,12 +1320,12 @@ requireModule('promise/polyfill').polyfill();
         keys: keys
     };
 
-    if (typeof define === 'function' && define.amd) {
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = asyncStorage;
+    } else if (typeof define === 'function' && define.amd) {
         define('asyncStorage', function() {
             return asyncStorage;
         });
-    } else if (typeof module !== 'undefined' && module.exports) {
-        module.exports = asyncStorage;
     } else {
         this.asyncStorage = asyncStorage;
     }
@@ -1375,10 +1375,10 @@ requireModule('promise/polyfill').polyfill();
 
     // Find out what kind of module setup we have; if none, we'll just attach
     // localForage to the main window.
-    if (typeof define === 'function' && define.amd) {
-        moduleType = ModuleType.DEFINE;
-    } else if (typeof module !== 'undefined' && module.exports) {
+    if (typeof module !== 'undefined' && module.exports) {
         moduleType = ModuleType.EXPORT;
+    } else if (typeof define === 'function' && define.amd) {
+        moduleType = ModuleType.DEFINE;
     }
 
     // Config the localStorage backend, using options set in the config.
@@ -1649,12 +1649,12 @@ requireModule('promise/polyfill').polyfill();
         keys: keys
     };
 
-    if (moduleType === ModuleType.DEFINE) {
+    if (moduleType === ModuleType.EXPORT) {
+        module.exports = localStorageWrapper;
+    } else if (moduleType === ModuleType.DEFINE) {
         define('localStorageWrapper', function() {
             return localStorageWrapper;
         });
-    } else if (moduleType === ModuleType.EXPORT) {
-        module.exports = localStorageWrapper;
     } else {
         this.localStorageWrapper = localStorageWrapper;
     }
@@ -1696,10 +1696,10 @@ requireModule('promise/polyfill').polyfill();
 
     // Find out what kind of module setup we have; if none, we'll just attach
     // localForage to the main window.
-    if (typeof define === 'function' && define.amd) {
-        moduleType = ModuleType.DEFINE;
-    } else if (typeof module !== 'undefined' && module.exports) {
+    if (typeof module !== 'undefined' && module.exports) {
         moduleType = ModuleType.EXPORT;
+    } else if (typeof define === 'function' && define.amd) {
+        moduleType = ModuleType.DEFINE;
     }
 
     // Open the WebSQL database (automatically creates one if one didn't
@@ -2132,10 +2132,10 @@ requireModule('promise/polyfill').polyfill();
 
     // Find out what kind of module setup we have; if none, we'll just attach
     // localForage to the main window.
-    if (typeof define === 'function' && define.amd) {
-        moduleType = ModuleType.DEFINE;
-    } else if (typeof module !== 'undefined' && module.exports) {
+    if (typeof module !== 'undefined' && module.exports) {
         moduleType = ModuleType.EXPORT;
+    } else if (typeof define === 'function' && define.amd) {
+        moduleType = ModuleType.DEFINE;
     }
 
     // Check to see if IndexedDB is available and if it is the latest
