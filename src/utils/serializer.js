@@ -218,12 +218,12 @@
         bufferToString: bufferToString
     };
 
-    if (typeof define === 'function' && define.amd) {
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = localforageSerializer;
+    } else if (typeof define === 'function' && define.amd) {
         define('localforageSerializer', function() {
             return localforageSerializer;
         });
-    } else if (typeof module !== 'undefined' && module.exports) {
-        module.exports = localforageSerializer;
     } else {
         this.localforageSerializer = localforageSerializer;
     }
