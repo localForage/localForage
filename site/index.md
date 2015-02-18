@@ -524,7 +524,8 @@ values can be set:
   <dt>name</dt>
   <dd>
     The name of the database. May appear during storage limit prompts.
-    Useful to use the name of your app here.<br>
+    Useful to use the name of your app here. In localStorage, this is used as a
+    key prefix for all keys stored in localStorage.<br>
     Default: <code>'localforage'</code>
   </dd>
   <dt>size</dt>
@@ -536,8 +537,7 @@ values can be set:
   <dd>
     The name of the datastore. In IndexedDB this is the
     <code>dataStore</code>, in WebSQL this is the name of the key/value
-    table in the database. In localStorage, this is used as a key prefix for
-    all keys stored in localStorage. <strong>Must be alphanumeric,
+    table in the database. <strong>Must be alphanumeric,
     with underscores.</strong> Any non-alphanumeric characters will be converted
     to underscores.<br>
     Default: <code>'keyvaluepairs'</code>
