@@ -498,6 +498,35 @@ DRIVERS.forEach(function(driverName) {
                     done();
                 });
             });
+
+            it('returns only its own keys from keys()', function(done) {
+               localStorage.setItem('local', 'forage');
+
+               localforage.setItem('office', 'Initech').then(function() {
+                    return localforage.keys();
+               }).then(function(keys) {
+                    expect(keys).to.eql(['office']);
+
+                    localStorage.clear();
+
+                    done();
+               });
+            });
+
+            it('counts only its own items with length()', function(done) {
+                localStorage.setItem('local', 'forage');
+                localStorage.setItem('another', 'value');
+
+                localforage.setItem('office', 'Initech').then(function() {
+                     return localforage.length();
+                }).then(function(length) {
+                     expect(length).to.be(1);
+
+                     localStorage.clear();
+
+                     done();
+                });
+            });
         }
 
         it('has a length after saving an item [callback]', function(done) {
