@@ -500,17 +500,17 @@ DRIVERS.forEach(function(driverName) {
             });
 
             it('returns only its own keys from keys()', function(done) {
-               localStorage.setItem('local', 'forage');
+                localStorage.setItem('local', 'forage');
 
-               localforage.setItem('office', 'Initech').then(function() {
+                localforage.setItem('office', 'Initech').then(function() {
                     return localforage.keys();
-               }).then(function(keys) {
+                }).then(function(keys) {
                     expect(keys).to.eql(['office']);
 
                     localStorage.clear();
 
                     done();
-               });
+                });
             });
 
             it('counts only its own items with length()', function(done) {
@@ -518,13 +518,13 @@ DRIVERS.forEach(function(driverName) {
                 localStorage.setItem('another', 'value');
 
                 localforage.setItem('office', 'Initech').then(function() {
-                     return localforage.length();
+                    return localforage.length();
                 }).then(function(length) {
-                     expect(length).to.be(1);
+                    expect(length).to.be(1);
 
-                     localStorage.clear();
+                    localStorage.clear();
 
-                     done();
+                    done();
                 });
             });
         }
