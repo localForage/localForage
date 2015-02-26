@@ -257,8 +257,8 @@
                 var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName +
-                                 ' WHERE key = ?', [key], function() {
-
+                                 ' WHERE key = ?', [key],
+                                 function() {
                         resolve();
                     }, function(t, error) {
 
