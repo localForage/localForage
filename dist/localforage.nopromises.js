@@ -318,7 +318,7 @@
             })["catch"](reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -357,7 +357,7 @@
             })["catch"](reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
 
         return promise;
     }
@@ -406,7 +406,7 @@
             })["catch"](reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -452,7 +452,7 @@
             })["catch"](reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -476,7 +476,7 @@
             })["catch"](reject);
         });
 
-        executeDeferedCallback(promise, callback);
+        executeCallback(promise, callback);
         return promise;
     }
 
@@ -598,29 +598,6 @@
             }, function(error) {
                 callback(error);
             });
-        }
-    }
-
-    function executeDeferedCallback(promise, callback) {
-        if (callback) {
-            promise.then(function(result) {
-                deferCallback(callback, result);
-            }, function(error) {
-                callback(error);
-            });
-        }
-    }
-
-    // Under Chrome the callback is called before the changes (save, clear)
-    // are actually made. So we use a defer function which wait that the
-    // call stack to be empty.
-    // For more info : https://github.com/mozilla/localForage/issues/175
-    // Pull request : https://github.com/mozilla/localForage/pull/178
-    function deferCallback(callback, result) {
-        if (callback) {
-            return setTimeout(function() {
-                return callback(null, result);
-            }, 0);
         }
     }
 
@@ -1235,8 +1212,8 @@
                 var dbInfo = self._dbInfo;
                 dbInfo.db.transaction(function(t) {
                     t.executeSql('DELETE FROM ' + dbInfo.storeName +
-                                 ' WHERE key = ?', [key], function() {
-
+                                 ' WHERE key = ?', [key],
+                                 function() {
                         resolve();
                     }, function(t, error) {
 
