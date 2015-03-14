@@ -75,6 +75,35 @@ describe('Task Batching', function() {
         }
     });
 
+    it('does not start a batch-of-one, even when not running', function(done) {
+        if (Modernizr.indexeddb) {
+            localforage._running = false;
+            localforage.setItem('foo', 'bar');
+            localforage.removeItem('foo1');
+            localforage.setItem('foo2', 'bar2');
+            localforage.removeItem('foo3');
+            setTimeout(function() {
+                expect(localforage._batches.length).to.be(1);
+                expect(localforage._batches[0].length).to.be(4);
+                expect(localforage._batches[0][0].action).to.be('put');
+                expect(localforage._batches[0][0].key).to.be('foo');
+                expect(localforage._batches[0][0].value).to.be('bar');
+                expect(localforage._batches[0][1].action).to.be('delete');
+                expect(localforage._batches[0][1].key).to.be('foo1');
+                expect(localforage._batches[0][2].action).to.be('put');
+                expect(localforage._batches[0][2].key).to.be('foo2');
+                expect(localforage._batches[0][2].value).to.be('bar2');
+                expect(localforage._batches[0][3].action).to.be('delete');
+                expect(localforage._batches[0][3].key).to.be('foo3');
+                setTimeout(function() {
+                    done();
+                }, SIMULATED_TRANSACTION_TIME);
+            }, MAX_TIME_TO_ADD_TASK);
+        } else {
+            done();
+        }
+    });
+
     it('batches tasks together when possible', function(done) {
         if (Modernizr.indexeddb) {
             localforage._running = true;
