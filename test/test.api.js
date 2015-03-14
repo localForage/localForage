@@ -255,6 +255,28 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
+        // Test for https://github.com/mozilla/localForage/issues/175
+        it('nested getItem inside clear works [callback]', function(done) {
+            localforage.setItem('hello', 'Hello World !', function() {
+                localforage.clear(function() {
+                    localforage.getItem('hello', function(secondValue) {
+                        expect(secondValue).to.be(null);
+                        done();
+                    });
+                });
+            });
+        });
+        it('nested getItem inside clear works [promise]', function(done) {
+            localforage.setItem('hello', 'Hello World !').then(function() {
+                return localforage.clear();
+            }).then(function() {
+                return localforage.getItem('hello');
+            }).then(function(secondValue) {
+                expect(secondValue).to.be(null);
+                done();
+            });
+        });
+
         // Because localStorage doesn't support saving the `undefined` type, we
         // always return `null` so that localForage is consistent across
         // browsers.
