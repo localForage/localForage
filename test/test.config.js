@@ -100,7 +100,7 @@ describe('Config API', function() {
             done();
         });
     });
-    
+
     if (supportedDrivers.length >= 2) {
         it('sets new driver using preference order', function(done) {
             var otherSupportedDrivers = supportedDrivers.slice(1);
@@ -157,6 +157,18 @@ describe('Config API', function() {
         expect(localforage.config('name')).to.be('My Cool App');
         expect(localforage.config('storeName')).to.be('my_store_front_v1');
         expect(localforage.config('version')).to.be(2.0);
+    });
+
+    it('returns an error if version is not a number', function() {
+        var configResult = localforage.config({
+            version: '2.0'
+        });
+
+        var error = "Error: Can't call config() with version " +
+                    'that is not a number';
+
+        expect(configResult).to.not.be(true);
+        expect(configResult.toString()).to.be(error);
     });
 
     it('uses the config values in ' + localforage.driver(), function(done) {
