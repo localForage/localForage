@@ -2255,6 +2255,11 @@ requireModule('promise/polyfill').polyfill();
                                  'has been used.');
             }
 
+            if ('version' in options && (typeof(options.version) !== 'number' || isNaN(options.version))) {
+                return new Error("Can't call config() with version " +
+                            'that is not a number');
+            }
+
             for (var i in options) {
                 if (i === 'storeName') {
                     options[i] = options[i].replace(/\W/g, '_');
