@@ -165,7 +165,8 @@
                     resolve(value);
                 };
                 transaction.onabort = transaction.onerror = function() {
-                    reject(req.error);
+                    var err = req.error ? req.error : req.transaction.error;
+                    reject(err);
                 };
             }).catch(reject);
         });
@@ -204,14 +205,11 @@
                     reject(req.error);
                 };
 
-                // The request will be aborted if we've exceeded our storage
-                // space. In this case, we will reject with a specific
-                // "QuotaExceededError".
-                transaction.onabort = function(event) {
-                    var error = event.target.error;
-                    if (error === 'QuotaExceededError') {
-                        reject(error);
-                    }
+                // The request will be also be aborted if we've exceeded our storage
+                // space.
+                transaction.onabort = function() {
+                    var err = req.error ? req.error : req.transaction.error;
+                    reject(err);
                 };
             }).catch(reject);
         });
@@ -235,7 +233,8 @@
                 };
 
                 transaction.onabort = transaction.onerror = function() {
-                    reject(req.error);
+                    var err = req.error ? req.error : req.transaction.error;
+                    reject(err);
                 };
             }).catch(reject);
         });
