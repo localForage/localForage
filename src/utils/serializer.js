@@ -218,7 +218,7 @@
         bufferToString: bufferToString
     };
 
-    if (typeof module !== 'undefined' && module.exports) {
+    if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') {
         module.exports = localforageSerializer;
     } else if (typeof define === 'function' && define.amd) {
         define('localforageSerializer', function() {

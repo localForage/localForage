@@ -6,7 +6,7 @@
     'use strict';
 
     // Promises!
-    var Promise = (typeof module !== 'undefined' && module.exports) ?
+    var Promise = (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') ?
                   require('promise') : this.Promise;
 
     var globalObject = this;
@@ -43,7 +43,7 @@
 
     // Find out what kind of module setup we have; if none, we'll just attach
     // localForage to the main window.
-    if (typeof module !== 'undefined' && module.exports) {
+    if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') {
         moduleType = ModuleType.EXPORT;
     } else if (typeof define === 'function' && define.amd) {
         moduleType = ModuleType.DEFINE;

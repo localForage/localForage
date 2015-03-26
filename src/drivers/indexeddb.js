@@ -6,7 +6,7 @@
     // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
 
     // Promises!
-    var Promise = (typeof module !== 'undefined' && module.exports) ?
+    var Promise = (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') ?
                   require('promise') : this.Promise;
 
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
@@ -377,7 +377,7 @@
         keys: keys
     };
 
-    if (typeof module !== 'undefined' && module.exports) {
+    if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') {
         module.exports = asyncStorage;
     } else if (typeof define === 'function' && define.amd) {
         define('asyncStorage', function() {
