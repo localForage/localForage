@@ -641,3 +641,25 @@ use this to make sure the browser in use supports your custom driver.
 </aside>
 
 [default drivers]: https://github.com/mozilla/localForage/tree/master/src/drivers
+
+# Multiple Instances
+
+You can create multiple instances of localForage that point to different stores.
+
+## createInstance
+
+This is used for creating a new instance of localForage
+
+``` javascript
+var store = localforage.createInstance({
+  storeName: "storeNameHere"
+});
+
+var otherStore = localforage.createInstance({
+  storeName: "otherStoreName"
+});
+
+// Setting the key on one of these doesn't affect the other.
+store.setItem("key", "value");
+otherStore.set("key", "value2");
+```
