@@ -220,8 +220,9 @@
                             }, function(t, error) {
                                 reject(error);
                             });
-                        }, function(sqlError) { // The transaction failed; check
-                                                // to see if it's a quota error.
+                        }, function(sqlError) {
+                            // The transaction failed; check
+                            // to see if it's a quota error.
                             if (sqlError.code === sqlError.QUOTA_ERR) {
                                 // We reject the callback outright for now, but
                                 // it's worth trying to re-run the transaction.
