@@ -66,7 +66,7 @@ npm install localforage
 # Or with bower:
 bower install localforage
 ```
-``` html
+```html
 <script src="localforage.js"></script>
 <script>localforage.getItem('somekey', function(err, val) { alert(val) });</script>
 ```
