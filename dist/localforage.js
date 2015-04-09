@@ -1124,9 +1124,8 @@ requireModule('promise/polyfill').polyfill();
                     reject(req.error);
                 };
 
-                // The request will be aborted if we've exceeded our storage
-                // space. In this case, we will reject with a specific
-                // "QuotaExceededError".
+                // The request will be also be aborted if we've exceeded our storage
+                // space.
                 transaction.onabort = function() {
                     var err = req.error ? req.error : req.transaction.error;
                     reject(err);
@@ -1858,8 +1857,9 @@ requireModule('promise/polyfill').polyfill();
                             }, function(t, error) {
                                 reject(error);
                             });
-                        }, function(sqlError) { // The transaction failed; check
-                                                // to see if it's a quota error.
+                        }, function(sqlError) {
+                            // The transaction failed; check
+                            // to see if it's a quota error.
                             if (sqlError.code === sqlError.QUOTA_ERR) {
                                 // We reject the callback outright for now, but
                                 // it's worth trying to re-run the transaction.
