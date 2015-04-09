@@ -59,8 +59,11 @@ versions of all major browsers: Chrome, Firefox, IE, and Safari
 
 # Installation
 
-``` bash
-# Optional installation with bower:
+```bash
+# Install via npm:
+npm install localforage
+
+# Or with bower:
 bower install localforage
 ```
 ``` html
@@ -68,7 +71,7 @@ bower install localforage
 <script>localforage.getItem('somekey', function(err, val) { alert(val) });</script>
 ```
 
-To use localForage, [download the latest release](https://github.com/mozilla/localForage/releases) or install with [bower](http://bower.io/) (`bower install localforage`).
+To use localForage, [download the latest release](https://github.com/mozilla/localForage/releases) or install with [npm](https://www.npmjs.org/) (`npm install localforage`) or [bower](http://bower.io/) (`bower install localforage`).
 
 Then simply include the JS file and start using localForage:
 `<script src="localforage.js"></script>`. You don't need to run any init method
