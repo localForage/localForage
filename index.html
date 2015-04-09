@@ -79,17 +79,17 @@
     <div class="page-wrapper">
       <div class="content">
         <h1 id="localforage">localForage</h1>
-<pre class="highlight javascript"><span class="c1">// In localStorage, we would do:
-</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'key'</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="s1">'value'</span><span class="p">));</span>
+<pre class="highlight javascript"><code><span class="c1">// In localStorage, we would do:</span>
+<span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'key'</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="s1">'value'</span><span class="p">));</span>
 <span class="nx">doSomethingElse</span><span class="p">();</span>
 
-<span class="c1">// With localForage, we use callbacks:
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'key'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">,</span> <span class="nx">doSomethingElse</span><span class="p">);</span>
+<span class="c1">// With localForage, we use callbacks:</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'key'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">,</span> <span class="nx">doSomethingElse</span><span class="p">);</span>
 
-<span class="c1">// Or we can use Promises:
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'key'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">doSomethingElse</span><span class="p">);</span>
-</pre>
-<pre class="highlight coffeescript"><span class="c1"># In localStorage, we would do:
+<span class="c1">// Or we can use Promises:</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'key'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">doSomethingElse</span><span class="p">);</span>
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="c1"># In localStorage, we would do:
 </span><span class="nx">localStorage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"key"</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="na">stringify</span><span class="p">(</span><span class="s">"value"</span><span class="p">)</span>
 <span class="nx">doSomethingElse</span><span class="p">()</span>
 
@@ -98,7 +98,7 @@
 
 <span class="c1"># Or we can use Promises:
 </span><span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span><span class="p">(</span><span class="s">"key"</span><span class="p">,</span> <span class="s">"value"</span><span class="p">).</span><span class="na">then</span> <span class="nx">doSomethingElse</span>
-</pre>
+</code></pre>
 
 <p><strong>Offline storage, improved.</strong></p>
 
@@ -118,14 +118,17 @@ versions of all major browsers: Chrome, Firefox, IE, and Safari
 <p><a href="https://mozilla.github.io/localForage/localforage.min.js">Download localforage.min.js</a></p>
 
 <h1 id="installation">Installation</h1>
-<pre class="highlight shell"><span class="c"># Optional installation with bower:</span>
-bower install localforage
-</pre>
-<pre class="highlight html"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"localforage.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;script&gt;</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span> <span class="nx">alert</span><span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">});</span><span class="nt">&lt;/script&gt;</span>
-</pre>
+<pre class="highlight shell"><code><span class="c"># Install via npm:</span>
+npm install localforage
 
-<p>To use localForage, <a href="https://github.com/mozilla/localForage/releases">download the latest release</a> or install with <a href="http://bower.io/">bower</a> (<code class="prettyprint">bower install localforage</code>).</p>
+<span class="c"># Or with bower:</span>
+bower install localforage
+</code></pre>
+<pre class="highlight html"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"localforage.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span> <span class="nx">alert</span><span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">});</span><span class="nt">&lt;/script&gt;</span>
+</code></pre>
+
+<p>To use localForage, <a href="https://github.com/mozilla/localForage/releases">download the latest release</a> or install with <a href="https://www.npmjs.org/">npm</a> (<code class="prettyprint">npm install localforage</code>) or <a href="http://bower.io/">bower</a> (<code class="prettyprint">bower install localforage</code>).</p>
 
 <p>Then simply include the JS file and start using localForage:
 <code class="prettyprint">&lt;script src=&quot;localforage.js&quot;&gt;&lt;/script&gt;</code>. You don&rsquo;t need to run any init method
@@ -136,17 +139,17 @@ or wait for any <code class="prettyprint">onready</code> events.</p>
 <p>These APIs deal with getting and setting data in the offline store.</p>
 
 <h2 id="getitem">getItem</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Run this code once the value has been
-</span>    <span class="c1">// loaded from the offline store.
-</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+<pre class="highlight javascript"><code><span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Run this code once the value has been</span>
+    <span class="c1">// loaded from the offline store.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 <span class="p">});</span>
 <span class="nx">localforage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// The same code, but using ES6 Promises.
-</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+    <span class="c1">// The same code, but using ES6 Promises.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 <span class="p">});</span>
-</pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">getItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="nx">localforage</span><span class="p">.</span><span class="na">getItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Run this code once the value has been loaded
 </span>  <span class="c1"># from the offline store.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">value</span>
@@ -154,7 +157,7 @@ or wait for any <code class="prettyprint">onready</code> events.</p>
 <span class="nx">localforage</span><span class="p">.</span><span class="na">getItem</span><span class="p">(</span><span class="s">"somekey"</span><span class="p">).</span><span class="na">then</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># The same code, but using ES6 Promises.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
-</pre>
+</code></pre>
 
 <p><code class="prettyprint">getItem(key, successCallback)</code></p>
 
@@ -169,33 +172,33 @@ If the key does not exist, <code class="prettyprint">getItem()</code> will retur
 </aside></p>
 
 <h2 id="setitem">setItem</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="s1">'some value'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Do other things once the value has been saved.
-</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+<pre class="highlight javascript"><code><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="s1">'some value'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Do other things once the value has been saved.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 <span class="p">});</span>
 
-<span class="c1">// Unlike localStorage, you can store non-strings.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'my array'</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'three'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// This will output `1`.
-</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="c1">// Unlike localStorage, you can store non-strings.</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'my array'</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'three'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// This will output `1`.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
 <span class="p">});</span>
 
-<span class="c1">// You can even store binary data from an AJAX request.
-</span><span class="nx">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="c1">// You can even store binary data from an AJAX request.</span>
+<span class="nx">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
 <span class="nx">request</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s1">'/photo.jpg'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 <span class="nx">request</span><span class="p">.</span><span class="nx">responseType</span> <span class="o">=</span> <span class="s1">'arraybuffer'</span><span class="p">;</span>
 
 <span class="nx">request</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'readystatechange'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// readyState DONE
-</span>        <span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'photo'</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">response</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">img</span><span class="p">)</span> <span class="p">{</span>
-            <span class="c1">// This will be a valid blob URI for an &lt;img&gt; tag.
-</span>            <span class="kd">var</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="nx">image</span><span class="p">]);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// readyState DONE</span>
+        <span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'photo'</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">response</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">img</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// This will be a valid blob URI for an &lt;img&gt; tag.</span>
+            <span class="kd">var</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="nx">image</span><span class="p">]);</span>
             <span class="kd">var</span> <span class="nx">imageURI</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">blob</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">});</span>
-</pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="s">"some value"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="s">"some value"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Do other things once the value has been saved.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">value</span>
 
@@ -215,7 +218,7 @@ If the key does not exist, <code class="prettyprint">getItem()</code> will retur
       <span class="c1"># This will be a valid blob URI for an &lt;img&gt; tag.
 </span>      <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span> <span class="p">[</span><span class="nx">image</span><span class="p">]</span>
       <span class="nx">imageURI</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="na">URL</span><span class="p">.</span><span class="na">createObjectURL</span> <span class="nx">blob</span>
-</pre>
+</code></pre>
 
 <p><code class="prettyprint">setItem(key, value, successCallback)</code></p>
 
@@ -247,30 +250,30 @@ objects:</p>
 </aside></p>
 
 <h2 id="removeitem">removeItem</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Run this code once the key has been removed.
-</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Key is cleared!'</span><span class="p">);</span>
+<pre class="highlight javascript"><code><span class="nx">localforage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'somekey'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Run this code once the key has been removed.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Key is cleared!'</span><span class="p">);</span>
 <span class="p">});</span>
-</pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">removeItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">-&gt;</span>
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="nx">localforage</span><span class="p">.</span><span class="na">removeItem</span> <span class="s">"somekey"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Run this code once the key has been removed.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Key is cleared!"</span>
-</pre>
+</code></pre>
 
 <p><code class="prettyprint">removeItem(key, successCallback)</code></p>
 
 <p>Removes the value of a key from the offline store.</p>
 
 <h2 id="clear">clear</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">clear</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Run this code once the database has been entirely deleted.
-</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Database is now empty.'</span><span class="p">);</span>
+<pre class="highlight javascript"><code><span class="nx">localforage</span><span class="p">.</span><span class="nx">clear</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Run this code once the database has been entirely deleted.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Database is now empty.'</span><span class="p">);</span>
 <span class="p">});</span>
-</pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">clear</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">-&gt;</span>
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="nx">localforage</span><span class="p">.</span><span class="na">clear</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Run this code once the database has been entirely deleted.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Database is now empty."</span>
-</pre>
+</code></pre>
 
 <p><code class="prettyprint">clear(successCallback)</code></p>
 
@@ -282,30 +285,30 @@ objects:</p>
 </aside></p>
 
 <h2 id="length">length</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">length</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">numberOfKeys</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Outputs the length of the database.
-</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numberOfKeys</span><span class="p">);</span>
+<pre class="highlight javascript"><code><span class="nx">localforage</span><span class="p">.</span><span class="nx">length</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">numberOfKeys</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Outputs the length of the database.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numberOfKeys</span><span class="p">);</span>
 <span class="p">});</span>
-</pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">length</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">numberOfKeys</span><span class="p">)</span> <span class="o">-&gt;</span>
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="nx">localforage</span><span class="p">.</span><span class="na">length</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">numberOfKeys</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Outputs the length of the database.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">numberOfKeys</span>
-</pre>
+</code></pre>
 
 <p><code class="prettyprint">length(successCallback)</code></p>
 
 <p>Gets the number of keys in the offline store (i.e. its &ldquo;length&rdquo;).</p>
 
 <h2 id="key">key</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">key</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keyName</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Name of the key.
-</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">keyName</span><span class="p">);</span>
+<pre class="highlight javascript"><code><span class="nx">localforage</span><span class="p">.</span><span class="nx">key</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keyName</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Name of the key.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">keyName</span><span class="p">);</span>
 <span class="p">});</span>
-</pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">key</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keyName</span><span class="p">)</span> <span class="o">-&gt;</span>
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="nx">localforage</span><span class="p">.</span><span class="na">key</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keyName</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Name of the key.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">keyName</span>
-</pre>
+</code></pre>
 
 <p><code class="prettyprint">key(keyIndex, successCallback)</code></p>
 
@@ -317,71 +320,65 @@ objects:</p>
 </aside></p>
 
 <h2 id="keys">keys</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keys</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// An array of all the key names.
-</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">keys</span><span class="p">);</span>
+<pre class="highlight javascript"><code><span class="nx">localforage</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keys</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// An array of all the key names.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">keys</span><span class="p">);</span>
 <span class="p">});</span>
-</pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">keys</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keys</span><span class="p">)</span> <span class="o">-&gt;</span>
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="nx">localforage</span><span class="p">.</span><span class="na">keys</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keys</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># An array of all the key names.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">keys</span>
-</pre>
+</code></pre>
 
 <p><code class="prettyprint">keys(successCallback)</code></p>
 
 <p>Get the list of all keys in the datastore.</p>
 
 <h2 id="iterate">iterate</h2>
-<pre class="highlight javascript"><span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Resulting key/value pair -- this callback
-</span>    <span class="c1">// will be executed for every item in the
-</span>    <span class="c1">// database.
-</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]);</span>
+<pre class="highlight javascript"><code><span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">iterationNumber</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Resulting key/value pair -- this callback</span>
+    <span class="c1">// will be executed for every item in the</span>
+    <span class="c1">// database.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]);</span>
 <span class="p">},</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Iteration has completed'</span><span class="p">);</span>
 <span class="p">});</span>
 
-<span class="c1">// The same code, but using ES6 Promises.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Resulting key/value pair -- this callback
-</span>    <span class="c1">// will be executed for every item in the
-</span>    <span class="c1">// database.
-</span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]);</span>
+<span class="c1">// The same code, but using ES6 Promises.</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">iterationNumber</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Resulting key/value pair -- this callback</span>
+    <span class="c1">// will be executed for every item in the</span>
+    <span class="c1">// database.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]);</span>
 <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Iteration has completed'</span><span class="p">);</span>
 <span class="p">});</span>
 
-<span class="c1">// Exit the iteration early:
-</span><span class="kd">var</span> <span class="nx">iterations</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">iterations</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+<span class="c1">// Exit the iteration early:</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">iterationNumber</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">iterationNumber</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]);</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
         <span class="k">return</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">];</span>
     <span class="p">}</span>
-
-    <span class="nx">iterations</span><span class="o">++</span><span class="p">;</span>
 <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Iteration has completed, last iterated pair:'</span><span class="p">);</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
 <span class="p">});</span>
 
-<span class="c1">// The same code for early exit, but using ES6 Promises.
-</span><span class="kd">var</span> <span class="nx">iterations</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">iterations</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+<span class="c1">// The same code for early exit, but using ES6 Promises.</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">iterate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">iterationNumber</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">iterationNumber</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]);</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
         <span class="k">return</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">];</span>
     <span class="p">}</span>
-
-    <span class="nx">iterations</span><span class="o">++</span><span class="p">;</span>
 <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Iteration has completed, last iterated pair:'</span><span class="p">);</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
 <span class="p">});</span>
-</pre>
-<pre class="highlight coffeescript"><span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">iterationNumber</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Resulting key/value pair -- this callback
 </span>  <span class="c1"># will be executed for every item in the
 </span>  <span class="c1"># database.
@@ -391,7 +388,7 @@ objects:</p>
   <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Iteration has completed"</span>
 
 <span class="c1"># The same code, but using ES6 Promises.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">iterationNumber</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="c1"># Resulting key/value pair -- this callback
 </span>  <span class="c1"># will be executed for every item in the
 </span>  <span class="c1"># database.
@@ -401,12 +398,9 @@ objects:</p>
   <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Iteration has completed"</span>
 
 <span class="c1"># Exit the iteration early:
-</span><span class="nx">iterations</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">-&gt;</span>
-  <span class="k">if</span> <span class="nx">iterations</span> <span class="o">&lt;</span> <span class="mi">3</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">iterationNumber</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="k">if</span> <span class="nx">iterationNumber</span> <span class="o">&lt;</span> <span class="mi">3</span>
     <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
-
-    <span class="nx">iterations</span><span class="o">++</span>
     <span class="k">return</span>
   <span class="k">else</span>
     <span class="k">return</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
@@ -415,23 +409,28 @@ objects:</p>
   <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">result</span>
 
 <span class="c1"># The same code for early exit, but using ES6 Promises.
-</span><span class="nx">iterations</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span><span class="p">((</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">-&gt;</span>
-  <span class="k">if</span> <span class="nx">iterations</span> <span class="o">&lt;</span> <span class="mi">3</span>
+</span><span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span><span class="p">((</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">iterationNumber</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="k">if</span> <span class="nx">iterationNumber</span> <span class="o">&lt;</span> <span class="mi">3</span>
     <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
-
-    <span class="nx">iterations</span><span class="o">++</span>
     <span class="k">return</span>
   <span class="k">else</span>
     <span class="k">return</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
 <span class="p">).</span><span class="na">then</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Iteration has completed, last iterated pair:"</span>
   <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">result</span>
-</pre>
+</code></pre>
 
 <p><code class="prettyprint">iterate(iteratorCallback, successCallback)</code></p>
 
 <p>Iterate over all value/key pairs in datastore.</p>
+
+<p><code class="prettyprint">iteratorCallback</code> is called once for each pair, with the following arguments:</p>
+
+<ol>
+<li>value</li>
+<li>key</li>
+<li>iterationNumber - one-based number</li>
+</ol>
 
 <p><aside class="notice">
   <code>iterate</code> supports early exit by returning non <code class="prettyprint">undefined</code>
@@ -449,18 +448,18 @@ should generally be called before the first <em>data</em> API call to localForag
 i.e. before you call <code class="prettyprint">getItem()</code> or <code class="prettyprint">length()</code>, etc.)</p>
 
 <h2 id="setdriver">setDriver</h2>
-<pre class="highlight javascript"><span class="c1">// Force localStorage to be the backend driver.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">(</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">LOCALSTORAGE</span><span class="p">);</span>
+<pre class="highlight javascript"><code><span class="c1">// Force localStorage to be the backend driver.</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">(</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">LOCALSTORAGE</span><span class="p">);</span>
 
-<span class="c1">// Supply a list of drivers, in order of preference.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">([</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">WEBSQL</span><span class="p">,</span> <span class="nx">localforage</span><span class="p">.</span><span class="nx">INDEXEDDB</span><span class="p">]);</span>
-</pre>
-<pre class="highlight coffeescript"><span class="c1"># Force localStorage to be the backend driver.
+<span class="c1">// Supply a list of drivers, in order of preference.</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">setDriver</span><span class="p">([</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">WEBSQL</span><span class="p">,</span> <span class="nx">localforage</span><span class="p">.</span><span class="nx">INDEXEDDB</span><span class="p">]);</span>
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="c1"># Force localStorage to be the backend driver.
 </span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="nx">localforage</span><span class="p">.</span><span class="na">LOCALSTORAGE</span>
 
 <span class="c1"># Supply a list of drivers, in order of preference.
 </span><span class="nx">localforage</span><span class="p">.</span><span class="na">setDriver</span> <span class="p">[</span><span class="nx">localforage</span><span class="p">.</span><span class="na">WEBSQL</span><span class="p">,</span> <span class="nx">localforage</span><span class="p">.</span><span class="na">INDEXEDDB</span><span class="p">]</span>
-</pre>
+</code></pre>
 
 <p><code class="prettyprint">setDriver(driverName)</code><br>
 <code class="prettyprint">setDriver([driverName, nextDriverName])</code></p>
@@ -493,29 +492,29 @@ order:</p>
 </aside></p>
 
 <h2 id="config">config</h2>
-<pre class="highlight javascript"><span class="c1">// This will rename the database from "localforage"
-// to "Hipster PDA App".
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+<pre class="highlight javascript"><code><span class="c1">// This will rename the database from "localforage"</span>
+<span class="c1">// to "Hipster PDA App".</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
     <span class="na">name</span><span class="p">:</span> <span class="s1">'Hipster PDA App'</span>
 <span class="p">});</span>
 
-<span class="c1">// This will force localStorage as the storage
-// driver even if another is available. You can
-// use this instead of `setDriver()`.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+<span class="c1">// This will force localStorage as the storage</span>
+<span class="c1">// driver even if another is available. You can</span>
+<span class="c1">// use this instead of `setDriver()`.</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
     <span class="na">driver</span><span class="p">:</span> <span class="nx">localforage</span><span class="p">.</span><span class="nx">LOCALSTORAGE</span><span class="p">,</span>
     <span class="na">name</span><span class="p">:</span> <span class="s1">'I-heart-localStorage'</span>
 <span class="p">});</span>
 
-<span class="c1">// This will use a different driver order.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+<span class="c1">// This will use a different driver order.</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
     <span class="na">driver</span><span class="p">:</span> <span class="p">[</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">WEBSQL</span><span class="p">,</span>
              <span class="nx">localforage</span><span class="p">.</span><span class="nx">INDEXEDDB</span><span class="p">,</span>
              <span class="nx">localforage</span><span class="p">.</span><span class="nx">LOCALSTORAGE</span><span class="p">],</span>
     <span class="na">name</span><span class="p">:</span> <span class="s1">'WebSQL-Rox'</span>
 <span class="p">});</span>
-</pre>
-<pre class="highlight coffeescript"><span class="c1"># This will rename the database from "localforage"
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="c1"># This will rename the database from "localforage"
 # to "Hipster PDA App".
 </span><span class="nx">localforage</span><span class="p">.</span><span class="na">config</span>
   <span class="na">name</span><span class="o">:</span> <span class="s">"Hipster PDA App"</span>
@@ -534,7 +533,7 @@ order:</p>
            <span class="nx">localforage</span><span class="p">.</span><span class="na">INDEXEDDB</span><span class="p">,</span>
            <span class="nx">localforage</span><span class="p">.</span><span class="na">LOCALSTORAGE</span><span class="p">]</span>
   <span class="na">name</span><span class="o">:</span> <span class="s">"WebSQL-Rox"</span>
-</pre>
+</code></pre>
 
 <p><code class="prettyprint">config(options)</code></p>
 
@@ -553,7 +552,8 @@ values can be set:</p>
   <dt>name</dt>
   <dd>
     The name of the database. May appear during storage limit prompts.
-    Useful to use the name of your app here.<br>
+    Useful to use the name of your app here. In localStorage, this is used as a
+    key prefix for all keys stored in localStorage.<br>
     Default: <code>'localforage'</code>
   </dd>
   <dt>size</dt>
@@ -565,8 +565,7 @@ values can be set:</p>
   <dd>
     The name of the datastore. In IndexedDB this is the
     <code>dataStore</code>, in WebSQL this is the name of the key/value
-    table in the database. In localStorage, this is used as a key prefix for
-    all keys stored in localStorage. <strong>Must be alphanumeric,
+    table in the database. <strong>Must be alphanumeric,
     with underscores.</strong> Any non-alphanumeric characters will be converted
     to underscores.<br>
     Default: <code>'keyvaluepairs'</code>
@@ -594,39 +593,39 @@ values can be set:</p>
 <p>You can write your own, custom driver for localForage since <strong>version 1.1</strong>.</p>
 
 <h2 id="definedriver">defineDriver</h2>
-<pre class="highlight javascript"><span class="c1">// Implement the driver here.
-</span><span class="kd">var</span> <span class="nx">myCustomDriver</span> <span class="o">=</span> <span class="p">{</span>
+<pre class="highlight javascript"><code><span class="c1">// Implement the driver here.</span>
+<span class="kd">var</span> <span class="nx">myCustomDriver</span> <span class="o">=</span> <span class="p">{</span>
     <span class="na">_driver</span><span class="p">:</span> <span class="s1">'customDriverUniqueName'</span><span class="p">,</span>
     <span class="na">_initStorage</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Custom implementation here...
-</span>    <span class="p">},</span>
+        <span class="c1">// Custom implementation here...</span>
+    <span class="p">},</span>
     <span class="na">clear</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Custom implementation here...
-</span>    <span class="p">},</span>
+        <span class="c1">// Custom implementation here...</span>
+    <span class="p">},</span>
     <span class="na">getItem</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Custom implementation here...
-</span>    <span class="p">},</span>
+        <span class="c1">// Custom implementation here...</span>
+    <span class="p">},</span>
     <span class="na">key</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">n</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Custom implementation here...
-</span>    <span class="p">},</span>
+        <span class="c1">// Custom implementation here...</span>
+    <span class="p">},</span>
     <span class="na">keys</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Custom implementation here...
-</span>    <span class="p">},</span>
+        <span class="c1">// Custom implementation here...</span>
+    <span class="p">},</span>
     <span class="na">length</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Custom implementation here...
-</span>    <span class="p">},</span>
+        <span class="c1">// Custom implementation here...</span>
+    <span class="p">},</span>
     <span class="na">removeItem</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Custom implementation here...
-</span>    <span class="p">},</span>
+        <span class="c1">// Custom implementation here...</span>
+    <span class="p">},</span>
     <span class="na">setItem</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Custom implementation here...
-</span>    <span class="p">}</span>
+        <span class="c1">// Custom implementation here...</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="c1">// Add the driver to localForage.
-</span><span class="nx">localforage</span><span class="p">.</span><span class="nx">defineDriver</span><span class="p">(</span><span class="nx">myCustomDriver</span><span class="p">);</span>
-</pre>
-<pre class="highlight coffeescript"><span class="c1"># Implement the driver here.
+<span class="c1">// Add the driver to localForage.</span>
+<span class="nx">localforage</span><span class="p">.</span><span class="nx">defineDriver</span><span class="p">(</span><span class="nx">myCustomDriver</span><span class="p">);</span>
+</code></pre>
+<pre class="highlight coffeescript"><code><span class="c1"># Implement the driver here.
 </span><span class="nx">myCustomDriver</span> <span class="o">=</span>
   <span class="na">_driver</span><span class="o">:</span> <span class="s">'customDriverUniqueName'</span>
   <span class="na">_initStorage</span><span class="o">:</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="o">-&gt;</span>
@@ -648,7 +647,7 @@ values can be set:</p>
 </span>
 <span class="c1"># Add the driver to localForage.
 </span><span class="nx">localforage</span><span class="p">.</span><span class="na">defineDriver</span><span class="p">(</span><span class="nx">myCustomDriver</span><span class="p">)</span>
-</pre>
+</code></pre>
 
 <p>You&rsquo;ll want to make sure you accept a <code class="prettyprint">callback</code> argument and that you pass
 the same arguments to callbacks as the default drivers do. You&rsquo;ll also want to
