@@ -32,7 +32,7 @@ DRIVERS.forEach(function(driverName) {
         }
 
         it('saves data', function(done) {
-            var webWorker = new Worker('/test/webworker.js');
+            var webWorker = new Worker('/test/webworker-client.js');
 
             webWorker.addEventListener('message', function(e) {
                 var body = e.data.body;
