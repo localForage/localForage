@@ -1,0 +1,31 @@
+{
+    "name": "localforage",
+    "description": "Offline storage, improved. Wraps IndexedDB, WebSQL, or localStorage using a simple but powerful API.",
+    "repository": {
+        "url": "https://github.com/mozilla/localForage",
+        "license": "Apache 2.0",
+        "tests": "https://travis-ci.org/mozilla/localForage"
+    },
+    "participate": {
+        "home": "https://github.com/mozilla/localForage",
+        "docs": "http://mozilla.github.io/localForage",
+        "irc": "irc://irc.mozilla.org/#apps",
+        "irc-contacts": [
+            "tofumatt"
+        ]
+    },
+    "bugs": {
+        "list": "https://github.com/mozilla/localForage/issues",
+        "report": "https://github.com/mozilla/localForage/issues/new",
+        "goodfirstbug": "https://github.com/mozilla/localForage/labels/help%20wanted"
+
+    },
+    "keywords": [
+        "javascript",
+        "indexeddb",
+        "localstorage",
+        "offline",
+        "storage",
+        "websql"
+    ]
+}
