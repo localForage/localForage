@@ -37,31 +37,7 @@ The team behind this library is often available on IRC
 
 ## Coding Style
 
-JavaScript should be indented with four spaces.
-
-Always use curly braces, with spaces around them:
-
-```javascript
-// Bad.
-if (something)
-    foo();
-if (something) foo();
-if (something){
-    foo()
-};
-
-// Good.
-if (something) {
-    foo();
-}
-```
-
-Comment your code and try to wrap lines at 80 characters, but don't make it
-less readable in doing so.
-
-CoffeeScript should be intended with two spaces.
-
-Always include semicolons (avoid ASI).
+All code can be tested for style by running the unit tests (`npm test`). This will make sure your code conforms to our styleguide. (You can read the rules in `.jshint` and `.jscsrc`.)
 
 ## Features localForage will reject
 
