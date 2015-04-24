@@ -326,43 +326,39 @@
             self._ready = null;
 
             if (isLibraryDriver(driverName)) {
-                // We allow localForage to be declared as a module or as a
-                // library available without AMD/require.js.
-                if (moduleType === ModuleType.DEFINE) {
-                    require([driverName], function(lib) {
-                        self._extend(lib);
-
-                        resolve();
-                    });
-
-                    return;
-                } else if (moduleType === ModuleType.EXPORT) {
-                    // Making it browserify friendly
-                    var driver;
-                    switch (driverName) {
-                        case self.INDEXEDDB:
-                            driver = require('./drivers/indexeddb');
-                            break;
-                        case self.LOCALSTORAGE:
-                            driver = require('./drivers/localstorage');
-                            break;
-                        case self.WEBSQL:
-                            driver = require('./drivers/websql');
+                var driverPromise = new Promise(function(resolve/*, reject*/) {
+                    // We allow localForage to be declared as a module or as a
+                    // library available without AMD/require.js.
+                    if (moduleType === ModuleType.DEFINE) {
+                        require([driverName], resolve);
+                    } else if (moduleType === ModuleType.EXPORT) {
+                        // Making it browserify friendly
+                        switch (driverName) {
+                            case self.INDEXEDDB:
+                                resolve(require('./drivers/indexeddb'));
+                                break;
+                            case self.LOCALSTORAGE:
+                                resolve(require('./drivers/localstorage'));
+                                break;
+                            case self.WEBSQL:
+                                resolve(require('./drivers/websql'));
+                                break;
+                        }
+                    } else {
+                        resolve(globalObject[driverName]);
                     }
-
+                });
+                driverPromise.then(function(driver) {
                     self._extend(driver);
-                } else {
-                    self._extend(globalObject[driverName]);
-                }
+                    resolve();
+                });
             } else if (CustomDrivers[driverName]) {
                 self._extend(CustomDrivers[driverName]);
+                resolve();
             } else {
                 self._driverSet = Promise.reject(error);
                 reject(error);
-                return;
             }
-
-            resolve();
         });
 
         function setDriverToConfig() {
