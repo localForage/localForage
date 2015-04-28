@@ -634,6 +634,7 @@ DRIVERS.forEach(function(driverName) {
     describe(driverName + ' driver multiple instances', function() {
         'use strict';
         var localforage2 = null;
+        var localforage3 = null;
         var Promise;
 
         before(function(done) {
@@ -647,6 +648,17 @@ DRIVERS.forEach(function(driverName) {
                 // TravisCI seem to work fine though.
                 size: 1024,
                 storeName: 'storagename2'
+            });
+
+            // Same name, but different storeName since this has been malfunctioning before w/ IndexedDB.
+            localforage3 = localforage.createInstance({
+                name: 'storage2',
+                // We need a small value here
+                // otherwise local PhantomJS test
+                // will fail with SECURITY_ERR.
+                // TravisCI seem to work fine though.
+                size: 1024,
+                storeName: 'storagename3'
             });
 
             Promise.all([
@@ -690,7 +702,8 @@ DRIVERS.forEach(function(driverName) {
         it('retrieves the proper value when using the same key with other instances', function(done) {
             Promise.all([
                 localforage.setItem('key', 'value1'),
-                localforage2.setItem('key', 'value2')
+                localforage2.setItem('key', 'value2'),
+                localforage3.setItem('key', 'value3')
             ]).then(function() {
                 return Promise.all([
                     localforage.getItem('key').then(function(value) {
@@ -698,6 +711,9 @@ DRIVERS.forEach(function(driverName) {
                     }),
                     localforage2.getItem('key').then(function(value) {
                         expect(value).to.be('value2');
+                    }),
+                    localforage3.getItem('key').then(function(value) {
+                        expect(value).to.be('value3');
                     })
                 ]);
             }).then(function() {
