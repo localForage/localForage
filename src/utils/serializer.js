@@ -27,6 +27,30 @@
     var BLOB_TYPE_PREFIX = '~~local_forage_type~';
     var BLOB_TYPE_PREFIX_REGEX = /^~~local_forage_type~([^~]+)~/;
 
+    // Abstracts constructing a Blob object, so it also works in older
+    // browsers that don't support the native Blob constructor. (i.e.
+    // old QtWebKit versions, at least).
+    function _createBlob(parts, properties) {
+        parts = parts || [];
+        properties = properties || {};
+        try {
+            return new Blob(parts, properties);
+        } catch (e) {
+            if (e.name !== 'TypeError') {
+                throw e;
+            }
+            var BlobBuilder = window.BlobBuilder ||
+                window.MSBlobBuilder ||
+                window.MozBlobBuilder ||
+                window.WebKitBlobBuilder;
+            var builder = new BlobBuilder();
+            for (var i = 0; i < parts.length; i += 1) {
+                builder.append(parts[i]);
+            }
+            return builder.getBlob(properties.type);
+        }
+    }
+
     // Serialize a value, afterwards executing a callback (which usually
     // instructs the `setItem()` callback/promise to be executed). This is how
     // we store binary data with localStorage.
@@ -143,7 +167,7 @@
             case TYPE_ARRAYBUFFER:
                 return buffer;
             case TYPE_BLOB:
-                return new Blob([buffer], {type: blobType});
+                return _createBlob([buffer], {type: blobType});
             case TYPE_INT8ARRAY:
                 return new Int8Array(buffer);
             case TYPE_UINT8ARRAY:
