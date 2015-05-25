@@ -79,6 +79,8 @@ DRIVERS.forEach(function(driverName) {
     describe(driverName + ' driver', function() {
         'use strict';
 
+        this.timeout(30000);
+
         before(function(done) {
             localforage.setDriver(driverName).then(done);
         });
@@ -809,6 +811,8 @@ DRIVERS.forEach(function(driverName) {
 
     describe(driverName + ' driver when ready() gets rejected', function() {
         'use strict';
+
+        this.timeout(30000);
 
         var _oldReady;
         var Promise;
