@@ -130,7 +130,7 @@
             case TYPE_ARRAYBUFFER:
                 return buffer;
             case TYPE_BLOB:
-                return new Blob([buffer]);
+                return bufferToBlob(buffer);
             case TYPE_INT8ARRAY:
                 return new Int8Array(buffer);
             case TYPE_UINT8ARRAY:
@@ -209,6 +209,19 @@
         }
 
         return base64String;
+    }
+
+    // Android 4.x browser doesn't support Blob constructor, but does support
+    // deprecated BlobBuilder API.  See http://caniuse.com/#feat=blobbuilder
+    function bufferToBlob(buffer) {
+        var builder;
+        if (window.WebKitBlobBuilder) {
+            builder = new window.WebKitBlobBuilder();
+            builder.append(buffer);
+            return builder.getBlob();
+        } else {
+            return new Blob([buffer]);
+        }
     }
 
     var localforageSerializer = {
