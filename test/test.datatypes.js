@@ -17,6 +17,8 @@ DRIVERS.forEach(function(driverName) {
     describe('Type handler for ' + driverName, function() {
         'use strict';
 
+        this.timeout(30000);
+
         before(function(done) {
             localforage.setDriver(driverName).then(done);
         });
@@ -312,9 +314,42 @@ DRIVERS.forEach(function(driverName) {
                             .to.be('[object Blob]');
                         expect(blob.size)
                             .to.be(testBlob.size);
-                        // TODO: localForage does not restore the mimeString!?
-                        // expect(blob.type)
-                        //     .to.be(testBlob.type);
+                        expect(blob.type)
+                            .to.be(testBlob.type);
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip('saves binary (Blob) data (Blob type does not exist)');
+        }
+
+        if (typeof Blob === 'function') {
+            it('saves binary (Blob) data, iterate back', function(done) {
+                var fileParts = ['<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>'];
+                var mimeString = 'text\/html';
+
+                var testBlob = new Blob(fileParts, { 'type' : mimeString });
+
+                localforage.setItem('blob', testBlob, function(err, blob) {
+                    expect(err).to.be(null);
+                    expect(blob.toString())
+                        .to.be('[object Blob]');
+                    expect(blob.size)
+                        .to.be(testBlob.size);
+                    expect(blob.type)
+                        .to.be(testBlob.type);
+                }).then(function() {
+                    localforage.iterate(function(blob, key) {
+                        if (key !== 'blob') {
+                            return;
+                        }
+                        expect(blob.toString())
+                            .to.be('[object Blob]');
+                        expect(blob.size)
+                            .to.be(testBlob.size);
+                        expect(blob.type)
+                            .to.be(testBlob.type);
                         done();
                     });
                 });
