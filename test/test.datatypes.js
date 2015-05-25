@@ -5,6 +5,30 @@ var DRIVERS = [
     localforage.WEBSQL
 ];
 
+// Abstracts constructing a Blob object, so it also works in older
+// browsers that don't support the native Blob constructor. (i.e.
+// old QtWebKit versions, at least).
+function _createBlob(parts, properties) {
+    parts = parts || [];
+    properties = properties || {};
+    try {
+        return new Blob(parts, properties);
+    } catch (e) {
+        if (e.name !== 'TypeError') {
+            throw e;
+        }
+        var BlobBuilder = window.BlobBuilder ||
+            window.MSBlobBuilder ||
+            window.MozBlobBuilder ||
+            window.WebKitBlobBuilder;
+        var builder = new BlobBuilder();
+        for (var i = 0; i < parts.length; i += 1) {
+            builder.append(parts[i]);
+        }
+        return builder.getBlob(properties.type);
+    }
+}
+
 DRIVERS.forEach(function(driverName) {
     if ((!Modernizr.indexeddb && driverName === localforage.INDEXEDDB) ||
         (!Modernizr.localstorage && driverName === localforage.LOCALSTORAGE) ||
@@ -297,7 +321,7 @@ DRIVERS.forEach(function(driverName) {
                 var fileParts = ['<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>'];
                 var mimeString = 'text\/html';
 
-                var testBlob = new Blob(fileParts, { 'type' : mimeString });
+                var testBlob = _createBlob(fileParts, { 'type' : mimeString });
 
                 localforage.setItem('blob', testBlob, function(err, blob) {
                     expect(err).to.be(null);
@@ -329,7 +353,7 @@ DRIVERS.forEach(function(driverName) {
                 var fileParts = ['<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>'];
                 var mimeString = 'text\/html';
 
-                var testBlob = new Blob(fileParts, { 'type' : mimeString });
+                var testBlob = _createBlob(fileParts, { 'type' : mimeString });
 
                 localforage.setItem('blob', testBlob, function(err, blob) {
                     expect(err).to.be(null);
