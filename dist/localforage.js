@@ -713,6 +713,9 @@ requireModule('promise/polyfill').polyfill();
     var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH +
                                         TYPE_ARRAYBUFFER.length;
 
+    // Get out of our habit of using `window` inline, at least.
+    var globalObject = this;
+
     // Serialize a value, afterwards executing a callback (which usually
     // instructs the `setItem()` callback/promise to be executed). This is how
     // we store binary data with localStorage.
@@ -779,8 +782,8 @@ requireModule('promise/polyfill').polyfill();
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                window.console.error("Couldn't convert value into a JSON " +
-                                     'string: ', value);
+                console.error("Couldn't convert value into a JSON string: ",
+                              value);
 
                 callback(null, e);
             }
@@ -901,11 +904,11 @@ requireModule('promise/polyfill').polyfill();
     }
 
     // Android 4.x browser doesn't support Blob constructor, but does support
-    // deprecated BlobBuilder API.  See http://caniuse.com/#feat=blobbuilder
+    // deprecated BlobBuilder API. See: http://caniuse.com/#feat=blobbuilder
     function bufferToBlob(buffer) {
         var builder;
-        if (window.WebKitBlobBuilder) {
-            builder = new window.WebKitBlobBuilder();
+        if (globalObject.WebKitBlobBuilder) {
+            builder = new globalObject.WebKitBlobBuilder();
             builder.append(buffer);
             return builder.getBlob();
         } else {
@@ -2069,7 +2072,8 @@ requireModule('promise/polyfill').polyfill();
     'use strict';
 
     // Promises!
-    var Promise = (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') ?
+    var Promise = (typeof module !== 'undefined' && module.exports &&
+                   typeof require !== 'undefined') ?
                   require('promise') : this.Promise;
 
     // Custom drivers are stored here when `defineDriver()` is called.
