@@ -20,6 +20,7 @@
     "validthis": true,
 
     "globals": {
+      "console": true,
       "define": true,
       "localforage": true,
       "module": true,
