@@ -52,7 +52,8 @@ var require = this.require;
 if (require) {
     requirejs.config({
         paths: {
-            localforage: '/dist/localforage'
+            localforage: '/dist/localforage',
+            localforageSerializer: '/src/utils/serializer'
         }
     });
     require(['localforage'], function(localforage) {

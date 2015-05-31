@@ -6,6 +6,9 @@
     // verbose ways of binary <-> string data storage.
     var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
+    var BLOB_TYPE_PREFIX = '~~local_forage_type~';
+    var BLOB_TYPE_PREFIX_REGEX = /^~~local_forage_type~([^~]+)~/;
+
     var SERIALIZED_MARKER = '__lfsc__:';
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
 
@@ -26,6 +29,34 @@
 
     // Get out of our habit of using `window` inline, at least.
     var globalObject = this;
+
+    // Abstracts constructing a Blob object, so it also works in older
+    // browsers that don't support the native Blob constructor. (i.e.
+    // old QtWebKit versions, at least).
+    function createBlob(parts, properties) {
+        parts = parts || [];
+        properties = properties || {};
+
+        try {
+            return new Blob(parts, properties);
+        } catch (error) {
+            if (error.name !== 'TypeError') {
+                throw error;
+            }
+
+            var BlobBuilder = globalObject.BlobBuilder ||
+                              globalObject.MSBlobBuilder ||
+                              globalObject.MozBlobBuilder ||
+                              globalObject.WebKitBlobBuilder;
+
+            var builder = new BlobBuilder();
+            for (var i = 0; i < parts.length; i += 1) {
+                builder.append(parts[i]);
+            }
+
+            return builder.getBlob(properties.type);
+        }
+    }
 
     // Serialize a value, afterwards executing a callback (which usually
     // instructs the `setItem()` callback/promise to be executed). This is how
@@ -83,7 +114,9 @@
             var fileReader = new FileReader();
 
             fileReader.onload = function() {
-                var str = bufferToString(this.result);
+                // Backwards-compatible prefix for the blob type.
+                var str = BLOB_TYPE_PREFIX + value.type + '~' +
+                    bufferToString(this.result);
 
                 callback(SERIALIZED_MARKER + TYPE_BLOB + str);
             };
@@ -125,6 +158,15 @@
         var type = value.substring(SERIALIZED_MARKER_LENGTH,
                                    TYPE_SERIALIZED_MARKER_LENGTH);
 
+        var blobType;
+        // Backwards-compatible blob type serialization strategy.
+        // DBs created with older versions of localForage will simply not have
+        // the blob type.
+        if (type === TYPE_BLOB && BLOB_TYPE_PREFIX_REGEX.test(serializedString)) {
+            var matcher = serializedString.match(BLOB_TYPE_PREFIX_REGEX);
+            blobType = matcher[1];
+            serializedString = serializedString.substring(matcher[0].length);
+        }
         var buffer = stringToBuffer(serializedString);
 
         // Return the right type based on the code/type set during
@@ -133,7 +175,7 @@
             case TYPE_ARRAYBUFFER:
                 return buffer;
             case TYPE_BLOB:
-                return bufferToBlob(buffer);
+                return createBlob([buffer], {type: blobType});
             case TYPE_INT8ARRAY:
                 return new Int8Array(buffer);
             case TYPE_UINT8ARRAY:
@@ -214,24 +256,12 @@
         return base64String;
     }
 
-    // Android 4.x browser doesn't support Blob constructor, but does support
-    // deprecated BlobBuilder API. See: http://caniuse.com/#feat=blobbuilder
-    function bufferToBlob(buffer) {
-        var builder;
-        if (globalObject.WebKitBlobBuilder) {
-            builder = new globalObject.WebKitBlobBuilder();
-            builder.append(buffer);
-            return builder.getBlob();
-        } else {
-            return new Blob([buffer]);
-        }
-    }
-
     var localforageSerializer = {
         serialize: serialize,
         deserialize: deserialize,
         stringToBuffer: stringToBuffer,
-        bufferToString: bufferToString
+        bufferToString: bufferToString,
+        createBlob: createBlob
     };
 
     if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') {
