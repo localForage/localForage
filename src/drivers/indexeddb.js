@@ -9,6 +9,8 @@
     var Promise = (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') ?
                   require('promise') : this.Promise;
 
+    var globalObject = this;
+
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
     var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
                     this.mozIndexedDB || this.OIndexedDB ||
@@ -17,6 +19,136 @@
     // If IndexedDB isn't available, we get outta here!
     if (!indexedDB) {
         return;
+    }
+
+    var DETECT_BLOB_SUPPORT_STORE = 'local-forage-detect-blob-support';
+    var serializer;
+    var supportsBlobs;
+
+    // Transform a binary string to an array buffer, because otherwise
+    // weird stuff happens when you try to work with the binary string directly.
+    // It is known.
+    // From http://stackoverflow.com/questions/14967647/encode-decode-image-with-base64-breaks-image
+    // (2013-04-21)
+    function _binaryStringToArrayBuffer(binaryString) {
+        var length = binaryString.length;
+        var buffer = new ArrayBuffer(length);
+        var array = new Uint8Array(buffer);
+
+        for (var i = 0; i < length; i++) {
+            array[i] = binaryString.charCodeAt(i);
+        }
+        return buffer;
+    }
+
+    // Fetch a blob using ajax. This reveals bugs in Chrome < 43.
+    // For details on all this junk:
+    // https://github.com/nolanlawson/state-of-binary-data-in-the-browser#readme
+    function _blobAjax(url) {
+        return new Promise(function(resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            xhr.withCredentials = true;
+            xhr.responseType = 'arraybuffer';
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState !== 4) {
+                    return;
+                }
+                if (xhr.status === 200) {
+                    return resolve({
+                        response: xhr.response,
+                        type: xhr.getResponseHeader('Content-Type')
+                    });
+                }
+                reject({status: xhr.status, response: xhr.response});
+            };
+            xhr.send();
+        });
+    }
+
+    // Detect blob support. Chrome didn't support it until version 38.
+    // In version 37 they had a broken version where PNGs (and possibly
+    // other binary types) aren't stored correctly, because when you fetch
+    // them, the content type is always null.
+    //
+    // Furthermore, they have some outstanding bugs where blobs occasionally
+    // are read by FileReader as null, or by ajax as 404s.
+    //
+    // Sadly we use the 404 bug to detect the FileReader bug, so if they
+    // get fixed independently and released in different versions of Chrome,
+    // then the bug could come back. So it's worthwhile to watch these issues:
+    // 404 bug: https://code.google.com/p/chromium/issues/detail?id=447916
+    // FileReader bug: https://code.google.com/p/chromium/issues/detail?id=447836
+    //
+    function _checkBlobSupportWithoutCaching(idb) {
+        return new Promise(function(resolve, reject) {
+            var blob = serializer.createBlob([''], {type: 'image/png'});
+            var txn = idb.transaction([DETECT_BLOB_SUPPORT_STORE], 'readwrite');
+            txn.objectStore(DETECT_BLOB_SUPPORT_STORE).put(blob, 'key');
+            txn.oncomplete = function() {
+                // have to do it in a separate transaction, else the correct
+                // content type is always returned
+                var blobTxn = idb.transaction([DETECT_BLOB_SUPPORT_STORE],
+                    'readwrite');
+                var getBlobReq = blobTxn.objectStore(
+                    DETECT_BLOB_SUPPORT_STORE).get('key');
+                getBlobReq.onerror = reject;
+                getBlobReq.onsuccess = function(e) {
+
+                    var storedBlob = e.target.result;
+                    var url = URL.createObjectURL(storedBlob);
+
+                    _blobAjax(url).then(function(res) {
+                        resolve(!!(res && res.type === 'image/png'));
+                    }, function() {
+                        resolve(false);
+                    }).then(function() {
+                        URL.revokeObjectURL(url);
+                    });
+                };
+            };
+        }).catch(function() {
+            return false; // error, so assume unsupported
+        });
+    }
+
+    function _checkBlobSupport(idb) {
+        if (typeof supportsBlobs === 'boolean') {
+            return Promise.resolve(supportsBlobs);
+        }
+        return _checkBlobSupportWithoutCaching(idb).then(function(value) {
+            supportsBlobs = value;
+            return supportsBlobs;
+        });
+    }
+
+    // encode a blob for indexeddb engines that don't support blobs
+    function _encodeBlob(blob) {
+        return new Promise(function(resolve, reject) {
+            var reader = new FileReader();
+            reader.onerror = reject;
+            reader.onloadend = function(e) {
+                var base64 = btoa(e.target.result || '');
+                resolve({
+                    __local_forage_encoded_blob: true,
+                    data: base64,
+                    type: blob.type
+                });
+            };
+            reader.readAsBinaryString(blob);
+        });
+    }
+
+    // decode an encoded blob
+    function _decodeBlob(encodedBlob) {
+        var arrayBuffer = _binaryStringToArrayBuffer(atob(encodedBlob.data));
+        return serializer.createBlob([arrayBuffer], { type: encodedBlob.type});
+    }
+
+    // is this one of our fancy encoded blobs?
+    function _isEncodedBlob(value) {
+        return value && value.__local_forage_encoded_blob;
     }
 
     // Open the IndexedDB database (automatically creates one if one didn't
@@ -33,20 +165,43 @@
             }
         }
 
-        return new Promise(function(resolve, reject) {
+        var databaseLoadedPromise = new Promise(function(resolve, reject) {
             var openreq = indexedDB.open(dbInfo.name, dbInfo.version);
             openreq.onerror = function() {
                 reject(openreq.error);
             };
-            openreq.onupgradeneeded = function() {
+            openreq.onupgradeneeded = function(e) {
                 // First time setup: create an empty object store
                 openreq.result.createObjectStore(dbInfo.storeName);
+                if (e.oldVersion <= 1) {
+                    // added when support for blob shims was added
+                    openreq.result.createObjectStore(DETECT_BLOB_SUPPORT_STORE);
+                }
             };
             openreq.onsuccess = function() {
                 dbInfo.db = openreq.result;
                 self._dbInfo = dbInfo;
                 resolve();
             };
+        });
+
+        var serializerPromise = new Promise(function(resolve) {
+            // We allow localForage to be declared as a module or as a
+            // library available without AMD/require.js.
+            if (typeof module !== 'undefined' && module.exports &&
+                typeof require !== 'undefined') {
+                require(['localforageSerializer'], resolve);
+            } else if (typeof define === 'function' && define.amd) {
+                // Making it browserify friendly
+                resolve(require('./../utils/serializer'));
+            } else {
+                resolve(globalObject.localforageSerializer);
+            }
+        });
+
+        return serializerPromise.then(function(lib) {
+            serializer = lib;
+            return databaseLoadedPromise;
         });
     }
 
@@ -72,7 +227,9 @@
                     if (value === undefined) {
                         value = null;
                     }
-
+                    if (_isEncodedBlob(value)) {
+                        value = _decodeBlob(value);
+                    }
                     resolve(value);
                 };
 
@@ -103,7 +260,11 @@
                     var cursor = req.result;
 
                     if (cursor) {
-                        var result = iterator(cursor.value, cursor.key, iterationNumber++);
+                        var value = cursor.value;
+                        if (_isEncodedBlob(value)) {
+                            value = _decodeBlob(value);
+                        }
+                        var result = iterator(value, cursor.key, iterationNumber++);
 
                         if (result !== void(0)) {
                             resolve(result);
@@ -137,8 +298,16 @@
         }
 
         var promise = new Promise(function(resolve, reject) {
+            var dbInfo;
             self.ready().then(function() {
-                var dbInfo = self._dbInfo;
+                dbInfo = self._dbInfo;
+                return _checkBlobSupport(dbInfo.db);
+            }).then(function(blobSupport) {
+                if (!blobSupport && value instanceof Blob) {
+                    return _encodeBlob(value);
+                }
+                return value;
+            }).then(function(value) {
                 var transaction = dbInfo.db.transaction(dbInfo.storeName, 'readwrite');
                 var store = transaction.objectStore(dbInfo.storeName);
 
