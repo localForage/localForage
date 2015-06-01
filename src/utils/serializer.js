@@ -6,6 +6,9 @@
     // verbose ways of binary <-> string data storage.
     var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
+    var BLOB_TYPE_PREFIX = '~~local_forage_type~';
+    var BLOB_TYPE_PREFIX_REGEX = /^~~local_forage_type~([^~]+)~/;
+
     var SERIALIZED_MARKER = '__lfsc__:';
     var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
 
@@ -27,29 +30,30 @@
     // Get out of our habit of using `window` inline, at least.
     var globalObject = this;
 
-    var BLOB_TYPE_PREFIX = '~~local_forage_type~';
-    var BLOB_TYPE_PREFIX_REGEX = /^~~local_forage_type~([^~]+)~/;
-
     // Abstracts constructing a Blob object, so it also works in older
     // browsers that don't support the native Blob constructor. (i.e.
     // old QtWebKit versions, at least).
     function _createBlob(parts, properties) {
         parts = parts || [];
         properties = properties || {};
+
         try {
             return new Blob(parts, properties);
-        } catch (e) {
-            if (e.name !== 'TypeError') {
-                throw e;
+        } catch (err) {
+            if (err.name !== 'TypeError') {
+                throw err;
             }
-            var BlobBuilder = window.BlobBuilder ||
-                window.MSBlobBuilder ||
-                window.MozBlobBuilder ||
-                window.WebKitBlobBuilder;
+
+            var BlobBuilder = globalObject.BlobBuilder ||
+                              globalObject.MSBlobBuilder ||
+                              globalObject.MozBlobBuilder ||
+                              globalObject.WebKitBlobBuilder;
+
             var builder = new BlobBuilder();
             for (var i = 0; i < parts.length; i += 1) {
                 builder.append(parts[i]);
             }
+
             return builder.getBlob(properties.type);
         }
     }
