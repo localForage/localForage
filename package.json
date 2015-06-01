@@ -1,6 +1,7 @@
 {
   "name": "localforage",
   "author": "Mozilla",
+  "license": "Apache 2.0",
   "description": "Offline storage, improved.",
   "keywords": [
     "indexeddb",
@@ -15,7 +16,6 @@
     "url": "git://github.com/mozilla/localForage.git"
   },
   "scripts": {
-    "prepublish": "grunt build",
     "test": "grunt test"
   },
   "devDependencies": {
