@@ -5,10 +5,6 @@
 (function() {
     'use strict';
 
-    // Promises!
-    var Promise = (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') ?
-                  require('promise') : this.Promise;
-
     var globalObject = this;
     var serializer = null;
     var localStorage = null;
@@ -41,13 +37,21 @@
     // simple default.
     var moduleType = ModuleType.WINDOW;
 
+    function isComponent() {
+        return typeof module !== 'undefined' && module.component && globalObject.require && globalObject.require.loader === 'component';
+    }
+
     // Find out what kind of module setup we have; if none, we'll just attach
     // localForage to the main window.
-    if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') {
-        moduleType = ModuleType.EXPORT;
-    } else if (typeof define === 'function' && define.amd) {
+    if (typeof globalObject.define === 'function' && globalObject.define.amd) {
         moduleType = ModuleType.DEFINE;
+    } else if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined' || isComponent()) {
+        moduleType = ModuleType.EXPORT;
     }
+
+    // Promises!
+    var Promise = moduleType === ModuleType.EXPORT ?
+                  require('promise') : globalObject.Promise;
 
     // Config the localStorage backend, using options set in the config.
     function _initStorage(options) {
@@ -67,7 +71,7 @@
             // We allow localForage to be declared as a module or as a
             // library available without AMD/require.js.
             if (moduleType === ModuleType.DEFINE) {
-                require(['localforageSerializer'], resolve);
+                globalObject.require(['localforageSerializer'], resolve);
             } else if (moduleType === ModuleType.EXPORT) {
                 // Making it browserify friendly
                 resolve(require('./../utils/serializer'));
