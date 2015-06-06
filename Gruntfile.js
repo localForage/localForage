@@ -19,10 +19,26 @@ module.exports = exports = function(grunt) {
                  '    (c) 2013-2015 Mozilla, Apache License 2.0\n' +
                  '*/\n';
 
+    var babelModuleIdProvider = function getModuleId(moduleName) {
+        var files = {
+            'src/localforage': 'localforage',
+            'src/utils/serializer': 'localforageSerializer',
+            'src/drivers/indexeddb': 'asyncStorage',
+            'src/drivers/localstorage': 'localStorageWrapper',
+            'src/drivers/websql': 'webSQLStorage'
+        };
+
+        return files[moduleName] || moduleName.replace('src/', '');
+    };
+
     grunt.initConfig({
         babel: {
             options: {
-                loose: 'all'
+                loose: 'all',
+                modules: 'umd',
+                moduleIds: true,
+                // sourceMap: true,
+                getModuleId: babelModuleIdProvider
             },
             dist: {
                 files: {
@@ -38,7 +54,9 @@ module.exports = exports = function(grunt) {
             client: {
                 options: {
                     transform: [['babelify', {
-                        loose: 'all'
+                        loose: 'all',
+                        moduleIds: true,
+                        getModuleId: babelModuleIdProvider
                     }]]
                 },
                 src: [
@@ -69,8 +87,7 @@ module.exports = exports = function(grunt) {
                     ]
                 },
                 options: {
-                    banner: BANNER + '(function(){',
-                    footer: '})();'
+                    banner: BANNER
                 }
             }
         },

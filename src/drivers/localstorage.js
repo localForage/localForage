@@ -321,13 +321,5 @@
         keys: keys
     };
 
-    if (moduleType === ModuleType.EXPORT) {
-        module.exports = localStorageWrapper;
-    } else if (moduleType === ModuleType.DEFINE) {
-        define('localStorageWrapper', function() {
-            return localStorageWrapper;
-        });
-    } else {
-        this.localStorageWrapper = localStorageWrapper;
-    }
+    export default localStorageWrapper;
 }).call(window);
