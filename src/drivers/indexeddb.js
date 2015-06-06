@@ -572,13 +572,5 @@
         keys: keys
     };
 
-    if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') {
-        module.exports = asyncStorage;
-    } else if (typeof define === 'function' && define.amd) {
-        define('asyncStorage', function() {
-            return asyncStorage;
-        });
-    } else {
-        this.asyncStorage = asyncStorage;
-    }
+    export default asyncStorage;
 }).call(window);

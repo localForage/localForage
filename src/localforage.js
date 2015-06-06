@@ -333,7 +333,7 @@
                         // We allow localForage to be declared as a module or as a
                         // library available without AMD/require.js.
                         if (moduleType === ModuleType.DEFINE) {
-                            require([driverName], resolve);
+                            globalObject.require([driverName], resolve);
                         } else if (moduleType === ModuleType.EXPORT) {
                             // Making it browserify friendly
                             switch (driverName) {
@@ -406,15 +406,5 @@
     // global. It's extended by pulling in one of our other libraries.
     var localForage = new LocalForage();
 
-    // We allow localForage to be declared as a module or as a library
-    // available without AMD/require.js.
-    if (moduleType === ModuleType.DEFINE) {
-        define('localforage', function() {
-            return localForage;
-        });
-    } else if (moduleType === ModuleType.EXPORT) {
-        module.exports = localForage;
-    } else {
-        this.localforage = localForage;
-    }
+    export default localForage;
 }).call(window);

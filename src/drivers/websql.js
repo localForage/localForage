@@ -409,13 +409,5 @@
         keys: keys
     };
 
-    if (moduleType === ModuleType.DEFINE) {
-        define('webSQLStorage', function() {
-            return webSQLStorage;
-        });
-    } else if (moduleType === ModuleType.EXPORT) {
-        module.exports = webSQLStorage;
-    } else {
-        this.webSQLStorage = webSQLStorage;
-    }
+    export default webSQLStorage;
 }).call(window);
