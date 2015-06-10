@@ -1,6 +1,5 @@
 {
   "name": "localforage",
-  "version": "1.2.3",
   "main": [
     "dist/localforage.js"
   ],
