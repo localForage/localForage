@@ -198,6 +198,8 @@ objects:
   increase when binary data is saved.
 </aside>
 
+<a href="http://jsfiddle.net/ryfo1jk4/">Live demo</a>
+
 ## removeItem
 
 ```javascript
