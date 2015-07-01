@@ -219,6 +219,8 @@ localforage.removeItem "somekey", (err) ->
 
 Removes the value of a key from the offline store.
 
+<a href="http://jsfiddle.net/y1Ly0hk1/1/">Live demo</a>
+
 ## clear
 
 ```javascript
