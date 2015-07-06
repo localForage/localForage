@@ -234,6 +234,27 @@ a browser environment. Local tests are run on a headless WebKit (using
 When you submit a pull request, tests will be run against all browsers that
 localForage supports on Travis CI using [Sauce Labs](https://saucelabs.com/).
 
+## Building the API Documentation
+
+We currently use a Ruby tool to build our
+[API documentation](https://mozilla.github.io/localForage). You can install the Ruby dependencies with [Bundler](http://bundler.io):
+
+```bash
+# From inside the localForage directory
+bundle install
+```
+
+Then use `grunt` to serve the site:
+
+```bash
+grunt site
+```
+
+Navigate to [localhost:4567](http://localhost:4567/) in your browser to see the
+docs.
+
+There is an [open issue to move to a node tool for the docs](https://github.com/mozilla/localForage/issues/192).
+
 # License
 
 This program is free software; it is distributed under an
