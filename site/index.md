@@ -198,6 +198,8 @@ objects:
   increase when binary data is saved.
 </aside>
 
+<a href="http://jsfiddle.net/ryfo1jk4/">Live demo</a>
+
 ## removeItem
 
 ```javascript
@@ -216,6 +218,8 @@ localforage.removeItem "somekey", (err) ->
 `removeItem(key, successCallback)`
 
 Removes the value of a key from the offline store.
+
+<a href="http://jsfiddle.net/y1Ly0hk1/1/">Live demo</a>
 
 ## clear
 
