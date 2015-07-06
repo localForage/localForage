@@ -69,9 +69,6 @@ under the License.
 
   <body class="<%= page_classes %>">
     <div class="tocify-wrapper">
-      <a href="https://mozilla.org/" id="logo">
-        <%= image_tag "logo.png", alt: "Mozilla" %>
-      </a>
       <div id="toc">
       </div>
       <% if current_page.data.toc_footers %>
@@ -85,6 +82,9 @@ under the License.
       <div class="build-status">
         <a href="http://travis-ci.org/mozilla/localForage"><img src="https://secure.travis-ci.org/mozilla/localForage.png?branch=master" alt="Build Status"></a>
       </div>
+      <a href="https://mozilla.org/" id="logo">
+        <%= image_tag "logo.png", alt: "Mozilla" %>
+      </a>
     </div>
     <div class="page-wrapper">
       <div class="content">
