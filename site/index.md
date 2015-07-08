@@ -139,7 +139,7 @@ request.responseType = 'arraybuffer';
 
 request.addEventListener('readystatechange', function() {
     if (request.readyState === 4) { // readyState DONE
-        localforage.setItem('photo', request.response, function(img) {
+        localforage.setItem('photo', request.response, function(image) {
             // This will be a valid blob URI for an <img> tag.
             var blob = new Blob([image]);
             var imageURI = window.URL.createObjectURL(blob);
@@ -165,7 +165,7 @@ request.responseType = "arraybuffer"
 
 request.addEventListener "readystatechange", ->
   if request.readyState == 4 # readyState DONE
-    localforage.setItem "photo", request.response, (img) ->
+    localforage.setItem "photo", request.response, image) ->
       # This will be a valid blob URI for an <img> tag.
       blob = new Blob [image]
       imageURI = window.URL.createObjectURL blob
