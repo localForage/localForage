@@ -38,7 +38,8 @@ module.exports = exports = function(grunt) {
                 modules: 'umd',
                 moduleIds: true,
                 // sourceMap: true,
-                getModuleId: babelModuleIdProvider
+                getModuleId: babelModuleIdProvider,
+                plugins: ['system-import-transformer']
             },
             dist: {
                 files: {
@@ -56,7 +57,8 @@ module.exports = exports = function(grunt) {
                     transform: [['babelify', {
                         loose: 'all',
                         moduleIds: true,
-                        getModuleId: babelModuleIdProvider
+                        getModuleId: babelModuleIdProvider,
+                        plugins: ['system-import-transformer']
                     }]]
                 },
                 src: [

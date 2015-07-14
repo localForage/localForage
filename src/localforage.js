@@ -329,28 +329,18 @@
                 self._ready = null;
 
                 if (isLibraryDriver(driverName)) {
-                    var driverPromise = new Promise(function(resolve/*, reject*/) {
-                        // We allow localForage to be declared as a module or as a
-                        // library available without AMD/require.js.
-                        if (moduleType === ModuleType.DEFINE) {
-                            globalObject.require([driverName], resolve);
-                        } else if (moduleType === ModuleType.EXPORT) {
-                            // Making it browserify friendly
-                            switch (driverName) {
-                                case self.INDEXEDDB:
-                                    resolve(require('./drivers/indexeddb'));
-                                    break;
-                                case self.LOCALSTORAGE:
-                                    resolve(require('./drivers/localstorage'));
-                                    break;
-                                case self.WEBSQL:
-                                    resolve(require('./drivers/websql'));
-                                    break;
-                            }
-                        } else {
-                            resolve(globalObject[driverName]);
-                        }
-                    });
+                    var driverPromise;
+                    switch (driverName) {
+                        case self.INDEXEDDB:
+                            driverPromise = System.import('./drivers/indexeddb');
+                            break;
+                        case self.LOCALSTORAGE:
+                            driverPromise = System.import('./drivers/localstorage');
+                            break;
+                        case self.WEBSQL:
+                            driverPromise = System.import('./drivers/websql');
+                            break;
+                    }
                     driverPromise.then(function(driver) {
                         self._extend(driver);
                         resolve();

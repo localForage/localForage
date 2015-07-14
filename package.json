@@ -19,6 +19,7 @@
     "test": "grunt test"
   },
   "devDependencies": {
+    "babel-plugin-system-import-transformer": "^1.0.1",
     "babelify": "^6.1.2",
     "component": "^1.0.0-rc7",
     "cors": "^2.3.1",
