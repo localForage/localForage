@@ -53,11 +53,11 @@ if (require) {
     if (this.requireUnbundledLocalForage) {
         requirejs.config({
             paths: {
-                localforage: '/dist/es5src/localforage',
-                localforageSerializer: '/dist/es5src/utils/serializer',
-                asyncStorage: '/dist/es5src/drivers/indexeddb',
-                localStorageWrapper: '/dist/es5src/drivers/localstorage',
-                webSQLStorage: '/dist/es5src/drivers/websql',
+                localforage: '/build/es5src/localforage',
+                localforageSerializer: '/build/es5src/utils/serializer',
+                asyncStorage: '/build/es5src/drivers/indexeddb',
+                localStorageWrapper: '/build/es5src/drivers/localstorage',
+                webSQLStorage: '/build/es5src/drivers/websql',
                 Promise: '/bower_components/es6-promise/promise'
             },
             shim: {
