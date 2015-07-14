@@ -24,6 +24,7 @@
       "define": true,
       "localforage": true,
       "module": true,
-      "require": true
+      "require": true,
+      "System": true
     }
 }
