@@ -25,10 +25,6 @@
         moduleType = ModuleType.EXPORT;
     }
 
-    // Promises!
-    var Promise = moduleType === ModuleType.EXPORT ?
-                  require('promise') : globalObject.Promise;
-
     // Custom drivers are stored here when `defineDriver()` is called.
     // They are shared across all instances of localForage.
     var CustomDrivers = {};

@@ -29,10 +29,6 @@
         moduleType = ModuleType.EXPORT;
     }
 
-    // Promises!
-    var Promise = moduleType === ModuleType.EXPORT ?
-                  require('promise') : globalObject.Promise;
-
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
     var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
                     this.mozIndexedDB || this.OIndexedDB ||

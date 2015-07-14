@@ -41,10 +41,6 @@
         moduleType = ModuleType.EXPORT;
     }
 
-    // Promises!
-    var Promise = moduleType === ModuleType.EXPORT ?
-                  require('promise') : globalObject.Promise;
-
     // Open the WebSQL database (automatically creates one if one didn't
     // previously exist), using any options set in the config.
     function _initStorage(options) {
