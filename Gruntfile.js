@@ -43,11 +43,11 @@ module.exports = exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'dist/es5src/localforage.js': 'src/localforage.js',
-                    'dist/es5src/utils/serializer.js': 'src/utils/serializer.js',
-                    'dist/es5src/drivers/indexeddb.js': 'src/drivers/indexeddb.js',
-                    'dist/es5src/drivers/localstorage.js': 'src/drivers/localstorage.js',
-                    'dist/es5src/drivers/websql.js': 'src/drivers/websql.js'
+                    'build/es5src/localforage.js': 'src/localforage.js',
+                    'build/es5src/utils/serializer.js': 'src/utils/serializer.js',
+                    'build/es5src/drivers/indexeddb.js': 'src/drivers/indexeddb.js',
+                    'build/es5src/drivers/localstorage.js': 'src/drivers/localstorage.js',
+                    'build/es5src/drivers/websql.js': 'src/drivers/websql.js'
                 }
             }
         },
@@ -78,14 +78,14 @@ module.exports = exports = function(grunt) {
                     'dist/localforage.js': [
                         // https://github.com/jakearchibald/es6-promise
                         'bower_components/es6-promise/promise.js',
-                        'dist/es5src/utils/**/*.js',
-                        'dist/es5src/drivers/**/*.js',
-                        'dist/es5src/localforage.js'
+                        'build/es5src/utils/**/*.js',
+                        'build/es5src/drivers/**/*.js',
+                        'build/es5src/localforage.js'
                     ],
                     'dist/localforage.nopromises.js': [
-                        'dist/es5src/utils/**/*.js',
-                        'dist/es5src/drivers/**/*.js',
-                        'dist/es5src/localforage.js'
+                        'build/es5src/utils/**/*.js',
+                        'build/es5src/drivers/**/*.js',
+                        'build/es5src/localforage.js'
                     ]
                 },
                 options: {
