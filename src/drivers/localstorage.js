@@ -49,10 +49,6 @@
         moduleType = ModuleType.EXPORT;
     }
 
-    // Promises!
-    var Promise = moduleType === ModuleType.EXPORT ?
-                  require('promise') : globalObject.Promise;
-
     // Config the localStorage backend, using options set in the config.
     function _initStorage(options) {
         var self = this;
