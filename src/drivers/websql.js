@@ -10,35 +10,12 @@
 (function() {
     'use strict';
 
-    var globalObject = this;
     var serializer = null;
     var openDatabase = this.openDatabase;
 
     // If WebSQL methods aren't available, we can stop now.
     if (!openDatabase) {
         return;
-    }
-
-    var ModuleType = {
-        DEFINE: 1,
-        EXPORT: 2,
-        WINDOW: 3
-    };
-
-    // Attaching to window (i.e. no module loader) is the assumed,
-    // simple default.
-    var moduleType = ModuleType.WINDOW;
-
-    function isComponent() {
-        return typeof module !== 'undefined' && module.component && globalObject.require && globalObject.require.loader === 'component';
-    }
-
-    // Find out what kind of module setup we have; if none, we'll just attach
-    // localForage to the main window.
-    if (typeof globalObject.define === 'function' && globalObject.define.amd) {
-        moduleType = ModuleType.DEFINE;
-    } else if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined' || isComponent()) {
-        moduleType = ModuleType.EXPORT;
     }
 
     // Open the WebSQL database (automatically creates one if one didn't
