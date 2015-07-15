@@ -1,30 +1,6 @@
 (function() {
     'use strict';
 
-    var globalObject = this;
-
-    var ModuleType = {
-        DEFINE: 1,
-        EXPORT: 2,
-        WINDOW: 3
-    };
-
-    // Attaching to window (i.e. no module loader) is the assumed,
-    // simple default.
-    var moduleType = ModuleType.WINDOW;
-
-    function isComponent() {
-        return typeof module !== 'undefined' && module.component && globalObject.require && globalObject.require.loader === 'component';
-    }
-
-    // Find out what kind of module setup we have; if none, we'll just attach
-    // localForage to the main window.
-    if (typeof globalObject.define === 'function' && globalObject.define.amd) {
-        moduleType = ModuleType.DEFINE;
-    } else if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined' || isComponent()) {
-        moduleType = ModuleType.EXPORT;
-    }
-
     // Custom drivers are stored here when `defineDriver()` is called.
     // They are shared across all instances of localForage.
     var CustomDrivers = {};
