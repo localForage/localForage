@@ -68,7 +68,8 @@ describe('localForage', function() {
 });
 
 DRIVERS.forEach(function(driverName) {
-    if ((!Modernizr.indexeddb && driverName === localforage.INDEXEDDB) ||
+    if ((!localforage.supports(localforage.INDEXEDDB) &&
+         driverName === localforage.INDEXEDDB) ||
         (!Modernizr.localstorage && driverName === localforage.LOCALSTORAGE) ||
         (!Modernizr.websqldatabase && driverName === localforage.WEBSQL)) {
         // Browser doesn't support this storage library, so we exit the API
