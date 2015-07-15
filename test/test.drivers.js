@@ -3,7 +3,7 @@ describe('Driver API', function() {
     'use strict';
 
     beforeEach(function(done) {
-        if (Modernizr.indexeddb) {
+        if (localforage.supports(localforage.INDEXEDDB)) {
             localforage.setDriver(localforage.INDEXEDDB, function() {
                 done();
             });
@@ -16,7 +16,7 @@ describe('Driver API', function() {
         }
     });
 
-    if ((Modernizr.indexeddb &&
+    if ((localforage.supports(localforage.INDEXEDDB) &&
          localforage.driver() === localforage.INDEXEDDB) ||
         (Modernizr.websqldatabase &&
          localforage.driver() === localforage.WEBSQL)) {
@@ -42,7 +42,7 @@ describe('Driver API', function() {
         });
     }
 
-    if (!Modernizr.indexeddb) {
+    if (!localforage.supports(localforage.INDEXEDDB)) {
         it("can't use unsupported IndexedDB [callback]", function(done) {
             var previousDriver = localforage.driver();
             expect(previousDriver).to.not.be(localforage.INDEXEDDB);
