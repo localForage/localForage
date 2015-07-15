@@ -1,4 +1,4 @@
-/* global afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true, Promise:true, require:true */
+/* global afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Promise:true, require:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
@@ -70,8 +70,10 @@ describe('localForage', function() {
 DRIVERS.forEach(function(driverName) {
     if ((!localforage.supports(localforage.INDEXEDDB) &&
          driverName === localforage.INDEXEDDB) ||
-        (!Modernizr.localstorage && driverName === localforage.LOCALSTORAGE) ||
-        (!Modernizr.websqldatabase && driverName === localforage.WEBSQL)) {
+        (!localforage.supports(localforage.LOCALSTORAGE) &&
+         driverName === localforage.LOCALSTORAGE) ||
+        (!localforage.supports(localforage.WEBSQL) &&
+         driverName === localforage.WEBSQL)) {
         // Browser doesn't support this storage library, so we exit the API
         // tests.
         return;
@@ -721,13 +723,13 @@ DRIVERS.forEach(function(driverName) {
             // and after the target driver
             driverPreferedOrder = ['I am a not supported driver'];
 
-            if (!Modernizr.websqldatabase) {
+            if (!localforage.supports(localforage.WEBSQL)) {
                 driverPreferedOrder.push(localforage.WEBSQL);
             }
-            if (!Modernizr.indexeddb) {
+            if (!localforage.supports(localforage.INDEXEDDB)) {
                 driverPreferedOrder.push(localforage.INDEXEDDB);
             }
-            if (!Modernizr.localstorage) {
+            if (!localforage.supports(localforage.LOCALSTORAGE)) {
                 driverPreferedOrder.push(localforage.localStorage);
             }
 

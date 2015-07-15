@@ -1,4 +1,4 @@
-/* global before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true */
+/* global before:true, beforeEach:true, describe:true, expect:true, it:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
@@ -32,8 +32,10 @@ function _createBlob(parts, properties) {
 DRIVERS.forEach(function(driverName) {
     if ((!localforage.supports(localforage.INDEXEDDB) &&
          driverName === localforage.INDEXEDDB) ||
-        (!Modernizr.localstorage && driverName === localforage.LOCALSTORAGE) ||
-        (!Modernizr.websqldatabase && driverName === localforage.WEBSQL)) {
+        (!localforage.supports(localforage.LOCALSTORAGE) &&
+         driverName === localforage.LOCALSTORAGE) ||
+        (!localforage.supports(localforage.WEBSQL) &&
+         driverName === localforage.WEBSQL)) {
         // Browser doesn't support this storage library, so we exit the API
         // tests.
         return;
