@@ -5,11 +5,11 @@
     "then/promise": "5.0.0"
   },
   "scripts": [
-    "src/localforage.js",
-    "src/utils/serializer.js",
-    "src/drivers/indexeddb.js",
-    "src/drivers/localstorage.js",
-    "src/drivers/websql.js"
+    "build/es5src/localforage.js",
+    "build/es5src/utils/serializer.js",
+    "build/es5src/drivers/indexeddb.js",
+    "build/es5src/drivers/localstorage.js",
+    "build/es5src/drivers/websql.js"
   ],
-  "main": "src/localforage.js"
+  "main": "build/es5src/localforage.js"
 }

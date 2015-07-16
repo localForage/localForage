@@ -5,11 +5,6 @@
 (function() {
     'use strict';
 
-    // Promises!
-    var Promise = (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') ?
-                  require('promise') : this.Promise;
-
-    var globalObject = this;
     var serializer = null;
     var localStorage = null;
 
@@ -31,24 +26,6 @@
         return;
     }
 
-    var ModuleType = {
-        DEFINE: 1,
-        EXPORT: 2,
-        WINDOW: 3
-    };
-
-    // Attaching to window (i.e. no module loader) is the assumed,
-    // simple default.
-    var moduleType = ModuleType.WINDOW;
-
-    // Find out what kind of module setup we have; if none, we'll just attach
-    // localForage to the main window.
-    if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') {
-        moduleType = ModuleType.EXPORT;
-    } else if (typeof define === 'function' && define.amd) {
-        moduleType = ModuleType.DEFINE;
-    }
-
     // Config the localStorage backend, using options set in the config.
     function _initStorage(options) {
         var self = this;
@@ -63,20 +40,7 @@
 
         self._dbInfo = dbInfo;
 
-        var serializerPromise = new Promise(function(resolve/*, reject*/) {
-            // We allow localForage to be declared as a module or as a
-            // library available without AMD/require.js.
-            if (moduleType === ModuleType.DEFINE) {
-                require(['localforageSerializer'], resolve);
-            } else if (moduleType === ModuleType.EXPORT) {
-                // Making it browserify friendly
-                resolve(require('./../utils/serializer'));
-            } else {
-                resolve(globalObject.localforageSerializer);
-            }
-        });
-
-        return serializerPromise.then(function(lib) {
+        return System.import('./../utils/serializer').then(function(lib) {
             serializer = lib;
             return Promise.resolve();
         });
@@ -317,13 +281,5 @@
         keys: keys
     };
 
-    if (moduleType === ModuleType.EXPORT) {
-        module.exports = localStorageWrapper;
-    } else if (moduleType === ModuleType.DEFINE) {
-        define('localStorageWrapper', function() {
-            return localStorageWrapper;
-        });
-    } else {
-        this.localStorageWrapper = localStorageWrapper;
-    }
+    export default localStorageWrapper;
 }).call(window);

@@ -19,9 +19,48 @@ module.exports = exports = function(grunt) {
                  '    (c) 2013-2015 Mozilla, Apache License 2.0\n' +
                  '*/\n';
 
+    var babelModuleIdProvider = function getModuleId(moduleName) {
+        var files = {
+            'src/localforage': 'localforage',
+            'src/utils/serializer': 'localforageSerializer',
+            'src/drivers/indexeddb': 'asyncStorage',
+            'src/drivers/localstorage': 'localStorageWrapper',
+            'src/drivers/websql': 'webSQLStorage'
+        };
+
+        return files[moduleName] || moduleName.replace('src/', '');
+    };
+
     grunt.initConfig({
+        babel: {
+            options: {
+                loose: 'all',
+                modules: 'umd',
+                moduleIds: true,
+                // sourceMap: true,
+                getModuleId: babelModuleIdProvider,
+                plugins: ['system-import-transformer']
+            },
+            dist: {
+                files: {
+                    'build/es5src/localforage.js': 'src/localforage.js',
+                    'build/es5src/utils/serializer.js': 'src/utils/serializer.js',
+                    'build/es5src/drivers/indexeddb.js': 'src/drivers/indexeddb.js',
+                    'build/es5src/drivers/localstorage.js': 'src/drivers/localstorage.js',
+                    'build/es5src/drivers/websql.js': 'src/drivers/websql.js'
+                }
+            }
+        },
         browserify: {
             client: {
+                options: {
+                    transform: [['babelify', {
+                        loose: 'all',
+                        moduleIds: true,
+                        getModuleId: babelModuleIdProvider,
+                        plugins: ['system-import-transformer']
+                    }]]
+                },
                 src: [
                     'bower_components/es6-promise/promise.js',
                     'src/**/*.js',
@@ -39,14 +78,14 @@ module.exports = exports = function(grunt) {
                     'dist/localforage.js': [
                         // https://github.com/jakearchibald/es6-promise
                         'bower_components/es6-promise/promise.js',
-                        'src/utils/**/*.js',
-                        'src/drivers/**/*.js',
-                        'src/localforage.js'
+                        'build/es5src/utils/**/*.js',
+                        'build/es5src/drivers/**/*.js',
+                        'build/es5src/localforage.js'
                     ],
                     'dist/localforage.nopromises.js': [
-                        'src/utils/**/*.js',
-                        'src/drivers/**/*.js',
-                        'src/localforage.js'
+                        'build/es5src/utils/**/*.js',
+                        'build/es5src/drivers/**/*.js',
+                        'build/es5src/localforage.js'
                     ]
                 },
                 options: {
@@ -185,7 +224,7 @@ module.exports = exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
 
     grunt.registerTask('default', ['build', 'connect', 'watch']);
-    grunt.registerTask('build', ['concat', 'es3_safe_recast', 'uglify']);
+    grunt.registerTask('build', ['babel', 'concat', 'es3_safe_recast', 'uglify']);
     grunt.registerTask('publish', ['build', 'shell:publish-site']);
     grunt.registerTask('serve', ['build', 'connect:test', 'watch']);
     grunt.registerTask('site', ['shell:serve-site']);

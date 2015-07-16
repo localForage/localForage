@@ -17,12 +17,14 @@
     <!-- Test runner -->
     <script src="/test/runner.js"></script>
 
+    <script src="/bower_components/es6-promise/promise.js"></script>
+
     <!-- localForage -->
     <script src="/test/localforage.component.js"></script>
 
     <script>
         /* jshint unused: false */
-        var localforage = require('localforage');
+        window.localforage = require('localforage');
     </script>
 
     <!-- specs -->

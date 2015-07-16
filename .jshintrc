@@ -5,7 +5,7 @@
     "curly": true,
     "eqeqeq": true,
     "eqnull": true,
-    "esnext": false,
+    "esnext": true,
     "immed": true,
     "latedef": true,
     "newcap": true,
@@ -24,6 +24,8 @@
       "define": true,
       "localforage": true,
       "module": true,
-      "require": true
+      "Promise": true,
+      "require": true,
+      "System": true
     }
 }
