@@ -5,6 +5,7 @@
 (function() {
     'use strict';
 
+    var globalObject = this;
     var serializer = null;
     var localStorage = null;
 
@@ -74,7 +75,7 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
+            globalObject.console.warn(key +
                                 ' used as a key, but it is not a string.');
             key = String(key);
         }
@@ -192,7 +193,7 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
+            globalObject.console.warn(key +
                                 ' used as a key, but it is not a string.');
             key = String(key);
         }
@@ -215,7 +216,7 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
+            globalObject.console.warn(key +
                                 ' used as a key, but it is not a string.');
             key = String(key);
         }
@@ -282,4 +283,4 @@
     };
 
     export default localStorageWrapper;
-}).call(window);
+}).call(typeof window !== 'undefined' ? window : self);
