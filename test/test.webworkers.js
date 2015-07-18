@@ -1,7 +1,7 @@
 /* global before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
-    // localforage.LOCALSTORAGE,
+    localforage.LOCALSTORAGE,
     localforage.WEBSQL
 ];
 
@@ -14,7 +14,7 @@ DRIVERS.forEach(function(driverName) {
         return;
     }
 
-    describe.skip('Web Worker support in ' + driverName, function() {
+    describe('Web Worker support in ' + driverName, function() {
         'use strict';
 
         before(function(done) {
@@ -26,8 +26,14 @@ DRIVERS.forEach(function(driverName) {
         });
 
         if (!Modernizr.webworkers) {
-            it.skip("doesn't have web worker support");
+            it.skip('doesn\'t have web worker support');
 
+            return;
+        }
+
+        if (driverName === localforage.LOCALSTORAGE ||
+            driverName === localforage.WEBSQL) {
+            it.skip(driverName + ' is not supported in web workers');
             return;
         }
 
@@ -38,7 +44,7 @@ DRIVERS.forEach(function(driverName) {
                 var body = e.data.body;
 
                 window.console.log(body);
-                expect(body.value).to.be('I have been set');
+                expect(body).to.be('I have been set');
                 done();
             });
 

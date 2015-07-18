@@ -274,7 +274,7 @@
         };
 
         module.exports = localforageSerializer;
-    }).call(window);
+    }).call(typeof window !== 'undefined' ? window : self);
 });
 (function (global, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -297,7 +297,7 @@
         'use strict';
 
         // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
-
+        var globalObject = this;
         // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
         var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB || this.mozIndexedDB || this.OIndexedDB || this.msIndexedDB;
 
@@ -321,7 +321,7 @@
                 if (e.name !== 'TypeError') {
                     throw e;
                 }
-                var BlobBuilder = window.BlobBuilder || window.MSBlobBuilder || window.MozBlobBuilder || window.WebKitBlobBuilder;
+                var BlobBuilder = globalObject.BlobBuilder || globalObject.MSBlobBuilder || globalObject.MozBlobBuilder || globalObject.WebKitBlobBuilder;
                 var builder = new BlobBuilder();
                 for (var i = 0; i < parts.length; i += 1) {
                     builder.append(parts[i]);
@@ -494,7 +494,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -573,7 +573,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -629,7 +629,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -823,7 +823,7 @@
         };
 
         module.exports = asyncStorage;
-    }).call(window);
+    }).call(typeof window !== 'undefined' ? window : self);
 });
 (function (global, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -838,15 +838,18 @@
         global.localStorageWrapper = mod.exports;
     }
 })(this, function (exports, module) {
+    'use strict';
+
+    var _systemImportTransformerGlobalIdentifier = typeof window !== 'undefined' ? window : self;
+
     // If IndexedDB isn't available, we'll fall back to localStorage.
     // Note that this will have considerable performance and storage
     // side-effects (all data will be serialized on save and only data that
     // can be converted to a string via `JSON.stringify()` will be saved).
-    'use strict';
-
     (function () {
         'use strict';
 
+        var globalObject = this;
         var serializer = null;
         var localStorage = null;
 
@@ -883,14 +886,12 @@
             self._dbInfo = dbInfo;
 
             return new Promise(function (resolve, reject) {
-                var global = window;
-
-                if (typeof global.define === 'function' && global.define.amd) {
-                    global.require(['localforageSerializer'], resolve, reject);
-                } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (global.require && global.require.loader === 'component'))) {
+                if (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd) {
+                    _systemImportTransformerGlobalIdentifier.require(['localforageSerializer'], resolve, reject);
+                } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (_systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component'))) {
                     resolve(require('./../utils/serializer'));
                 } else {
-                    resolve(global['localforageSerializer']);
+                    resolve(_systemImportTransformerGlobalIdentifier['localforageSerializer']);
                 }
             }).then(function (lib) {
                 serializer = lib;
@@ -926,7 +927,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1043,7 +1044,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1065,7 +1066,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1130,7 +1131,7 @@
         };
 
         module.exports = localStorageWrapper;
-    }).call(window);
+    }).call(typeof window !== 'undefined' ? window : self);
 });
 (function (global, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -1145,6 +1146,10 @@
         global.webSQLStorage = mod.exports;
     }
 })(this, function (exports, module) {
+    'use strict';
+
+    var _systemImportTransformerGlobalIdentifier = typeof window !== 'undefined' ? window : self;
+
     /*
      * Includes code from:
      *
@@ -1154,11 +1159,10 @@
      * Copyright (c) 2012 Niklas von Hertzen
      * Licensed under the MIT license.
      */
-    'use strict';
-
     (function () {
         'use strict';
 
+        var globalObject = this;
         var serializer = null;
         var openDatabase = this.openDatabase;
 
@@ -1204,14 +1208,12 @@
             });
 
             return new Promise(function (resolve, reject) {
-                var global = window;
-
-                if (typeof global.define === 'function' && global.define.amd) {
-                    global.require(['localforageSerializer'], resolve, reject);
-                } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (global.require && global.require.loader === 'component'))) {
+                if (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd) {
+                    _systemImportTransformerGlobalIdentifier.require(['localforageSerializer'], resolve, reject);
+                } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (_systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component'))) {
                     resolve(require('./../utils/serializer'));
                 } else {
-                    resolve(global['localforageSerializer']);
+                    resolve(_systemImportTransformerGlobalIdentifier['localforageSerializer']);
                 }
             }).then(function (lib) {
                 serializer = lib;
@@ -1224,7 +1226,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1303,7 +1305,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1358,7 +1360,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1507,7 +1509,7 @@
         };
 
         module.exports = webSQLStorage;
-    }).call(window);
+    }).call(typeof window !== 'undefined' ? window : self);
 });
 (function (global, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -1523,6 +1525,8 @@
     }
 })(this, function (exports, module) {
     'use strict';
+
+    var _systemImportTransformerGlobalIdentifier = typeof window !== 'undefined' ? window : self;
 
     function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
@@ -1807,40 +1811,34 @@
                         switch (driverName) {
                             case self.INDEXEDDB:
                                 driverPromise = new Promise(function (resolve, reject) {
-                                    var global = window;
-
-                                    if (typeof global.define === 'function' && global.define.amd) {
-                                        global.require(['asyncStorage'], resolve, reject);
-                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (global.require && global.require.loader === 'component'))) {
+                                    if (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd) {
+                                        _systemImportTransformerGlobalIdentifier.require(['asyncStorage'], resolve, reject);
+                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (_systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component'))) {
                                         resolve(require('./drivers/indexeddb'));
                                     } else {
-                                        resolve(global['asyncStorage']);
+                                        resolve(_systemImportTransformerGlobalIdentifier['asyncStorage']);
                                     }
                                 });
                                 break;
                             case self.LOCALSTORAGE:
                                 driverPromise = new Promise(function (resolve, reject) {
-                                    var global = window;
-
-                                    if (typeof global.define === 'function' && global.define.amd) {
-                                        global.require(['localStorageWrapper'], resolve, reject);
-                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (global.require && global.require.loader === 'component'))) {
+                                    if (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd) {
+                                        _systemImportTransformerGlobalIdentifier.require(['localStorageWrapper'], resolve, reject);
+                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (_systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component'))) {
                                         resolve(require('./drivers/localstorage'));
                                     } else {
-                                        resolve(global['localStorageWrapper']);
+                                        resolve(_systemImportTransformerGlobalIdentifier['localStorageWrapper']);
                                     }
                                 });
                                 break;
                             case self.WEBSQL:
                                 driverPromise = new Promise(function (resolve, reject) {
-                                    var global = window;
-
-                                    if (typeof global.define === 'function' && global.define.amd) {
-                                        global.require(['webSQLStorage'], resolve, reject);
-                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (global.require && global.require.loader === 'component'))) {
+                                    if (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd) {
+                                        _systemImportTransformerGlobalIdentifier.require(['webSQLStorage'], resolve, reject);
+                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (_systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component'))) {
                                         resolve(require('./drivers/websql'));
                                     } else {
-                                        resolve(global['webSQLStorage']);
+                                        resolve(_systemImportTransformerGlobalIdentifier['webSQLStorage']);
                                     }
                                 });
                                 break;
@@ -1904,5 +1902,5 @@
         var localForage = new LocalForage();
 
         module.exports = localForage;
-    }).call(window);
+    }).call(typeof window !== 'undefined' ? window : self);
 });

@@ -26,6 +26,7 @@
       "module": true,
       "Promise": true,
       "require": true,
+      "self": true,
       "System": true
     }
 }
