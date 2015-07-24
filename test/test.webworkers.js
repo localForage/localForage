@@ -30,7 +30,6 @@ DRIVERS.forEach(function(driverName) {
 
         if (!Modernizr.webworkers) {
             it.skip('doesn\'t have web worker support');
-
             return;
         }
 

@@ -823,7 +823,7 @@ requireModule('promise/polyfill').polyfill();
                 try {
                     callback(JSON.stringify(value));
                 } catch (e) {
-                    console.error('Couldn\'t convert value into a JSON string: ', value);
+                    console.error("Couldn't convert value into a JSON string: ", value);
 
                     callback(null, e);
                 }
@@ -2370,7 +2370,7 @@ requireModule('promise/polyfill').polyfill();
                     // If localforage is ready and fully initialized, we can't set
                     // any new configuration values. Instead, we return an error.
                     if (this._ready) {
-                        return new Error('Can\'t call config() after localforage ' + 'has been used.');
+                        return new Error("Can't call config() after localforage " + 'has been used.');
                     }
 
                     for (var i in options) {
@@ -2578,10 +2578,12 @@ requireModule('promise/polyfill').polyfill();
             };
 
             return LocalForage;
-        })();
+        })()
 
         // The actual localForage object that we expose as a module or via a
         // global. It's extended by pulling in one of our other libraries.
+        ;
+
         var localForage = new LocalForage();
 
         module.exports = localForage;
