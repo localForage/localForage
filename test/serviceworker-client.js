@@ -14,7 +14,7 @@ self.onmessage = function(messageEvent) {
             messageEvent
                 .ports[0]
                 .postMessage({
-                    body: value
+                    body: value + ' using ' + localforage.driver()
                 });
 
         })
