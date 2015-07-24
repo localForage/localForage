@@ -1,4 +1,4 @@
-/* global navigator:true, window:true, Modernizr:true, describe:true, expect:true, it:true, before:true, beforeEach:true, after:true*/
+/* global navigator:true, window:true, Modernizr:true, describe:true, expect:true, it:true, xit:true, before:true, beforeEach:true, after:true*/
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
@@ -17,11 +17,26 @@ DRIVERS.forEach(function(driverName) {
     describe('Service Worker support in ' + driverName, function() {
         'use strict';
 
+        // Use this until a test is added to Modernizr
+        if (!('serviceworker' in Modernizr)) {
+            Modernizr.serviceworker = 'serviceWorker' in navigator;
+        }
+
         if (!Modernizr.serviceworker) {
             before.skip('doesn\'t have service worker support');
+            beforeEach.skip('doesn\'t have service worker support');
+            it.skip('doesn\'t have service worker support');
+            after.skip('doesn\'t have service worker support');
             return;
         }
 
+        if (!window.MessageChannel) {
+            before.skip('doesn\'t have MessageChannel support');
+            beforeEach.skip('doesn\'t have MessageChannel support');
+            it.skip('doesn\'t have MessageChannel support');
+            after.skip('doesn\'t have MessageChannel support');
+            return;
+        }
 
         before(function(done) {
             navigator.serviceWorker
@@ -31,11 +46,6 @@ DRIVERS.forEach(function(driverName) {
                 })
                 .then(done);
         });
-
-        if (!Modernizr.serviceworker) {
-            after.skip('doesn\'t have service worker support');
-            return;
-        }
 
         after(function(done) {
             navigator.serviceWorker.ready
@@ -51,19 +61,9 @@ DRIVERS.forEach(function(driverName) {
                 });
         });
 
-        if (!Modernizr.serviceworker) {
-            beforeEach.skip('doesn\'t have service worker support');
-            return;
-        }
-
         beforeEach(function(done) {
             localforage.clear(done);
         });
-
-        if (!Modernizr.serviceworker) {
-            it.skip('doesn\'t have service worker support');
-            return;
-        }
 
         if (driverName === localforage.LOCALSTORAGE ||
             driverName === localforage.WEBSQL) {
@@ -71,7 +71,7 @@ DRIVERS.forEach(function(driverName) {
             return;
         }
 
-        it('should set a value on registration', function(done) {
+        xit('should set a value on registration', function(done) {
             navigator.serviceWorker.ready
                 .then(function() {
                     return localforage.getItem('service worker registration');
@@ -87,15 +87,12 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('saves data', function(done) {
-            if (window.MessageChannel) {
-                var messageChannel = new MessageChannel();
-
-                messageChannel.port1.onmessage = function(event) {
-                    expect(event.data.body)
-                        .to.be('I have been set');
-                    done();
-                };
-            }
+            var messageChannel = new MessageChannel();
+            messageChannel.port1.onmessage = function(event) {
+                expect(event.data.body)
+                    .to.be('I have been set using ' + driverName);
+                done();
+            };
 
             navigator.serviceWorker.ready
                 .then(function(registration) {
