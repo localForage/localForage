@@ -1,13 +1,13 @@
-/* global beforeEach:true, describe:true, expect:true, it:true, Modernizr:true */
+/* global beforeEach:true, describe:true, expect:true, it:true */
 describe('Driver API', function() {
     'use strict';
 
     beforeEach(function(done) {
-        if (Modernizr.indexeddb) {
+        if (localforage.supports(localforage.INDEXEDDB)) {
             localforage.setDriver(localforage.INDEXEDDB, function() {
                 done();
             });
-        } else if (Modernizr.websqldatabase) {
+        } else if (localforage.supports(localforage.WEBSQL)) {
             localforage.setDriver(localforage.WEBSQL, function() {
                 done();
             });
@@ -16,9 +16,9 @@ describe('Driver API', function() {
         }
     });
 
-    if ((Modernizr.indexeddb &&
+    if ((localforage.supports(localforage.INDEXEDDB) &&
          localforage.driver() === localforage.INDEXEDDB) ||
-        (Modernizr.websqldatabase &&
+        (localforage.supports(localforage.WEBSQL) &&
          localforage.driver() === localforage.WEBSQL)) {
         it('can change to localStorage from ' + localforage.driver() +
            ' [callback]', function(done) {
@@ -42,7 +42,7 @@ describe('Driver API', function() {
         });
     }
 
-    if (!Modernizr.indexeddb) {
+    if (!localforage.supports(localforage.INDEXEDDB)) {
         it("can't use unsupported IndexedDB [callback]", function(done) {
             var previousDriver = localforage.driver();
             expect(previousDriver).to.not.be(localforage.INDEXEDDB);
@@ -87,7 +87,7 @@ describe('Driver API', function() {
         });
     }
 
-    if (!Modernizr.localstorage) {
+    if (!localforage.supports(localforage.LOCALSTORAGE)) {
         it("can't use unsupported localStorage [callback]", function(done) {
             var previousDriver = localforage.driver();
             expect(previousDriver).to.not.be(localforage.LOCALSTORAGE);
@@ -107,7 +107,8 @@ describe('Driver API', function() {
                 done();
             });
         });
-    } else if (!Modernizr.indexeddb && !Modernizr.websqldatabase) {
+    } else if (!localforage.supports(localforage.INDEXEDDB) &&
+               !localforage.supports(localforage.WEBSQL)) {
         it('can set already active localStorage [callback]', function(done) {
             var previousDriver = localforage.driver();
             expect(previousDriver).to.be(localforage.LOCALSTORAGE);
@@ -128,7 +129,7 @@ describe('Driver API', function() {
         });
     }
 
-    if (!Modernizr.websqldatabase) {
+    if (!localforage.supports(localforage.WEBSQL)) {
         it("can't use unsupported WebSQL [callback]", function(done) {
             var previousDriver = localforage.driver();
             expect(previousDriver).to.not.be(localforage.WEBSQL);
