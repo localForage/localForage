@@ -369,4 +369,4 @@
     var localForage = new LocalForage();
 
     export default localForage;
-}).call(window);
+}).call(typeof window !== 'undefined' ? window : self);

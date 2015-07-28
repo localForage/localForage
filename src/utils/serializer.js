@@ -263,4 +263,4 @@
     };
 
     export default localforageSerializer;
-}).call(window);
+}).call(typeof window !== 'undefined' ? window : self);
