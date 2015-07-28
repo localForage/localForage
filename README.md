@@ -173,8 +173,7 @@ define(['localforage'], function(localforage) {
 
 ## Web Workers
 
-Web Worker support in Firefox is blocked by [bug 701634][]. Until it is fixed,
-web workers are not officially supported by localForage.
+As of Firefox version 37, the IndexedDB API is now supported in Web Workers, which allows localForage to be accessed from them.
 
 [bug 701634]: https://bugzilla.mozilla.org/show_bug.cgi?id=701634
 
