@@ -171,13 +171,6 @@ define(['localforage'], function(localforage) {
 });
 ```
 
-## Web Workers
-
-Web Worker support in Firefox is blocked by [bug 701634][]. Until it is fixed,
-web workers are not officially supported by localForage.
-
-[bug 701634]: https://bugzilla.mozilla.org/show_bug.cgi?id=701634
-
 ## Framework Support
 
 If you use a framework listed, there's a localForage storage driver for the
