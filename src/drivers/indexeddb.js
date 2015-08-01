@@ -3,8 +3,7 @@
 (function() {
     'use strict';
 
-    // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
-
+    var globalObject = this;
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
     var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
                     this.mozIndexedDB || this.OIndexedDB ||
@@ -30,10 +29,10 @@
             if (e.name !== 'TypeError') {
                 throw e;
             }
-            var BlobBuilder = window.BlobBuilder ||
-                window.MSBlobBuilder ||
-                window.MozBlobBuilder ||
-                window.WebKitBlobBuilder;
+            var BlobBuilder = globalObject.BlobBuilder ||
+                globalObject.MSBlobBuilder ||
+                globalObject.MozBlobBuilder ||
+                globalObject.WebKitBlobBuilder;
             var builder = new BlobBuilder();
             for (var i = 0; i < parts.length; i += 1) {
                 builder.append(parts[i]);
@@ -208,7 +207,7 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
+            globalObject.console.warn(key +
                                 ' used as a key, but it is not a string.');
             key = String(key);
         }
@@ -290,7 +289,7 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
+            globalObject.console.warn(key +
                                 ' used as a key, but it is not a string.');
             key = String(key);
         }
@@ -347,7 +346,7 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
+            globalObject.console.warn(key +
                                 ' used as a key, but it is not a string.');
             key = String(key);
         }
@@ -545,4 +544,4 @@
     };
 
     export default asyncStorage;
-}).call(window);
+}).call(typeof window !== 'undefined' ? window : self);

@@ -274,7 +274,7 @@
         };
 
         module.exports = localforageSerializer;
-    }).call(window);
+    }).call(typeof window !== 'undefined' ? window : self);
 });
 (function (global, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -296,8 +296,7 @@
     (function () {
         'use strict';
 
-        // Originally found in https://github.com/mozilla-b2g/gaia/blob/e8f624e4cc9ea945727278039b3bc9bcb9f8667a/shared/js/async_storage.js
-
+        var globalObject = this;
         // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
         var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB || this.mozIndexedDB || this.OIndexedDB || this.msIndexedDB;
 
@@ -321,7 +320,7 @@
                 if (e.name !== 'TypeError') {
                     throw e;
                 }
-                var BlobBuilder = window.BlobBuilder || window.MSBlobBuilder || window.MozBlobBuilder || window.WebKitBlobBuilder;
+                var BlobBuilder = globalObject.BlobBuilder || globalObject.MSBlobBuilder || globalObject.MozBlobBuilder || globalObject.WebKitBlobBuilder;
                 var builder = new BlobBuilder();
                 for (var i = 0; i < parts.length; i += 1) {
                     builder.append(parts[i]);
@@ -494,7 +493,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -573,7 +572,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -629,7 +628,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -823,7 +822,7 @@
         };
 
         module.exports = asyncStorage;
-    }).call(window);
+    }).call(typeof window !== 'undefined' ? window : self);
 });
 (function (global, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -847,6 +846,7 @@
     (function () {
         'use strict';
 
+        var globalObject = this;
         var serializer = null;
         var localStorage = null;
 
@@ -926,7 +926,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1043,7 +1043,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1065,7 +1065,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1130,7 +1130,7 @@
         };
 
         module.exports = localStorageWrapper;
-    }).call(window);
+    }).call(typeof window !== 'undefined' ? window : self);
 });
 (function (global, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -1159,6 +1159,7 @@
     (function () {
         'use strict';
 
+        var globalObject = this;
         var serializer = null;
         var openDatabase = this.openDatabase;
 
@@ -1224,7 +1225,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1303,7 +1304,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1358,7 +1359,7 @@
 
             // Cast the key to a string, as that's all we can set as a key.
             if (typeof key !== 'string') {
-                window.console.warn(key + ' used as a key, but it is not a string.');
+                globalObject.console.warn(key + ' used as a key, but it is not a string.');
                 key = String(key);
             }
 
@@ -1507,7 +1508,7 @@
         };
 
         module.exports = webSQLStorage;
-    }).call(window);
+    }).call(typeof window !== 'undefined' ? window : self);
 });
 (function (global, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -1904,5 +1905,5 @@
         var localForage = new LocalForage();
 
         module.exports = localForage;
-    }).call(window);
+    }).call(typeof window !== 'undefined' ? window : self);
 });
