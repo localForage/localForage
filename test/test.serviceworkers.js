@@ -23,18 +23,18 @@ DRIVERS.forEach(function(driverName) {
         }
 
         if (!Modernizr.serviceworker) {
-            before.skip('doesn\'t have service worker support');
-            beforeEach.skip('doesn\'t have service worker support');
-            it.skip('doesn\'t have service worker support');
-            after.skip('doesn\'t have service worker support');
+            before.skip("doesn't have service worker support");
+            beforeEach.skip("doesn't have service worker support");
+            it.skip("doesn't have service worker support");
+            after.skip("doesn't have service worker support");
             return;
         }
 
         if (!window.MessageChannel) {
-            before.skip('doesn\'t have MessageChannel support');
-            beforeEach.skip('doesn\'t have MessageChannel support');
-            it.skip('doesn\'t have MessageChannel support');
-            after.skip('doesn\'t have MessageChannel support');
+            before.skip("doesn't have MessageChannel support");
+            beforeEach.skip("doesn't have MessageChannel support");
+            it.skip("doesn't have MessageChannel support");
+            after.skip("doesn't have MessageChannel support");
             return;
         }
 
