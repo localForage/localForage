@@ -1,6 +1,6 @@
 /*!
     localForage -- Offline Storage, Improved
-    Version 1.2.5
+    Version 1.2.6
     https://mozilla.github.io/localForage
     (c) 2013-2015 Mozilla, Apache License 2.0
 */
@@ -140,7 +140,7 @@
                 try {
                     callback(JSON.stringify(value));
                 } catch (e) {
-                    console.error('Couldn\'t convert value into a JSON string: ', value);
+                    console.error("Couldn't convert value into a JSON string: ", value);
 
                     callback(null, e);
                 }
@@ -837,12 +837,14 @@
         global.localStorageWrapper = mod.exports;
     }
 })(this, function (exports, module) {
+    'use strict';
+
+    var _systemImportTransformerGlobalIdentifier = typeof window !== 'undefined' ? window : self;
+
     // If IndexedDB isn't available, we'll fall back to localStorage.
     // Note that this will have considerable performance and storage
     // side-effects (all data will be serialized on save and only data that
     // can be converted to a string via `JSON.stringify()` will be saved).
-    'use strict';
-
     (function () {
         'use strict';
 
@@ -883,14 +885,12 @@
             self._dbInfo = dbInfo;
 
             return new Promise(function (resolve, reject) {
-                var global = window;
-
-                if (typeof global.define === 'function' && global.define.amd) {
-                    global.require(['localforageSerializer'], resolve, reject);
-                } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (global.require && global.require.loader === 'component'))) {
+                if (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd) {
+                    _systemImportTransformerGlobalIdentifier.require(['localforageSerializer'], resolve, reject);
+                } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (_systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component'))) {
                     resolve(require('./../utils/serializer'));
                 } else {
-                    resolve(global['localforageSerializer']);
+                    resolve(_systemImportTransformerGlobalIdentifier['localforageSerializer']);
                 }
             }).then(function (lib) {
                 serializer = lib;
@@ -1145,6 +1145,10 @@
         global.webSQLStorage = mod.exports;
     }
 })(this, function (exports, module) {
+    'use strict';
+
+    var _systemImportTransformerGlobalIdentifier = typeof window !== 'undefined' ? window : self;
+
     /*
      * Includes code from:
      *
@@ -1154,8 +1158,6 @@
      * Copyright (c) 2012 Niklas von Hertzen
      * Licensed under the MIT license.
      */
-    'use strict';
-
     (function () {
         'use strict';
 
@@ -1205,14 +1207,12 @@
             });
 
             return new Promise(function (resolve, reject) {
-                var global = window;
-
-                if (typeof global.define === 'function' && global.define.amd) {
-                    global.require(['localforageSerializer'], resolve, reject);
-                } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (global.require && global.require.loader === 'component'))) {
+                if (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd) {
+                    _systemImportTransformerGlobalIdentifier.require(['localforageSerializer'], resolve, reject);
+                } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (_systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component'))) {
                     resolve(require('./../utils/serializer'));
                 } else {
-                    resolve(global['localforageSerializer']);
+                    resolve(_systemImportTransformerGlobalIdentifier['localforageSerializer']);
                 }
             }).then(function (lib) {
                 serializer = lib;
@@ -1525,6 +1525,8 @@
 })(this, function (exports, module) {
     'use strict';
 
+    var _systemImportTransformerGlobalIdentifier = typeof window !== 'undefined' ? window : self;
+
     function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
     (function () {
@@ -1671,6 +1673,9 @@
                 this.setDriver(this._config.driver);
             }
 
+            // The actual localForage object that we expose as a module or via a
+            // global. It's extended by pulling in one of our other libraries.
+
             // Set any config values for localForage; can be called anytime before
             // the first API call (e.g. `getItem`, `setItem`).
             // We loop through options so we don't overwrite existing config
@@ -1684,7 +1689,7 @@
                     // If localforage is ready and fully initialized, we can't set
                     // any new configuration values. Instead, we return an error.
                     if (this._ready) {
-                        return new Error('Can\'t call config() after localforage ' + 'has been used.');
+                        return new Error("Can't call config() after localforage " + 'has been used.');
                     }
 
                     for (var i in options) {
@@ -1808,40 +1813,34 @@
                         switch (driverName) {
                             case self.INDEXEDDB:
                                 driverPromise = new Promise(function (resolve, reject) {
-                                    var global = window;
-
-                                    if (typeof global.define === 'function' && global.define.amd) {
-                                        global.require(['asyncStorage'], resolve, reject);
-                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (global.require && global.require.loader === 'component'))) {
+                                    if (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd) {
+                                        _systemImportTransformerGlobalIdentifier.require(['asyncStorage'], resolve, reject);
+                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (_systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component'))) {
                                         resolve(require('./drivers/indexeddb'));
                                     } else {
-                                        resolve(global['asyncStorage']);
+                                        resolve(_systemImportTransformerGlobalIdentifier['asyncStorage']);
                                     }
                                 });
                                 break;
                             case self.LOCALSTORAGE:
                                 driverPromise = new Promise(function (resolve, reject) {
-                                    var global = window;
-
-                                    if (typeof global.define === 'function' && global.define.amd) {
-                                        global.require(['localStorageWrapper'], resolve, reject);
-                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (global.require && global.require.loader === 'component'))) {
+                                    if (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd) {
+                                        _systemImportTransformerGlobalIdentifier.require(['localStorageWrapper'], resolve, reject);
+                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (_systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component'))) {
                                         resolve(require('./drivers/localstorage'));
                                     } else {
-                                        resolve(global['localStorageWrapper']);
+                                        resolve(_systemImportTransformerGlobalIdentifier['localStorageWrapper']);
                                     }
                                 });
                                 break;
                             case self.WEBSQL:
                                 driverPromise = new Promise(function (resolve, reject) {
-                                    var global = window;
-
-                                    if (typeof global.define === 'function' && global.define.amd) {
-                                        global.require(['webSQLStorage'], resolve, reject);
-                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (global.require && global.require.loader === 'component'))) {
+                                    if (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd) {
+                                        _systemImportTransformerGlobalIdentifier.require(['webSQLStorage'], resolve, reject);
+                                    } else if (typeof module !== 'undefined' && (module.exports && typeof require !== 'undefined') || typeof module !== 'undefined' && (module.component && (_systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component'))) {
                                         resolve(require('./drivers/websql'));
                                     } else {
-                                        resolve(global['webSQLStorage']);
+                                        resolve(_systemImportTransformerGlobalIdentifier['webSQLStorage']);
                                     }
                                 });
                                 break;
@@ -1900,8 +1899,6 @@
             return LocalForage;
         })();
 
-        // The actual localForage object that we expose as a module or via a
-        // global. It's extended by pulling in one of our other libraries.
         var localForage = new LocalForage();
 
         module.exports = localForage;

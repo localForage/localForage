@@ -1,6 +1,6 @@
 {
   "name": "localforage",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "dependencies": {
     "then/promise": "5.0.0"
   },
