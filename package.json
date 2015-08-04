@@ -41,12 +41,16 @@
     "phantomjs": "^1.9.7-12",
     "uglify-js": "^2.3.x"
   },
-  "browser": "src/localforage.js",
+  "browser": {
+    "dist/localforage.js": "./src/localforage.js",
+    "promise": "./src/browser-promise.js"
+  },
   "main": "dist/localforage.js",
   "bugs": {
     "url": "http://github.com/mozilla/localForage/issues"
   },
   "dependencies": {
-    "promise": "^5.0.0"
+    "promise": "^5.0.0",
+    "es6-promise": "~1.0.0"
   }
 }
