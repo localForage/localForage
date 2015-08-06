@@ -48,5 +48,8 @@
   },
   "dependencies": {
     "promise": "^5.0.0"
+  },
+  "browserify": {
+    "transform": ["babelify"]
   }
 }

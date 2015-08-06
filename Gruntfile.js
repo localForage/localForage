@@ -34,12 +34,9 @@ module.exports = exports = function(grunt) {
     grunt.initConfig({
         babel: {
             options: {
-                loose: 'all',
                 modules: 'umd',
                 moduleIds: true,
-                // sourceMap: true,
-                getModuleId: babelModuleIdProvider,
-                plugins: ['system-import-transformer']
+                getModuleId: babelModuleIdProvider
             },
             dist: {
                 files: {
@@ -55,10 +52,8 @@ module.exports = exports = function(grunt) {
             client: {
                 options: {
                     transform: [['babelify', {
-                        loose: 'all',
                         moduleIds: true,
-                        getModuleId: babelModuleIdProvider,
-                        plugins: ['system-import-transformer']
+                        getModuleId: babelModuleIdProvider
                     }]]
                 },
                 src: [
