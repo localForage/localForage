@@ -1,0 +1,4 @@
+{
+  "loose": "all",
+  "plugins": ["system-import-transformer"]
+}

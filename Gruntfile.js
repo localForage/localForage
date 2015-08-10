@@ -34,12 +34,9 @@ module.exports = exports = function(grunt) {
     grunt.initConfig({
         babel: {
             options: {
-                loose: 'all',
                 modules: 'umd',
                 moduleIds: true,
-                // sourceMap: true,
-                getModuleId: babelModuleIdProvider,
-                plugins: ['system-import-transformer']
+                getModuleId: babelModuleIdProvider
             },
             dist: {
                 files: {
@@ -52,20 +49,8 @@ module.exports = exports = function(grunt) {
             }
         },
         browserify: {
-            client: {
-                options: {
-                    transform: [['babelify', {
-                        loose: 'all',
-                        moduleIds: true,
-                        getModuleId: babelModuleIdProvider,
-                        plugins: ['system-import-transformer']
-                    }]]
-                },
-                src: [
-                    'bower_components/es6-promise/promise.js',
-                    'src/**/*.js',
-                    'test/runner.browserify.js'
-                ],
+            package_bundling_test: {
+                src: 'test/runner.browserify.js',
                 dest: 'test/localforage.browserify.js'
             }
         },
@@ -216,7 +201,7 @@ module.exports = exports = function(grunt) {
                     'test/runner.js',
                     'test/test.*.*'
                 ],
-                tasks: ['jshint', 'jscs', 'shell:component', 'browserify', 'mocha:unit']
+                tasks: ['jshint', 'jscs', 'shell:component', 'browserify:package_bundling_test', 'mocha:unit']
             }
         }
     });
@@ -235,7 +220,7 @@ module.exports = exports = function(grunt) {
         'jshint',
         'jscs',
         'shell:component',
-        'browserify',
+        'browserify:package_bundling_test',
         'connect:test',
         'mocha'
     ];
