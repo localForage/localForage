@@ -43,6 +43,7 @@
   },
   "browser": "src/localforage.js",
   "main": "dist/localforage.js",
+  "webpack": "dist/localforage.js",
   "bugs": {
     "url": "http://github.com/mozilla/localForage/issues"
   },
