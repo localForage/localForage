@@ -134,6 +134,7 @@ module.exports = exports = function(grunt) {
                         'http://localhost:9999/test/test.require.html',
                         'http://localhost:9999/test/test.require.unbundled.html',
                         'http://localhost:9999/test/test.browserify.html',
+                        'http://localhost:9999/test/test.webpack.html',
                         'http://localhost:9999/test/test.callwhenready.html',
                         'http://localhost:9999/test/test.customdriver.html'
                     ]
@@ -201,7 +202,23 @@ module.exports = exports = function(grunt) {
                     'test/runner.js',
                     'test/test.*.*'
                 ],
-                tasks: ['jshint', 'jscs', 'shell:component', 'browserify:package_bundling_test', 'mocha:unit']
+                tasks: [
+                    'jshint',
+                    'jscs',
+                    'shell:component',
+                    'browserify:package_bundling_test',
+                    'webpack:package_bundling_test',
+                    'mocha:unit'
+                ]
+            }
+        },
+        webpack: {
+            package_bundling_test: {
+                entry: './test/runner.webpack.js',
+                output: {
+                    path: 'test/',
+                    filename: 'localforage.webpack.js'
+                }
             }
         }
     });
@@ -221,6 +238,7 @@ module.exports = exports = function(grunt) {
         'jscs',
         'shell:component',
         'browserify:package_bundling_test',
+        'webpack:package_bundling_test',
         'connect:test',
         'mocha'
     ];
