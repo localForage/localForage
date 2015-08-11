@@ -36,13 +36,18 @@
     "grunt-mocha": "^0.4.10",
     "grunt-saucelabs": "^5.1.2",
     "grunt-shell": "^0.6.4",
+    "grunt-webpack": "^1.0.11",
     "load-grunt-tasks": "^0.4.0",
     "mocha": "^1.18.2",
     "phantomjs": "^1.9.7-12",
-    "uglify-js": "^2.3.x"
+    "script-loader": "^0.6.1",
+    "uglify-js": "^2.3.x",
+    "webpack": "^1.11.0",
+    "webpack-dev-server": "^1.10.1"
   },
   "browser": "src/localforage.js",
   "main": "dist/localforage.js",
+  "webpack": "dist/localforage.js",
   "bugs": {
     "url": "http://github.com/mozilla/localForage/issues"
   },
