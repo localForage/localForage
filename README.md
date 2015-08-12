@@ -171,6 +171,17 @@ define(['localforage'], function(localforage) {
 });
 ```
 
+## Browserify and Webpack
+
+localForage should work with both Browserify and Webpack as of the current
+master branch. Older releases have spotty support but this will soon be fixed.
+
+**For browserify:** ensure that you have the
+[required plugins and transformers](https://github.com/mozilla/localForage/blob/master/package.json#L57)
+installed.
+
+**For Webpack:** currently, you need to require localForage as `require('script!localforage')`.
+
 ## Framework Support
 
 If you use a framework listed, there's a localForage storage driver for the
