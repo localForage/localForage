@@ -260,6 +260,32 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
+        it('should iterate() through only its own keys/values', function(done) {
+            localStorage.setItem('local', 'forage');
+
+            localforage.setItem('office', 'Initech').then(function() {
+                return localforage.setItem('name', 'Bob');
+            }).then(function() {
+                // Loop through all key/value pairs; local: 'forage' set
+                // manually should not be returned.
+                var numberOfItems = 0;
+                localforage.iterate(function(value, key) {
+                    // Returning defined value will break the cycle.
+                    expect(key).to.not.be('local');
+                    expect(value).to.not.be('forage');
+                    numberOfItems++;
+                }, function(err) {
+                    if (!err) {
+                        // Only two items were set, so that's all we should
+                        // have!
+                        expect(numberOfItems).to.be(2);
+
+                        done();
+                    }
+                });
+            });
+        });
+
         // Test for https://github.com/mozilla/localForage/issues/175
         it('nested getItem inside clear works [callback]', function(done) {
             localforage.setItem('hello', 'Hello World !', function() {
