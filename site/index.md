@@ -315,8 +315,10 @@ localforage.iterate(function(value, key, iterationNumber) {
     // will be executed for every item in the
     // database.
     console.log([key, value]);
-}, function() {
-    console.log('Iteration has completed');
+}, function(err) {
+    if (!err) {
+        console.log('Iteration has completed');
+    }
 });
 
 // The same code, but using ES6 Promises.
@@ -361,8 +363,9 @@ localforage.iterate (value, key, iterationNumber) ->
   # database.
   console.log [key, value]
   return
-, ->
-  console.log "Iteration has completed"
+, (err) ->
+  unless err
+    console.log "Iteration has completed"
 
 # The same code, but using ES6 Promises.
 localforage.iterate (value, key, iterationNumber) ->
@@ -381,9 +384,10 @@ localforage.iterate (value, key, iterationNumber) ->
     return
   else
     return [key, value]
-), (result) ->
-  console.log "Iteration has completed, last iterated pair:"
-  console.log result
+), (err, result) ->
+  unless err
+    console.log "Iteration has completed, last iterated pair:"
+    console.log result
 
 # The same code for early exit, but using ES6 Promises.
 localforage.iterate((value, key, iterationNumber) ->
