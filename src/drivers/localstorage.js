@@ -110,6 +110,9 @@
 
             for (var i = 0; i < length; i++) {
                 var key = localStorage.key(i);
+                if (key.indexOf(keyPrefix) !== 0) { 
+                    continue;
+                }
                 var value = localStorage.getItem(key);
 
                 // If a result was found, parse it from the serialized
