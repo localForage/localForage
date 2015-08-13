@@ -57,9 +57,6 @@
 
   <body class="index">
     <div class="tocify-wrapper">
-      <a href="https://mozilla.org/" id="logo">
-        <img alt="Mozilla" src="images/logo.png" />
-      </a>
       <div id="toc">
       </div>
       
@@ -75,6 +72,9 @@
       <div class="build-status">
         <a href="http://travis-ci.org/mozilla/localForage"><img src="https://secure.travis-ci.org/mozilla/localForage.png?branch=master" alt="Build Status"></a>
       </div>
+      <a href="https://mozilla.org/" id="logo">
+        <img alt="Mozilla" src="images/logo.png" />
+      </a>
     </div>
     <div class="page-wrapper">
       <div class="content">
@@ -190,7 +190,7 @@ If the key does not exist, <code class="prettyprint">getItem()</code> will retur
 
 <span class="nx">request</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'readystatechange'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// readyState DONE</span>
-        <span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'photo'</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">response</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">img</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">localforage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'photo'</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">response</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">image</span><span class="p">)</span> <span class="p">{</span>
             <span class="c1">// This will be a valid blob URI for an &lt;img&gt; tag.</span>
             <span class="kd">var</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="nx">image</span><span class="p">]);</span>
             <span class="kd">var</span> <span class="nx">imageURI</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">blob</span><span class="p">);</span>
@@ -214,7 +214,7 @@ If the key does not exist, <code class="prettyprint">getItem()</code> will retur
 
 <span class="nx">request</span><span class="p">.</span><span class="na">addEventListener</span> <span class="s">"readystatechange"</span><span class="p">,</span> <span class="o">-&gt;</span>
   <span class="k">if</span> <span class="nx">request</span><span class="p">.</span><span class="na">readyState</span> <span class="o">==</span> <span class="mi">4</span> <span class="c1"># readyState DONE
-</span>    <span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"photo"</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="na">response</span><span class="p">,</span> <span class="p">(</span><span class="nx">img</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span>    <span class="nx">localforage</span><span class="p">.</span><span class="na">setItem</span> <span class="s">"photo"</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="na">response</span><span class="p">,</span> <span class="nx">image</span><span class="p">)</span> <span class="o">-&gt;</span>
       <span class="c1"># This will be a valid blob URI for an &lt;img&gt; tag.
 </span>      <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span> <span class="p">[</span><span class="nx">image</span><span class="p">]</span>
       <span class="nx">imageURI</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="na">URL</span><span class="p">.</span><span class="na">createObjectURL</span> <span class="nx">blob</span>
@@ -344,8 +344,10 @@ objects:</p>
     <span class="c1">// will be executed for every item in the</span>
     <span class="c1">// database.</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]);</span>
-<span class="p">},</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Iteration has completed'</span><span class="p">);</span>
+<span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Iteration has completed'</span><span class="p">);</span>
+    <span class="p">}</span>
 <span class="p">});</span>
 
 <span class="c1">// The same code, but using ES6 Promises.</span>
@@ -388,8 +390,9 @@ objects:</p>
 </span>  <span class="c1"># database.
 </span>  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
   <span class="k">return</span>
-<span class="p">,</span> <span class="o">-&gt;</span>
-  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Iteration has completed"</span>
+<span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="nx">unless</span> <span class="nx">err</span>
+    <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Iteration has completed"</span>
 
 <span class="c1"># The same code, but using ES6 Promises.
 </span><span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">iterationNumber</span><span class="p">)</span> <span class="o">-&gt;</span>
@@ -408,9 +411,10 @@ objects:</p>
     <span class="k">return</span>
   <span class="k">else</span>
     <span class="k">return</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
-<span class="p">),</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="o">-&gt;</span>
-  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Iteration has completed, last iterated pair:"</span>
-  <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">result</span>
+<span class="p">),</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="nx">unless</span> <span class="nx">err</span>
+    <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="s">"Iteration has completed, last iterated pair:"</span>
+    <span class="nx">console</span><span class="p">.</span><span class="na">log</span> <span class="nx">result</span>
 
 <span class="c1"># The same code for early exit, but using ES6 Promises.
 </span><span class="nx">localforage</span><span class="p">.</span><span class="na">iterate</span><span class="p">((</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">iterationNumber</span><span class="p">)</span> <span class="o">-&gt;</span>
