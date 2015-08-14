@@ -366,6 +366,7 @@ DRIVERS.forEach(function(driverName) {
                 });
             });
         });
+
         it('saves an item over an existing key [promise]', function(done) {
             localforage.setItem('4e', 'Mozilla').then(function(setValue) {
                 expect(setValue).to.be('Mozilla');
@@ -405,6 +406,7 @@ DRIVERS.forEach(function(driverName) {
                 done();
             });
         });
+
         it('returns null for a non-existant key [promise]', function(done) {
             localforage.getItem('undef').then(function(value) {
                 expect(value).to.be(null);
@@ -430,6 +432,7 @@ DRIVERS.forEach(function(driverName) {
                 done();
             });
         });
+
         it('returns null from an undefined key [promise]', function(done) {
             localforage.key(0).then(function(key) {
                 expect(key).to.be(null);
@@ -447,6 +450,7 @@ DRIVERS.forEach(function(driverName) {
                 });
             });
         });
+
         it('returns key name [promise]', function(done) {
             localforage.setItem('office', 'Initech').then(function() {
                 return localforage.key(0);
@@ -476,6 +480,7 @@ DRIVERS.forEach(function(driverName) {
                 });
             });
         });
+
         it('removes an item [promise]', function(done) {
             localforage.setItem('office', 'Initech').then(function() {
                 return localforage.setItem('otherOffice', 'Initrode');
@@ -515,6 +520,7 @@ DRIVERS.forEach(function(driverName) {
                 });
             });
         });
+
         it('removes all items [promise]', function(done) {
             localforage.setItem('office', 'Initech').then(function() {
                 return localforage.setItem('otherOffice', 'Initrode');
@@ -566,6 +572,26 @@ DRIVERS.forEach(function(driverName) {
                 });
             });
 
+            it('iterates only its own keys with iterate()', function(done) {
+                localStorage.setItem('local', 'forage');
+                localStorage.setItem('another', 'value');
+
+                localforage.setItem('office', 'Initech').then(function() {
+                    return localforage.iterate(function(value, key, iterationNumber) {
+                        expect(key).to.not.be('local');
+                        expect(key).to.not.be('another');
+                        expect(key).to.be('office');
+                        expect(value).to.be('Initech');
+                        expect(iterationNumber).to.be(1);
+                    }).then(function() {
+
+                        localStorage.clear();
+
+                        done();
+                    });
+                });
+            });
+
             it('counts only its own items with length()', function(done) {
                 localStorage.setItem('local', 'forage');
                 localStorage.setItem('another', 'value');
@@ -594,6 +620,7 @@ DRIVERS.forEach(function(driverName) {
                 });
             });
         });
+
         it('has a length after saving an item [promise]', function(done) {
             localforage.length().then(function(length) {
                 expect(length).to.be(0);
