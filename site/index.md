@@ -338,9 +338,11 @@ localforage.iterate(function(value, key, iterationNumber) {
     } else {
         return [key, value];
     }
-}, function(result) {
-    console.log('Iteration has completed, last iterated pair:');
-    console.log(result);
+}, function(err, result) {
+    if (!err) {
+        console.log('Iteration has completed, last iterated pair:');
+        console.log(result);
+    }
 });
 
 // The same code for early exit, but using ES6 Promises.
