@@ -261,6 +261,9 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('should iterate() through only its own keys/values', function(done) {
+
+            var iterationNumberConcat = '';
+
             localStorage.setItem('local', 'forage');
 
             localforage.setItem('office', 'Initech').then(function() {
@@ -269,16 +272,21 @@ DRIVERS.forEach(function(driverName) {
                 // Loop through all key/value pairs; local: 'forage' set
                 // manually should not be returned.
                 var numberOfItems = 0;
-                localforage.iterate(function(value, key) {
+                localforage.iterate(function(value, key, iterationNumber) {
                     // Returning defined value will break the cycle.
                     expect(key).to.not.be('local');
                     expect(value).to.not.be('forage');
                     numberOfItems++;
+                    iterationNumberConcat += iterationNumber;
                 }, function(err) {
                     if (!err) {
                         // Only two items were set, so that's all we should
                         // have!
                         expect(numberOfItems).to.be(2);
+
+                        // Only one item was set on localForage storage,
+                        // so we should get '1' and not '12'
+                        expect(iterationNumberConcat).to.be('1');
 
                         done();
                     }

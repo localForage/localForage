@@ -107,6 +107,7 @@
             var keyPrefix = self._dbInfo.keyPrefix;
             var keyPrefixLength = keyPrefix.length;
             var length = localStorage.length;
+            var iterationNumber = 1;
 
             for (var i = 0; i < length; i++) {
                 var key = localStorage.key(i);
@@ -123,7 +124,7 @@
                     value = serializer.deserialize(value);
                 }
 
-                value = iterator(value, key.substring(keyPrefixLength), i + 1);
+                value = iterator(value, key.substring(keyPrefixLength), iterationNumber++);
 
                 if (value !== void(0)) {
                     return value;
