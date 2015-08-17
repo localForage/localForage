@@ -56,11 +56,12 @@ It's otherwise exactly the same as the
 
 ```javascript
 // In localStorage, we would do:
-localStorage.setItem('key', JSON.stringify('value'));
-alert('value');
+var obj = { value: "hello world" };
+localStorage.setItem('key', JSON.stringify(obj));
+alert(obj.value);
 
 // With localForage, we use callbacks:
-localforage.setItem('key', 'value', function(err, value) { alert(value); });
+localforage.setItem('key', obj, function(err, result) { alert(result.value); });
 ```
 
 Similarly, please don't expect a return value from calls to
