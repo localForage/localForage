@@ -263,6 +263,29 @@
             return this._driver || null;
         }
 
+        getDriver(driverName, callback, errorCallback) {
+            var self = this;
+            var getDriverPromise = (function() {
+                if (isLibraryDriver(driverName)) {
+                    switch (driverName) {
+                        case self.INDEXEDDB:
+                            return System.import('./drivers/indexeddb');
+                        case self.LOCALSTORAGE:
+                            return System.import('./drivers/localstorage');
+                        case self.WEBSQL:
+                            return System.import('./drivers/websql');
+                    }
+                } else if (CustomDrivers[driverName]) {
+                    return Promise.resolve(CustomDrivers[driverName]);
+                }
+
+                return Promise.reject(new Error('Driver not found.'));
+            })();
+
+            getDriverPromise.then(callback, errorCallback);
+            return getDriverPromise;
+        }
+
         ready(callback) {
             var self = this;
 
@@ -300,30 +323,13 @@
                 self._dbInfo = null;
                 self._ready = null;
 
-                if (isLibraryDriver(driverName)) {
-                    var driverPromise;
-                    switch (driverName) {
-                        case self.INDEXEDDB:
-                            driverPromise = System.import('./drivers/indexeddb');
-                            break;
-                        case self.LOCALSTORAGE:
-                            driverPromise = System.import('./drivers/localstorage');
-                            break;
-                        case self.WEBSQL:
-                            driverPromise = System.import('./drivers/websql');
-                            break;
-                    }
-                    driverPromise.then(function(driver) {
-                        self._extend(driver);
-                        resolve();
-                    });
-                } else if (CustomDrivers[driverName]) {
-                    self._extend(CustomDrivers[driverName]);
+                self.getDriver(driverName).then(function(driver) {
+                    self._extend(driver);
                     resolve();
-                } else {
+                }).catch(function(error) {
                     self._driverSet = Promise.reject(error);
                     reject(error);
-                }
+                });
             });
 
             function setDriverToConfig() {
