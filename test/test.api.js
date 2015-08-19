@@ -175,7 +175,7 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        it('should iterate [promise]', function() {
+        it('should iterate [promise]', function(done) {
             var accumulator = {};
             var iterationNumbers = [];
 
@@ -199,6 +199,7 @@ DRIVERS.forEach(function(driverName) {
                 expect(accumulator.officeX).to.be('InitechX');
                 expect(accumulator.officeY).to.be('InitechY');
                 expect(iterationNumbers).to.eql([1, 2]);
+                done();
             });
         });
 
