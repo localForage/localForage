@@ -89,6 +89,44 @@ describe('localForage', function() {
             done();
         });
     });
+
+    it('skips drivers that fail to initilize', function(done) {
+        var failingStorageDriver = (function() {
+            function driverDummyMethod() {
+                return Promise.reject(new Error('Driver Method Failed.'));
+            }
+
+            return {
+                _driver: 'failingStorageDriver',
+                _initStorage: function _initStorage() {
+                    return Promise.reject(new Error('Driver Failed to Initialize.'));
+                },
+                iterate: driverDummyMethod,
+                getItem: driverDummyMethod,
+                setItem: driverDummyMethod,
+                removeItem: driverDummyMethod,
+                clear: driverDummyMethod,
+                length: driverDummyMethod,
+                key: driverDummyMethod,
+                keys: driverDummyMethod
+            };
+        })();
+
+        var driverPreferedOrder = [
+            failingStorageDriver._driver,
+            localforage.INDEXEDDB,
+            localforage.WEBSQL,
+            localforage.LOCALSTORAGE
+        ];
+
+        localforage.defineDriver(failingStorageDriver).then(function() {
+            return localforage.setDriver(driverPreferedOrder);
+        }).then(function() {
+            expect(localforage.driver()).to.be(appropriateDriver);
+            done();
+        });
+
+    });
 });
 
 DRIVERS.forEach(function(driverName) {
