@@ -5,6 +5,16 @@ var DRIVERS = [
     localforage.WEBSQL
 ];
 
+var driverApiMethods = [
+    'getItem',
+    'setItem',
+    'clear',
+    'length',
+    'removeItem',
+    'key',
+    'keys'
+];
+
 var componentBuild = window.require && window.require.modules &&
                      window.require.modules.localforage &&
                      window.require.modules.localforage.component;
@@ -42,6 +52,24 @@ describe('localForage', function() {
             expect(error.message).to
                                  .be('No available storage method found.');
             expect(localforage.driver()).to.be(null);
+            done();
+        });
+    });
+
+    it('errors when a requested driver is not found [callback]', function(done) {
+        localforage.getDriver('UnknownDriver', null, function(error) {
+            expect(error).to.be.an(Error);
+            expect(error.message).to
+                                 .be('Driver not found.');
+            done();
+        });
+    });
+
+    it('errors when a requested driver is not found [promise]', function(done) {
+        localforage.getDriver('UnknownDriver').then(null, function(error) {
+            expect(error).to.be.an(Error);
+            expect(error.message).to
+                                 .be('Driver not found.');
             done();
         });
     });
@@ -113,6 +141,7 @@ DRIVERS.forEach(function(driverName) {
             expect(localforage.length).to.be.a('function');
             expect(localforage.removeItem).to.be.a('function');
             expect(localforage.key).to.be.a('function');
+            expect(localforage.getDriver).to.be.a('function');
             expect(localforage.setDriver).to.be.a('function');
             expect(localforage.ready).to.be.a('function');
             expect(localforage.createInstance).to.be.a('function');
@@ -655,6 +684,28 @@ DRIVERS.forEach(function(driverName) {
                 done();
             });
         });
+
+        it('is retrieved by getDriver [callback]', function(done) {
+            localforage.getDriver(driverName, function(driver) {
+                expect(typeof driver).to.be('object');
+                driverApiMethods.concat('_initStorage').forEach(function(methodName) {
+                    expect(typeof driver[methodName]).to.be('function');
+                });
+                expect(driver._driver).to.be(driverName);
+                done();
+            });
+        });
+
+        it('is retrieved by getDriver [promise]', function(done) {
+            localforage.getDriver(driverName).then(function(driver) {
+                expect(typeof driver).to.be('object');
+                driverApiMethods.concat('_initStorage').forEach(function(methodName) {
+                    expect(typeof driver[methodName]).to.be('function');
+                });
+                expect(driver._driver).to.be(driverName);
+                done();
+            });
+        });
     });
 
     describe(driverName + ' driver multiple instances', function() {
@@ -858,16 +909,6 @@ DRIVERS.forEach(function(driverName) {
             _oldReady = null;
             done();
         });
-
-        var driverApiMethods = [
-            'getItem',
-            'setItem',
-            'clear',
-            'length',
-            'removeItem',
-            'key',
-            'keys'
-        ];
 
         driverApiMethods.forEach(function(methodName) {
             it('rejects ' + methodName + '() promise', function(done) {
