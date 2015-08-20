@@ -23,17 +23,13 @@ describe('localForage API', function() {
 });
 
 describe('localForage', function() {
-    var appropriateDriver;
-
-    before(function() {
-        appropriateDriver =
-            (localforage.supports(localforage.INDEXEDDB) &&
-             localforage.INDEXEDDB) ||
-            (localforage.supports(localforage.WEBSQL) &&
-             localforage.WEBSQL) ||
-            (localforage.supports(localforage.LOCALSTORAGE) &&
-             localforage.LOCALSTORAGE);
-    });
+    var appropriateDriver =
+        (localforage.supports(localforage.INDEXEDDB) &&
+         localforage.INDEXEDDB) ||
+        (localforage.supports(localforage.WEBSQL) &&
+         localforage.WEBSQL) ||
+        (localforage.supports(localforage.LOCALSTORAGE) &&
+         localforage.LOCALSTORAGE);
 
     it('automatically selects the most appropriate driver (' +
        appropriateDriver + ')', function(done) {
