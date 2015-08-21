@@ -61,16 +61,13 @@ module.exports = exports = function(grunt) {
             localforage: {
                 files: {
                     'dist/localforage.js': [
-                        // https://github.com/jakearchibald/es6-promise
                         'bower_components/es6-promise/promise.js',
-                        'build/es5src/utils/**/*.js',
-                        'build/es5src/drivers/**/*.js',
-                        'build/es5src/localforage.js'
+                        'dist/localforage.nopromises.js'
                     ],
                     'dist/localforage.nopromises.js': [
-                        'build/es5src/utils/**/*.js',
-                        'build/es5src/drivers/**/*.js',
-                        'build/es5src/localforage.js'
+                        // just to add the BANNER
+                        // without adding an extra grunt module
+                        'dist/localforage.nopromises.js'
                     ]
                 },
                 options: {
@@ -219,6 +216,22 @@ module.exports = exports = function(grunt) {
                     path: 'test/',
                     filename: 'localforage.webpack.js'
                 }
+            },
+            localforage_nopromises: {
+                entry: './src/localforage.js',
+                output: {
+                    path: 'dist/',
+                    filename: 'localforage.nopromises.js',
+                    library: ['localforage'],
+                    libraryTarget: 'umd'
+                },
+                module: {
+                    loaders: [{
+                        test: /\.js?$/,
+                        exclude: /(node_modules|bower_components)/,
+                        loader: 'babel'
+                    }]
+                }
             }
         }
     });
@@ -226,7 +239,7 @@ module.exports = exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
 
     grunt.registerTask('default', ['build', 'connect', 'watch']);
-    grunt.registerTask('build', ['babel', 'concat', 'es3_safe_recast', 'uglify']);
+    grunt.registerTask('build', ['webpack:localforage_nopromises', 'concat', 'es3_safe_recast', 'uglify']);
     grunt.registerTask('publish', ['build', 'shell:publish-site']);
     grunt.registerTask('serve', ['build', 'connect:test', 'watch']);
     grunt.registerTask('site', ['shell:serve-site']);
@@ -234,6 +247,7 @@ module.exports = exports = function(grunt) {
     // These are the test tasks we run regardless of Sauce Labs credentials.
     var testTasks = [
         'build',
+        'babel',
         'jshint',
         'jscs',
         'shell:component',
