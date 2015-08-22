@@ -122,6 +122,8 @@ describe('localForage', function() {
         localforage.defineDriver(failingStorageDriver).then(function() {
             return localforage.setDriver(driverPreferedOrder);
         }).then(function() {
+            return localforage.ready();
+        }).then(function() {
             expect(localforage.driver()).to.be(appropriateDriver);
             done();
         });
