@@ -280,12 +280,9 @@ DRIVERS.forEach(function(driverName) {
                     iterationNumberConcat += iterationNumber;
                 }, function(err) {
                     if (!err) {
-                        // Only two items were set, so that's all we should
-                        // have!
-                        expect(numberOfItems).to.be(2);
-
-                        // Only one item was set on localForage storage,
-                        // so we should get '1' and not '12'
+                        // While there are 2 items in localStorage,
+                        // only one item was set on localForage storage.
+                        expect(numberOfItems).to.be(1);
                         expect(iterationNumberConcat).to.be('1');
 
                         done();
