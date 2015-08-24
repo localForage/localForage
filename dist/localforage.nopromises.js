@@ -1,6 +1,6 @@
 /*!
     localForage -- Offline Storage, Improved
-    Version 1.2.7
+    Version 1.2.8
     https://mozilla.github.io/localForage
     (c) 2013-2015 Mozilla, Apache License 2.0
 */
@@ -985,6 +985,9 @@
 
             for (var i = 0; i < length; i++) {
                 var key = localStorage.key(i);
+                if (key.indexOf(keyPrefix) !== 0) {
+                    continue;
+                }
                 var value = localStorage.getItem(key);
 
                 // If a result was found, parse it from the serialized
