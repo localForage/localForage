@@ -172,7 +172,7 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        it('should iterate [promise]', function() {
+        it('should iterate [promise]', function(done) {
             var accumulator = {};
             var iterationNumbers = [];
 
@@ -196,6 +196,7 @@ DRIVERS.forEach(function(driverName) {
                 expect(accumulator.officeX).to.be('InitechX');
                 expect(accumulator.officeY).to.be('InitechY');
                 expect(iterationNumbers).to.eql([1, 2]);
+                done();
             });
         });
 
@@ -254,6 +255,37 @@ DRIVERS.forEach(function(driverName) {
             }).then(function(result) {
                 expect(result).to.be(breakCondition);
                 done();
+            });
+        });
+
+        it('should iterate() through only its own keys/values', function(done) {
+
+            localStorage.setItem('local', 'forage');
+            localforage.setItem('office', 'Initech').then(function() {
+                return localforage.setItem('name', 'Bob');
+            }).then(function() {
+                // Loop through all key/value pairs; {local: 'forage'} set
+                // manually should not be returned.
+                var numberOfItems = 0;
+                var iterationNumberConcat = '';
+                localforage.iterate(function(value, key, iterationNumber) {
+                    expect(key).to.not.be('local');
+                    expect(value).to.not.be('forage');
+                    numberOfItems++;
+                    iterationNumberConcat += iterationNumber;
+                }, function(err) {
+                    if (!err) {
+                        // While there are 3 items in localStorage,
+                        // only 2 items were set using localForage.
+                        expect(numberOfItems).to.be(2);
+
+                        // Only 2 items were set using localForage,
+                        // so we should get '12' and not '123'
+                        expect(iterationNumberConcat).to.be('12');
+
+                        done();
+                    }
+                });
             });
         });
 
