@@ -259,35 +259,37 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('should iterate() through only its own keys/values', function(done) {
+           localStorage.setItem('local', 'forage');
+           localforage.setItem('office', 'Initech').then(function() {
+               return localforage.setItem('name', 'Bob');
+           }).then(function() {
+               // Loop through all key/value pairs; {local: 'forage'} set
+               // manually should not be returned.
+               var numberOfItems = 0;
+               var iterationNumberConcat = '';
 
-            localStorage.setItem('local', 'forage');
-            localforage.setItem('office', 'Initech').then(function() {
-                return localforage.setItem('name', 'Bob');
-            }).then(function() {
-                // Loop through all key/value pairs; {local: 'forage'} set
-                // manually should not be returned.
-                var numberOfItems = 0;
-                var iterationNumberConcat = '';
-                localforage.iterate(function(value, key, iterationNumber) {
-                    expect(key).to.not.be('local');
-                    expect(value).to.not.be('forage');
-                    numberOfItems++;
-                    iterationNumberConcat += iterationNumber;
-                }, function(err) {
-                    if (!err) {
-                        // While there are 3 items in localStorage,
-                        // only 2 items were set using localForage.
-                        expect(numberOfItems).to.be(2);
+               localStorage.setItem('locals', 'forages');
 
-                        // Only 2 items were set using localForage,
-                        // so we should get '12' and not '123'
-                        expect(iterationNumberConcat).to.be('12');
+               localforage.iterate(function(value, key, iterationNumber) {
+                   expect(key).to.not.be('local');
+                   expect(value).to.not.be('forage');
+                   numberOfItems++;
+                   iterationNumberConcat += iterationNumber;
+               }, function(err) {
+                   if (!err) {
+                       // While there are 4 items in localStorage,
+                       // only 2 items were set using localForage.
+                       expect(numberOfItems).to.be(2);
 
-                        done();
-                    }
-                });
-            });
-        });
+                       // Only 2 items were set using localForage,
+                       // so we should get '12' and not '1234'
+                       expect(iterationNumberConcat).to.be('12');
+
+                       done();
+                   }
+               });
+           });
+       });
 
         // Test for https://github.com/mozilla/localForage/issues/175
         it('nested getItem inside clear works [callback]', function(done) {
