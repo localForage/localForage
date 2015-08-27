@@ -172,7 +172,7 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        it('should iterate [promise]', function() {
+        it('should iterate [promise]', function(done) {
             var accumulator = {};
             var iterationNumbers = [];
 
@@ -196,6 +196,7 @@ DRIVERS.forEach(function(driverName) {
                 expect(accumulator.officeX).to.be('InitechX');
                 expect(accumulator.officeY).to.be('InitechY');
                 expect(iterationNumbers).to.eql([1, 2]);
+                done();
             });
         });
 
@@ -256,6 +257,39 @@ DRIVERS.forEach(function(driverName) {
                 done();
             });
         });
+
+        it('should iterate() through only its own keys/values', function(done) {
+           localStorage.setItem('local', 'forage');
+           localforage.setItem('office', 'Initech').then(function() {
+               return localforage.setItem('name', 'Bob');
+           }).then(function() {
+               // Loop through all key/value pairs; {local: 'forage'} set
+               // manually should not be returned.
+               var numberOfItems = 0;
+               var iterationNumberConcat = '';
+
+               localStorage.setItem('locals', 'forages');
+
+               localforage.iterate(function(value, key, iterationNumber) {
+                   expect(key).to.not.be('local');
+                   expect(value).to.not.be('forage');
+                   numberOfItems++;
+                   iterationNumberConcat += iterationNumber;
+               }, function(err) {
+                   if (!err) {
+                       // While there are 4 items in localStorage,
+                       // only 2 items were set using localForage.
+                       expect(numberOfItems).to.be(2);
+
+                       // Only 2 items were set using localForage,
+                       // so we should get '12' and not '1234'
+                       expect(iterationNumberConcat).to.be('12');
+
+                       done();
+                   }
+               });
+           });
+       });
 
         // Test for https://github.com/mozilla/localForage/issues/175
         it('nested getItem inside clear works [callback]', function(done) {

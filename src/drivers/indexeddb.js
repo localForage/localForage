@@ -266,7 +266,8 @@
                         if (_isEncodedBlob(value)) {
                             value = _decodeBlob(value);
                         }
-                        var result = iterator(value, cursor.key, iterationNumber++);
+                        var result = iterator(value, cursor.key,
+                                              iterationNumber++);
 
                         if (result !== void(0)) {
                             resolve(result);
