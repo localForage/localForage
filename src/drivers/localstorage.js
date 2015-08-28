@@ -6,7 +6,6 @@
     'use strict';
 
     var globalObject = this;
-    var serializer = null;
     var localStorage = null;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
@@ -42,7 +41,7 @@
         self._dbInfo = dbInfo;
 
         return System.import('./../utils/serializer').then(function(lib) {
-            serializer = lib;
+            dbInfo.serializer = lib;
             return Promise.resolve();
         });
     }
@@ -89,7 +88,7 @@
             // is likely undefined and we'll pass it straight to the
             // callback.
             if (result) {
-                result = serializer.deserialize(result);
+                result = dbInfo.serializer.deserialize(result);
             }
 
             return result;
@@ -104,7 +103,8 @@
         var self = this;
 
         var promise = self.ready().then(function() {
-            var keyPrefix = self._dbInfo.keyPrefix;
+            var dbInfo = self._dbInfo;
+            var keyPrefix = dbInfo.keyPrefix;
             var keyPrefixLength = keyPrefix.length;
             var length = localStorage.length;
 
@@ -128,7 +128,7 @@
                 // key is likely undefined and we'll pass it straight
                 // to the iterator.
                 if (value) {
-                    value = serializer.deserialize(value);
+                    value = dbInfo.serializer.deserialize(value);
                 }
 
                 value = iterator(value, key.substring(keyPrefixLength),
@@ -244,12 +244,12 @@
             var originalValue = value;
 
             return new Promise(function(resolve, reject) {
-                serializer.serialize(value, function(value, error) {
+                var dbInfo = self._dbInfo;
+                dbInfo.serializer.serialize(value, function(value, error) {
                     if (error) {
                         reject(error);
                     } else {
                         try {
-                            var dbInfo = self._dbInfo;
                             localStorage.setItem(dbInfo.keyPrefix + key, value);
                             resolve(originalValue);
                         } catch (e) {
