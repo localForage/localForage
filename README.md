@@ -218,6 +218,10 @@ dependencies. Replace `USERNAME` with your GitHub username and run the
 following:
 
 ```bash
+# Install bower and grunt globally if you don't have them:
+npm install -g bower grunt-cli
+
+# Replace USERNAME with your GitHub username:
 git clone git@github.com:USERNAME/localForage.git
 cd localForage
 npm install
