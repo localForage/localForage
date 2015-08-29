@@ -171,6 +171,13 @@ define(['localforage'], function(localforage) {
 });
 ```
 
+## Browserify and Webpack
+
+localForage should work with both Browserify and Webpack.
+You should not override the entry point defined in `package.json`.
+
+**For Webpack:** currently, you need to require localForage as `require('script!localforage')`.
+
 ## Web Workers
 
 Web Worker support in Firefox is blocked by [bug 701634][]. Until it is fixed,
