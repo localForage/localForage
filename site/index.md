@@ -459,11 +459,11 @@ order:
 3. localStorage
 
 If you would like to force usage of a particular driver you can use
-`setDriver()` with one or more of the following parameters.
+`setDriver()` with one or more of the following arguments:
 
-* localforage.INDEXEDDB
-* localforage.WEBSQL
-* localforage.LOCALSTORAGE
+* `localforage.INDEXEDDB`
+* `localforage.WEBSQL`
+* `localforage.LOCALSTORAGE`
 
 <aside class="notice">
   If the backend you're trying to load isn't available on the user's browser,
@@ -531,7 +531,7 @@ values can be set:
 <dl>
   <dt>driver</dt>
   <dd>
-    The preferred driver(s) to use. Same format as what is passed to `setDriver()`, above.<br>
+    The preferred driver(s) to use. Same format as what is passed to <a href="#setdriver"><code>setDriver</code></a>, above.<br>
     Default: <code>[localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE]</code>
   </dd>
   <dt>name</dt>
@@ -654,3 +654,37 @@ use this to make sure the browser in use supports your custom driver.
 </aside>
 
 [default drivers]: https://github.com/mozilla/localForage/tree/master/src/drivers
+
+## driver
+
+```javascript
+localforage.driver();
+// "asyncStorage"
+```
+
+```coffeescript
+localforage.driver()
+# "asyncStorage"
+```
+
+`driver()`
+
+Returns the name of the driver being used, or `null` if none can be used.
+
+## supports
+
+```javascript
+localforage.supports(localforage.INDEXEDDB);
+// true
+```
+
+```coffeescript
+localforage.supports(localforage.INDEXEDDB)
+# true
+```
+
+`supports(driverName)`
+
+Returns (boolean) whether `driverName` is supported by the browser.
+
+See <a href="#setdriver"><code>setDriver</code></a> for default driver names.
