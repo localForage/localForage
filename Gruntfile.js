@@ -21,12 +21,8 @@ module.exports = exports = function(grunt) {
 
     grunt.initConfig({
         browserify: {
-            client: {
-                src: [
-                    'bower_components/es6-promise/promise.js',
-                    'src/**/*.js',
-                    'test/runner.browserify.js'
-                ],
+            package_bundling_test: {
+                src: 'test/runner.browserify.js',
                 dest: 'test/localforage.browserify.js'
             }
         },
@@ -110,6 +106,7 @@ module.exports = exports = function(grunt) {
                         'http://localhost:9999/test/test.require.html',
                         'http://localhost:9999/test/test.require.unbundled.html',
                         'http://localhost:9999/test/test.browserify.html',
+                        'http://localhost:9999/test/test.webpack.html',
                         'http://localhost:9999/test/test.callwhenready.html',
                         'http://localhost:9999/test/test.customdriver.html'
                     ]
@@ -177,7 +174,23 @@ module.exports = exports = function(grunt) {
                     'test/runner.js',
                     'test/test.*.*'
                 ],
-                tasks: ['jshint', 'jscs', 'shell:component', 'browserify', 'mocha:unit']
+                tasks: [
+                    'jshint',
+                    'jscs',
+                    'shell:component',
+                    'browserify:package_bundling_test',
+                    'webpack:package_bundling_test',
+                    'mocha:unit'
+                ]
+            }
+        },
+        webpack: {
+            package_bundling_test: {
+                entry: './test/runner.webpack.js',
+                output: {
+                    path: 'test/',
+                    filename: 'localforage.webpack.js'
+                }
             }
         }
     });
@@ -196,7 +209,8 @@ module.exports = exports = function(grunt) {
         'jshint',
         'jscs',
         'shell:component',
-        'browserify',
+        'browserify:package_bundling_test',
+        'webpack:package_bundling_test',
         'connect:test',
         'mocha'
     ];
