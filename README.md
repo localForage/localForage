@@ -181,7 +181,7 @@ master branch. Older releases have spotty support but this will soon be fixed.
 [required plugins and transformers](https://github.com/mozilla/localForage/blob/master/package.json#L57)
 installed.
 
-**For Webpack:** currently, you need to require localForage as `require('script!localforage')`.
+**For Webpack:** currently, you need to require localForage as `require('script!localforage')` using [webpack script-loader](https://github.com/webpack/script-loader).
 
 ## Framework Support
 
