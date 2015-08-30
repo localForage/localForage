@@ -160,8 +160,9 @@ means calling `config()` before using `getItem()`, `setItem()`, `removeItem()`,
 
 ## Multiple instances
 
-You can create multiple instances of localForage that point to different stores using `createInstance`.
-All the configuration options used by [config](#configuration) are supported.
+You can create multiple instances of localForage that point to different stores
+using `createInstance`. All the configuration options used by
+`[config](#configuration)` are supported.
 
 ``` javascript
 var store = localforage.createInstance({
@@ -174,7 +175,7 @@ var otherStore = localforage.createInstance({
 
 // Setting the key on one of these doesn't affect the other.
 store.setItem("key", "value");
-otherStore.set("key", "value2");
+otherStore.setItem("key", "value2");
 ```
 
 ## RequireJS

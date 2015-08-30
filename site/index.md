@@ -696,8 +696,6 @@ All the configuration options used by [config](#config) are supported.
 
 ## createInstance
 
-This is used for creating a new instance of localForage
-
 ``` javascript
 var store = localforage.createInstance({
   name: "nameHere"
@@ -709,5 +707,20 @@ var otherStore = localforage.createInstance({
 
 // Setting the key on one of these doesn't affect the other.
 store.setItem("key", "value");
-otherStore.set("key", "value2");
+otherStore.setItem("key", "value2");
 ```
+
+``` coffeescript
+store = localforage.createInstance
+  name: "nameHere"
+
+otherStore = localforage.createInstance
+  name: "otherName"
+
+# Setting the key on one of these doesn't affect the other.
+store.setItem "key", "value"
+otherStore.setItem "key", "value2"
+```
+
+Creates a new instance of localForage and returns it. Each object contains its
+own database and doesn't affect other instances of localForage.
