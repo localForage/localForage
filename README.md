@@ -136,24 +136,6 @@ localStorage make storing many large Blobs impossible.
 
 [api]: https://mozilla.github.io/localForage/#setitem
 
-## Multiple instances
-
-You can create multiple instances of localForage that point to different stores using `createInstance`
-
-``` javascript
-var store = localforage.createInstance({
-  storeName: "storeNameHere"
-});
-
-var otherStore = localforage.createInstance({
-  storeName: "otherStoreName"
-});
-
-// Setting the key on one of these doesn't affect the other.
-store.setItem("key", "value");
-otherStore.set("key", "value2");
-```
-
 ## Configuration
 
 You can set database information with the `config()` method.
@@ -175,6 +157,25 @@ localforage.config({
 **Note:** you must call `config()` _before_ you interact with your data. This
 means calling `config()` before using `getItem()`, `setItem()`, `removeItem()`,
 `clear()`, `key()`, `keys()` or `length()`.
+
+## Multiple instances
+
+You can create multiple instances of localForage that point to different stores using `createInstance`.
+All the configuration options used by [config](#configuration) are supported.
+
+``` javascript
+var store = localforage.createInstance({
+  name: "nameHere"
+});
+
+var otherStore = localforage.createInstance({
+  name: "otherName"
+});
+
+// Setting the key on one of these doesn't affect the other.
+store.setItem("key", "value");
+otherStore.set("key", "value2");
+```
 
 ## RequireJS
 
