@@ -176,7 +176,7 @@ define(['localforage'], function(localforage) {
 localForage should work with both Browserify and Webpack.
 You should not override the entry point defined in `package.json`.
 
-**For Webpack:** currently, you need to require localForage as `require('script!localforage')`.
+**For Webpack:** currently, you need to require localForage as `require('script!localforage')` using [webpack script-loader](https://github.com/webpack/script-loader).
 
 ## Web Workers
 
