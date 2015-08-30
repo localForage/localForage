@@ -692,6 +692,7 @@ See <a href="#setdriver"><code>setDriver</code></a> for default driver names.
 # Multiple Instances
 
 You can create multiple instances of localForage that point to different stores.
+All the configuration options used by [config](#config) are supported.
 
 ## createInstance
 
@@ -699,11 +700,11 @@ This is used for creating a new instance of localForage
 
 ``` javascript
 var store = localforage.createInstance({
-  storeName: "storeNameHere"
+  name: "nameHere"
 });
 
 var otherStore = localforage.createInstance({
-  storeName: "otherStoreName"
+  name: "otherName"
 });
 
 // Setting the key on one of these doesn't affect the other.
