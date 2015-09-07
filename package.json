@@ -19,6 +19,8 @@
     "test": "grunt test"
   },
   "devDependencies": {
+    "babel-core": "^5.8.22",
+    "babel-loader": "^5.3.2",
     "babel-plugin-system-import-transformer": "^1.1.4",
     "babelify": "^6.1.2",
     "component": "^1.0.0-rc7",
@@ -45,16 +47,11 @@
     "webpack": "^1.11.0",
     "webpack-dev-server": "^1.10.1"
   },
-  "browser": "src/localforage.js",
   "main": "dist/localforage.js",
-  "webpack": "dist/localforage.js",
   "bugs": {
     "url": "http://github.com/mozilla/localForage/issues"
   },
   "dependencies": {
     "promise": "^5.0.0"
-  },
-  "browserify": {
-    "transform": ["babelify"]
   }
 }

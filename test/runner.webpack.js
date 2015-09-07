@@ -1,2 +1,6 @@
-// require localforage (with webpack/script-loader) as defined in package.json
-require('script!../');
+// if (typeof Promise === 'undefined') {
+//     require('../bower_components/es6-promise/promise');
+// }
+// require localforage as defined in package.json
+window.localforage = require('../');
+// require('script!../'); // optionally use webpack/script-loader
