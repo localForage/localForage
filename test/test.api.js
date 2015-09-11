@@ -204,7 +204,8 @@ DRIVERS.forEach(function(driverName) {
             var accumulator = {};
             var iterationNumbers = [];
 
-            return localforage.setItem('officeX', 'InitechX').then(function(setValue) {
+            return localforage.setItem('officeX',
+                                       'InitechX').then(function(setValue) {
                 expect(setValue).to.be('InitechX');
                 return localforage.getItem('officeX');
             }).then(function(value) {
@@ -216,7 +217,8 @@ DRIVERS.forEach(function(driverName) {
             }).then(function(value) {
                 expect(value).to.be('InitechY');
 
-                return localforage.iterate(function(value, key, iterationNumber) {
+                return localforage.iterate(function(value, key,
+                                                    iterationNumber) {
                     accumulator[key] = value;
                     iterationNumbers.push(iterationNumber);
                 });
@@ -287,7 +289,6 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('should iterate() through only its own keys/values', function(done) {
-
             localStorage.setItem('local', 'forage');
             localforage.setItem('office', 'Initech').then(function() {
                 return localforage.setItem('name', 'Bob');
@@ -296,6 +297,9 @@ DRIVERS.forEach(function(driverName) {
                 // manually should not be returned.
                 var numberOfItems = 0;
                 var iterationNumberConcat = '';
+
+                localStorage.setItem('locals', 'forages');
+
                 localforage.iterate(function(value, key, iterationNumber) {
                     expect(key).to.not.be('local');
                     expect(value).to.not.be('forage');
@@ -303,12 +307,12 @@ DRIVERS.forEach(function(driverName) {
                     iterationNumberConcat += iterationNumber;
                 }, function(err) {
                     if (!err) {
-                        // While there are 3 items in localStorage,
+                        // While there are 4 items in localStorage,
                         // only 2 items were set using localForage.
                         expect(numberOfItems).to.be(2);
 
                         // Only 2 items were set using localForage,
-                        // so we should get '12' and not '123'
+                        // so we should get '12' and not '1234'
                         expect(iterationNumberConcat).to.be('12');
 
                         done();
