@@ -308,6 +308,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return this._driver || null;
 	        };
 
+	        LocalForage.prototype.getDriver = function getDriver(driverName, callback, errorCallback) {
+	            var self = this;
+	            var getDriverPromise = (function () {
+	                if (isLibraryDriver(driverName)) {
+	                    switch (driverName) {
+	                        case self.INDEXEDDB:
+	                            return new Promise(function (resolve, reject) {
+	                                resolve(__webpack_require__(1));
+	                            });
+	                        case self.LOCALSTORAGE:
+	                            return new Promise(function (resolve, reject) {
+	                                resolve(__webpack_require__(2));
+	                            });
+	                        case self.WEBSQL:
+	                            return new Promise(function (resolve, reject) {
+	                                resolve(__webpack_require__(4));
+	                            });
+	                    }
+	                } else if (CustomDrivers[driverName]) {
+	                    return Promise.resolve(CustomDrivers[driverName]);
+	                }
+
+	                return Promise.reject(new Error('Driver not found.'));
+	            })();
+
+	            getDriverPromise.then(callback, errorCallback);
+	            return getDriverPromise;
+	        };
+
 	        LocalForage.prototype.ready = function ready(callback) {
 	            var self = this;
 
@@ -345,36 +374,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                self._dbInfo = null;
 	                self._ready = null;
 
-	                if (isLibraryDriver(driverName)) {
-	                    var driverPromise;
-	                    switch (driverName) {
-	                        case self.INDEXEDDB:
-	                            driverPromise = new Promise(function (resolve, reject) {
-	                                resolve(__webpack_require__(1));
-	                            });
-	                            break;
-	                        case self.LOCALSTORAGE:
-	                            driverPromise = new Promise(function (resolve, reject) {
-	                                resolve(__webpack_require__(2));
-	                            });
-	                            break;
-	                        case self.WEBSQL:
-	                            driverPromise = new Promise(function (resolve, reject) {
-	                                resolve(__webpack_require__(4));
-	                            });
-	                            break;
-	                    }
-	                    driverPromise.then(function (driver) {
-	                        self._extend(driver);
-	                        resolve();
-	                    });
-	                } else if (CustomDrivers[driverName]) {
-	                    self._extend(CustomDrivers[driverName]);
+	                self.getDriver(driverName).then(function (driver) {
+	                    self._extend(driver);
 	                    resolve();
-	                } else {
+	                })['catch'](function (error) {
 	                    self._driverSet = Promise.reject(error);
 	                    reject(error);
-	                }
+	                });
 	            });
 
 	            function setDriverToConfig() {
