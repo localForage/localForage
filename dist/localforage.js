@@ -879,17 +879,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            this._config = extend({}, DefaultConfig, options);
 	            this._driverSet = null;
+	            this._initDriver = null;
 	            this._ready = false;
 	            this._dbInfo = null;
 
-	            // Add a stub for each driver API method that delays the call to the
-	            // corresponding driver method until localForage is ready. These stubs
-	            // will be replaced by the driver methods as soon as the driver is
-	            // loaded, so there is no performance impact.
-	            for (var i = 0; i < LibraryMethods.length; i++) {
-	                callWhenReady(this, LibraryMethods[i]);
-	            }
-
+	            this._wrapLibraryMethodsWithReady();
 	            this.setDriver(this._config.driver);
 	        }
 
@@ -1023,14 +1017,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        LocalForage.prototype.ready = function ready(callback) {
 	            var self = this;
 
-	            var promise = new Promise(function (resolve, reject) {
-	                self._driverSet.then(function () {
-	                    if (self._ready === null) {
-	                        self._ready = self._initStorage(self._config);
-	                    }
+	            var promise = self._driverSet.then(function () {
+	                if (self._ready === null) {
+	                    self._ready = self._initDriver();
+	                }
 
-	                    self._ready.then(resolve, reject);
-	                })['catch'](reject);
+	                return self._ready;
 	            });
 
 	            promise.then(callback, callback);
@@ -1040,36 +1032,71 @@ return /******/ (function(modules) { // webpackBootstrap
 	        LocalForage.prototype.setDriver = function setDriver(drivers, callback, errorCallback) {
 	            var self = this;
 
-	            if (typeof drivers === 'string') {
+	            if (!isArray(drivers)) {
 	                drivers = [drivers];
 	            }
 
-	            this._driverSet = new Promise(function (resolve, reject) {
-	                var driverName = self._getFirstSupportedDriver(drivers);
-	                var error = new Error('No available storage method found.');
-
-	                if (!driverName) {
-	                    self._driverSet = Promise.reject(error);
-	                    reject(error);
-	                    return;
-	                }
-
-	                self._dbInfo = null;
-	                self._ready = null;
-
-	                self.getDriver(driverName).then(function (driver) {
-	                    self._extend(driver);
-	                    resolve();
-	                })['catch'](function (error) {
-	                    self._driverSet = Promise.reject(error);
-	                    reject(error);
-	                });
-	            });
+	            var supportedDrivers = this._getSupportedDrivers(drivers);
 
 	            function setDriverToConfig() {
 	                self._config.driver = self.driver();
 	            }
-	            this._driverSet.then(setDriverToConfig, setDriverToConfig);
+
+	            function initDriver(supportedDrivers) {
+	                return function () {
+	                    var crntDriverPos = 0;
+
+	                    function driverPromiseLoop() {
+	                        while (crntDriverPos < supportedDrivers.length) {
+	                            var driverName = supportedDrivers[crntDriverPos];
+	                            crntDriverPos++;
+
+	                            self._dbInfo = null;
+	                            self._ready = null;
+
+	                            return self.getDriver(driverName).then(function (driver) {
+	                                self._extend(driver);
+	                                setDriverToConfig();
+
+	                                self._ready = self._initStorage(self._config);
+	                                return self._ready;
+	                            })['catch'](driverPromiseLoop);
+	                        }
+
+	                        setDriverToConfig();
+	                        var error = new Error('No available storage method found.');
+	                        self._driverSet = Promise.reject(error);
+	                        return self._driverSet;
+	                    }
+
+	                    return driverPromiseLoop();
+	                };
+	            }
+
+	            // There might be a driver initialization in progress
+	            // so wait for it to finish in order to avoid a possible
+	            // race condition to set _dbInfo
+	            var oldDriverSetDone = this._driverSet !== null ? this._driverSet['catch'](function () {
+	                return Promise.resolve();
+	            }) : Promise.resolve();
+
+	            this._driverSet = oldDriverSetDone.then(function () {
+	                var driverName = supportedDrivers[0];
+	                self._dbInfo = null;
+	                self._ready = null;
+
+	                return self.getDriver(driverName).then(function (driver) {
+	                    self._driver = driver._driver;
+	                    setDriverToConfig();
+	                    self._wrapLibraryMethodsWithReady();
+	                    self._initDriver = initDriver(supportedDrivers);
+	                });
+	            })['catch'](function () {
+	                setDriverToConfig();
+	                var error = new Error('No available storage method found.');
+	                self._driverSet = Promise.reject(error);
+	                return self._driverSet;
+	            });
 
 	            this._driverSet.then(callback, errorCallback);
 	            return this._driverSet;
@@ -1083,21 +1110,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	            extend(this, libraryMethodsAndProperties);
 	        };
 
-	        // Used to determine which driver we should use as the backend for this
-	        // instance of localForage.
-
-	        LocalForage.prototype._getFirstSupportedDriver = function _getFirstSupportedDriver(drivers) {
-	            if (drivers && isArray(drivers)) {
-	                for (var i = 0; i < drivers.length; i++) {
-	                    var driver = drivers[i];
-
-	                    if (this.supports(driver)) {
-	                        return driver;
-	                    }
+	        LocalForage.prototype._getSupportedDrivers = function _getSupportedDrivers(drivers) {
+	            var supportedDrivers = [];
+	            for (var i = 0, len = drivers.length; i < len; i++) {
+	                var driverName = drivers[i];
+	                if (this.supports(driverName)) {
+	                    supportedDrivers.push(driverName);
 	                }
 	            }
+	            return supportedDrivers;
+	        };
 
-	            return null;
+	        LocalForage.prototype._wrapLibraryMethodsWithReady = function _wrapLibraryMethodsWithReady() {
+	            // Add a stub for each driver API method that delays the call to the
+	            // corresponding driver method until localForage is ready. These stubs
+	            // will be replaced by the driver methods as soon as the driver is
+	            // loaded, so there is no performance impact.
+	            for (var i = 0; i < LibraryMethods.length; i++) {
+	                callWhenReady(this, LibraryMethods[i]);
+	            }
 	        };
 
 	        LocalForage.prototype.createInstance = function createInstance(options) {
