@@ -1044,12 +1044,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            function initDriver(supportedDrivers) {
 	                return function () {
-	                    var crntDriverPos = 0;
+	                    var currentDriverIndex = 0;
 
 	                    function driverPromiseLoop() {
-	                        while (crntDriverPos < supportedDrivers.length) {
-	                            var driverName = supportedDrivers[crntDriverPos];
-	                            crntDriverPos++;
+	                        while (currentDriverIndex < supportedDrivers.length) {
+	                            var driverName = supportedDrivers[currentDriverIndex];
+	                            currentDriverIndex++;
 
 	                            self._dbInfo = null;
 	                            self._ready = null;
