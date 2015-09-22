@@ -203,6 +203,14 @@ installed.
 
 **For Webpack:** currently, you need to require localForage as `require('script!localforage')` using [webpack script-loader](https://github.com/webpack/script-loader).
 
+## TypeScript
+
+To import localForage in TypeScript:
+
+```javascript
+import {default as localforage} from "localforage"
+```
+
 ## Framework Support
 
 If you use a framework listed, there's a localForage storage driver for the
