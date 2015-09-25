@@ -181,25 +181,162 @@
             }
         }
 
+        // Initialize a singleton container for all running localForages.
+        if (!globalObject.container) {
+            globalObject.container = {};
+        }
+
+        // Get the current context of the database;
+        var context = globalObject.container[dbInfo.name];
+
+        // ...or create a new context.
+        if (!context) {
+            context = {
+                // Running localForages sharing a database.
+                forages: [],
+                // Shared database.
+                db: null
+            };
+            // Register the new context in the global container.
+            globalObject.container[dbInfo.name] = context;
+        }
+
+        // Register itself as a running localForage in the current context.
+        context.forages.push(this);
+
+        // Create an array of readiness of the related localForages.
+        var ready = [];
+        for (var j = 0; j < context.forages.length; j++) {
+            var forage = context.forages[j];
+            if (forage !== this) { // Don't wait for itself...
+                ready.push(forage.ready());
+            }
+        }
+
+        // Take a snapshot of the related localForages.
+        var forages = context.forages.slice(0);
+
+        // Initialize the connection process only when
+        // all the related localForages are ready.
+        return Promise.all(ready).then(function() {
+            dbInfo.db = context.db;
+            // Get the connection or open a new one without upgrade.
+            return _getOriginalConnection(dbInfo);
+        }).then(function(db) {
+            dbInfo.db = db;
+            if (_isUpgradeNeeded(dbInfo, self._defaultConfig.version)) {
+                // Reopen the database for upgrading.
+                return _getUpgradedConnection(dbInfo);
+            }
+            return db;
+        }).then(function(db) {
+            dbInfo.db = context.db = db;
+            self._dbInfo = dbInfo;
+            // Share the final connection amongst related localForages.
+            for (var k in forages) {
+                var forage = forages[k];
+                if (forage !== self) { // Self is already up-to-date.
+                    forage._dbInfo.db = dbInfo.db;
+                    forage._dbInfo.version = dbInfo.db;
+                }
+            }
+        });
+    }
+
+    function _getOriginalConnection(dbInfo) {
+        return _getConnection(dbInfo, false);
+    }
+
+    function _getUpgradedConnection(dbInfo) {
+        return _getConnection(dbInfo, true);
+    }
+
+    function _getConnection(dbInfo, upgradeNeeded) {
         return new Promise(function(resolve, reject) {
-            var openreq = indexedDB.open(dbInfo.name, dbInfo.version);
+            if (dbInfo.db) {
+                if (upgradeNeeded) {
+                    dbInfo.db.close();
+                } else {
+                    return resolve(dbInfo.db);
+                }
+            }
+
+            var dbArgs = [dbInfo.name];
+
+            if (upgradeNeeded) {
+                dbArgs.push(dbInfo.version);
+            }
+
+            var openreq = indexedDB.open.apply(indexedDB, dbArgs);
+
+            if (upgradeNeeded) {
+                openreq.onupgradeneeded = function(e) {
+                    var db = openreq.result;
+                    try {
+                        db.createObjectStore(dbInfo.storeName);
+                        if (e.oldVersion <= 1) {
+                            // Added when support for blob shims was added
+                            db.createObjectStore(DETECT_BLOB_SUPPORT_STORE);
+                        }
+                    } catch (ex) {
+                        if (ex.name === 'ConstraintError') {
+                            globalObject.console.warn('The database "' + dbInfo.name + '"' +
+                                ' has been upgraded from version ' + e.oldVersion +
+                                ' to version ' + e.newVersion +
+                                ', but the storage "' + dbInfo.storeName + '" already exists.');
+                        } else {
+                            throw ex;
+                        }
+                    }
+                };
+            }
+
             openreq.onerror = function() {
                 reject(openreq.error);
             };
-            openreq.onupgradeneeded = function(e) {
-                // First time setup: create an empty object store
-                openreq.result.createObjectStore(dbInfo.storeName);
-                if (e.oldVersion <= 1) {
-                    // added when support for blob shims was added
-                    openreq.result.createObjectStore(DETECT_BLOB_SUPPORT_STORE);
-                }
-            };
+
             openreq.onsuccess = function() {
-                dbInfo.db = openreq.result;
-                self._dbInfo = dbInfo;
-                resolve();
+                resolve(openreq.result);
             };
         });
+    }
+
+    function _isUpgradeNeeded(dbInfo, defaultVersion) {
+        if (!dbInfo.db) {
+            return true;
+        }
+
+        var isNewStore = !dbInfo.db.objectStoreNames.contains(dbInfo.storeName);
+        var isDowngrade = dbInfo.version < dbInfo.db.version;
+        var isUpgrade = dbInfo.version > dbInfo.db.version;
+
+        if (isDowngrade) {
+            // If the version is not the default one
+            // then warn for impossible downgrade.
+            if (dbInfo.version !== defaultVersion) {
+                globalObject.console.warn('The database "' + dbInfo.name + '"' +
+                    ' can\'t be downgraded from version ' + dbInfo.db.version +
+                    ' to version ' + dbInfo.version + '.');
+            }
+            // Align the versions to prevent errors.
+            dbInfo.version = dbInfo.db.version;
+        }
+
+        if (isUpgrade || isNewStore) {
+            // If the store is new then increment the version (if needed).
+            // This will trigger an "upgradeneeded" event which is required
+            // for creating a store.
+            if (isNewStore) {
+                var incVersion = dbInfo.db.version + 1;
+                if (incVersion > dbInfo.version) {
+                    dbInfo.version = incVersion;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     function getItem(key, callback) {

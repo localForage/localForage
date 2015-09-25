@@ -39,6 +39,10 @@
 
         dbInfo.keyPrefix = dbInfo.name + '/';
 
+        if (dbInfo.storeName !== self._defaultConfig.storeName) {
+            dbInfo.keyPrefix += dbInfo.storeName + '/';
+        }
+
         self._dbInfo = dbInfo;
 
         return System.import('./../utils/serializer').then(function(lib) {
