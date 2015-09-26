@@ -738,7 +738,7 @@ DRIVERS.forEach(function(driverName) {
                 storeName: 'storagename2'
             });
 
-            // Same name, but different storeName since this has been malfunctioning before w/ IndexedDB.
+            // Same name, but different storeName
             localforage3 = localforage.createInstance({
                 name: 'storage2',
                 // We need a small value here
@@ -772,13 +772,20 @@ DRIVERS.forEach(function(driverName) {
         it('is not be able to access values of other instances', function(done) {
             Promise.all([
                 localforage.setItem('key1', 'value1a'),
-                localforage2.setItem('key2', 'value2a')
+                localforage2.setItem('key2', 'value2a'),
+                localforage3.setItem('key3', 'value3a')
             ]).then(function() {
                 return Promise.all([
                     localforage.getItem('key2').then(function(value) {
                         expect(value).to.be(null);
                     }),
                     localforage2.getItem('key1').then(function(value) {
+                        expect(value).to.be(null);
+                    }),
+                    localforage2.getItem('key3').then(function(value) {
+                        expect(value).to.be(null);
+                    }),
+                    localforage3.getItem('key2').then(function(value) {
                         expect(value).to.be(null);
                     })
                 ]);
