@@ -16,6 +16,7 @@
 
     var DETECT_BLOB_SUPPORT_STORE = 'local-forage-detect-blob-support';
     var supportsBlobs;
+    var dbContexts;
 
     // Abstracts constructing a Blob object, so it also works in older
     // browsers that don't support the native Blob constructor. (i.e.
@@ -182,44 +183,44 @@
         }
 
         // Initialize a singleton container for all running localForages.
-        if (!globalObject.container) {
-            globalObject.container = {};
+        if (!dbContexts) {
+            dbContexts = {};
         }
 
         // Get the current context of the database;
-        var context = globalObject.container[dbInfo.name];
+        var dbContext = dbContexts[dbInfo.name];
 
         // ...or create a new context.
-        if (!context) {
-            context = {
+        if (!dbContext) {
+            dbContext = {
                 // Running localForages sharing a database.
                 forages: [],
                 // Shared database.
                 db: null
             };
             // Register the new context in the global container.
-            globalObject.container[dbInfo.name] = context;
+            dbContexts[dbInfo.name] = dbContext;
         }
 
         // Register itself as a running localForage in the current context.
-        context.forages.push(this);
+        dbContext.forages.push(this);
 
         // Create an array of readiness of the related localForages.
         var ready = [];
-        for (var j = 0; j < context.forages.length; j++) {
-            var forage = context.forages[j];
+        for (var j = 0; j < dbContext.forages.length; j++) {
+            var forage = dbContext.forages[j];
             if (forage !== this) { // Don't wait for itself...
                 ready.push(forage.ready());
             }
         }
 
         // Take a snapshot of the related localForages.
-        var forages = context.forages.slice(0);
+        var forages = dbContext.forages.slice(0);
 
         // Initialize the connection process only when
         // all the related localForages are ready.
         return Promise.all(ready).then(function() {
-            dbInfo.db = context.db;
+            dbInfo.db = dbContext.db;
             // Get the connection or open a new one without upgrade.
             return _getOriginalConnection(dbInfo);
         }).then(function(db) {
@@ -230,7 +231,7 @@
             }
             return db;
         }).then(function(db) {
-            dbInfo.db = context.db = db;
+            dbInfo.db = dbContext.db = db;
             self._dbInfo = dbInfo;
             // Share the final connection amongst related localForages.
             for (var k in forages) {
