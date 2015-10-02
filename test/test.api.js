@@ -757,6 +757,16 @@ DRIVERS.forEach(function(driverName) {
                 done();
             });
         });
+
+        if (driverName === localforage.WEBSQL ||
+            driverName === localforage.LOCALSTORAGE) {
+            it('exposes the serializer on the dbInfo object', function(done) {
+                localforage.ready().then(function() {
+                    expect(localforage._dbInfo.serializer).to.be.an('object');
+                    done();
+                });
+            });
+        }
     });
 
     describe(driverName + ' driver multiple instances', function() {
