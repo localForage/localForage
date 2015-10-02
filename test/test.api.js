@@ -74,6 +74,24 @@ describe('localForage', function() {
         });
     });
 
+    it('retrieves the serializer [callback]', function(done) {
+        localforage.getSerializer(function(serializer) {
+            expect(serializer).to.be.an('object');
+            done();
+        });
+    });
+
+    it('retrieves the serializer [promise]', function(done) {
+        var serializerPromise = localforage.getSerializer();
+        expect(serializerPromise).to.be.an('object');
+        expect(serializerPromise.then).to.be.a('function');
+
+        serializerPromise.then(function(serializer) {
+            expect(serializer).to.be.an('object');
+            done();
+        });
+    });
+
     it('does not support object parameter to setDriver', function(done) {
         var driverPreferedOrder = {
             '0': localforage.INDEXEDDB,
@@ -185,6 +203,7 @@ DRIVERS.forEach(function(driverName) {
             expect(localforage.setDriver).to.be.a('function');
             expect(localforage.ready).to.be.a('function');
             expect(localforage.createInstance).to.be.a('function');
+            expect(localforage.getSerializer).to.be.a('function');
         });
 
         // Make sure we don't support bogus drivers.
