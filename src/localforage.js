@@ -280,6 +280,16 @@
             return getDriverPromise;
         }
 
+        getSerializer(callback) {
+            var serializerPromise = System.import('./utils/serializer');
+            if (callback && typeof callback === 'function') {
+                serializerPromise.then(function(result) {
+                    callback(result);
+                });
+            }
+            return serializerPromise;
+        }
+
         ready(callback) {
             var self = this;
 

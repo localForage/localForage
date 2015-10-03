@@ -11,7 +11,6 @@
     'use strict';
 
     var globalObject = this;
-    var serializer = null;
     var openDatabase = this.openDatabase;
 
     // If WebSQL methods aren't available, we can stop now.
@@ -60,7 +59,7 @@
         });
 
         return System.import('./../utils/serializer').then(function(lib) {
-            serializer = lib;
+            dbInfo.serializer = lib;
             return dbInfoPromise;
         });
     }
@@ -88,7 +87,7 @@
                         // Check to see if this is serialized content we need to
                         // unpack.
                         if (result) {
-                            result = serializer.deserialize(result);
+                            result = dbInfo.serializer.deserialize(result);
                         }
 
                         resolve(result);
@@ -124,7 +123,7 @@
                                 // Check to see if this is serialized content
                                 // we need to unpack.
                                 if (result) {
-                                    result = serializer.deserialize(result);
+                                    result = dbInfo.serializer.deserialize(result);
                                 }
 
                                 result = iterator(result, item.key, i + 1);
@@ -171,11 +170,11 @@
                 // Save the original value to pass to the callback.
                 var originalValue = value;
 
-                serializer.serialize(value, function(value, error) {
+                var dbInfo = self._dbInfo;
+                dbInfo.serializer.serialize(value, function(value, error) {
                     if (error) {
                         reject(error);
                     } else {
-                        var dbInfo = self._dbInfo;
                         dbInfo.db.transaction(function(t) {
                             t.executeSql('INSERT OR REPLACE INTO ' +
                                          dbInfo.storeName +
