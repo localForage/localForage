@@ -206,11 +206,18 @@
         dbContext.forages.push(this);
 
         // Create an array of readiness of the related localForages.
-        var ready = [];
+        var readyPromises = [];
+
+        function ignoreErrors() {
+            // Don't handle errors here,
+            // just makes sure related localForages aren't pending.
+            return Promise.resolve();
+        }
+
         for (var j = 0; j < dbContext.forages.length; j++) {
             var forage = dbContext.forages[j];
             if (forage !== this) { // Don't wait for itself...
-                ready.push(forage.ready());
+                readyPromises.push(forage.ready().catch(ignoreErrors));
             }
         }
 
@@ -218,8 +225,8 @@
         var forages = dbContext.forages.slice(0);
 
         // Initialize the connection process only when
-        // all the related localForages are ready.
-        return Promise.all(ready).then(function() {
+        // all the related localForages aren't pending.
+        return Promise.all(readyPromises).then(function() {
             dbInfo.db = dbContext.db;
             // Get the connection or open a new one without upgrade.
             return _getOriginalConnection(dbInfo);
