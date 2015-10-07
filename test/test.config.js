@@ -45,7 +45,7 @@ describe('Config API', function() {
                 description: '123',
                 driver: 'I a not set driver',
                 name: 'My Cool App',
-                storeName: 'storeFront',
+                storeName: 'myStoreFront',
                 version: 2.0
             });
 
@@ -78,7 +78,7 @@ describe('Config API', function() {
             description: 'The offline datastore for my cool app',
             driver: secondSupportedDriver,
             name: 'My Cool App',
-            storeName: 'storeFront',
+            storeName: 'myStoreFront',
             version: 2.0
         });
 
@@ -89,7 +89,7 @@ describe('Config API', function() {
                           .be(secondSupportedDriver);
         expect(localforage.config('name')).to.be('My Cool App');
         expect(localforage.config('size')).to.be(4980736);
-        expect(localforage.config('storeName')).to.be('storeFront');
+        expect(localforage.config('storeName')).to.be('myStoreFront');
         expect(localforage.config('version')).to.be(2.0);
 
         localforage.ready(function() {
@@ -103,7 +103,7 @@ describe('Config API', function() {
             done();
         });
     });
-    
+
     if (supportedDrivers.length >= 2) {
         it('sets new driver using preference order', function(done) {
             var otherSupportedDrivers = supportedDrivers.slice(1);
@@ -167,7 +167,7 @@ describe('Config API', function() {
             description: 'The offline datastore for my cool app',
             driver: localforage.driver(),
             name: 'My Cool App',
-            storeName: 'storeFront',
+            storeName: 'myStoreFront',
             version: 2.0
         });
 
@@ -181,8 +181,8 @@ describe('Config API', function() {
 
                 req.onsuccess = function() {
                     var dbValue = req.result
-                                     .transaction('storeFront', 'readonly')
-                                     .objectStore('storeFront')
+                                     .transaction('myStoreFront', 'readonly')
+                                     .objectStore('myStoreFront')
                                      .get('some key');
                     expect(dbValue).to.be(value);
                     done();

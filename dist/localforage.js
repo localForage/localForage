@@ -877,7 +877,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.LOCALSTORAGE = DriverType.LOCALSTORAGE;
 	            this.WEBSQL = DriverType.WEBSQL;
 
-	            this._config = extend({}, DefaultConfig, options);
+	            this._defaultConfig = extend({}, DefaultConfig);
+	            this._config = extend({}, this._defaultConfig, options);
 	            this._driverSet = null;
 	            this._initDriver = null;
 	            this._ready = false;
@@ -1012,6 +1013,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            getDriverPromise.then(callback, errorCallback);
 	            return getDriverPromise;
+	        };
+
+	        LocalForage.prototype.getSerializer = function getSerializer(callback) {
+	            var serializerPromise = new Promise(function (resolve, reject) {
+	                resolve(__webpack_require__(3));
+	            });
+	            if (callback && typeof callback === 'function') {
+	                serializerPromise.then(function (result) {
+	                    callback(result);
+	                });
+	            }
+	            return serializerPromise;
 	        };
 
 	        LocalForage.prototype.ready = function ready(callback) {
@@ -1167,6 +1180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var DETECT_BLOB_SUPPORT_STORE = 'local-forage-detect-blob-support';
 	    var supportsBlobs;
+	    var dbContexts;
 
 	    // Abstracts constructing a Blob object, so it also works in older
 	    // browsers that don't support the native Blob constructor. (i.e.
@@ -1327,25 +1341,166 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 
+	        // Initialize a singleton container for all running localForages.
+	        if (!dbContexts) {
+	            dbContexts = {};
+	        }
+
+	        // Get the current context of the database;
+	        var dbContext = dbContexts[dbInfo.name];
+
+	        // ...or create a new context.
+	        if (!dbContext) {
+	            dbContext = {
+	                // Running localForages sharing a database.
+	                forages: [],
+	                // Shared database.
+	                db: null
+	            };
+	            // Register the new context in the global container.
+	            dbContexts[dbInfo.name] = dbContext;
+	        }
+
+	        // Register itself as a running localForage in the current context.
+	        dbContext.forages.push(this);
+
+	        // Create an array of readiness of the related localForages.
+	        var readyPromises = [];
+
+	        function ignoreErrors() {
+	            // Don't handle errors here,
+	            // just makes sure related localForages aren't pending.
+	            return Promise.resolve();
+	        }
+
+	        for (var j = 0; j < dbContext.forages.length; j++) {
+	            var forage = dbContext.forages[j];
+	            if (forage !== this) {
+	                // Don't wait for itself...
+	                readyPromises.push(forage.ready()['catch'](ignoreErrors));
+	            }
+	        }
+
+	        // Take a snapshot of the related localForages.
+	        var forages = dbContext.forages.slice(0);
+
+	        // Initialize the connection process only when
+	        // all the related localForages aren't pending.
+	        return Promise.all(readyPromises).then(function () {
+	            dbInfo.db = dbContext.db;
+	            // Get the connection or open a new one without upgrade.
+	            return _getOriginalConnection(dbInfo);
+	        }).then(function (db) {
+	            dbInfo.db = db;
+	            if (_isUpgradeNeeded(dbInfo, self._defaultConfig.version)) {
+	                // Reopen the database for upgrading.
+	                return _getUpgradedConnection(dbInfo);
+	            }
+	            return db;
+	        }).then(function (db) {
+	            dbInfo.db = dbContext.db = db;
+	            self._dbInfo = dbInfo;
+	            // Share the final connection amongst related localForages.
+	            for (var k in forages) {
+	                var forage = forages[k];
+	                if (forage !== self) {
+	                    // Self is already up-to-date.
+	                    forage._dbInfo.db = dbInfo.db;
+	                    forage._dbInfo.version = dbInfo.db;
+	                }
+	            }
+	        });
+	    }
+
+	    function _getOriginalConnection(dbInfo) {
+	        return _getConnection(dbInfo, false);
+	    }
+
+	    function _getUpgradedConnection(dbInfo) {
+	        return _getConnection(dbInfo, true);
+	    }
+
+	    function _getConnection(dbInfo, upgradeNeeded) {
 	        return new Promise(function (resolve, reject) {
-	            var openreq = indexedDB.open(dbInfo.name, dbInfo.version);
+	            if (dbInfo.db) {
+	                if (upgradeNeeded) {
+	                    dbInfo.db.close();
+	                } else {
+	                    return resolve(dbInfo.db);
+	                }
+	            }
+
+	            var dbArgs = [dbInfo.name];
+
+	            if (upgradeNeeded) {
+	                dbArgs.push(dbInfo.version);
+	            }
+
+	            var openreq = indexedDB.open.apply(indexedDB, dbArgs);
+
+	            if (upgradeNeeded) {
+	                openreq.onupgradeneeded = function (e) {
+	                    var db = openreq.result;
+	                    try {
+	                        db.createObjectStore(dbInfo.storeName);
+	                        if (e.oldVersion <= 1) {
+	                            // Added when support for blob shims was added
+	                            db.createObjectStore(DETECT_BLOB_SUPPORT_STORE);
+	                        }
+	                    } catch (ex) {
+	                        if (ex.name === 'ConstraintError') {
+	                            globalObject.console.warn('The database "' + dbInfo.name + '"' + ' has been upgraded from version ' + e.oldVersion + ' to version ' + e.newVersion + ', but the storage "' + dbInfo.storeName + '" already exists.');
+	                        } else {
+	                            throw ex;
+	                        }
+	                    }
+	                };
+	            }
+
 	            openreq.onerror = function () {
 	                reject(openreq.error);
 	            };
-	            openreq.onupgradeneeded = function (e) {
-	                // First time setup: create an empty object store
-	                openreq.result.createObjectStore(dbInfo.storeName);
-	                if (e.oldVersion <= 1) {
-	                    // added when support for blob shims was added
-	                    openreq.result.createObjectStore(DETECT_BLOB_SUPPORT_STORE);
-	                }
-	            };
+
 	            openreq.onsuccess = function () {
-	                dbInfo.db = openreq.result;
-	                self._dbInfo = dbInfo;
-	                resolve();
+	                resolve(openreq.result);
 	            };
 	        });
+	    }
+
+	    function _isUpgradeNeeded(dbInfo, defaultVersion) {
+	        if (!dbInfo.db) {
+	            return true;
+	        }
+
+	        var isNewStore = !dbInfo.db.objectStoreNames.contains(dbInfo.storeName);
+	        var isDowngrade = dbInfo.version < dbInfo.db.version;
+	        var isUpgrade = dbInfo.version > dbInfo.db.version;
+
+	        if (isDowngrade) {
+	            // If the version is not the default one
+	            // then warn for impossible downgrade.
+	            if (dbInfo.version !== defaultVersion) {
+	                globalObject.console.warn('The database "' + dbInfo.name + '"' + ' can\'t be downgraded from version ' + dbInfo.db.version + ' to version ' + dbInfo.version + '.');
+	            }
+	            // Align the versions to prevent errors.
+	            dbInfo.version = dbInfo.db.version;
+	        }
+
+	        if (isUpgrade || isNewStore) {
+	            // If the store is new then increment the version (if needed).
+	            // This will trigger an "upgradeneeded" event which is required
+	            // for creating a store.
+	            if (isNewStore) {
+	                var incVersion = dbInfo.db.version + 1;
+	                if (incVersion > dbInfo.version) {
+	                    dbInfo.version = incVersion;
+	                }
+	            }
+
+	            return true;
+	        }
+
+	        return false;
 	    }
 
 	    function getItem(key, callback) {
@@ -1700,7 +1855,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    'use strict';
 
 	    var globalObject = this;
-	    var serializer = null;
 	    var localStorage = null;
 
 	    // If the app is running inside a Google Chrome packaged webapp, or some
@@ -1733,12 +1887,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        dbInfo.keyPrefix = dbInfo.name + '/';
 
+	        if (dbInfo.storeName !== self._defaultConfig.storeName) {
+	            dbInfo.keyPrefix += dbInfo.storeName + '/';
+	        }
+
 	        self._dbInfo = dbInfo;
 
 	        return new Promise(function (resolve, reject) {
 	            resolve(__webpack_require__(3));
 	        }).then(function (lib) {
-	            serializer = lib;
+	            dbInfo.serializer = lib;
 	            return Promise.resolve();
 	        });
 	    }
@@ -1784,7 +1942,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // is likely undefined and we'll pass it straight to the
 	            // callback.
 	            if (result) {
-	                result = serializer.deserialize(result);
+	                result = dbInfo.serializer.deserialize(result);
 	            }
 
 	            return result;
@@ -1799,7 +1957,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var self = this;
 
 	        var promise = self.ready().then(function () {
-	            var keyPrefix = self._dbInfo.keyPrefix;
+	            var dbInfo = self._dbInfo;
+	            var keyPrefix = dbInfo.keyPrefix;
 	            var keyPrefixLength = keyPrefix.length;
 	            var length = localStorage.length;
 
@@ -1823,7 +1982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // key is likely undefined and we'll pass it straight
 	                // to the iterator.
 	                if (value) {
-	                    value = serializer.deserialize(value);
+	                    value = dbInfo.serializer.deserialize(value);
 	                }
 
 	                value = iterator(value, key.substring(keyPrefixLength), iterationNumber++);
@@ -1936,12 +2095,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var originalValue = value;
 
 	            return new Promise(function (resolve, reject) {
-	                serializer.serialize(value, function (value, error) {
+	                var dbInfo = self._dbInfo;
+	                dbInfo.serializer.serialize(value, function (value, error) {
 	                    if (error) {
 	                        reject(error);
 	                    } else {
 	                        try {
-	                            var dbInfo = self._dbInfo;
 	                            localStorage.setItem(dbInfo.keyPrefix + key, value);
 	                            resolve(originalValue);
 	                        } catch (e) {
@@ -2274,7 +2433,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    'use strict';
 
 	    var globalObject = this;
-	    var serializer = null;
 	    var openDatabase = this.openDatabase;
 
 	    // If WebSQL methods aren't available, we can stop now.
@@ -2321,7 +2479,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return new Promise(function (resolve, reject) {
 	            resolve(__webpack_require__(3));
 	        }).then(function (lib) {
-	            serializer = lib;
+	            dbInfo.serializer = lib;
 	            return dbInfoPromise;
 	        });
 	    }
@@ -2345,7 +2503,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        // Check to see if this is serialized content we need to
 	                        // unpack.
 	                        if (result) {
-	                            result = serializer.deserialize(result);
+	                            result = dbInfo.serializer.deserialize(result);
 	                        }
 
 	                        resolve(result);
@@ -2380,7 +2538,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            // Check to see if this is serialized content
 	                            // we need to unpack.
 	                            if (result) {
-	                                result = serializer.deserialize(result);
+	                                result = dbInfo.serializer.deserialize(result);
 	                            }
 
 	                            result = iterator(result, item.key, i + 1);
@@ -2426,11 +2584,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // Save the original value to pass to the callback.
 	                var originalValue = value;
 
-	                serializer.serialize(value, function (value, error) {
+	                var dbInfo = self._dbInfo;
+	                dbInfo.serializer.serialize(value, function (value, error) {
 	                    if (error) {
 	                        reject(error);
 	                    } else {
-	                        var dbInfo = self._dbInfo;
 	                        dbInfo.db.transaction(function (t) {
 	                            t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName + ' (key, value) VALUES (?, ?)', [key, value], function () {
 	                                resolve(originalValue);
