@@ -146,7 +146,8 @@
             this.LOCALSTORAGE = DriverType.LOCALSTORAGE;
             this.WEBSQL = DriverType.WEBSQL;
 
-            this._config = extend({}, DefaultConfig, options);
+            this._defaultConfig = extend({}, DefaultConfig);
+            this._config = extend({}, this._defaultConfig, options);
             this._driverSet = null;
             this._initDriver = null;
             this._ready = false;

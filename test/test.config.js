@@ -200,7 +200,7 @@ describe('Config API', function() {
                     });
                 });
             } else if (localforage.driver() === localforage.LOCALSTORAGE) {
-                var dbValue = JSON.parse(localStorage['My Cool App/some key']);
+                var dbValue = JSON.parse(localStorage['My Cool App/storeFront/some key']);
 
                 expect(dbValue).to.be(value);
                 done();
