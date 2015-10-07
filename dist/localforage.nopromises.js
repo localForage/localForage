@@ -723,7 +723,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                if (forage !== self) {
 	                    // Self is already up-to-date.
 	                    forage._dbInfo.db = dbInfo.db;
-	                    forage._dbInfo.version = dbInfo.db;
+	                    forage._dbInfo.version = dbInfo.version;
 	                }
 	            }
 	        });
