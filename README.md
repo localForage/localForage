@@ -200,8 +200,8 @@ Webpack, please upgrade to 1.3.0 or above.
 
 If you're using localForage in your own build system (eg. browserify or
 webpack) make sure you have the
-[required plugins and transformers](https://github.com/mozilla/localForage/blob/master/package.json#L57)
-installed.
+[required plugins and transformers](https://github.com/mozilla/localForage/blob/master/package.json#L24)
+installed (eg. `npm install --save-dev babel-plugin-system-import-transformer`).
 
 ## Framework Support
 
