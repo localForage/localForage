@@ -3,6 +3,9 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [1.3](https://github.com/mozilla/localForage/releases/tag/1.3.0)
+* We now use ES6 for our source code and `webpack` to bundle the `dist/` files.
+
 ### [1.2](https://github.com/mozilla/localForage/releases/tag/1.2.0)
 * Iterate through the entire database using `iterate()`. ([#283](https://github.com/mozilla/localForage/pull/283); fixes [#186](https://github.com/mozilla/localForage/pull/186))
 
