@@ -807,7 +807,8 @@ DRIVERS.forEach(function(driverName) {
                 storeName: 'storagename2'
             });
 
-            // Same name, but different storeName
+            // Same name, but different storeName since this has been
+            // malfunctioning before w/ IndexedDB.
             localforage3 = localforage.createInstance({
                 name: 'storage2',
                 // We need a small value here
