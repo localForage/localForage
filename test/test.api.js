@@ -790,6 +790,9 @@ DRIVERS.forEach(function(driverName) {
 
     describe(driverName + ' driver multiple instances', function() {
         'use strict';
+
+        this.timeout(30000);
+
         var localforage2 = null;
         var localforage3 = null;
         var Promise;
