@@ -241,7 +241,7 @@
             dbInfo.db = dbContext.db = db;
             self._dbInfo = dbInfo;
             // Share the final connection amongst related localForages.
-            for (var k in forages) {
+            for (var k = 0; k < forages.length; k++) {
                 var forage = forages[k];
                 if (forage !== self) { // Self is already up-to-date.
                     forage._dbInfo.db = dbInfo.db;
