@@ -272,7 +272,7 @@ module.exports = exports = function(grunt) {
     ];
     grunt.registerTask('test:local', testTasks.slice());
     grunt.registerTask('testtest', 'Run the unit tests',
-                 ['karma:run'])
+                 ['karma:run']);
 
     // Run tests using Sauce Labs if we are on Travis or have locally
     // available Sauce Labs credentials. Use `grunt test:local` to skip
