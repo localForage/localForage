@@ -162,7 +162,7 @@ means calling `config()` before using `getItem()`, `setItem()`, `removeItem()`,
 
 You can create multiple instances of localForage that point to different stores
 using `createInstance`. All the configuration options used by
-`[config](#configuration)` are supported.
+[`config`](#configuration) are supported.
 
 ``` javascript
 var store = localforage.createInstance({
