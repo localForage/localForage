@@ -913,7 +913,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            self.ready().then(function () {
 	                dbInfo = self._dbInfo;
 	                if (value instanceof Blob) {
-	                    return _checkBlobSupport(dbInfo).then(function (blobSupport) {
+	                    return _checkBlobSupport(dbInfo.db).then(function (blobSupport) {
 	                        if (blobSupport) {
 	                            return value;
 	                        }

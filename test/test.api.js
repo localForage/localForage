@@ -1,4 +1,4 @@
-/* global afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Promise:true, require:true */
+/* global after:true, afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Promise:true, require:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
@@ -222,6 +222,68 @@ DRIVERS.forEach(function(driverName) {
                 done();
             });
         });
+
+        if (driverName === localforage.INDEXEDDB) {
+            describe('Blob support', function() {
+                var transaction;
+                var called;
+                var db;
+                var blob = new Blob([''], {type: 'image/png'});
+
+                before(function() {
+                    db = localforage._dbInfo.db;
+                    transaction = db.transaction;
+                    db.transaction = function() {
+                        called += 1;
+                        return transaction.apply(db, arguments);
+                    };
+                });
+
+                beforeEach(function() {
+                    called = 0;
+                });
+
+                it('not check for non Blob', function(done) {
+                    localforage.setItem('key', {}).then(function() {
+                        if (called === 1) {
+                            done();
+                        } else {
+                            done('db.transaction was called' + called + ' times');
+                        }
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+
+                it('check for Blob', function(done) {
+                    localforage.setItem('key', blob).then(function() {
+                        if (called > 1) {
+                            done();
+                        } else {
+                            done('db.transaction was called' + called + ' times');
+                        }
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+
+                it('check for Blob once', function(done) {
+                    localforage.setItem('key', blob).then(function() {
+                        if (called === 1) {
+                            done();
+                        } else {
+                            done('db.transaction was called' + called + ' times');
+                        }
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+
+                after(function() {
+                    localforage._dbInfo.db.transaction = transaction;
+                });
+            });
+        }
 
         it('should iterate [callback]', function(done) {
             localforage.setItem('officeX', 'InitechX', function(err, setValue) {
