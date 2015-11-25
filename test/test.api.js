@@ -245,11 +245,8 @@ DRIVERS.forEach(function(driverName) {
 
                 it('not check for non Blob', function(done) {
                     localforage.setItem('key', {}).then(function() {
-                        if (called === 1) {
-                            done();
-                        } else {
-                            done('db.transaction was called' + called + ' times');
-                        }
+                        expect(called).to.be(1);
+                        done();
                     }, function(error) {
                         done(error || 'error');
                     });
@@ -257,11 +254,8 @@ DRIVERS.forEach(function(driverName) {
 
                 it('check for Blob', function(done) {
                     localforage.setItem('key', blob).then(function() {
-                        if (called > 1) {
-                            done();
-                        } else {
-                            done('db.transaction was called' + called + ' times');
-                        }
+                        expect(called).to.be.above(1);
+                        done();
                     }, function(error) {
                         done(error || 'error');
                     });
@@ -269,11 +263,8 @@ DRIVERS.forEach(function(driverName) {
 
                 it('check for Blob once', function(done) {
                     localforage.setItem('key', blob).then(function() {
-                        if (called === 1) {
-                            done();
-                        } else {
-                            done('db.transaction was called' + called + ' times');
-                        }
+                        expect(called).to.be(1);
+                        done();
                     }, function(error) {
                         done(error || 'error');
                     });
