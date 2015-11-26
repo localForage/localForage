@@ -444,10 +444,13 @@
             var dbInfo;
             self.ready().then(function() {
                 dbInfo = self._dbInfo;
-                return _checkBlobSupport(dbInfo.db);
-            }).then(function(blobSupport) {
-                if (!blobSupport && value instanceof Blob) {
-                    return _encodeBlob(value);
+                if (value instanceof Blob) {
+                    return _checkBlobSupport(dbInfo.db).then(function(blobSupport) {
+                        if (blobSupport) {
+                            return value;
+                        }
+                        return _encodeBlob(value);
+                    });
                 }
                 return value;
             }).then(function(value) {
