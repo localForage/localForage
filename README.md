@@ -15,7 +15,7 @@ To use localForage, just drop a single JavaScript file into your page:
 ```
 
 Download the [latest localForage from GitHub](https://github.com/mozilla/localForage/releases/latest), or install with
-[npm](https://www.npmjs.org/):
+[npm](https://www.npmjs.com/):
 
 ```bash
 npm install localforage
@@ -121,8 +121,8 @@ localforage.setItem('key', 'value').then(function(value) {
 });
 ```
 
-localForage relies on native [ES6 Promises](http://www.promisejs.org/), but
-[ships with an awesome polyfill](https://github.com/jakearchibald/ES6-Promises)
+localForage relies on native [ES6 Promises](https://www.promisejs.org/), but
+[ships with an awesome polyfill](https://github.com/jakearchibald/es6-promise)
 for browsers that don't support ES6 Promises yet.
 
 ## Storing Blobs, TypedArrays, and other JS objects
@@ -262,7 +262,7 @@ Omitting the bower dependencies will cause the tests to fail!
 
 You need PhantomJS installed to run local tests. Run `npm test` (or,
 directly: `grunt test`). Your code must also pass the
-[linter](http://www.jshint.com/).
+[linter](http://jshint.com/).
 
 localForage is designed to run in the browser, so the tests explicitly require
 a browser environment. Local tests are run on a headless WebKit (using
