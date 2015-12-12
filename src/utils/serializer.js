@@ -1,4 +1,4 @@
-(function() {
+var localforageSerializer = (function() {
     'use strict';
 
     // Sadly, the best way to save binary data in WebSQL/localStorage is serializing
@@ -262,5 +262,6 @@
         bufferToString: bufferToString
     };
 
-    export default localforageSerializer;
+    return localforageSerializer;
 }).call(typeof window !== 'undefined' ? window : self);
+export default localforageSerializer;

@@ -1,6 +1,6 @@
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
-(function() {
+var asyncStorage = (function() {
     'use strict';
 
     var globalObject = this;
@@ -692,5 +692,6 @@
         keys: keys
     };
 
-    export default asyncStorage;
+    return asyncStorage;
 }).call(typeof window !== 'undefined' ? window : self);
+export default asyncStorage;

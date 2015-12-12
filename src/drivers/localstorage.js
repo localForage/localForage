@@ -2,7 +2,7 @@
 // Note that this will have considerable performance and storage
 // side-effects (all data will be serialized on save and only data that
 // can be converted to a string via `JSON.stringify()` will be saved).
-(function() {
+var localStorageWrapper = (function() {
     'use strict';
 
     var globalObject = this;
@@ -298,5 +298,6 @@
         keys: keys
     };
 
-    export default localStorageWrapper;
+    return localStorageWrapper;
 }).call(typeof window !== 'undefined' ? window : self);
+export default localStorageWrapper;
