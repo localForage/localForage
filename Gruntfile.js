@@ -34,7 +34,8 @@ module.exports = exports = function(grunt) {
     grunt.initConfig({
         babel: {
             options: {
-                modules: 'umd',
+                babelrc: false,
+                extends: path.resolve('.babelrc-umd'),
                 moduleIds: true,
                 getModuleId: babelModuleIdProvider
             },
@@ -124,17 +125,17 @@ module.exports = exports = function(grunt) {
             unit: {
                 options: {
                     urls: [
-                        'http://localhost:9999/test/test.component.html',
-                        'http://localhost:9999/test/test.nodriver.html',
-                        'http://localhost:9999/test/test.faultydriver.html',
                         'http://localhost:9999/test/test.main.html',
                         'http://localhost:9999/test/test.min.html',
-                        'http://localhost:9999/test/test.require.html',
-                        'http://localhost:9999/test/test.require.unbundled.html',
-                        'http://localhost:9999/test/test.browserify.html',
-                        'http://localhost:9999/test/test.webpack.html',
                         'http://localhost:9999/test/test.callwhenready.html',
-                        'http://localhost:9999/test/test.customdriver.html'
+                        'http://localhost:9999/test/test.customdriver.html',
+                        'http://localhost:9999/test/test.faultydriver.html',
+                        'http://localhost:9999/test/test.nodriver.html',
+                        'http://localhost:9999/test/test.browserify.html',
+                        'http://localhost:9999/test/test.require.html',
+                        'http://localhost:9999/test/test.webpack.html',
+                        'http://localhost:9999/test/test.require.unbundled.html', // not officially supported since v1.3
+                        'http://localhost:9999/test/test.component.html' // project was deprecated
                     ]
                 }
             }
