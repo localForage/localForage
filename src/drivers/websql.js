@@ -7,7 +7,7 @@
  * Copyright (c) 2012 Niklas von Hertzen
  * Licensed under the MIT license.
  */
-(function() {
+var webSQLStorage = (function() {
     'use strict';
 
     var globalObject = this;
@@ -369,5 +369,6 @@
         keys: keys
     };
 
-    export default webSQLStorage;
+    return webSQLStorage;
 }).call(typeof window !== 'undefined' ? window : self);
+export default webSQLStorage;
