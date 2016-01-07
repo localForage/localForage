@@ -1,6 +1,5 @@
 {
   "name": "localforage",
-  "version": "1.2.0",
   "main": [
     "dist/localforage.js"
   ],
@@ -14,7 +13,8 @@
     "LICENSE",
     "docs*",
     "examples*",
-    "test*"
+    "test*",
+    "site*"
   ],
   "dependencies": {},
   "devDependencies": {

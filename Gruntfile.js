@@ -12,7 +12,48 @@ var sourceFiles = [
 module.exports = exports = function(grunt) {
     'use strict';
 
+    var BANNER = '/*!\n' +
+                 '    localForage -- Offline Storage, Improved\n' +
+                 '    Version ' + grunt.file.readJSON('package.json').version + '\n' +
+                 '    https://mozilla.github.io/localForage\n' +
+                 '    (c) 2013-2015 Mozilla, Apache License 2.0\n' +
+                 '*/\n';
+
+    var babelModuleIdProvider = function getModuleId(moduleName) {
+        var files = {
+            'src/localforage': 'localforage',
+            'src/utils/serializer': 'localforageSerializer',
+            'src/drivers/indexeddb': 'asyncStorage',
+            'src/drivers/localstorage': 'localStorageWrapper',
+            'src/drivers/websql': 'webSQLStorage'
+        };
+
+        return files[moduleName] || moduleName.replace('src/', '');
+    };
+
     grunt.initConfig({
+        babel: {
+            options: {
+                modules: 'umd',
+                moduleIds: true,
+                getModuleId: babelModuleIdProvider
+            },
+            dist: {
+                files: {
+                    'build/es5src/localforage.js': 'src/localforage.js',
+                    'build/es5src/utils/serializer.js': 'src/utils/serializer.js',
+                    'build/es5src/drivers/indexeddb.js': 'src/drivers/indexeddb.js',
+                    'build/es5src/drivers/localstorage.js': 'src/drivers/localstorage.js',
+                    'build/es5src/drivers/websql.js': 'src/drivers/websql.js'
+                }
+            }
+        },
+        browserify: {
+            package_bundling_test: {
+                src: 'test/runner.browserify.js',
+                dest: 'test/localforage.browserify.js'
+            }
+        },
         concat: {
             options: {
                 separator: ''
@@ -20,24 +61,17 @@ module.exports = exports = function(grunt) {
             localforage: {
                 files: {
                     'dist/localforage.js': [
-                        // https://github.com/jakearchibald/es6-promise
                         'bower_components/es6-promise/promise.js',
-                        'src/drivers/**/*.js',
-                        'src/localforage.js'
+                        'dist/localforage.nopromises.js'
                     ],
                     'dist/localforage.nopromises.js': [
-                        'src/drivers/**/*.js',
-                        'src/localforage.js'
+                        // just to add the BANNER
+                        // without adding an extra grunt module
+                        'dist/localforage.nopromises.js'
                     ]
                 },
                 options: {
-                    banner:
-                        '/*!\n' +
-                        '    localForage -- Offline Storage, Improved\n' +
-                        '    Version 1.2.0\n' +
-                        '    http://mozilla.github.io/localForage\n' +
-                        '    (c) 2013-2014 Mozilla, Apache License 2.0\n' +
-                        '*/\n'
+                    banner: BANNER
                 }
             }
         },
@@ -95,6 +129,9 @@ module.exports = exports = function(grunt) {
                         'http://localhost:9999/test/test.main.html',
                         'http://localhost:9999/test/test.min.html',
                         'http://localhost:9999/test/test.require.html',
+                        'http://localhost:9999/test/test.require.unbundled.html',
+                        'http://localhost:9999/test/test.browserify.html',
+                        'http://localhost:9999/test/test.webpack.html',
                         'http://localhost:9999/test/test.callwhenready.html',
                         'http://localhost:9999/test/test.customdriver.html'
                     ]
@@ -144,6 +181,9 @@ module.exports = exports = function(grunt) {
                         'dist/localforage.nopromises.js'
                     ],
                     'site/localforage.min.js': ['dist/localforage.js']
+                },
+                options: {
+                    banner: BANNER
                 }
             }
         },
@@ -159,7 +199,39 @@ module.exports = exports = function(grunt) {
                     'test/runner.js',
                     'test/test.*.*'
                 ],
-                tasks: ['jshint', 'jscs', 'shell:component', 'mocha:unit']
+                tasks: [
+                    'jshint',
+                    'jscs',
+                    'shell:component',
+                    'browserify:package_bundling_test',
+                    'webpack:package_bundling_test',
+                    'mocha:unit'
+                ]
+            }
+        },
+        webpack: {
+            package_bundling_test: {
+                entry: './test/runner.webpack.js',
+                output: {
+                    path: 'test/',
+                    filename: 'localforage.webpack.js'
+                }
+            },
+            localforage_nopromises: {
+                entry: './src/localforage.js',
+                output: {
+                    path: 'dist/',
+                    filename: 'localforage.nopromises.js',
+                    library: ['localforage'],
+                    libraryTarget: 'umd'
+                },
+                module: {
+                    loaders: [{
+                        test: /\.js?$/,
+                        exclude: /(node_modules|bower_components)/,
+                        loader: 'babel'
+                    }]
+                }
             }
         }
     });
@@ -167,7 +239,7 @@ module.exports = exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
 
     grunt.registerTask('default', ['build', 'connect', 'watch']);
-    grunt.registerTask('build', ['concat', 'es3_safe_recast', 'uglify']);
+    grunt.registerTask('build', ['webpack:localforage_nopromises', 'concat', 'es3_safe_recast', 'uglify']);
     grunt.registerTask('publish', ['build', 'shell:publish-site']);
     grunt.registerTask('serve', ['build', 'connect:test', 'watch']);
     grunt.registerTask('site', ['shell:serve-site']);
@@ -175,9 +247,12 @@ module.exports = exports = function(grunt) {
     // These are the test tasks we run regardless of Sauce Labs credentials.
     var testTasks = [
         'build',
+        'babel',
         'jshint',
         'jscs',
         'shell:component',
+        'browserify:package_bundling_test',
+        'webpack:package_bundling_test',
         'connect:test',
         'mocha'
     ];

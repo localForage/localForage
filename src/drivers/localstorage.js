@@ -2,12 +2,10 @@
 // Note that this will have considerable performance and storage
 // side-effects (all data will be serialized on save and only data that
 // can be converted to a string via `JSON.stringify()` will be saved).
-(function() {
+var localStorageWrapper = (function() {
     'use strict';
 
-    // Promises!
-    var Promise = (typeof module !== 'undefined' && module.exports) ?
-                  require('promise') : this.Promise;
+    var globalObject = this;
     var localStorage = null;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
@@ -40,46 +38,32 @@
 
         dbInfo.keyPrefix = dbInfo.name + '/';
 
+        if (dbInfo.storeName !== self._defaultConfig.storeName) {
+            dbInfo.keyPrefix += dbInfo.storeName + '/';
+        }
+
         self._dbInfo = dbInfo;
-        return Promise.resolve();
+
+        return System.import('./../utils/serializer').then(function(lib) {
+            dbInfo.serializer = lib;
+            return Promise.resolve();
+        });
     }
-
-    var SERIALIZED_MARKER = '__lfsc__:';
-    var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
-
-    // OMG the serializations!
-    var TYPE_ARRAYBUFFER = 'arbf';
-    var TYPE_BLOB = 'blob';
-    var TYPE_INT8ARRAY = 'si08';
-    var TYPE_UINT8ARRAY = 'ui08';
-    var TYPE_UINT8CLAMPEDARRAY = 'uic8';
-    var TYPE_INT16ARRAY = 'si16';
-    var TYPE_INT32ARRAY = 'si32';
-    var TYPE_UINT16ARRAY = 'ur16';
-    var TYPE_UINT32ARRAY = 'ui32';
-    var TYPE_FLOAT32ARRAY = 'fl32';
-    var TYPE_FLOAT64ARRAY = 'fl64';
-    var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH +
-                                        TYPE_ARRAYBUFFER.length;
 
     // Remove all keys from the datastore, effectively destroying all data in
     // the app's key/value store!
     function clear(callback) {
         var self = this;
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var keyPrefix = self._dbInfo.keyPrefix;
+        var promise = self.ready().then(function() {
+            var keyPrefix = self._dbInfo.keyPrefix;
 
-                for (var i = localStorage.length - 1; i >= 0; i--) {
-                    var key = localStorage.key(i);
+            for (var i = localStorage.length - 1; i >= 0; i--) {
+                var key = localStorage.key(i);
 
-                    if (key.indexOf(keyPrefix) === 0) {
-                        localStorage.removeItem(key);
-                    }
+                if (key.indexOf(keyPrefix) === 0) {
+                    localStorage.removeItem(key);
                 }
-
-                resolve();
-            }).catch(reject);
+            }
         });
 
         executeCallback(promise, callback);
@@ -94,30 +78,24 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
+            globalObject.console.warn(key +
                                 ' used as a key, but it is not a string.');
             key = String(key);
         }
 
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                try {
-                    var dbInfo = self._dbInfo;
-                    var result = localStorage.getItem(dbInfo.keyPrefix + key);
+        var promise = self.ready().then(function() {
+            var dbInfo = self._dbInfo;
+            var result = localStorage.getItem(dbInfo.keyPrefix + key);
 
-                    // If a result was found, parse it from the serialized
-                    // string into a JS object. If result isn't truthy, the key
-                    // is likely undefined and we'll pass it straight to the
-                    // callback.
-                    if (result) {
-                        result = _deserialize(result);
-                    }
+            // If a result was found, parse it from the serialized
+            // string into a JS object. If result isn't truthy, the key
+            // is likely undefined and we'll pass it straight to the
+            // callback.
+            if (result) {
+                result = dbInfo.serializer.deserialize(result);
+            }
 
-                    resolve(result);
-                } catch (e) {
-                    reject(e);
-                }
-            }).catch(reject);
+            return result;
         });
 
         executeCallback(promise, callback);
@@ -128,38 +106,42 @@
     function iterate(iterator, callback) {
         var self = this;
 
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                try {
-                    var keyPrefix = self._dbInfo.keyPrefix;
-                    var keyPrefixLength = keyPrefix.length;
-                    var length = localStorage.length;
+        var promise = self.ready().then(function() {
+            var dbInfo = self._dbInfo;
+            var keyPrefix = dbInfo.keyPrefix;
+            var keyPrefixLength = keyPrefix.length;
+            var length = localStorage.length;
 
-                    for (var i = 0; i < length; i++) {
-                        var key = localStorage.key(i);
-                        var value = localStorage.getItem(key);
+            // We use a dedicated iterator instead of the `i` variable below
+            // so other keys we fetch in localStorage aren't counted in
+            // the `iterationNumber` argument passed to the `iterate()`
+            // callback.
+            //
+            // See: github.com/mozilla/localForage/pull/435#discussion_r38061530
+            var iterationNumber = 1;
 
-                        // If a result was found, parse it from the serialized
-                        // string into a JS object. If result isn't truthy, the
-                        // key is likely undefined and we'll pass it straight
-                        // to the iterator.
-                        if (value) {
-                            value = _deserialize(value);
-                        }
-
-                        value = iterator(value, key.substring(keyPrefixLength));
-
-                        if (value !== void(0)) {
-                            resolve(value);
-                            return;
-                        }
-                    }
-
-                    resolve();
-                } catch (e) {
-                    reject(e);
+            for (var i = 0; i < length; i++) {
+                var key = localStorage.key(i);
+                if (key.indexOf(keyPrefix) !== 0) {
+                    continue;
                 }
-            }).catch(reject);
+                var value = localStorage.getItem(key);
+
+                // If a result was found, parse it from the serialized
+                // string into a JS object. If result isn't truthy, the
+                // key is likely undefined and we'll pass it straight
+                // to the iterator.
+                if (value) {
+                    value = dbInfo.serializer.deserialize(value);
+                }
+
+                value = iterator(value, key.substring(keyPrefixLength),
+                                 iterationNumber++);
+
+                if (value !== void(0)) {
+                    return value;
+                }
+            }
         });
 
         executeCallback(promise, callback);
@@ -169,23 +151,21 @@
     // Same as localStorage's key() method, except takes a callback.
     function key(n, callback) {
         var self = this;
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var dbInfo = self._dbInfo;
-                var result;
-                try {
-                    result = localStorage.key(n);
-                } catch (error) {
-                    result = null;
-                }
+        var promise = self.ready().then(function() {
+            var dbInfo = self._dbInfo;
+            var result;
+            try {
+                result = localStorage.key(n);
+            } catch (error) {
+                result = null;
+            }
 
-                // Remove the prefix from the key, if a key is found.
-                if (result) {
-                    result = result.substring(dbInfo.keyPrefix.length);
-                }
+            // Remove the prefix from the key, if a key is found.
+            if (result) {
+                result = result.substring(dbInfo.keyPrefix.length);
+            }
 
-                resolve(result);
-            }).catch(reject);
+            return result;
         });
 
         executeCallback(promise, callback);
@@ -194,20 +174,18 @@
 
     function keys(callback) {
         var self = this;
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var dbInfo = self._dbInfo;
-                var length = localStorage.length;
-                var keys = [];
+        var promise = self.ready().then(function() {
+            var dbInfo = self._dbInfo;
+            var length = localStorage.length;
+            var keys = [];
 
-                for (var i = 0; i < length; i++) {
-                    if (localStorage.key(i).indexOf(dbInfo.keyPrefix) === 0) {
-                        keys.push(localStorage.key(i).substring(dbInfo.keyPrefix.length));
-                    }
+            for (var i = 0; i < length; i++) {
+                if (localStorage.key(i).indexOf(dbInfo.keyPrefix) === 0) {
+                    keys.push(localStorage.key(i).substring(dbInfo.keyPrefix.length));
                 }
+            }
 
-                resolve(keys);
-            }).catch(reject);
+            return keys;
         });
 
         executeCallback(promise, callback);
@@ -217,10 +195,8 @@
     // Supply the number of keys in the datastore to the callback function.
     function length(callback) {
         var self = this;
-        var promise = new Promise(function(resolve, reject) {
-            self.keys().then(function(keys) {
-                resolve(keys.length);
-            }).catch(reject);
+        var promise = self.keys().then(function(keys) {
+            return keys.length;
         });
 
         executeCallback(promise, callback);
@@ -233,177 +209,18 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
+            globalObject.console.warn(key +
                                 ' used as a key, but it is not a string.');
             key = String(key);
         }
 
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var dbInfo = self._dbInfo;
-                localStorage.removeItem(dbInfo.keyPrefix + key);
-
-                resolve();
-            }).catch(reject);
+        var promise = self.ready().then(function() {
+            var dbInfo = self._dbInfo;
+            localStorage.removeItem(dbInfo.keyPrefix + key);
         });
 
         executeCallback(promise, callback);
         return promise;
-    }
-
-    // Deserialize data we've inserted into a value column/field. We place
-    // special markers into our strings to mark them as encoded; this isn't
-    // as nice as a meta field, but it's the only sane thing we can do whilst
-    // keeping localStorage support intact.
-    //
-    // Oftentimes this will just deserialize JSON content, but if we have a
-    // special marker (SERIALIZED_MARKER, defined above), we will extract
-    // some kind of arraybuffer/binary data/typed array out of the string.
-    function _deserialize(value) {
-        // If we haven't marked this string as being specially serialized (i.e.
-        // something other than serialized JSON), we can just return it and be
-        // done with it.
-        if (value.substring(0,
-            SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
-            return JSON.parse(value);
-        }
-
-        // The following code deals with deserializing some kind of Blob or
-        // TypedArray. First we separate out the type of data we're dealing
-        // with from the data itself.
-        var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);
-        var type = value.substring(SERIALIZED_MARKER_LENGTH,
-                                   TYPE_SERIALIZED_MARKER_LENGTH);
-
-        // Fill the string into a ArrayBuffer.
-        // 2 bytes for each char.
-        var buffer = new ArrayBuffer(serializedString.length * 2);
-        var bufferView = new Uint16Array(buffer);
-        for (var i = serializedString.length - 1; i >= 0; i--) {
-            bufferView[i] = serializedString.charCodeAt(i);
-        }
-
-        // Return the right type based on the code/type set during
-        // serialization.
-        switch (type) {
-            case TYPE_ARRAYBUFFER:
-                return buffer;
-            case TYPE_BLOB:
-                return new Blob([buffer]);
-            case TYPE_INT8ARRAY:
-                return new Int8Array(buffer);
-            case TYPE_UINT8ARRAY:
-                return new Uint8Array(buffer);
-            case TYPE_UINT8CLAMPEDARRAY:
-                return new Uint8ClampedArray(buffer);
-            case TYPE_INT16ARRAY:
-                return new Int16Array(buffer);
-            case TYPE_UINT16ARRAY:
-                return new Uint16Array(buffer);
-            case TYPE_INT32ARRAY:
-                return new Int32Array(buffer);
-            case TYPE_UINT32ARRAY:
-                return new Uint32Array(buffer);
-            case TYPE_FLOAT32ARRAY:
-                return new Float32Array(buffer);
-            case TYPE_FLOAT64ARRAY:
-                return new Float64Array(buffer);
-            default:
-                throw new Error('Unkown type: ' + type);
-        }
-    }
-
-    // Converts a buffer to a string to store, serialized, in the backend
-    // storage library.
-    function _bufferToString(buffer) {
-        var str = '';
-        var uint16Array = new Uint16Array(buffer);
-
-        try {
-            str = String.fromCharCode.apply(null, uint16Array);
-        } catch (e) {
-            // This is a fallback implementation in case the first one does
-            // not work. This is required to get the phantomjs passing...
-            for (var i = 0; i < uint16Array.length; i++) {
-                str += String.fromCharCode(uint16Array[i]);
-            }
-        }
-
-        return str;
-    }
-
-    // Serialize a value, afterwards executing a callback (which usually
-    // instructs the `setItem()` callback/promise to be executed). This is how
-    // we store binary data with localStorage.
-    function _serialize(value, callback) {
-        var valueString = '';
-        if (value) {
-            valueString = value.toString();
-        }
-
-        // Cannot use `value instanceof ArrayBuffer` or such here, as these
-        // checks fail when running the tests using casper.js...
-        //
-        // TODO: See why those tests fail and use a better solution.
-        if (value && (value.toString() === '[object ArrayBuffer]' ||
-                      value.buffer &&
-                      value.buffer.toString() === '[object ArrayBuffer]')) {
-            // Convert binary arrays to a string and prefix the string with
-            // a special marker.
-            var buffer;
-            var marker = SERIALIZED_MARKER;
-
-            if (value instanceof ArrayBuffer) {
-                buffer = value;
-                marker += TYPE_ARRAYBUFFER;
-            } else {
-                buffer = value.buffer;
-
-                if (valueString === '[object Int8Array]') {
-                    marker += TYPE_INT8ARRAY;
-                } else if (valueString === '[object Uint8Array]') {
-                    marker += TYPE_UINT8ARRAY;
-                } else if (valueString === '[object Uint8ClampedArray]') {
-                    marker += TYPE_UINT8CLAMPEDARRAY;
-                } else if (valueString === '[object Int16Array]') {
-                    marker += TYPE_INT16ARRAY;
-                } else if (valueString === '[object Uint16Array]') {
-                    marker += TYPE_UINT16ARRAY;
-                } else if (valueString === '[object Int32Array]') {
-                    marker += TYPE_INT32ARRAY;
-                } else if (valueString === '[object Uint32Array]') {
-                    marker += TYPE_UINT32ARRAY;
-                } else if (valueString === '[object Float32Array]') {
-                    marker += TYPE_FLOAT32ARRAY;
-                } else if (valueString === '[object Float64Array]') {
-                    marker += TYPE_FLOAT64ARRAY;
-                } else {
-                    callback(new Error('Failed to get type for BinaryArray'));
-                }
-            }
-
-            callback(marker + _bufferToString(buffer));
-        } else if (valueString === '[object Blob]') {
-            // Conver the blob to a binaryArray and then to a string.
-            var fileReader = new FileReader();
-
-            fileReader.onload = function() {
-                var str = _bufferToString(this.result);
-
-                callback(SERIALIZED_MARKER + TYPE_BLOB + str);
-            };
-
-            fileReader.readAsArrayBuffer(value);
-        } else {
-            try {
-                callback(JSON.stringify(value));
-            } catch (e) {
-                window.console.error("Couldn't convert value into a JSON " +
-                                     'string: ', value);
-
-                callback(e);
-            }
-        }
     }
 
     // Set a key's value and run an optional callback once the value is set.
@@ -415,29 +232,30 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
+            globalObject.console.warn(key +
                                 ' used as a key, but it is not a string.');
             key = String(key);
         }
 
-        var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                // Convert undefined values to null.
-                // https://github.com/mozilla/localForage/pull/42
-                if (value === undefined) {
-                    value = null;
-                }
+        var promise = self.ready().then(function() {
+            // Convert undefined values to null.
+            // https://github.com/mozilla/localForage/pull/42
+            if (value === undefined) {
+                value = null;
+            }
 
-                // Save the original value to pass to the callback.
-                var originalValue = value;
+            // Save the original value to pass to the callback.
+            var originalValue = value;
 
-                _serialize(value, function(value, error) {
+            return new Promise(function(resolve, reject) {
+                var dbInfo = self._dbInfo;
+                dbInfo.serializer.serialize(value, function(value, error) {
                     if (error) {
                         reject(error);
                     } else {
                         try {
-                            var dbInfo = self._dbInfo;
                             localStorage.setItem(dbInfo.keyPrefix + key, value);
+                            resolve(originalValue);
                         } catch (e) {
                             // localStorage capacity exceeded.
                             // TODO: Make this a specific error/event.
@@ -445,12 +263,11 @@
                                 e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
                                 reject(e);
                             }
+                            reject(e);
                         }
-
-                        resolve(originalValue);
                     }
                 });
-            }).catch(reject);
+            });
         });
 
         executeCallback(promise, callback);
@@ -481,13 +298,6 @@
         keys: keys
     };
 
-    if (typeof define === 'function' && define.amd) {
-        define('localStorageWrapper', function() {
-            return localStorageWrapper;
-        });
-    } else if (typeof module !== 'undefined' && module.exports) {
-        module.exports = localStorageWrapper;
-    } else {
-        this.localStorageWrapper = localStorageWrapper;
-    }
-}).call(window);
+    return localStorageWrapper;
+}).call(typeof window !== 'undefined' ? window : self);
+export default localStorageWrapper;

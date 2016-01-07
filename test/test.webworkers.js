@@ -1,20 +1,23 @@
 /* global before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
-    // localforage.LOCALSTORAGE,
+    localforage.LOCALSTORAGE,
     localforage.WEBSQL
 ];
 
 DRIVERS.forEach(function(driverName) {
-    if ((!Modernizr.indexeddb && driverName === localforage.INDEXEDDB) ||
-        (!Modernizr.localstorage && driverName === localforage.LOCALSTORAGE) ||
-        (!Modernizr.websqldatabase && driverName === localforage.WEBSQL)) {
+    if ((!localforage.supports(localforage.INDEXEDDB) &&
+         driverName === localforage.INDEXEDDB) ||
+        (!localforage.supports(localforage.LOCALSTORAGE) &&
+         driverName === localforage.LOCALSTORAGE) ||
+        (!localforage.supports(localforage.WEBSQL) &&
+         driverName === localforage.WEBSQL)) {
         // Browser doesn't support this storage library, so we exit the API
         // tests.
         return;
     }
 
-    describe.skip('Web Worker support in ' + driverName, function() {
+    describe('Web Worker support in ' + driverName, function() {
         'use strict';
 
         before(function(done) {
@@ -26,19 +29,24 @@ DRIVERS.forEach(function(driverName) {
         });
 
         if (!Modernizr.webworkers) {
-            it.skip("doesn't have web worker support");
+            it.skip('doesn\'t have web worker support');
+            return;
+        }
 
+        if (driverName === localforage.LOCALSTORAGE ||
+            driverName === localforage.WEBSQL) {
+            it.skip(driverName + ' is not supported in web workers');
             return;
         }
 
         it('saves data', function(done) {
-            var webWorker = new Worker('/test/webworker.js');
+            var webWorker = new Worker('/test/webworker-client.js');
 
             webWorker.addEventListener('message', function(e) {
                 var body = e.data.body;
 
                 window.console.log(body);
-                expect(body.value).to.be('I have been set');
+                expect(body).to.be('I have been set');
                 done();
             });
 

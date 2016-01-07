@@ -1,14 +1,41 @@
-/* global before:true, beforeEach:true, describe:true, expect:true, it:true, Modernizr:true */
+/* global before:true, beforeEach:true, describe:true, expect:true, it:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
     localforage.WEBSQL
 ];
 
+// Abstracts constructing a Blob object, so it also works in older
+// browsers that don't support the native Blob constructor. (i.e.
+// old QtWebKit versions, at least).
+function _createBlob(parts, properties) {
+    parts = parts || [];
+    properties = properties || {};
+    try {
+        return new Blob(parts, properties);
+    } catch (e) {
+        if (e.name !== 'TypeError') {
+            throw e;
+        }
+        var BlobBuilder = window.BlobBuilder ||
+            window.MSBlobBuilder ||
+            window.MozBlobBuilder ||
+            window.WebKitBlobBuilder;
+        var builder = new BlobBuilder();
+        for (var i = 0; i < parts.length; i += 1) {
+            builder.append(parts[i]);
+        }
+        return builder.getBlob(properties.type);
+    }
+}
+
 DRIVERS.forEach(function(driverName) {
-    if ((!Modernizr.indexeddb && driverName === localforage.INDEXEDDB) ||
-        (!Modernizr.localstorage && driverName === localforage.LOCALSTORAGE) ||
-        (!Modernizr.websqldatabase && driverName === localforage.WEBSQL)) {
+    if ((!localforage.supports(localforage.INDEXEDDB) &&
+         driverName === localforage.INDEXEDDB) ||
+        (!localforage.supports(localforage.LOCALSTORAGE) &&
+         driverName === localforage.LOCALSTORAGE) ||
+        (!localforage.supports(localforage.WEBSQL) &&
+         driverName === localforage.WEBSQL)) {
         // Browser doesn't support this storage library, so we exit the API
         // tests.
         return;
@@ -16,6 +43,8 @@ DRIVERS.forEach(function(driverName) {
 
     describe('Type handler for ' + driverName, function() {
         'use strict';
+
+        this.timeout(30000);
 
         before(function(done) {
             localforage.setDriver(driverName).then(done);
@@ -241,12 +270,12 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        // Skip binary data tests if Array Buffer isn't supported.
+        // Skip binary (ArrayBuffer) data tests if Array Buffer isn't supported.
         if (typeof ArrayBuffer !== 'undefined') {
-            it('saves binary data', function(done) {
+            var runBinaryTest = function(url, done) {
                 var request = new XMLHttpRequest();
 
-                request.open('GET', '/test/photo.jpg', true);
+                request.open('GET', url, true);
                 request.responseType = 'arraybuffer';
 
                 // When the AJAX state changes, save the photo locally.
@@ -274,9 +303,86 @@ DRIVERS.forEach(function(driverName) {
                 };
 
                 request.send();
+            };
+
+            it('saves binary (ArrayBuffer) data', function(done) {
+                runBinaryTest('/test/photo.jpg', done);
+            });
+
+            it('saves odd length binary (ArrayBuffer) data', function(done) {
+                runBinaryTest('/test/photo2.jpg', done);
             });
         } else {
-            it.skip('saves binary data (ArrayBuffer type does not exist)');
+            it.skip('saves binary (ArrayBuffer) data (ArrayBuffer type does not exist)');
+        }
+
+        // This does not run on PhantomJS < 2.0.
+        // https://github.com/ariya/phantomjs/issues/11013
+        // Skip binary(Blob) data tests if Blob isn't supported.
+        if (typeof Blob === 'function') {
+            it('saves binary (Blob) data', function(done) {
+                var fileParts = ['<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>'];
+                var mimeString = 'text\/html';
+
+                var testBlob = _createBlob(fileParts, { 'type' : mimeString });
+
+                localforage.setItem('blob', testBlob, function(err, blob) {
+                    expect(err).to.be(null);
+                    expect(blob.toString())
+                        .to.be('[object Blob]');
+                    expect(blob.size)
+                        .to.be(testBlob.size);
+                    expect(blob.type)
+                        .to.be(testBlob.type);
+                }).then(function() {
+                    localforage.getItem('blob', function(err, blob) {
+                        expect(err).to.be(null);
+                        expect(blob.toString())
+                            .to.be('[object Blob]');
+                        expect(blob.size)
+                            .to.be(testBlob.size);
+                        expect(blob.type)
+                            .to.be(testBlob.type);
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip('saves binary (Blob) data (Blob type does not exist)');
+        }
+
+        if (typeof Blob === 'function') {
+            it('saves binary (Blob) data, iterate back', function(done) {
+                var fileParts = ['<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>'];
+                var mimeString = 'text\/html';
+
+                var testBlob = _createBlob(fileParts, { 'type' : mimeString });
+
+                localforage.setItem('blob', testBlob, function(err, blob) {
+                    expect(err).to.be(null);
+                    expect(blob.toString())
+                        .to.be('[object Blob]');
+                    expect(blob.size)
+                        .to.be(testBlob.size);
+                    expect(blob.type)
+                        .to.be(testBlob.type);
+                }).then(function() {
+                    localforage.iterate(function(blob, key) {
+                        if (key !== 'blob') {
+                            return;
+                        }
+                        expect(blob.toString())
+                            .to.be('[object Blob]');
+                        expect(blob.size)
+                            .to.be(testBlob.size);
+                        expect(blob.type)
+                            .to.be(testBlob.type);
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip('saves binary (Blob) data (Blob type does not exist)');
         }
     });
 

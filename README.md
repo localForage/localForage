@@ -1,13 +1,11 @@
-# localForage [![Build Status](https://secure.travis-ci.org/mozilla/localForage.png?branch=master)](http://travis-ci.org/mozilla/localForage)
+# localForage [![Build Status](https://travis-ci.org/mozilla/localForage.svg?branch=master)](http://travis-ci.org/mozilla/localForage)
 
-localForage is a JavaScript library that improves the offline experience of
-your web app by using asynchronous storage (via IndexedDB or WebSQL
-where available) with a simple, `localStorage`-like API.
+localForage is a fast and simple storage library for JavaScript. localForage
+improves the offline experience of your web app by using asynchronous storage
+(IndexedDB or WebSQL) with a simple, `localStorage`-like API.
 
 localForage uses localStorage in browsers with no IndexedDB or
-WebSQL support. Asynchronous storage is available in the current
-versions of all major browsers: Chrome, Firefox, IE, and Safari
-(including Safari Mobile). See below for detailed compatibility info.
+WebSQL support. See [the wiki for detailed compatibility info][supported browsers].
 
 To use localForage, just drop a single JavaScript file into your page:
 
@@ -17,52 +15,34 @@ To use localForage, just drop a single JavaScript file into your page:
 ```
 
 Download the [latest localForage from GitHub](https://github.com/mozilla/localForage/releases/latest), or install with
-[npm](https://www.npmjs.org/) or [bower](http://bower.io):
+[npm](https://www.npmjs.com/):
 
 ```bash
 npm install localforage
+```
+
+or [bower](http://bower.io):
+
+```bash
 bower install localforage
 ```
 
 localForage is compatible with [browserify](http://browserify.org/).
 
-## Supported Browsers/Platforms
-
-localForage works in all modern browsers (IE 8 and above).
-_Asynchronous storage_ is available in all browsers **in bold**, with
-localStorage fallback in parentheses.
-
-* **Android Browser 2.1**
-* **Blackberry 7**
-* **Chrome 23** (Chrome 4.0+ with localStorage)
-* **Chrome for Android 32**
-* **Firefox 10** (Firefox 3.5+ with localStorage)
-* **Firefox for Android 25**
-* **Firefox OS 1.0**
-* **IE 10** (IE 8+ with localStorage)
-* **IE Mobile 10**
-* **Opera 15** (Opera 10.5+ with localStorage)
-* **Opera Mobile 11**
-* **Phonegap/Apache Cordova 1.2.0**
-* **Safari 3.1** (includes Mobile Safari)
-
-Different browsers have [different storage limits](http://www.html5rocks.com/en/tutorials/offline/quota-research/#toc-overview), so plan accordingly.
-
-Note that, thanks to WebSQL support, apps packaged with Phonegap will also
-use asynchronous storage. Pretty slick!
+[supported browsers]: https://github.com/mozilla/localForage/wiki/Supported-Browsers-Platforms
 
 ## Support
 
 Lost? Need help? Try the
 [localForage API documentation](https://mozilla.github.io/localForage).
 
-If you're stuck using the library, running the tests, or want to contribute,
+If you're stuck using the library, running the tests, or want to contribute
 to localForage, you can visit
-[irc.mozilla.org](https://wiki.mozilla.org/IRC) and head to the `#apps`
+[irc.freenode.net](https://freenode.net/) and head to the `#localforage`
 channel to ask questions about localForage.
 
 The best person to ask about localForage is [**tofumatt**][tofumatt], who
-is usually online from 8am-10pm Eastern Time.
+is usually online from 8am-8pm GMT (London Time).
 
 [tofumatt]: http://tofumatt.com/
 
@@ -70,17 +50,18 @@ is usually online from 8am-10pm Eastern Time.
 
 ## Callbacks
 
-Because localForage uses async storage, it has an async API. It's otherwise
-exactly the same as the
+Because localForage uses async storage, it has an async API.
+It's otherwise exactly the same as the
 [localStorage API](https://hacks.mozilla.org/2009/06/localstorage/).
 
 ```javascript
 // In localStorage, we would do:
-localStorage.setItem('key', JSON.stringify('value'));
-doSomethingElse();
+var obj = { value: "hello world" };
+localStorage.setItem('key', JSON.stringify(obj));
+alert(obj.value);
 
 // With localForage, we use callbacks:
-localforage.setItem('key', 'value', doSomethingElse);
+localforage.setItem('key', obj, function(err, result) { alert(result.value); });
 ```
 
 Similarly, please don't expect a return value from calls to
@@ -93,10 +74,9 @@ alert(value);
 
 // Async, fast, and non-blocking!
 localforage.getItem('key', function(err, value) { alert(value) });
-
 ```
 
-Note that callbacks in localForage are Node-style (error argument first) since
+Callbacks in localForage are Node-style (error argument first) since version
 `0.9.3`. This means if you're using callbacks, your code should look like this:
 
 ```javascript
@@ -129,7 +109,7 @@ function doSomethingElse(value) {
 localforage.setItem('key', 'value').then(doSomethingElse);
 ```
 
-Note that with Promises, `err` is not the first argument to your function.
+When using Promises, `err` is **not** the first argument passed to a function.
 Instead, you handle an error with the rejection part of the Promise:
 
 ```javascript
@@ -141,8 +121,8 @@ localforage.setItem('key', 'value').then(function(value) {
 });
 ```
 
-localForage relies on native [ES6 Promises](http://www.promisejs.org/), but
-[ships with an awesome polyfill](https://github.com/jakearchibald/ES6-Promises)
+localForage relies on native [ES6 Promises](https://www.promisejs.org/), but
+[ships with an awesome polyfill](https://github.com/jakearchibald/es6-promise)
 for browsers that don't support ES6 Promises yet.
 
 ## Storing Blobs, TypedArrays, and other JS objects
@@ -156,45 +136,10 @@ localStorage make storing many large Blobs impossible.
 
 [api]: https://mozilla.github.io/localForage/#setitem
 
-## Driver Selection (i.e. forcing localStorage)
-
-For development, it can be easier to use the
-slower--but easier to debug--localStorage driver (mostly because localStorage
-can easily be inspected from the console). You can use the `setDriver()` method
-to change the driver localForage is using at any time.
-
-```javascript
-// If you aren't using JS modules, things are loaded synchronously.
-localforage.setDriver(localforage.LOCALSTORAGE);
-alert(localforage.driver());
-  => 'localStorageWrapper'
-
-// If you're using modules, things load asynchronously, so you should use
-// callbacks or promises to ensure things have loaded.
-localforage.setDriver(localforage.LOCALSTORAGE, function() {
-    alert(localforage.driver());
-});
-  => 'localStorageWrapper'
-
-// The promises version:
-localforage.setDriver(localforage.LOCALSTORAGE).then(function() {
-    alert(localforage.driver());
-});
-  => 'localStorageWrapper'
-```
-
-You can actually force any available driver with this method, but given that
-the best driver will be selected automatically when the library is loaded, this
-method is mostly useful in forcing localStorage.
-
-Note that trying to load a driver unavailable on the current browser (like
-trying to load WebSQL in Gecko) will fail and the previously loaded "best
-choice" will continue to be used.
-
 ## Configuration
 
 You can set database information with the `config()` method.
-Available options are `driver`, `name`, `storeName`, `version`, and
+Available options are `driver`, `name`, `storeName`, `version`, `size`, and
 `description`.
 
 Example:
@@ -213,11 +158,29 @@ localforage.config({
 means calling `config()` before using `getItem()`, `setItem()`, `removeItem()`,
 `clear()`, `key()`, `keys()` or `length()`.
 
+## Multiple instances
+
+You can create multiple instances of localForage that point to different stores
+using `createInstance`. All the configuration options used by
+[`config`](#configuration) are supported.
+
+``` javascript
+var store = localforage.createInstance({
+  name: "nameHere"
+});
+
+var otherStore = localforage.createInstance({
+  name: "otherName"
+});
+
+// Setting the key on one of these doesn't affect the other.
+store.setItem("key", "value");
+otherStore.setItem("key", "value2");
+```
+
 ## RequireJS
 
-You can use localForage with [RequireJS](http://requirejs.org/), and even though
-each driver will be loaded asynchronously with a `require()` call, you can use
-localForage without having to confirm that it's ready:
+You can use localForage with [RequireJS](http://requirejs.org/):
 
 ```javascript
 define(['localforage'], function(localforage) {
@@ -229,15 +192,24 @@ define(['localforage'], function(localforage) {
 });
 ```
 
-In pre-1.0 versions you had to call `.ready()` to make sure the code was loaded,
-but this is no longer necessary.
+## Browserify and Webpack
 
-## Web Workers
+localForage 1.3+ works with both Browserify and Webpack. If you're using an
+earlier version of localForage and are having issues with Browserify or
+Webpack, please upgrade to 1.3.0 or above.
 
-Web Worker support in Firefox is blocked by [bug 701634][]. Until it is fixed,
-web workers are not officially supported by localForage.
+If you're using localForage in your own build system (eg. browserify or
+webpack) make sure you have the
+[required plugins and transformers](https://github.com/mozilla/localForage/blob/master/package.json#L24)
+installed (eg. `npm install --save-dev babel-plugin-system-import-transformer`).
 
-[bug 701634]: https://bugzilla.mozilla.org/show_bug.cgi?id=701634
+## TypeScript
+
+To import localForage in TypeScript:
+
+```javascript
+import {default as localforage} from "localforage"
+```
 
 ## Framework Support
 
@@ -258,6 +230,10 @@ added to this list.
 You can create your own driver if you want; see the
 [`defineDriver`](https://mozilla.github.io/localForage/#definedriver) API docs.
 
+There is a [list of custom drivers on the wiki][custom drivers].
+
+[custom drivers]: https://github.com/mozilla/localForage/wiki/Custom-Drivers
+
 # Working on localForage
 
 You'll need [node/npm](http://nodejs.org/),
@@ -270,6 +246,10 @@ dependencies. Replace `USERNAME` with your GitHub username and run the
 following:
 
 ```bash
+# Install bower and grunt globally if you don't have them:
+npm install -g bower grunt-cli
+
+# Replace USERNAME with your GitHub username:
 git clone git@github.com:USERNAME/localForage.git
 cd localForage
 npm install
@@ -282,19 +262,35 @@ Omitting the bower dependencies will cause the tests to fail!
 
 You need PhantomJS installed to run local tests. Run `npm test` (or,
 directly: `grunt test`). Your code must also pass the
-[linter](http://www.jshint.com/).
+[linter](http://jshint.com/).
 
 localForage is designed to run in the browser, so the tests explicitly require
 a browser environment. Local tests are run on a headless WebKit (using
-[PhantomJS](http://phantomjs.org)), but cross-browser tests are run using
-[Sauce Labs](https://saucelabs.com/).
-
-If you have Sauce Labs credentials on your machine, localForage will attempt
-to connect to Sauce Labs to run the tests on Sauce Labs as well. To skip
-Sauce Labs tests, run `grunt test:local`.
+[PhantomJS](http://phantomjs.org)).
 
 When you submit a pull request, tests will be run against all browsers that
-localForage supports.
+localForage supports on Travis CI using [Sauce Labs](https://saucelabs.com/).
+
+## Building the API Documentation
+
+We currently use a Ruby tool to build our
+[API documentation](https://mozilla.github.io/localForage). You can install the Ruby dependencies with [Bundler](http://bundler.io):
+
+```bash
+# From inside the localForage directory
+bundle install
+```
+
+Then use `grunt` to serve the site:
+
+```bash
+grunt site
+```
+
+Navigate to [localhost:4567](http://localhost:4567/) in your browser to see the
+docs.
+
+There is an [open issue to move to a node tool for the docs](https://github.com/mozilla/localForage/issues/192).
 
 # License
 
@@ -303,5 +299,5 @@ This program is free software; it is distributed under an
 
 ---
 
-Copyright (c) 2013-2014 [Mozilla](https://mozilla.org)
+Copyright (c) 2013-2015 [Mozilla](https://mozilla.org)
 ([Contributors](https://github.com/mozilla/localForage/graphs/contributors)).

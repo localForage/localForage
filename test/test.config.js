@@ -27,13 +27,16 @@ describe('Config API', function() {
         localforage.config(this.defaultConfig);
     });
 
-    it('returns the default values', function() {
+    it('returns the default values', function(done) {
         expect(localforage.config('description')).to.be('');
-        expect(localforage.config('driver')).to.be(localforage.driver());
         expect(localforage.config('name')).to.be('localforage');
         expect(localforage.config('size')).to.be(4980736);
         expect(localforage.config('storeName')).to.be('keyvaluepairs');
         expect(localforage.config('version')).to.be(1.0);
+        localforage.ready(function() {
+            expect(localforage.config('driver')).to.be(localforage.driver());
+            done();
+        });
     });
 
     it('returns error if API call was already made', function(done) {
@@ -42,7 +45,7 @@ describe('Config API', function() {
                 description: '123',
                 driver: 'I a not set driver',
                 name: 'My Cool App',
-                storeName: 'storeFront',
+                storeName: 'myStoreName',
                 version: 2.0
             });
 
@@ -75,7 +78,7 @@ describe('Config API', function() {
             description: 'The offline datastore for my cool app',
             driver: secondSupportedDriver,
             name: 'My Cool App',
-            storeName: 'storeFront',
+            storeName: 'myStoreName',
             version: 2.0
         });
 
@@ -86,7 +89,7 @@ describe('Config API', function() {
                           .be(secondSupportedDriver);
         expect(localforage.config('name')).to.be('My Cool App');
         expect(localforage.config('size')).to.be(4980736);
-        expect(localforage.config('storeName')).to.be('storeFront');
+        expect(localforage.config('storeName')).to.be('myStoreName');
         expect(localforage.config('version')).to.be(2.0);
 
         localforage.ready(function() {
@@ -100,7 +103,7 @@ describe('Config API', function() {
             done();
         });
     });
-    
+
     if (supportedDrivers.length >= 2) {
         it('sets new driver using preference order', function(done) {
             var otherSupportedDrivers = supportedDrivers.slice(1);
@@ -150,12 +153,12 @@ describe('Config API', function() {
         localforage.config({
             name: 'My Cool App',
             // https://github.com/mozilla/localForage/issues/247
-            storeName: 'my store&front-v1',
+            storeName: 'my store&name-v1',
             version: 2.0
         });
 
         expect(localforage.config('name')).to.be('My Cool App');
-        expect(localforage.config('storeName')).to.be('my_store_front_v1');
+        expect(localforage.config('storeName')).to.be('my_store_name_v1');
         expect(localforage.config('version')).to.be(2.0);
     });
 
@@ -164,7 +167,7 @@ describe('Config API', function() {
             description: 'The offline datastore for my cool app',
             driver: localforage.driver(),
             name: 'My Cool App',
-            storeName: 'storeFront',
+            storeName: 'myStoreName',
             version: 2.0
         });
 
@@ -178,8 +181,8 @@ describe('Config API', function() {
 
                 req.onsuccess = function() {
                     var dbValue = req.result
-                                     .transaction('storeFront', 'readonly')
-                                     .objectStore('storeFront')
+                                     .transaction('myStoreName', 'readonly')
+                                     .objectStore('myStoreName')
                                      .get('some key');
                     expect(dbValue).to.be(value);
                     done();
@@ -187,7 +190,7 @@ describe('Config API', function() {
             } else if (localforage.driver() === localforage.WEBSQL) {
                 window.openDatabase('My Cool App', String(2.0), '',
                                     4980736).transaction(function(t) {
-                    t.executeSql('SELECT * FROM storeFront WHERE key = ? ' +
+                    t.executeSql('SELECT * FROM myStoreName WHERE key = ? ' +
                                  'LIMIT 1', ['some key'],
                                  function(t, results) {
                         var dbValue = JSON.parse(results.rows.item(0).value);
@@ -197,7 +200,8 @@ describe('Config API', function() {
                     });
                 });
             } else if (localforage.driver() === localforage.LOCALSTORAGE) {
-                var dbValue = JSON.parse(localStorage['My Cool App/some key']);
+                var dbValue = JSON.parse(
+                  localStorage['My Cool App/myStoreName/some key']);
 
                 expect(dbValue).to.be(value);
                 done();

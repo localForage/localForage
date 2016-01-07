@@ -3,7 +3,9 @@
 bower_components
 node_modules
 components
+test/localforage.browserify.js
 test/localforage.component.js
+test/localforage.webpack.js
 
 # Logs + Sauce Labs Tests
 *.log

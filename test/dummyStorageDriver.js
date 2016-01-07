@@ -2,7 +2,7 @@
     'use strict';
 
     // Promises!
-    var Promise = (typeof module !== 'undefined' && module.exports) ?
+    var Promise = (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') ?
                   require('promise') : this.Promise;
 
     var dummyStorage = {};
@@ -422,7 +422,7 @@
         define('dummyStorageDriver', function() {
             return dummyStorageDriver;
         });
-    } else if (typeof module !== 'undefined' && module.exports) {
+    } else if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') {
         module.exports = dummyStorageDriver;
     } else {
         this.dummyStorageDriver = dummyStorageDriver;

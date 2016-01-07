@@ -59,16 +59,19 @@ versions of all major browsers: Chrome, Firefox, IE, and Safari
 
 # Installation
 
-``` bash
-# Optional installation with bower:
+```bash
+# Install via npm:
+npm install localforage
+
+# Or with bower:
 bower install localforage
 ```
-``` html
+```html
 <script src="localforage.js"></script>
 <script>localforage.getItem('somekey', function(err, val) { alert(val) });</script>
 ```
 
-To use localForage, [download the latest release](https://github.com/mozilla/localForage/releases) or install with [bower](http://bower.io/) (`bower install localforage`).
+To use localForage, [download the latest release](https://github.com/mozilla/localForage/releases) or install with [npm](https://www.npmjs.org/) (`npm install localforage`) or [bower](http://bower.io/) (`bower install localforage`).
 
 Then simply include the JS file and start using localForage:
 `<script src="localforage.js"></script>`. You don't need to run any init method
@@ -136,11 +139,11 @@ request.responseType = 'arraybuffer';
 
 request.addEventListener('readystatechange', function() {
     if (request.readyState === 4) { // readyState DONE
-        localforage.setItem('photo', request.response, function(img) {
+        localforage.setItem('photo', request.response, function(err, image) {
             // This will be a valid blob URI for an <img> tag.
             var blob = new Blob([image]);
             var imageURI = window.URL.createObjectURL(blob);
-        }
+        });
     }
 });
 ```
@@ -162,7 +165,7 @@ request.responseType = "arraybuffer"
 
 request.addEventListener "readystatechange", ->
   if request.readyState == 4 # readyState DONE
-    localforage.setItem "photo", request.response, (img) ->
+    localforage.setItem "photo", request.response, (err, image) ->
       # This will be a valid blob URI for an <img> tag.
       blob = new Blob [image]
       imageURI = window.URL.createObjectURL blob
@@ -195,6 +198,8 @@ objects:
   increase when binary data is saved.
 </aside>
 
+<a href="http://jsfiddle.net/ryfo1jk4/">Live demo</a>
+
 ## removeItem
 
 ```javascript
@@ -213,6 +218,8 @@ localforage.removeItem "somekey", (err) ->
 `removeItem(key, successCallback)`
 
 Removes the value of a key from the offline store.
+
+<a href="http://jsfiddle.net/y1Ly0hk1/1/">Live demo</a>
 
 ## clear
 
@@ -303,17 +310,19 @@ Get the list of all keys in the datastore.
 ## iterate
 
 ```javascript
-localforage.iterate(function(value, key) {
+localforage.iterate(function(value, key, iterationNumber) {
     // Resulting key/value pair -- this callback
     // will be executed for every item in the
     // database.
     console.log([key, value]);
-}, function() {
-    console.log('Iteration has completed');
+}, function(err) {
+    if (!err) {
+        console.log('Iteration has completed');
+    }
 });
 
 // The same code, but using ES6 Promises.
-localforage.iterate(function(value, key) {
+localforage.iterate(function(value, key, iterationNumber) {
     // Resulting key/value pair -- this callback
     // will be executed for every item in the
     // database.
@@ -323,30 +332,26 @@ localforage.iterate(function(value, key) {
 });
 
 // Exit the iteration early:
-var iterations = 0;
-localforage.iterate(function(value, key) {
-    if (iterations < 3) {
+localforage.iterate(function(value, key, iterationNumber) {
+    if (iterationNumber < 3) {
         console.log([key, value]);
     } else {
         return [key, value];
     }
-
-    iterations++;
-}, function(result) {
-    console.log('Iteration has completed, last iterated pair:');
-    console.log(result);
+}, function(err, result) {
+    if (!err) {
+        console.log('Iteration has completed, last iterated pair:');
+        console.log(result);
+    }
 });
 
 // The same code for early exit, but using ES6 Promises.
-var iterations = 0;
-localforage.iterate(function(value, key) {
-    if (iterations < 3) {
+localforage.iterate(function(value, key, iterationNumber) {
+    if (iterationNumber < 3) {
         console.log([key, value]);
     } else {
         return [key, value];
     }
-
-    iterations++;
 }).then(function(result) {
     console.log('Iteration has completed, last iterated pair:');
     console.log(result);
@@ -354,17 +359,18 @@ localforage.iterate(function(value, key) {
 ```
 
 ```coffeescript
-localforage.iterate (value, key) ->
+localforage.iterate (value, key, iterationNumber) ->
   # Resulting key/value pair -- this callback
   # will be executed for every item in the
   # database.
   console.log [key, value]
   return
-, ->
-  console.log "Iteration has completed"
+, (err) ->
+  unless err
+    console.log "Iteration has completed"
 
 # The same code, but using ES6 Promises.
-localforage.iterate (value, key) ->
+localforage.iterate (value, key, iterationNumber) ->
   # Resulting key/value pair -- this callback
   # will be executed for every item in the
   # database.
@@ -374,26 +380,21 @@ localforage.iterate (value, key) ->
   console.log "Iteration has completed"
 
 # Exit the iteration early:
-iterations = 0
-localforage.iterate (value, key) ->
-  if iterations < 3
+localforage.iterate (value, key, iterationNumber) ->
+  if iterationNumber < 3
     console.log [key, value]
-
-    iterations++
     return
   else
     return [key, value]
-), (result) ->
-  console.log "Iteration has completed, last iterated pair:"
-  console.log result
+), (err, result) ->
+  unless err
+    console.log "Iteration has completed, last iterated pair:"
+    console.log result
 
 # The same code for early exit, but using ES6 Promises.
-iterations = 0
-localforage.iterate((value, key) ->
-  if iterations < 3
+localforage.iterate((value, key, iterationNumber) ->
+  if iterationNumber < 3
     console.log [key, value]
-
-    iterations++
     return
   else
     return [key, value]
@@ -405,6 +406,12 @@ localforage.iterate((value, key) ->
 `iterate(iteratorCallback, successCallback)`
 
 Iterate over all value/key pairs in datastore.
+
+`iteratorCallback` is called once for each pair, with the following arguments:
+
+1. value
+2. key
+3. iterationNumber - one-based number
 
 <aside class="notice">
   <code>iterate</code> supports early exit by returning non `undefined`
@@ -452,11 +459,11 @@ order:
 3. localStorage
 
 If you would like to force usage of a particular driver you can use
-`setDriver()` with one or more of the following parameters.
+`setDriver()` with one or more of the following arguments:
 
-* localforage.INDEXEDDB
-* localforage.WEBSQL
-* localforage.LOCALSTORAGE
+* `localforage.INDEXEDDB`
+* `localforage.WEBSQL`
+* `localforage.LOCALSTORAGE`
 
 <aside class="notice">
   If the backend you're trying to load isn't available on the user's browser,
@@ -524,13 +531,14 @@ values can be set:
 <dl>
   <dt>driver</dt>
   <dd>
-    The preferred driver(s) to use. Same format as what is passed to `setDriver()`, above.<br>
+    The preferred driver(s) to use. Same format as what is passed to <a href="#setdriver"><code>setDriver</code></a>, above.<br>
     Default: <code>[localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE]</code>
   </dd>
   <dt>name</dt>
   <dd>
     The name of the database. May appear during storage limit prompts.
-    Useful to use the name of your app here.<br>
+    Useful to use the name of your app here. In localStorage, this is used as a
+    key prefix for all keys stored in localStorage.<br>
     Default: <code>'localforage'</code>
   </dd>
   <dt>size</dt>
@@ -542,8 +550,7 @@ values can be set:
   <dd>
     The name of the datastore. In IndexedDB this is the
     <code>dataStore</code>, in WebSQL this is the name of the key/value
-    table in the database. In localStorage, this is used as a key prefix for
-    all keys stored in localStorage. <strong>Must be alphanumeric,
+    table in the database. <strong>Must be alphanumeric,
     with underscores.</strong> Any non-alphanumeric characters will be converted
     to underscores.<br>
     Default: <code>'keyvaluepairs'</code>
@@ -647,3 +654,73 @@ use this to make sure the browser in use supports your custom driver.
 </aside>
 
 [default drivers]: https://github.com/mozilla/localForage/tree/master/src/drivers
+
+## driver
+
+```javascript
+localforage.driver();
+// "asyncStorage"
+```
+
+```coffeescript
+localforage.driver()
+# "asyncStorage"
+```
+
+`driver()`
+
+Returns the name of the driver being used, or `null` if none can be used.
+
+## supports
+
+```javascript
+localforage.supports(localforage.INDEXEDDB);
+// true
+```
+
+```coffeescript
+localforage.supports(localforage.INDEXEDDB)
+# true
+```
+
+`supports(driverName)`
+
+Returns (boolean) whether `driverName` is supported by the browser.
+
+See <a href="#setdriver"><code>setDriver</code></a> for default driver names.
+
+# Multiple Instances
+
+You can create multiple instances of localForage that point to different stores.
+All the configuration options used by [config](#config) are supported.
+
+## createInstance
+
+``` javascript
+var store = localforage.createInstance({
+  name: "nameHere"
+});
+
+var otherStore = localforage.createInstance({
+  name: "otherName"
+});
+
+// Setting the key on one of these doesn't affect the other.
+store.setItem("key", "value");
+otherStore.setItem("key", "value2");
+```
+
+``` coffeescript
+store = localforage.createInstance
+  name: "nameHere"
+
+otherStore = localforage.createInstance
+  name: "otherName"
+
+# Setting the key on one of these doesn't affect the other.
+store.setItem "key", "value"
+otherStore.setItem "key", "value2"
+```
+
+Creates a new instance of localForage and returns it. Each object contains its
+own database and doesn't affect other instances of localForage.
