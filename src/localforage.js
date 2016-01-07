@@ -1,4 +1,4 @@
-var localForage = (function() {
+var localForage = (function(globalObject) {
     'use strict';
 
     // Custom drivers are stored here when `defineDriver()` is called.
@@ -101,7 +101,7 @@ var localForage = (function() {
         })();
 
         return result;
-    })(this);
+    })(globalObject);
 
     var isArray = Array.isArray || function(arg) {
         return Object.prototype.toString.call(arg) === '[object Array]';
@@ -426,5 +426,5 @@ var localForage = (function() {
     // The actual localForage object that we expose as a module or via a
     // global. It's extended by pulling in one of our other libraries.
     return new LocalForage();
-}).call(typeof window !== 'undefined' ? window : self);
+})(typeof window !== 'undefined' ? window : self);
 export default localForage;

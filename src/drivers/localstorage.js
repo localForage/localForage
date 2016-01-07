@@ -2,10 +2,9 @@
 // Note that this will have considerable performance and storage
 // side-effects (all data will be serialized on save and only data that
 // can be converted to a string via `JSON.stringify()` will be saved).
-var localStorageWrapper = (function() {
+var localStorageWrapper = (function(globalObject) {
     'use strict';
 
-    var globalObject = this;
     var localStorage = null;
 
     // If the app is running inside a Google Chrome packaged webapp, or some
@@ -16,12 +15,12 @@ var localStorageWrapper = (function() {
     try {
         // If localStorage isn't available, we get outta here!
         // This should be inside a try catch
-        if (!this.localStorage || !('setItem' in this.localStorage)) {
+        if (!globalObject.localStorage || !('setItem' in globalObject.localStorage)) {
             return;
         }
         // Initialize localStorage and create a variable to use throughout
         // the code.
-        localStorage = this.localStorage;
+        localStorage = globalObject.localStorage;
     } catch (e) {
         return;
     }
@@ -299,5 +298,5 @@ var localStorageWrapper = (function() {
     };
 
     return localStorageWrapper;
-}).call(typeof window !== 'undefined' ? window : self);
+})(typeof window !== 'undefined' ? window : self);
 export default localStorageWrapper;

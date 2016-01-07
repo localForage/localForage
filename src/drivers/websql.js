@@ -7,11 +7,10 @@
  * Copyright (c) 2012 Niklas von Hertzen
  * Licensed under the MIT license.
  */
-var webSQLStorage = (function() {
+var webSQLStorage = (function(globalObject) {
     'use strict';
 
-    var globalObject = this;
-    var openDatabase = this.openDatabase;
+    var openDatabase = globalObject.openDatabase;
 
     // If WebSQL methods aren't available, we can stop now.
     if (!openDatabase) {
@@ -370,5 +369,5 @@ var webSQLStorage = (function() {
     };
 
     return webSQLStorage;
-}).call(typeof window !== 'undefined' ? window : self);
+})(typeof window !== 'undefined' ? window : self);
 export default webSQLStorage;

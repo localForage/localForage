@@ -1,13 +1,12 @@
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
-var asyncStorage = (function() {
+var asyncStorage = (function(globalObject) {
     'use strict';
 
-    var globalObject = this;
     // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
-    var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB ||
-                    this.mozIndexedDB || this.OIndexedDB ||
-                    this.msIndexedDB;
+    var indexedDB = indexedDB || globalObject.indexedDB || globalObject.webkitIndexedDB ||
+                    globalObject.mozIndexedDB || globalObject.OIndexedDB ||
+                    globalObject.msIndexedDB;
 
     // If IndexedDB isn't available, we get outta here!
     if (!indexedDB) {
@@ -693,5 +692,5 @@ var asyncStorage = (function() {
     };
 
     return asyncStorage;
-}).call(typeof window !== 'undefined' ? window : self);
+})(typeof window !== 'undefined' ? window : self);
 export default asyncStorage;
