@@ -850,38 +850,61 @@ DRIVERS.forEach(function(driverName) {
         var localforage3 = null;
         var Promise;
 
+        function prepareStorage(storageName) {
+            // Delete IndexedDB storages (start from scratch)
+            // Refers to issue #492 - https://github.com/mozilla/localForage/issues/492
+            if (driverName === localforage.INDEXEDDB) {
+                return new Promise(function(resolve) {
+                    var indexedDB = (indexedDB || window.indexedDB ||
+                                     window.webkitIndexedDB ||
+                                     window.mozIndexedDB || window.OIndexedDB ||
+                                     window.msIndexedDB);
+
+                    var delRequest = indexedDB.deleteDatabase(storageName);
+
+                    delRequest.onsuccess = function() {
+                        resolve();
+                    };
+                });
+            }
+
+            // Otherwise, do nothing
+            return Promise.resolve();
+        }
+
         before(function(done) {
             Promise = window.Promise || require('promise');
 
-            localforage2 = localforage.createInstance({
-                name: 'storage2',
-                // We need a small value here
-                // otherwise local PhantomJS test
-                // will fail with SECURITY_ERR.
-                // TravisCI seem to work fine though.
-                size: 1024,
-                storeName: 'storagename2'
-            });
+            prepareStorage('storage2').then(function() {
+                localforage2 = localforage.createInstance({
+                    name: 'storage2',
+                    // We need a small value here
+                    // otherwise local PhantomJS test
+                    // will fail with SECURITY_ERR.
+                    // TravisCI seem to work fine though.
+                    size: 1024,
+                    storeName: 'storagename2'
+                });
 
-            // Same name, but different storeName since this has been
-            // malfunctioning before w/ IndexedDB.
-            localforage3 = localforage.createInstance({
-                name: 'storage2',
-                // We need a small value here
-                // otherwise local PhantomJS test
-                // will fail with SECURITY_ERR.
-                // TravisCI seem to work fine though.
-                size: 1024,
-                storeName: 'storagename3'
-            });
+                // Same name, but different storeName since this has been
+                // malfunctioning before w/ IndexedDB.
+                localforage3 = localforage.createInstance({
+                    name: 'storage2',
+                    // We need a small value here
+                    // otherwise local PhantomJS test
+                    // will fail with SECURITY_ERR.
+                    // TravisCI seem to work fine though.
+                    size: 1024,
+                    storeName: 'storagename3'
+                });
 
-            Promise.all([
-                localforage.setDriver(driverName),
-                localforage2.setDriver(driverName),
-                localforage3.setDriver(driverName)
-            ])
-            .then(function() {
-                done();
+                Promise.all([
+                    localforage.setDriver(driverName),
+                    localforage2.setDriver(driverName),
+                    localforage3.setDriver(driverName)
+                ]).then(function() {
+                    done();
+                });
             });
         });
 
