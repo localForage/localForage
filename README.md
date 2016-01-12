@@ -208,8 +208,12 @@ installed (eg. `npm install --save-dev babel-plugin-system-import-transformer`).
 To import localForage in TypeScript:
 
 ```javascript
-import {default as localforage} from "localforage"
+const localForage:LocalForage = require("localforage");
 ```
+
+Note that the ES6 style import is not supported for our module type. Check out the following to know why:
+* http://stackoverflow.com/questions/29596714/new-es6-syntax-for-importing-commonjs-amd-modules-i-e-import-foo-require
+* http://www.jbrantly.com/es6-modules-with-typescript-and-webpack/
 
 ## Framework Support
 
