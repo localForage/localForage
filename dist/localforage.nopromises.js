@@ -66,7 +66,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var localForage = (function () {
+	var localForage = (function (globalObject) {
 	    'use strict';
 
 	    // Custom drivers are stored here when `defineDriver()` is called.
@@ -148,7 +148,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        })();
 
 	        return result;
-	    })(this);
+	    })(globalObject);
 
 	    var isArray = Array.isArray || function (arg) {
 	        return Object.prototype.toString.call(arg) === '[object Array]';
@@ -476,7 +476,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    })();
 
 	    return new LocalForage();
-	}).call(typeof window !== 'undefined' ? window : self);
+	})(typeof window !== 'undefined' ? window : self);
 	exports['default'] = localForage;
 	module.exports = exports['default'];
 
@@ -489,12 +489,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	exports.__esModule = true;
-	var asyncStorage = (function () {
+	var asyncStorage = (function (globalObject) {
 	    'use strict';
 
-	    var globalObject = this;
 	    // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
-	    var indexedDB = indexedDB || this.indexedDB || this.webkitIndexedDB || this.mozIndexedDB || this.OIndexedDB || this.msIndexedDB;
+	    var indexedDB = indexedDB || globalObject.indexedDB || globalObject.webkitIndexedDB || globalObject.mozIndexedDB || globalObject.OIndexedDB || globalObject.msIndexedDB;
 
 	    // If IndexedDB isn't available, we get outta here!
 	    if (!indexedDB) {
@@ -1163,7 +1162,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return asyncStorage;
-	}).call(typeof window !== 'undefined' ? window : self);
+	})(typeof window !== 'undefined' ? window : self);
 	exports['default'] = asyncStorage;
 	module.exports = exports['default'];
 
@@ -1178,10 +1177,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	exports.__esModule = true;
-	var localStorageWrapper = (function () {
+	var localStorageWrapper = (function (globalObject) {
 	    'use strict';
 
-	    var globalObject = this;
 	    var localStorage = null;
 
 	    // If the app is running inside a Google Chrome packaged webapp, or some
@@ -1192,12 +1190,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    try {
 	        // If localStorage isn't available, we get outta here!
 	        // This should be inside a try catch
-	        if (!this.localStorage || !('setItem' in this.localStorage)) {
+	        if (!globalObject.localStorage || !('setItem' in globalObject.localStorage)) {
 	            return;
 	        }
 	        // Initialize localStorage and create a variable to use throughout
 	        // the code.
-	        localStorage = this.localStorage;
+	        localStorage = globalObject.localStorage;
 	    } catch (e) {
 	        return;
 	    }
@@ -1472,7 +1470,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return localStorageWrapper;
-	}).call(typeof window !== 'undefined' ? window : self);
+	})(typeof window !== 'undefined' ? window : self);
 	exports['default'] = localStorageWrapper;
 	module.exports = exports['default'];
 
@@ -1483,7 +1481,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	exports.__esModule = true;
-	var localforageSerializer = (function () {
+	var localforageSerializer = (function (globalObject) {
 	    'use strict';
 
 	    // Sadly, the best way to save binary data in WebSQL/localStorage is serializing
@@ -1510,9 +1508,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var TYPE_FLOAT32ARRAY = 'fl32';
 	    var TYPE_FLOAT64ARRAY = 'fl64';
 	    var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
-
-	    // Get out of our habit of using `window` inline, at least.
-	    var globalObject = this;
 
 	    // Abstracts constructing a Blob object, so it also works in older
 	    // browsers that don't support the native Blob constructor. (i.e.
@@ -1738,7 +1733,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return localforageSerializer;
-	}).call(typeof window !== 'undefined' ? window : self);
+	})(typeof window !== 'undefined' ? window : self);
 	exports['default'] = localforageSerializer;
 	module.exports = exports['default'];
 
@@ -1758,11 +1753,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	exports.__esModule = true;
-	var webSQLStorage = (function () {
+	var webSQLStorage = (function (globalObject) {
 	    'use strict';
 
-	    var globalObject = this;
-	    var openDatabase = this.openDatabase;
+	    var openDatabase = globalObject.openDatabase;
 
 	    // If WebSQL methods aren't available, we can stop now.
 	    if (!openDatabase) {
@@ -2101,7 +2095,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return webSQLStorage;
-	}).call(typeof window !== 'undefined' ? window : self);
+	})(typeof window !== 'undefined' ? window : self);
 	exports['default'] = webSQLStorage;
 	module.exports = exports['default'];
 

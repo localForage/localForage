@@ -1,4 +1,4 @@
-var localforageSerializer = (function() {
+var localforageSerializer = (function(globalObject) {
     'use strict';
 
     // Sadly, the best way to save binary data in WebSQL/localStorage is serializing
@@ -26,9 +26,6 @@ var localforageSerializer = (function() {
     var TYPE_FLOAT64ARRAY = 'fl64';
     var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH +
                                         TYPE_ARRAYBUFFER.length;
-
-    // Get out of our habit of using `window` inline, at least.
-    var globalObject = this;
 
     // Abstracts constructing a Blob object, so it also works in older
     // browsers that don't support the native Blob constructor. (i.e.
@@ -263,5 +260,5 @@ var localforageSerializer = (function() {
     };
 
     return localforageSerializer;
-}).call(typeof window !== 'undefined' ? window : self);
+})(typeof window !== 'undefined' ? window : self);
 export default localforageSerializer;
