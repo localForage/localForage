@@ -240,9 +240,8 @@ There is a [list of custom drivers on the wiki][custom drivers].
 
 # Working on localForage
 
-You'll need [node/npm](http://nodejs.org/),
-[bower](http://bower.io/#installing-bower), and
-[Grunt](http://gruntjs.com/getting-started#installing-the-cli).
+You'll need [node/npm](http://nodejs.org/) and
+[bower](http://bower.io/#installing-bower).
 
 To work on localForage, you should start by
 [forking it](https://github.com/mozilla/localForage/fork) and installing its
@@ -250,8 +249,8 @@ dependencies. Replace `USERNAME` with your GitHub username and run the
 following:
 
 ```bash
-# Install bower and grunt globally if you don't have them:
-npm install -g bower grunt-cli
+# Install bower globally if you don't have it:
+npm install -g bower
 
 # Replace USERNAME with your GitHub username:
 git clone git@github.com:USERNAME/localForage.git
