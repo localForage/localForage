@@ -339,21 +339,9 @@ var asyncStorage = (function(globalObject) {
                 };
             }
 
-            var errHandlerCalled = false;
-            var errHandler = function() {
-                if (errHandlerCalled) {
-                    return;
-                }
-                errHandlerCalled = true;
+            openreq.onerror = function () {
                 reject(openreq.error);
             };
-
-            openreq.onerror = errHandler;
-            // The openreq can already be in a failed state. In this case the
-            // handler never gets called. This is probably a bug in Firefox.
-            if (openreq.error) {
-                errHandler();
-            }
 
             openreq.onsuccess = function() {
                 resolve(openreq.result);
