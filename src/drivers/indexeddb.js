@@ -339,7 +339,7 @@ var asyncStorage = (function(globalObject) {
                 };
             }
 
-            openreq.onerror = function () {
+            openreq.onerror = function() {
                 reject(openreq.error);
             };
 

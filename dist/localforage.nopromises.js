@@ -650,6 +650,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return value && value.__local_forage_encoded_blob;
 	    }
 
+	    // Specialize the default `ready()` function by making it dependant
+	    // on the current database operations. Thus, the driver will be actually
+	    // ready when it's been initialized (default) *and* there are no pending
+	    // operations on the database (initiated by some other instances).
+	    function _fullyReady(callback) {
+	        var self = this;
+
+	        var promise = self._initReady().then(function () {
+	            if (self._dbReady) {
+	                return self._dbReady;
+	            }
+	        });
+
+	        promise.then(callback, callback);
+	        return promise;
+	    }
+
 	    // Open the IndexedDB database (automatically creates one if one didn't
 	    // previously exist), using any options set in the config.
 	    function _initStorage(options) {
@@ -678,17 +695,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // Running localForages sharing a database.
 	                forages: [],
 	                // Shared database.
-	                db: null
+	                db: null,
+	                // States of the database operations.
+	                deferredOperations: {},
+	                operationPromises: []
 	            };
 	            // Register the new context in the global container.
 	            dbContexts[dbInfo.name] = dbContext;
 	        }
 
 	        // Register itself as a running localForage in the current context.
-	        dbContext.forages.push(this);
+	        dbContext.forages.push(self);
 
-	        // Create an array of readiness of the related localForages.
-	        var readyPromises = [];
+	        // Replace the default `ready()` function with the specialized one.
+	        if (!self._initReady) {
+	            self._initReady = self.ready;
+	            self.ready = _fullyReady;
+	        }
+
+	        // Create an array of initialization states of the related localForages.
+	        var initPromises = [];
 
 	        function ignoreErrors() {
 	            // Don't handle errors here,
@@ -696,11 +722,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return Promise.resolve();
 	        }
 
+	        function defer(resolve, reject) {
+	            this.resolve = resolve;
+	            this.reject = reject;
+	        }
+
 	        for (var j = 0; j < dbContext.forages.length; j++) {
 	            var forage = dbContext.forages[j];
-	            if (forage !== this) {
+	            if (forage !== self) {
 	                // Don't wait for itself...
-	                readyPromises.push(forage.ready()['catch'](ignoreErrors));
+	                initPromises.push(forage._initReady()['catch'](ignoreErrors));
+
+	                // Create a deferred object and add it on related localForages
+	                // to make them wait until the database operation required
+	                // by this current instance has finished.
+	                var deferredOperation = {};
+	                deferredOperation.promise = new Promise(defer.bind(deferredOperation));
+	                dbContext.deferredOperations[dbInfo.storeName] = deferredOperation;
+	                dbContext.operationPromises.push(deferredOperation.promise);
+	                forage._dbReady = Promise.all(dbContext.operationPromises);
 	            }
 	        }
 
@@ -709,7 +749,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // Initialize the connection process only when
 	        // all the related localForages aren't pending.
-	        return Promise.all(readyPromises).then(function () {
+	        return Promise.all(initPromises).then(function () {
 	            dbInfo.db = dbContext.db;
 	            // Get the connection or open a new one without upgrade.
 	            return _getOriginalConnection(dbInfo);
@@ -780,24 +820,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	                };
 	            }
 
-	            var errHandlerCalled = false;
-	            var errHandler = function errHandler() {
-	                if (errHandlerCalled) {
-	                    return;
-	                }
-	                errHandlerCalled = true;
+	            openreq.onerror = function () {
 	                reject(openreq.error);
 	            };
 
-	            openreq.onerror = errHandler;
-	            // The openreq can already be in a failed state. In this case the
-	            // handler never gets called. This is probably a bug in Firefox.
-	            if (openreq.error) {
-	                errHandler();
-	            }
-
 	            openreq.onsuccess = function () {
 	                resolve(openreq.result);
+	                // Resolve the deferred operation, on which other related
+	                // localForage instances depend on to be ready again.
+	                var deferredOperation = dbContexts[dbInfo.name].deferredOperations[dbInfo.storeName];
+	                if (deferredOperation) {
+	                    deferredOperation.resolve();
+	                }
 	            };
 	        });
 	    }
