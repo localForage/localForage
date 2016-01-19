@@ -1473,8 +1473,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            };
 
 	            openreq.onerror = errHandler;
-	            // The openreq can already be in a failed state. In this case the handler gets never called.
-	            // This probably is a bug in firefox.
+	            // The openreq can already be in a failed state. In this case the
+	            // handler never gets called. This is probably a bug in Firefox.
 	            if (openreq.error) {
 	                errHandler();
 	            }

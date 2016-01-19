@@ -16,7 +16,7 @@
     "url": "git://github.com/mozilla/localForage.git"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "node -e \"require('grunt').cli()\" null test"
   },
   "devDependencies": {
     "babel-core": "^5.8.22",
