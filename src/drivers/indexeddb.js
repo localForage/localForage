@@ -124,6 +124,7 @@ var asyncStorage = (function(globalObject) {
                     });
                 };
             };
+            txn.onerror = txn.onabort = reject;
         }).catch(function() {
             return false; // error, so assume unsupported
         });
@@ -298,9 +299,21 @@ var asyncStorage = (function(globalObject) {
                 };
             }
 
-            openreq.onerror = function() {
+            var errHandlerCalled = false;
+            var errHandler = function() {
+                if (errHandlerCalled) {
+                    return;
+                }
+                errHandlerCalled = true;
                 reject(openreq.error);
             };
+
+            openreq.onerror = errHandler;
+            // The openreq can already be in a failed state. In this case the
+            // handler never gets called. This is probably a bug in Firefox.
+            if (openreq.error) {
+                errHandler();
+            }
 
             openreq.onsuccess = function() {
                 resolve(openreq.result);
@@ -464,7 +477,6 @@ var asyncStorage = (function(globalObject) {
                     value = undefined;
                 }
 
-                var req = store.put(value, key);
                 transaction.oncomplete = function() {
                     // Cast to undefined so the value passed to
                     // callback/promise is the same as what one would get out
@@ -482,6 +494,8 @@ var asyncStorage = (function(globalObject) {
                     var err = req.error ? req.error : req.transaction.error;
                     reject(err);
                 };
+
+                var req = store.put(value, key);
             }).catch(reject);
         });
 

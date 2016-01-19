@@ -606,6 +606,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    });
 	                };
 	            };
+	            txn.onerror = txn.onabort = reject;
 	        })['catch'](function () {
 	            return false; // error, so assume unsupported
 	        });
@@ -779,9 +780,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	                };
 	            }
 
-	            openreq.onerror = function () {
+	            var errHandlerCalled = false;
+	            var errHandler = function errHandler() {
+	                if (errHandlerCalled) {
+	                    return;
+	                }
+	                errHandlerCalled = true;
 	                reject(openreq.error);
 	            };
+
+	            openreq.onerror = errHandler;
+	            // The openreq can already be in a failed state. In this case the handler gets never called.
+	            // This probably is a bug in firefox.
+	            if (openreq.error) {
+	                errHandler();
+	            }
 
 	            openreq.onsuccess = function () {
 	                resolve(openreq.result);
@@ -938,7 +951,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    value = undefined;
 	                }
 
-	                var req = store.put(value, key);
 	                transaction.oncomplete = function () {
 	                    // Cast to undefined so the value passed to
 	                    // callback/promise is the same as what one would get out
@@ -956,6 +968,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    var err = req.error ? req.error : req.transaction.error;
 	                    reject(err);
 	                };
+
+	                var req = store.put(value, key);
 	            })['catch'](reject);
 	        });
 
