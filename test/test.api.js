@@ -841,6 +841,24 @@ DRIVERS.forEach(function(driverName) {
         }
     });
 
+    function prepareStorage(storageName) {
+        // Delete IndexedDB storages (start from scratch)
+        // Refers to issue #492 - https://github.com/mozilla/localForage/issues/492
+        if (driverName === localforage.INDEXEDDB) {
+            return new Promise(function(resolve) {
+                var indexedDB = (indexedDB || window.indexedDB ||
+                                 window.webkitIndexedDB ||
+                                 window.mozIndexedDB || window.OIndexedDB ||
+                                 window.msIndexedDB);
+
+                indexedDB.deleteDatabase(storageName).onsuccess = resolve;
+            });
+        }
+
+        // Otherwise, do nothing
+        return Promise.resolve();
+    }
+
     describe(driverName + ' driver multiple instances', function() {
         'use strict';
 
@@ -849,28 +867,6 @@ DRIVERS.forEach(function(driverName) {
         var localforage2 = null;
         var localforage3 = null;
         var Promise;
-
-        function prepareStorage(storageName) {
-            // Delete IndexedDB storages (start from scratch)
-            // Refers to issue #492 - https://github.com/mozilla/localForage/issues/492
-            if (driverName === localforage.INDEXEDDB) {
-                return new Promise(function(resolve) {
-                    var indexedDB = (indexedDB || window.indexedDB ||
-                                     window.webkitIndexedDB ||
-                                     window.mozIndexedDB || window.OIndexedDB ||
-                                     window.msIndexedDB);
-
-                    var delRequest = indexedDB.deleteDatabase(storageName);
-
-                    delRequest.onsuccess = function() {
-                        resolve();
-                    };
-                });
-            }
-
-            // Otherwise, do nothing
-            return Promise.resolve();
-        }
 
         before(function(done) {
             Promise = window.Promise || require('promise');
@@ -966,6 +962,65 @@ DRIVERS.forEach(function(driverName) {
                 done();
             }, function(errors) {
                 done(new Error(errors));
+            });
+        });
+    });
+
+    // Refers to issue #492 - https://github.com/mozilla/localForage/issues/492
+    describe(driverName + ' driver multiple instances (concurrent on same database)', function() {
+
+        'use strict';
+
+        this.timeout(30000);
+
+        it('chains operation on multiple stores', function(done) {
+
+            prepareStorage('storage3').then(function() {
+                var localforage1 = localforage.createInstance({
+                    name: 'storage3',
+                    storeName: 'store1',
+                    size: 1024
+                });
+
+                var localforage2 = localforage.createInstance({
+                    name: 'storage3',
+                    storeName: 'store2',
+                    size: 1024
+                });
+
+                var localforage3 = localforage.createInstance({
+                    name: 'storage3',
+                    storeName: 'store3',
+                    size: 1024
+                });
+
+                var promise1 = localforage1.setItem('key', 'value1').then(function() {
+                    return localforage1.getItem('key');
+                }).then(function(value) {
+                    expect(value).to.be('value1');
+                });
+
+                var promise2 = localforage2.setItem('key', 'value2').then(function() {
+                    return localforage2.getItem('key');
+                }).then(function(value) {
+                    expect(value).to.be('value2');
+                });
+
+                var promise3 = localforage3.setItem('key', 'value3').then(function() {
+                    return localforage3.getItem('key');
+                }).then(function(value) {
+                    expect(value).to.be('value3');
+                });
+
+                Promise.all([
+                    promise1,
+                    promise2,
+                    promise3
+                ]).then(function() {
+                    done();
+                }).catch(function(errors) {
+                    done(new Error(errors));
+                });
             });
         });
     });
