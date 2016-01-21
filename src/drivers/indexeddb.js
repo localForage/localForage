@@ -168,7 +168,7 @@ var asyncStorage = (function(globalObject) {
         return value && value.__local_forage_encoded_blob;
     }
 
-    // Specialize the default `ready()` function by making it dependant
+    // Specialize the default `ready()` function by making it dependent
     // on the current database operations. Thus, the driver will be actually
     // ready when it's been initialized (default) *and* there are no pending
     // operations on the database (initiated by some other instances).
@@ -176,13 +176,51 @@ var asyncStorage = (function(globalObject) {
         var self = this;
 
         var promise = self._initReady().then(() => {
-            if (self._dbReady) {
-                return self._dbReady;
+            var dbContext = dbContexts[self._dbInfo.name];
+
+            if (dbContext && dbContext.dbReady) {
+                return dbContext.dbReady;
             }
         });
 
         promise.then(callback, callback);
         return promise;
+    }
+
+    function _deferReadiness(dbInfo) {
+        var dbContext = dbContexts[dbInfo.name];
+
+        // Create a deferred object representing the current database operation.
+        var deferredOperation = {};
+
+        deferredOperation.promise = new Promise(function(resolve) {
+            deferredOperation.resolve = resolve;
+        });
+
+        // Enqueue the deferred operation.
+        dbContext.deferredOperations.push(deferredOperation);
+
+        // Chain its promise to the database readiness.
+        if (!dbContext.dbReady) {
+            dbContext.dbReady = deferredOperation.promise;
+        } else {
+            dbContext.dbReady = dbContext.dbReady.then(function() {
+                return deferredOperation.promise;
+            });
+        }
+    }
+
+    function _advanceReadiness(dbInfo) {
+        var dbContext = dbContexts[dbInfo.name];
+
+        // Dequeue a deferred operation.
+        var deferredOperation = dbContext.deferredOperations.pop();
+
+        // Resolve its promise (which is part of the database readiness
+        // chain of promises).
+        if (deferredOperation) {
+            deferredOperation.resolve();
+        }
     }
 
     // Open the IndexedDB database (automatically creates one if one didn't
@@ -214,9 +252,10 @@ var asyncStorage = (function(globalObject) {
                 forages: [],
                 // Shared database.
                 db: null,
-                // States of the database operations.
-                deferredOperations: {},
-                operationPromises: []
+                // Database readiness (promise).
+                dbReady: null,
+                // Deferred operations on the database.
+                deferredOperations: []
             };
             // Register the new context in the global container.
             dbContexts[dbInfo.name] = dbContext;
@@ -240,24 +279,10 @@ var asyncStorage = (function(globalObject) {
             return Promise.resolve();
         }
 
-        function defer(resolve, reject) {
-            this.resolve = resolve;
-            this.reject = reject;
-        }
-
         for (var j = 0; j < dbContext.forages.length; j++) {
             var forage = dbContext.forages[j];
             if (forage !== self) { // Don't wait for itself...
                 initPromises.push(forage._initReady().catch(ignoreErrors));
-
-                // Create a deferred object and add it on related localForages
-                // to make them wait until the database operation required
-                // by this current instance has finished.
-                var deferredOperation = {};
-                deferredOperation.promise = new Promise(defer.bind(deferredOperation));
-                dbContext.deferredOperations[dbInfo.storeName] = deferredOperation;
-                dbContext.operationPromises.push(deferredOperation.promise);
-                forage._dbReady = Promise.all(dbContext.operationPromises);
             }
         }
 
@@ -301,8 +326,10 @@ var asyncStorage = (function(globalObject) {
 
     function _getConnection(dbInfo, upgradeNeeded) {
         return new Promise(function(resolve, reject) {
+
             if (dbInfo.db) {
                 if (upgradeNeeded) {
+                    _deferReadiness(dbInfo);
                     dbInfo.db.close();
                 } else {
                     return resolve(dbInfo.db);
@@ -345,12 +372,7 @@ var asyncStorage = (function(globalObject) {
 
             openreq.onsuccess = function() {
                 resolve(openreq.result);
-                // Resolve the deferred operation, on which other related
-                // localForage instances depend on to be ready again.
-                var deferredOperation = dbContexts[dbInfo.name].deferredOperations[dbInfo.storeName];
-                if (deferredOperation) {
-                    deferredOperation.resolve();
-                }
+                _advanceReadiness(dbInfo);
             };
         });
     }
