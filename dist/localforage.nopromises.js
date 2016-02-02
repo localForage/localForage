@@ -1853,9 +1853,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            try {
 	                dbInfo.db = openDatabase(dbInfo.name, String(dbInfo.version), dbInfo.description, dbInfo.size);
 	            } catch (e) {
-	                return self.setDriver(self.LOCALSTORAGE).then(function () {
-	                    return self._initStorage(options);
-	                }).then(resolve)['catch'](reject);
+	                return reject(e);
 	            }
 
 	            // Create our key/value table if it doesn't exist.
