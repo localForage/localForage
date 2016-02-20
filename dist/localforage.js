@@ -747,13 +747,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	var localForage = (function (globalObject) {
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var localForage = function (globalObject) {
 	    'use strict';
 
 	    // Custom drivers are stored here when `defineDriver()` is called.
 	    // They are shared across all instances of localForage.
+
 	    var CustomDrivers = {};
 
 	    var DriverType = {
@@ -777,7 +780,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        version: 1.0
 	    };
 
-	    var driverSupport = (function (self) {
+	    var driverSupport = function (self) {
 	        var result = {};
 
 	        // Check to see if IndexedDB is available and if it is the latest
@@ -785,7 +788,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // as the name of the database because it's not the one we'll operate on,
 	        // but it's useful to make sure its using the right spec.
 	        // See: https://github.com/mozilla/localForage/issues/128
-	        result[DriverType.INDEXEDDB] = !!(function () {
+	        result[DriverType.INDEXEDDB] = !!function () {
 	            try {
 	                // Initialize IndexedDB; fall back to vendor-prefixed versions
 	                // if needed.
@@ -812,26 +815,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	            } catch (e) {
 	                return false;
 	            }
-	        })();
+	        }();
 
-	        result[DriverType.WEBSQL] = !!(function () {
+	        result[DriverType.WEBSQL] = !!function () {
 	            try {
 	                return self.openDatabase;
 	            } catch (e) {
 	                return false;
 	            }
-	        })();
+	        }();
 
-	        result[DriverType.LOCALSTORAGE] = !!(function () {
+	        result[DriverType.LOCALSTORAGE] = !!function () {
 	            try {
 	                return self.localStorage && 'setItem' in self.localStorage && self.localStorage.setItem;
 	            } catch (e) {
 	                return false;
 	            }
-	        })();
+	        }();
 
 	        return result;
-	    })(globalObject);
+	    }(globalObject);
 
 	    var isArray = Array.isArray || function (arg) {
 	        return Object.prototype.toString.call(arg) === '[object Array]';
@@ -876,7 +879,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return false;
 	    }
 
-	    var LocalForage = (function () {
+	    var LocalForage = function () {
 	        function LocalForage(options) {
 	            _classCallCheck(this, LocalForage);
 
@@ -895,19 +898,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.setDriver(this._config.driver);
 	        }
 
-	        // The actual localForage object that we expose as a module or via a
-	        // global. It's extended by pulling in one of our other libraries.
-
 	        // Set any config values for localForage; can be called anytime before
 	        // the first API call (e.g. `getItem`, `setItem`).
 	        // We loop through options so we don't overwrite existing config
 	        // values.
 
+
 	        LocalForage.prototype.config = function config(options) {
 	            // If the options argument is an object, we use it to set values.
 	            // Otherwise, we return either a specified config value or all
 	            // config values.
-	            if (typeof options === 'object') {
+	            if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') {
 	                // If localforage is ready and fully initialized, we can't set
 	                // any new configuration values. Instead, we return an error.
 	                if (this._ready) {
@@ -938,6 +939,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // Used to define a custom driver, shared across all instances of
 	        // localForage.
+
 
 	        LocalForage.prototype.defineDriver = function defineDriver(driverObject, callback, errorCallback) {
 	            var promise = new Promise(function (resolve, reject) {
@@ -995,20 +997,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        LocalForage.prototype.getDriver = function getDriver(driverName, callback, errorCallback) {
 	            var self = this;
-	            var getDriverPromise = (function () {
+	            var getDriverPromise = function () {
 	                if (isLibraryDriver(driverName)) {
 	                    switch (driverName) {
 	                        case self.INDEXEDDB:
 	                            return new Promise(function (resolve, reject) {
-	                                resolve(__webpack_require__(1));
+	                                resolve(__webpack_require__((1)));
 	                            });
 	                        case self.LOCALSTORAGE:
 	                            return new Promise(function (resolve, reject) {
-	                                resolve(__webpack_require__(2));
+	                                resolve(__webpack_require__((2)));
 	                            });
 	                        case self.WEBSQL:
 	                            return new Promise(function (resolve, reject) {
-	                                resolve(__webpack_require__(4));
+	                                resolve(__webpack_require__((4)));
 	                            });
 	                    }
 	                } else if (CustomDrivers[driverName]) {
@@ -1016,7 +1018,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                return Promise.reject(new Error('Driver not found.'));
-	            })();
+	            }();
 
 	            getDriverPromise.then(callback, errorCallback);
 	            return getDriverPromise;
@@ -1024,7 +1026,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        LocalForage.prototype.getSerializer = function getSerializer(callback) {
 	            var serializerPromise = new Promise(function (resolve, reject) {
-	                resolve(__webpack_require__(3));
+	                resolve(__webpack_require__((3)));
 	            });
 	            if (callback && typeof callback === 'function') {
 	                serializerPromise.then(function (result) {
@@ -1080,7 +1082,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                                self._ready = self._initStorage(self._config);
 	                                return self._ready;
-	                            })['catch'](driverPromiseLoop);
+	                            })["catch"](driverPromiseLoop);
 	                        }
 
 	                        setDriverToConfig();
@@ -1096,7 +1098,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // There might be a driver initialization in progress
 	            // so wait for it to finish in order to avoid a possible
 	            // race condition to set _dbInfo
-	            var oldDriverSetDone = this._driverSet !== null ? this._driverSet['catch'](function () {
+	            var oldDriverSetDone = this._driverSet !== null ? this._driverSet["catch"](function () {
 	                return Promise.resolve();
 	            }) : Promise.resolve();
 
@@ -1111,7 +1113,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    self._wrapLibraryMethodsWithReady();
 	                    self._initDriver = initDriver(supportedDrivers);
 	                });
-	            })['catch'](function () {
+	            })["catch"](function () {
 	                setDriverToConfig();
 	                var error = new Error('No available storage method found.');
 	                self._driverSet = Promise.reject(error);
@@ -1156,26 +1158,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 
 	        return LocalForage;
-	    })();
+	    }();
+
+	    // The actual localForage object that we expose as a module or via a
+	    // global. It's extended by pulling in one of our other libraries.
+
 
 	    return new LocalForage();
-	})(typeof window !== 'undefined' ? window : self);
-	exports['default'] = localForage;
+	}(typeof window !== 'undefined' ? window : self);
+	exports["default"] = localForage;
 	module.exports = exports['default'];
 
 /***/ },
 /* 1 */
 /***/ function(module, exports) {
 
-	// Some code originally from async_storage.js in
-	// [Gaia](https://github.com/mozilla-b2g/gaia).
 	'use strict';
 
 	exports.__esModule = true;
-	var asyncStorage = (function (globalObject) {
+	// Some code originally from async_storage.js in
+	// [Gaia](https://github.com/mozilla-b2g/gaia).
+	var asyncStorage = function (globalObject) {
 	    'use strict';
 
 	    // Initialize IndexedDB; fall back to vendor-prefixed versions if needed.
+
 	    var indexedDB = indexedDB || globalObject.indexedDB || globalObject.webkitIndexedDB || globalObject.mozIndexedDB || globalObject.OIndexedDB || globalObject.msIndexedDB;
 
 	    // If IndexedDB isn't available, we get outta here!
@@ -1290,7 +1297,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                };
 	            };
 	            txn.onerror = txn.onabort = reject;
-	        })['catch'](function () {
+	        })["catch"](function () {
 	            return false; // error, so assume unsupported
 	        });
 	    }
@@ -1448,7 +1455,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var forage = dbContext.forages[j];
 	            if (forage !== self) {
 	                // Don't wait for itself...
-	                initPromises.push(forage._initReady()['catch'](ignoreErrors));
+	                initPromises.push(forage._initReady()["catch"](ignoreErrors));
 	            }
 	        }
 
@@ -1606,7 +1613,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                req.onerror = function () {
 	                    reject(req.error);
 	                };
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -1638,7 +1645,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        if (result !== void 0) {
 	                            resolve(result);
 	                        } else {
-	                            cursor['continue']();
+	                            cursor["continue"]();
 	                        }
 	                    } else {
 	                        resolve();
@@ -1648,7 +1655,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                req.onerror = function () {
 	                    reject(req.error);
 	                };
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -1709,7 +1716,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                };
 
 	                var req = store.put(value, key);
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -1736,7 +1743,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // Normally IE won't like `.delete()` and will insist on
 	                // using `['delete']()`, but we have a build step that
 	                // fixes this for us now.
-	                var req = store['delete'](key);
+	                var req = store["delete"](key);
 	                transaction.oncomplete = function () {
 	                    resolve();
 	                };
@@ -1751,7 +1758,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    var err = req.error ? req.error : req.transaction.error;
 	                    reject(err);
 	                };
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -1776,7 +1783,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    var err = req.error ? req.error : req.transaction.error;
 	                    reject(err);
 	                };
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -1799,7 +1806,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                req.onerror = function () {
 	                    reject(req.error);
 	                };
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -1851,7 +1858,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                req.onerror = function () {
 	                    reject(req.error);
 	                };
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -1878,13 +1885,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    }
 
 	                    keys.push(cursor.key);
-	                    cursor['continue']();
+	                    cursor["continue"]();
 	                };
 
 	                req.onerror = function () {
 	                    reject(req.error);
 	                };
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -1915,22 +1922,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return asyncStorage;
-	})(typeof window !== 'undefined' ? window : self);
-	exports['default'] = asyncStorage;
+	}(typeof window !== 'undefined' ? window : self);
+	exports["default"] = asyncStorage;
 	module.exports = exports['default'];
 
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	exports.__esModule = true;
 	// If IndexedDB isn't available, we'll fall back to localStorage.
 	// Note that this will have considerable performance and storage
 	// side-effects (all data will be serialized on save and only data that
 	// can be converted to a string via `JSON.stringify()` will be saved).
-	'use strict';
-
-	exports.__esModule = true;
-	var localStorageWrapper = (function (globalObject) {
+	var localStorageWrapper = function (globalObject) {
 	    'use strict';
 
 	    var localStorage = null;
@@ -1972,7 +1979,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        self._dbInfo = dbInfo;
 
 	        return new Promise(function (resolve, reject) {
-	            resolve(__webpack_require__(3));
+	            resolve(__webpack_require__((3)));
 	        }).then(function (lib) {
 	            dbInfo.serializer = lib;
 	            return Promise.resolve();
@@ -2223,8 +2230,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return localStorageWrapper;
-	})(typeof window !== 'undefined' ? window : self);
-	exports['default'] = localStorageWrapper;
+	}(typeof window !== 'undefined' ? window : self);
+	exports["default"] = localStorageWrapper;
 	module.exports = exports['default'];
 
 /***/ },
@@ -2234,12 +2241,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	exports.__esModule = true;
-	var localforageSerializer = (function (globalObject) {
+	var localforageSerializer = function (globalObject) {
 	    'use strict';
 
 	    // Sadly, the best way to save binary data in WebSQL/localStorage is serializing
 	    // it to Base64, so this is how we store it to prevent very strange errors with less
 	    // verbose ways of binary <-> string data storage.
+
 	    var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 	    var BLOB_TYPE_PREFIX = '~~local_forage_type~';
@@ -2486,14 +2494,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return localforageSerializer;
-	})(typeof window !== 'undefined' ? window : self);
-	exports['default'] = localforageSerializer;
+	}(typeof window !== 'undefined' ? window : self);
+	exports["default"] = localforageSerializer;
 	module.exports = exports['default'];
 
 /***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	exports.__esModule = true;
 	/*
 	 * Includes code from:
 	 *
@@ -2503,10 +2514,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Copyright (c) 2012 Niklas von Hertzen
 	 * Licensed under the MIT license.
 	 */
-	'use strict';
-
-	exports.__esModule = true;
-	var webSQLStorage = (function (globalObject) {
+	var webSQLStorage = function (globalObject) {
 	    'use strict';
 
 	    var openDatabase = globalObject.openDatabase;
@@ -2551,7 +2559,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 
 	        return new Promise(function (resolve, reject) {
-	            resolve(__webpack_require__(3));
+	            resolve(__webpack_require__((3)));
 	        }).then(function (lib) {
 	            dbInfo.serializer = lib;
 	            return dbInfoPromise;
@@ -2586,7 +2594,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        reject(error);
 	                    });
 	                });
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -2630,7 +2638,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        reject(error);
 	                    });
 	                });
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -2685,7 +2693,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        });
 	                    }
 	                });
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -2712,7 +2720,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        reject(error);
 	                    });
 	                });
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -2734,7 +2742,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        reject(error);
 	                    });
 	                });
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -2760,7 +2768,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        reject(error);
 	                    });
 	                });
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -2788,7 +2796,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        reject(error);
 	                    });
 	                });
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -2815,7 +2823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        reject(error);
 	                    });
 	                });
-	            })['catch'](reject);
+	            })["catch"](reject);
 	        });
 
 	        executeCallback(promise, callback);
@@ -2846,8 +2854,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return webSQLStorage;
-	})(typeof window !== 'undefined' ? window : self);
-	exports['default'] = webSQLStorage;
+	}(typeof window !== 'undefined' ? window : self);
+	exports["default"] = webSQLStorage;
 	module.exports = exports['default'];
 
 /***/ }
