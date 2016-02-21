@@ -34,7 +34,8 @@ module.exports = exports = function(grunt) {
     grunt.initConfig({
         babel: {
             options: {
-                modules: 'umd',
+                babelrc: false,
+                extends: path.resolve('.babelrc-umd'),
                 moduleIds: true,
                 getModuleId: babelModuleIdProvider
             },
@@ -124,17 +125,16 @@ module.exports = exports = function(grunt) {
             unit: {
                 options: {
                     urls: [
-                        'http://localhost:9999/test/test.component.html',
-                        'http://localhost:9999/test/test.nodriver.html',
-                        'http://localhost:9999/test/test.faultydriver.html',
                         'http://localhost:9999/test/test.main.html',
                         'http://localhost:9999/test/test.min.html',
-                        'http://localhost:9999/test/test.require.html',
-                        'http://localhost:9999/test/test.require.unbundled.html',
-                        'http://localhost:9999/test/test.browserify.html',
-                        'http://localhost:9999/test/test.webpack.html',
                         'http://localhost:9999/test/test.callwhenready.html',
-                        'http://localhost:9999/test/test.customdriver.html'
+                        'http://localhost:9999/test/test.customdriver.html',
+                        'http://localhost:9999/test/test.faultydriver.html',
+                        'http://localhost:9999/test/test.nodriver.html',
+                        'http://localhost:9999/test/test.browserify.html',
+                        'http://localhost:9999/test/test.require.html',
+                        'http://localhost:9999/test/test.webpack.html',
+                        'http://localhost:9999/test/test.require.unbundled.html' // not officially supported since v1.3
                     ]
                 }
             }
@@ -161,11 +161,6 @@ module.exports = exports = function(grunt) {
         shell: {
             options: {
                 stdout: true
-            },
-            component: {
-                command: path.resolve('node_modules', 'component', 'bin',
-                                      'component-build') +
-                         ' --dev -o test -n localforage.component'
             },
             'publish-site': {
                 command: 'rake publish ALLOW_DIRTY=true'
@@ -203,7 +198,6 @@ module.exports = exports = function(grunt) {
                 tasks: [
                     'jshint',
                     'jscs',
-                    'shell:component',
                     'browserify:package_bundling_test',
                     'webpack:package_bundling_test',
                     'mocha:unit'
@@ -251,7 +245,6 @@ module.exports = exports = function(grunt) {
         'babel',
         'jshint',
         'jscs',
-        'shell:component',
         'browserify:package_bundling_test',
         'webpack:package_bundling_test',
         'connect:test',

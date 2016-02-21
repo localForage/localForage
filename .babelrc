@@ -1,4 +1,7 @@
 {
-  "loose": "all",
-  "plugins": ["system-import-transformer"]
+  "presets": ["es2015-loose"],
+  "plugins": [
+    "add-module-exports",
+    ["system-import-transformer", { "modules": "common" }]
+  ]
 }
