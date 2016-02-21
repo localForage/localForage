@@ -135,7 +135,6 @@ module.exports = exports = function(grunt) {
                         'http://localhost:9999/test/test.require.html',
                         'http://localhost:9999/test/test.webpack.html',
                         'http://localhost:9999/test/test.require.unbundled.html' // not officially supported since v1.3
-                        // 'http://localhost:9999/test/test.component.html' // project was deprecated
                     ]
                 }
             }
@@ -162,11 +161,6 @@ module.exports = exports = function(grunt) {
         shell: {
             options: {
                 stdout: true
-            },
-            component: {
-                command: path.resolve('node_modules', 'component', 'bin',
-                                      'component-build') +
-                         ' --dev -o test -n localforage.component'
             },
             'publish-site': {
                 command: 'rake publish ALLOW_DIRTY=true'
@@ -204,7 +198,6 @@ module.exports = exports = function(grunt) {
                 tasks: [
                     'jshint',
                     'jscs',
-                    // 'shell:component', // project was deprecated
                     'browserify:package_bundling_test',
                     'webpack:package_bundling_test',
                     'mocha:unit'
@@ -252,7 +245,6 @@ module.exports = exports = function(grunt) {
         'babel',
         'jshint',
         'jscs',
-        // 'shell:component', // project was deprecated
         'browserify:package_bundling_test',
         'webpack:package_bundling_test',
         'connect:test',

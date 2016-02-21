@@ -27,7 +27,6 @@
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-es2015-loose": "^7.0.0",
     "babelify": "^7.2.0",
-    "component": "^1.0.0-rc7",
     "cors": "^2.3.1",
     "grunt": "^0.4.2",
     "grunt-babel": "^6.0.0",
