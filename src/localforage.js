@@ -147,6 +147,16 @@ var localForage = (function(globalObject) {
         return false;
     }
 
+    function executeCallback(promise, callback, errorCallback) {
+        if (typeof callback === 'function') {
+            promise.then(callback);
+        }
+        
+        if (typeof errorCallback === 'function') {
+            promise.catch(errorCallback);
+        }
+    }
+
     class LocalForage {
         constructor(options) {
             this.INDEXEDDB = DriverType.INDEXEDDB;
@@ -257,7 +267,7 @@ var localForage = (function(globalObject) {
                 }
             });
 
-            promise.then(callback, errorCallback);
+            executeCallback(promise, callback, errorCallback);
             return promise;
         }
 
@@ -284,17 +294,13 @@ var localForage = (function(globalObject) {
                 return Promise.reject(new Error('Driver not found.'));
             })();
 
-            getDriverPromise.then(callback, errorCallback);
+            executeCallback(getDriverPromise, callback, errorCallback);
             return getDriverPromise;
         }
 
         getSerializer(callback) {
             var serializerPromise = System.import('./utils/serializer');
-            if (callback && typeof callback === 'function') {
-                serializerPromise.then(function(result) {
-                    callback(result);
-                });
-            }
+            executeCallback(serializerPromise, callback);
             return serializerPromise;
         }
 
@@ -309,7 +315,7 @@ var localForage = (function(globalObject) {
                 return self._ready;
             });
 
-            promise.then(callback, callback);
+            executeCallback(promise, callback, callback);
             return promise;
         }
 
@@ -385,7 +391,7 @@ var localForage = (function(globalObject) {
                 return self._driverSet;
             });
 
-            this._driverSet.then(callback, errorCallback);
+            executeCallback(this._driverSet, callback, errorCallback);
             return this._driverSet;
         }
 

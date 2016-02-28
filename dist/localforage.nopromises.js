@@ -196,6 +196,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return false;
 	    }
 
+	    function executeCallback(promise, callback, errorCallback) {
+	        if (typeof callback === 'function') {
+	            promise.then(callback);
+	        }
+
+	        if (typeof errorCallback === 'function') {
+	            promise["catch"](errorCallback);
+	        }
+	    }
+
 	    var LocalForage = function () {
 	        function LocalForage(options) {
 	            _classCallCheck(this, LocalForage);
@@ -304,7 +314,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            });
 
-	            promise.then(callback, errorCallback);
+	            executeCallback(promise, callback, errorCallback);
 	            return promise;
 	        };
 
@@ -337,7 +347,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return Promise.reject(new Error('Driver not found.'));
 	            }();
 
-	            getDriverPromise.then(callback, errorCallback);
+	            executeCallback(getDriverPromise, callback, errorCallback);
 	            return getDriverPromise;
 	        };
 
@@ -345,11 +355,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var serializerPromise = new Promise(function (resolve, reject) {
 	                resolve(__webpack_require__((3)));
 	            });
-	            if (callback && typeof callback === 'function') {
-	                serializerPromise.then(function (result) {
-	                    callback(result);
-	                });
-	            }
+	            executeCallback(serializerPromise, callback);
 	            return serializerPromise;
 	        };
 
@@ -364,7 +370,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return self._ready;
 	            });
 
-	            promise.then(callback, callback);
+	            executeCallback(promise, callback, callback);
 	            return promise;
 	        };
 
@@ -437,7 +443,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return self._driverSet;
 	            });
 
-	            this._driverSet.then(callback, errorCallback);
+	            executeCallback(this._driverSet, callback, errorCallback);
 	            return this._driverSet;
 	        };
 
