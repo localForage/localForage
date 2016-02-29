@@ -298,5 +298,5 @@ var localStorageWrapper = (function(globalObject) {
     };
 
     return localStorageWrapper;
-})(typeof window !== 'undefined' ? window : self);
+})(typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {}));
 export default localStorageWrapper;
