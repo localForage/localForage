@@ -1171,7 +1171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	    return new LocalForage();
-	}(typeof window !== 'undefined' ? window : self);
+	}(typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {});
 	exports["default"] = localForage;
 	module.exports = exports['default'];
 
@@ -1928,7 +1928,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return asyncStorage;
-	}(typeof window !== 'undefined' ? window : self);
+	}(typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {});
 	exports["default"] = asyncStorage;
 	module.exports = exports['default'];
 
@@ -2236,7 +2236,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return localStorageWrapper;
-	}(typeof window !== 'undefined' ? window : self);
+	}(typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {});
 	exports["default"] = localStorageWrapper;
 	module.exports = exports['default'];
 
@@ -2500,7 +2500,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return localforageSerializer;
-	}(typeof window !== 'undefined' ? window : self);
+	}(typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {});
 	exports["default"] = localforageSerializer;
 	module.exports = exports['default'];
 
@@ -2860,7 +2860,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    return webSQLStorage;
-	}(typeof window !== 'undefined' ? window : self);
+	}(typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {});
 	exports["default"] = webSQLStorage;
 	module.exports = exports['default'];
 
