@@ -432,5 +432,5 @@ var localForage = (function(globalObject) {
     // The actual localForage object that we expose as a module or via a
     // global. It's extended by pulling in one of our other libraries.
     return new LocalForage();
-})(typeof window !== 'undefined' ? window : self);
+})(typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {}));
 export default localForage;

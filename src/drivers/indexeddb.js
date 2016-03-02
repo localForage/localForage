@@ -762,5 +762,5 @@ var asyncStorage = (function(globalObject) {
     };
 
     return asyncStorage;
-})(typeof window !== 'undefined' ? window : self);
+})(typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {}));
 export default asyncStorage;

@@ -260,5 +260,5 @@ var localforageSerializer = (function(globalObject) {
     };
 
     return localforageSerializer;
-})(typeof window !== 'undefined' ? window : self);
+})(typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {}));
 export default localforageSerializer;

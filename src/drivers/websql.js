@@ -367,5 +367,5 @@ var webSQLStorage = (function(globalObject) {
     };
 
     return webSQLStorage;
-})(typeof window !== 'undefined' ? window : self);
+})(typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {}));
 export default webSQLStorage;
