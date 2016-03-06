@@ -1,9 +1,9 @@
 ---
 title: localForage API Reference
 
-language_tabs:
-  - javascript
-  - coffeescript
+async_tabs:
+  - promises
+  - callbacks
 
 toc_footers:
   - <a href="https://github.com/mozilla/localForage">Contribute to localForage</a>
@@ -13,28 +13,22 @@ toc_footers:
 
 # localForage
 
-```javascript
+```js
 // In localStorage, we would do:
 localStorage.setItem('key', JSON.stringify('value'));
 doSomethingElse();
 
-// With localForage, we use callbacks:
-localforage.setItem('key', 'value', doSomethingElse);
-
-// Or we can use Promises:
+// With localForage, we do:
 localforage.setItem('key', 'value').then(doSomethingElse);
 ```
 
-```coffeescript
-# In localStorage, we would do:
-localStorage.setItem "key", JSON.stringify("value")
-doSomethingElse()
+```js
+// In localStorage, we would do:
+localStorage.setItem('key', JSON.stringify('value'));
+doSomethingElse();
 
-# With localForage, we use callbacks:
-localforage.setItem "key", "value", doSomethingElse
-
-# Or we can use Promises:
-localforage.setItem("key", "value").then doSomethingElse
+// With localForage, we do:
+localforage.setItem('key', 'value', doSomethingElse);
 ```
 
 **Offline storage, improved.**
@@ -66,9 +60,10 @@ npm install localforage
 # Or with bower:
 bower install localforage
 ```
+
 ```html
 <script src="localforage.js"></script>
-<script>localforage.getItem('somekey', function(err, val) { alert(val) });</script>
+<script>console.log('localforage is: ', localforage);</script>
 ```
 
 To use localForage, [download the latest release](https://github.com/mozilla/localForage/releases) or install with [npm](https://www.npmjs.org/) (`npm install localforage`) or [bower](http://bower.io/) (`bower install localforage`).
@@ -83,27 +78,23 @@ These APIs deal with getting and setting data in the offline store.
 
 ## getItem
 
-```javascript
+```js
+localforage.getItem('somekey').then(function(value) {
+    // This code runs once the value has been loaded
+    // from the offline store.
+    console.log(value);
+}).catch(function(err) {
+    // This code runs if there were any errors
+    console.log(err);
+});
+```
+
+```js
 localforage.getItem('somekey', function(err, value) {
     // Run this code once the value has been
     // loaded from the offline store.
     console.log(value);
 });
-localforage.getItem('somekey').then(function(value) {
-    // The same code, but using ES6 Promises.
-    console.log(value);
-});
-```
-
-```coffeescript
-localforage.getItem "somekey", (err, value) ->
-  # Run this code once the value has been loaded
-  # from the offline store.
-  console.log value
-
-localforage.getItem("somekey").then (value) ->
-  # The same code, but using ES6 Promises.
-  console.log(value)
 ```
 
 `getItem(key, successCallback)`
@@ -120,7 +111,44 @@ If the key does not exist, `getItem()` will return `null`.
 
 ## setItem
 
-```javascript
+```js
+localforage.setItem('somekey', 'some value').then(function (value) {
+    // Do other things once the value has been saved.
+    console.log(value);
+}).catch(function(err) {
+    // This code runs if there were any errors
+    console.log(err);
+});
+
+// Unlike localStorage, you can store non-strings.
+localforage.setItem('my array', [1, 2, 'three']).then(function(value) {
+    // This will output `1`.
+    console.log(value[0]);
+}).catch(function(err) {
+    // This code runs if there were any errors
+    console.log(err);
+});
+
+// You can even store binary data from an AJAX request.
+request = new XMLHttpRequest();
+request.open('GET', '/photo.jpg', true);
+request.responseType = 'arraybuffer';
+
+request.addEventListener('readystatechange', function() {
+    if (request.readyState === 4) { // readyState DONE
+        localforage.setItem('photo', request.response).then(function(image) {
+            // This will be a valid blob URI for an <img> tag.
+            var blob = new Blob([image]);
+            var imageURI = window.URL.createObjectURL(blob);
+        }).catch(function(err) {
+          // This code runs if there were any errors
+          console.log(err);
+        });
+    }
+});
+```
+
+```js
 localforage.setItem('somekey', 'some value', function(err, value) {
     // Do other things once the value has been saved.
     console.log(value);
@@ -146,29 +174,6 @@ request.addEventListener('readystatechange', function() {
         });
     }
 });
-```
-
-```coffeescript
-localforage.setItem "somekey", "some value", (err, value) ->
-  # Do other things once the value has been saved.
-  console.log value
-
-# Unlike localStorage, you can store non-strings.
-localforage.setItem "my array", [1, 2, "three"], (err, value) ->
-  # This will output `1`.
-  console.log value[0]
-
-# You can even store binary data from an AJAX request.
-request = new XMLHttpRequest()
-request.open "GET", "photo.jpg", true
-request.responseType = "arraybuffer"
-
-request.addEventListener "readystatechange", ->
-  if request.readyState == 4 # readyState DONE
-    localforage.setItem "photo", request.response, (err, image) ->
-      # This will be a valid blob URI for an <img> tag.
-      blob = new Blob [image]
-      imageURI = window.URL.createObjectURL blob
 ```
 
 `setItem(key, value, successCallback)`
@@ -202,17 +207,21 @@ objects:
 
 ## removeItem
 
-```javascript
+```js
+localforage.removeItem('somekey').then(function() {
+    // Run this code once the key has been removed.
+    console.log('Key is cleared!');
+}).catch(function(err) {
+    // This code runs if there were any errors
+    console.log(err);
+});
+```
+
+```js
 localforage.removeItem('somekey', function(err) {
     // Run this code once the key has been removed.
     console.log('Key is cleared!');
 });
-```
-
-```coffeescript
-localforage.removeItem "somekey", (err) ->
-  # Run this code once the key has been removed.
-  console.log "Key is cleared!"
 ```
 
 `removeItem(key, successCallback)`
@@ -223,17 +232,21 @@ Removes the value of a key from the offline store.
 
 ## clear
 
-```javascript
+```js
+localforage.clear().then(function() {
+    // Run this code once the database has been entirely deleted.
+    console.log('Database is now empty.');
+}).catch(function(err) {
+    // This code runs if there were any errors
+    console.log(err);
+});
+```
+
+```js
 localforage.clear(function(err) {
     // Run this code once the database has been entirely deleted.
     console.log('Database is now empty.');
 });
-```
-
-```coffeescript
-localforage.clear (err) ->
-  # Run this code once the database has been entirely deleted.
-  console.log "Database is now empty."
 ```
 
 `clear(successCallback)`
@@ -247,17 +260,21 @@ Removes every key from the database, returning it to a blank slate.
 
 ## length
 
-```javascript
+```js
+localforage.length().then(function(numberOfKeys) {
+    // Outputs the length of the database.
+    console.log(numberOfKeys);
+}).catch(function(err) {
+    // This code runs if there were any errors
+    console.log(err);
+});
+```
+
+```js
 localforage.length(function(err, numberOfKeys) {
     // Outputs the length of the database.
     console.log(numberOfKeys);
 });
-```
-
-```coffeescript
-localforage.length (err, numberOfKeys) ->
-  # Outputs the length of the database.
-  console.log numberOfKeys
 ```
 
 `length(successCallback)`
@@ -266,17 +283,21 @@ Gets the number of keys in the offline store (i.e. its "length").
 
 ## key
 
-```javascript
+```js
+localforage.key(2).then(function(keyName) {
+    // Name of the key.
+    console.log(keyName);
+}).catch(function(err) {
+    // This code runs if there were any errors
+    console.log(err);
+});
+```
+
+```js
 localforage.key(2, function(err, keyName) {
     // Name of the key.
     console.log(keyName);
 });
-```
-
-```coffeescript
-localforage.key 2, (err, keyName) ->
-  # Name of the key.
-  console.log keyName
 ```
 
 `key(keyIndex, successCallback)`
@@ -290,17 +311,21 @@ Get the name of a key based on its ID.
 
 ## keys
 
-```javascript
+```js
+localforage.keys().then(function(keys) {
+    // An array of all the key names.
+    console.log(keys);
+}).catch(function(err) {
+    // This code runs if there were any errors
+    console.log(err);
+});
+```
+
+```js
 localforage.keys(function(err, keys) {
     // An array of all the key names.
     console.log(keys);
 });
-```
-
-```coffeescript
-localforage.keys (err, keys) ->
-  # An array of all the key names.
-  console.log keys
 ```
 
 `keys(successCallback)`
@@ -309,7 +334,37 @@ Get the list of all keys in the datastore.
 
 ## iterate
 
-```javascript
+```js
+// The same code, but using ES6 Promises.
+localforage.iterate(function(value, key, iterationNumber) {
+    // Resulting key/value pair -- this callback
+    // will be executed for every item in the
+    // database.
+    console.log([key, value]);
+}).then(function() {
+    console.log('Iteration has completed');
+}).catch(function(err) {
+    // This code runs if there were any errors
+    console.log(err);
+});
+
+// Exit the iteration early:
+localforage.iterate(function(value, key, iterationNumber) {
+    if (iterationNumber < 3) {
+        console.log([key, value]);
+    } else {
+        return [key, value];
+    }
+}).then(function(result) {
+    console.log('Iteration has completed, last iterated pair:');
+    console.log(result);
+}).catch(function(err) {
+    // This code runs if there were any errors
+    console.log(err);
+});
+```
+
+```js
 localforage.iterate(function(value, key, iterationNumber) {
     // Resulting key/value pair -- this callback
     // will be executed for every item in the
@@ -319,16 +374,6 @@ localforage.iterate(function(value, key, iterationNumber) {
     if (!err) {
         console.log('Iteration has completed');
     }
-});
-
-// The same code, but using ES6 Promises.
-localforage.iterate(function(value, key, iterationNumber) {
-    // Resulting key/value pair -- this callback
-    // will be executed for every item in the
-    // database.
-    console.log([key, value]);
-}).then(function() {
-    console.log('Iteration has completed');
 });
 
 // Exit the iteration early:
@@ -344,63 +389,6 @@ localforage.iterate(function(value, key, iterationNumber) {
         console.log(result);
     }
 });
-
-// The same code for early exit, but using ES6 Promises.
-localforage.iterate(function(value, key, iterationNumber) {
-    if (iterationNumber < 3) {
-        console.log([key, value]);
-    } else {
-        return [key, value];
-    }
-}).then(function(result) {
-    console.log('Iteration has completed, last iterated pair:');
-    console.log(result);
-});
-```
-
-```coffeescript
-localforage.iterate (value, key, iterationNumber) ->
-  # Resulting key/value pair -- this callback
-  # will be executed for every item in the
-  # database.
-  console.log [key, value]
-  return
-, (err) ->
-  unless err
-    console.log "Iteration has completed"
-
-# The same code, but using ES6 Promises.
-localforage.iterate (value, key, iterationNumber) ->
-  # Resulting key/value pair -- this callback
-  # will be executed for every item in the
-  # database.
-  console.log [key, value]
-  return
-.then ->
-  console.log "Iteration has completed"
-
-# Exit the iteration early:
-localforage.iterate (value, key, iterationNumber) ->
-  if iterationNumber < 3
-    console.log [key, value]
-    return
-  else
-    return [key, value]
-), (err, result) ->
-  unless err
-    console.log "Iteration has completed, last iterated pair:"
-    console.log result
-
-# The same code for early exit, but using ES6 Promises.
-localforage.iterate((value, key, iterationNumber) ->
-  if iterationNumber < 3
-    console.log [key, value]
-    return
-  else
-    return [key, value]
-).then (result) ->
-  console.log "Iteration has completed, last iterated pair:"
-  console.log result
 ```
 
 `iterate(iteratorCallback, successCallback)`
@@ -430,7 +418,7 @@ i.e. before you call `getItem()` or `length()`, etc.)
 
 ## setDriver
 
-```javascript
+```js
 // Force localStorage to be the backend driver.
 localforage.setDriver(localforage.LOCALSTORAGE);
 
@@ -438,12 +426,12 @@ localforage.setDriver(localforage.LOCALSTORAGE);
 localforage.setDriver([localforage.WEBSQL, localforage.INDEXEDDB]);
 ```
 
-```coffeescript
-# Force localStorage to be the backend driver.
-localforage.setDriver localforage.LOCALSTORAGE
+```js
+// Force localStorage to be the backend driver.
+localforage.setDriver(localforage.LOCALSTORAGE);
 
-# Supply a list of drivers, in order of preference.
-localforage.setDriver [localforage.WEBSQL, localforage.INDEXEDDB]
+// Supply a list of drivers, in order of preference.
+localforage.setDriver([localforage.WEBSQL, localforage.INDEXEDDB]);
 ```
 
 `setDriver(driverName)`<br>
@@ -474,7 +462,7 @@ If you would like to force usage of a particular driver you can use
 
 ## config
 
-```javascript
+```js
 // This will rename the database from "localforage"
 // to "Hipster PDA App".
 localforage.config({
@@ -498,26 +486,28 @@ localforage.config({
 });
 ```
 
-```coffeescript
-# This will rename the database from "localforage"
-# to "Hipster PDA App".
-localforage.config
-  name: "Hipster PDA App"
+```js
+// This will rename the database from "localforage"
+// to "Hipster PDA App".
+localforage.config({
+    name: 'Hipster PDA App'
+});
 
+// This will force localStorage as the storage
+// driver even if another is available. You can
+// use this instead of `setDriver()`.
+localforage.config({
+    driver: localforage.LOCALSTORAGE,
+    name: 'I-heart-localStorage'
+});
 
-# This will force localStorage as the storage
-# driver even if another is available. You can
-# use this instead of `setDriver()`.
-localforage.config
-  driver: localforage.LOCALSTORAGE
-  name: "I-heart-localStorage"
-
-# This will use a different driver order.
-localforage.config
-  driver: [localforage.WEBSQL,
-           localforage.INDEXEDDB,
-           localforage.LOCALSTORAGE]
-  name: "WebSQL-Rox"
+// This will use a different driver order.
+localforage.config({
+    driver: [localforage.WEBSQL,
+             localforage.INDEXEDDB,
+             localforage.LOCALSTORAGE],
+    name: 'WebSQL-Rox'
+});
 ```
 
 `config(options)`
@@ -579,7 +569,7 @@ You can write your own, custom driver for localForage since **version 1.1**.
 
 ## defineDriver
 
-```javascript
+```js
 // Implement the driver here.
 var myCustomDriver = {
     _driver: 'customDriverUniqueName',
@@ -613,29 +603,38 @@ var myCustomDriver = {
 localforage.defineDriver(myCustomDriver);
 ```
 
-```coffeescript
-# Implement the driver here.
-myCustomDriver =
-  _driver: 'customDriverUniqueName'
-  _initStorage: (options) ->
-    # Custom implementation here...
-  clear: (callback) ->
-    # Custom implementation here...
-  getItem: (key, callback) ->
-    # Custom implementation here...
-  key: (n, callback) ->
-    # Custom implementation here...
-  keys: (callback) ->
-    # Custom implementation here...
-  length: (callback) ->
-    # Custom implementation here...
-  removeItem: (key, callback) ->
-    # Custom implementation here...
-  setItem: (key, value, callback) ->
-    # Custom implementation here...
+```js
+// Implement the driver here.
+var myCustomDriver = {
+    _driver: 'customDriverUniqueName',
+    _initStorage: function(options) {
+        // Custom implementation here...
+    },
+    clear: function(callback) {
+        // Custom implementation here...
+    },
+    getItem: function(key, callback) {
+        // Custom implementation here...
+    },
+    key: function(n, callback) {
+        // Custom implementation here...
+    },
+    keys: function(callback) {
+        // Custom implementation here...
+    },
+    length: function(callback) {
+        // Custom implementation here...
+    },
+    removeItem: function(key, callback) {
+        // Custom implementation here...
+    },
+    setItem: function(key, value, callback) {
+        // Custom implementation here...
+    }
+}
 
-# Add the driver to localForage.
-localforage.defineDriver(myCustomDriver)
+// Add the driver to localForage.
+localforage.defineDriver(myCustomDriver);
 ```
 
 You'll want to make sure you accept a `callback` argument and that you pass
@@ -657,14 +656,14 @@ use this to make sure the browser in use supports your custom driver.
 
 ## driver
 
-```javascript
+```js
 localforage.driver();
 // "asyncStorage"
 ```
 
-```coffeescript
-localforage.driver()
-# "asyncStorage"
+```js
+localforage.driver();
+// "asyncStorage"
 ```
 
 `driver()`
@@ -673,14 +672,14 @@ Returns the name of the driver being used, or `null` if none can be used.
 
 ## supports
 
-```javascript
+```js
 localforage.supports(localforage.INDEXEDDB);
 // true
 ```
 
-```coffeescript
-localforage.supports(localforage.INDEXEDDB)
-# true
+```js
+localforage.supports(localforage.INDEXEDDB);
+// true
 ```
 
 `supports(driverName)`
@@ -696,7 +695,7 @@ All the configuration options used by [config](#config) are supported.
 
 ## createInstance
 
-``` javascript
+```js
 var store = localforage.createInstance({
   name: "nameHere"
 });
@@ -710,16 +709,18 @@ store.setItem("key", "value");
 otherStore.setItem("key", "value2");
 ```
 
-``` coffeescript
-store = localforage.createInstance
+```js
+var store = localforage.createInstance({
   name: "nameHere"
+});
 
-otherStore = localforage.createInstance
+var otherStore = localforage.createInstance({
   name: "otherName"
+});
 
-# Setting the key on one of these doesn't affect the other.
-store.setItem "key", "value"
-otherStore.setItem "key", "value2"
+// Setting the key on one of these doesn't affect the other.
+store.setItem("key", "value");
+otherStore.setItem("key", "value2");
 ```
 
 Creates a new instance of localForage and returns it. Each object contains its
