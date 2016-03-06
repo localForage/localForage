@@ -1,10 +1,6 @@
 (function() {
     'use strict';
 
-    // Promises!
-    var Promise = (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') ?
-                  require('promise') : this.Promise;
-
     var dummyStorage = {};
 
     // Config the localStorage backend, using options set in the config.

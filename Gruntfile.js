@@ -53,6 +53,45 @@ module.exports = exports = function(grunt) {
             package_bundling_test: {
                 src: 'test/runner.browserify.js',
                 dest: 'test/localforage.browserify.js'
+            },
+            main: {
+                files: {
+                    'dist/localforage.js': 'src/localforage.js'
+                },
+                options: {
+                    browserifyOptions: {
+                        standalone: 'localforage'
+                    },
+                    transform: ['rollupify', 'babelify'],
+                    plugin: ['bundle-collapser/plugin']
+                }
+            },
+            no_promises: {
+                files: {
+                    'dist/localforage.nopromises.js': 'src/localforage.js'
+                },
+                options: {
+                    browserifyOptions: {
+                        standalone: 'localforage'
+                    },
+                    transform: ['rollupify', 'babelify'],
+                    plugin: ['bundle-collapser/plugin'],
+                    exclude: ['lie']
+                }
+            }
+        },
+        run: {
+            derequire: {
+                exec: 'derequire ' +
+                  '< dist/localforage.js > dist/localforage.tmp ' +
+                  '&& ncp dist/localforage.tmp dist/localforage.js' +
+                  '&& rimraf dist/localforage.tmp'
+            },
+            derequire_no_promises: {
+                exec: 'derequire ' +
+                '< dist/localforage.nopromises.js > dist/localforage.nopromises.tmp ' +
+                '&& ncp dist/localforage.nopromises.tmp dist/localforage.nopromises.js' +
+                '&& rimraf dist/localforage.nopromises.tmp'
             }
         },
         concat: {
@@ -60,14 +99,13 @@ module.exports = exports = function(grunt) {
                 separator: ''
             },
             localforage: {
+                // just to add the BANNER
+                // without adding an extra grunt module
                 files: {
                     'dist/localforage.js': [
-                        'bower_components/es6-promise/promise.js',
-                        'dist/localforage.nopromises.js'
+                        'dist/localforage.js'
                     ],
                     'dist/localforage.nopromises.js': [
-                        // just to add the BANNER
-                        // without adding an extra grunt module
                         'dist/localforage.nopromises.js'
                     ]
                 },
@@ -133,8 +171,7 @@ module.exports = exports = function(grunt) {
                         'http://localhost:9999/test/test.nodriver.html',
                         'http://localhost:9999/test/test.browserify.html',
                         'http://localhost:9999/test/test.require.html',
-                        'http://localhost:9999/test/test.webpack.html',
-                        'http://localhost:9999/test/test.require.unbundled.html' // not officially supported since v1.3
+                        'http://localhost:9999/test/test.webpack.html'
                     ]
                 }
             }
@@ -194,22 +231,6 @@ module.exports = exports = function(grunt) {
                     path: 'test/',
                     filename: 'localforage.webpack.js'
                 }
-            },
-            localforage_nopromises: {
-                entry: './src/localforage.js',
-                output: {
-                    path: 'dist/',
-                    filename: 'localforage.nopromises.js',
-                    library: ['localforage'],
-                    libraryTarget: 'umd'
-                },
-                module: {
-                    loaders: [{
-                        test: /\.js?$/,
-                        exclude: /(node_modules|bower_components)/,
-                        loader: 'babel'
-                    }]
-                }
             }
         }
     });
@@ -217,7 +238,9 @@ module.exports = exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
 
     grunt.registerTask('default', ['build', 'connect', 'watch']);
-    grunt.registerTask('build', ['webpack:localforage_nopromises', 'concat', 'es3_safe_recast', 'uglify']);
+    grunt.registerTask('build', ['browserify:main', 'browserify:no_promises',
+        'run:derequire', 'run:derequire_no_promises',
+        'concat', 'es3_safe_recast', 'uglify']);
     grunt.registerTask('serve', ['build', 'connect:test', 'watch']);
 
     // These are the test tasks we run regardless of Sauce Labs credentials.
