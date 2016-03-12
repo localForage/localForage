@@ -52,13 +52,13 @@ under the License.
         setTimeout(function() {
           toc.setOption("showEffectSpeed", 180);
         },50);
-        setupLanguages([
-          <% if current_page.data.language_tabs %>
-            <% current_page.data.language_tabs.each do |lang| %>
-              <% if lang.is_a? Hash %>
-                '<%= lang.keys[0] %>',
+        setupTabs([
+          <% if current_page.data.async_tabs %>
+            <% current_page.data.async_tabs.each do |key| %>
+              <% if key.is_a? Hash %>
+                '<%= key.keys[0] %>',
               <% else %>
-                '<%= lang %>',
+                '<%= key %>',
               <% end %>
             <% end %>
           <% end %>
@@ -96,13 +96,13 @@ under the License.
         <% end %>
       </div>
       <div class="dark-box">
-        <div id="lang-selector">
-          <% if current_page.data.language_tabs %>
-            <% current_page.data.language_tabs.each do |lang| %>
-              <% if lang.is_a? Hash %>
-                <a href="#" data-language-name="<%= lang.keys[0] %>"><%= lang.values[0] %></a>
+        <div id="async-selector">
+          <% if current_page.data.async_tabs %>
+            <% current_page.data.async_tabs.each do |key| %>
+              <% if key.is_a? Hash %>
+                <a href="#" data-async-name="<%= key.keys[0] %>"><%= key.values[0] %></a>
               <% else %>
-                <a href="#" data-language-name="<%= lang %>"><%= lang %></a>
+                <a href="#" data-async-name="<%= key %>"><%= key %></a>
               <% end %>
             <% end %>
           <% end %>
