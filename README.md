@@ -80,7 +80,7 @@ localforage.setItem('key', 'value').then(function () {
 });
 ```
 
-For more examples, please visit [the API docs])(http://mozilla.github.io/localForage). 
+For more examples, please visit [the API docs](http://mozilla.github.io/localForage). 
 
 ## Storing Blobs, TypedArrays, and other JS objects
 
