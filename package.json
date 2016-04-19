@@ -39,6 +39,7 @@
     "grunt-es3-safe-recast": "^0.1.0",
     "grunt-jscs": "^1.5.0",
     "grunt-mocha": "^0.4.10",
+    "grunt-mocha-test": "^0.12.7",
     "grunt-saucelabs": "^5.1.2",
     "grunt-shell": "^0.6.4",
     "grunt-webpack": "^1.0.11",
@@ -50,11 +51,13 @@
     "webpack": "^1.12.13",
     "webpack-dev-server": "^1.10.1"
   },
-  "main": "dist/localforage.js",
+  "main": "dist/localforage.node.js",
+  "browser": "dist/localforage.js",
   "bugs": {
     "url": "http://github.com/mozilla/localForage/issues"
   },
   "dependencies": {
+    "dom-storage": "^2.0.2",
     "promise": "^5.0.0"
   }
 }

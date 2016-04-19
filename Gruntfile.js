@@ -61,6 +61,7 @@ module.exports = exports = function(grunt) {
             },
             localforage: {
                 files: {
+                    // Browser output files
                     'dist/localforage.js': [
                         'bower_components/es6-promise/promise.js',
                         'dist/localforage.nopromises.js'
@@ -68,6 +69,18 @@ module.exports = exports = function(grunt) {
                     'dist/localforage.nopromises.js': [
                         // just to add the BANNER
                         // without adding an extra grunt module
+                        'dist/localforage.nopromises.js'
+                    ],
+                    // Node output files
+                    'dist/localforage.node.js': [
+                        'src/utils/node_banner.js',
+                        'bower_components/es6-promise/promise.js',
+                        'dist/localforage.nopromises.js'
+                    ],
+                    'dist/localforage.nopromises.node.js': [
+                        // just to add the BANNER
+                        // without adding an extra grunt module
+                        'src/utils/node_banner.js',
                         'dist/localforage.nopromises.js'
                     ]
                 },
@@ -137,6 +150,15 @@ module.exports = exports = function(grunt) {
                         'http://localhost:9999/test/test.require.unbundled.html' // not officially supported since v1.3
                     ]
                 }
+            }
+        },
+        // Test node.js
+        mochaTest: {
+            test: {
+                options: {
+                    reporter: 'spec'
+                },
+                src: ['test/test.node.js']
             }
         },
         open: {
@@ -248,7 +270,8 @@ module.exports = exports = function(grunt) {
         'browserify:package_bundling_test',
         'webpack:package_bundling_test',
         'connect:test',
-        'mocha'
+        'mocha',
+        'mochaTest'
     ];
     grunt.registerTask('test:local', testTasks.slice());
 
