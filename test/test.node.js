@@ -1,3 +1,4 @@
+/*exported Promise */
 var Promise = require('es6-promise').Promise;
 var localforage = require('../dist/localforage.nopromises.node');
 
