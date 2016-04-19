@@ -28,5 +28,14 @@
       "require": true,
       "self": true,
       "System": true
-    }
+    },
+
+    "predef": [
+        "describe",
+        "before",
+        "beforeEach",
+        "after",
+        "afterEach",
+        "it"
+    ]
 }
