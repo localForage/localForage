@@ -188,18 +188,11 @@ describe('nodejs.nopromises', function()
 
         describe('Testing: removeItem', function()
         {
-            // TODO: Shouldn't this throw an error?
-            it('should not allow removing invalid keys', function(done) {
+            // NOTE: This behavior is a bit unexpected to me.
+            it('should allow removing non-existing keys (without error)', function(done) {
                 localforage.removeItem('key', function(err)
                 {
-                    if (err)
-                    {
-                        done();
-                    }
-                    else
-                    {
-                        done('Expected an error, none fired!');
-                    }
+                    done(err);
                 });
             });
 
@@ -324,17 +317,16 @@ describe('nodejs.nopromises', function()
                 });
             });
 
-            // TODO: Shouldn't this return the empty array?
             it('should start out empty (value check)', function(done) {
                 localforage.keys(function(err, keys)
                 {
-                    if (keys === [])
+                    if (keys.length === 0)
                     {
                         done();
                     }
                     else
                     {
-                        done('Expected "[]" got: ' + keys);
+                        done('Expected "keys.length === 0" got: keys.length === ' + keys.length);
                     }
                 });
             });
@@ -454,7 +446,33 @@ describe('nodejs.nopromises', function()
     describe('Testing: Settings API', function()
     {
         // NOTE: setDriver not tested; emulation only provides localStorage.
-        // NOTE: config could be tested, specifically, but solely 'name'.
+        // NOTE: The rest of config could not be tested in node.
+        describe('Testing: createInstance', function()
+        {
+            it('should support multiple instances', function(done)
+            {
+                var store = localforage.createInstance({
+                    name: 'nameHere'
+                });
+                var otherStore = localforage.createInstance({
+                    name: 'otherName'
+                });
+                store.setItem('key', 'value1', function(err, value1) {
+                    otherStore.setItem('key', 'value2', function(err, value2)
+                    {
+                        if (value1 === 'value1' && value2 === 'value2')
+                        {
+                            done();
+                        }
+                        else
+                        {
+                            done('Expected "value1:value" got: ' + value1 + ':' + value2);
+                        }
+                    });
+                });
+            });
+        });
+
         it("isn't tested", function()
         {
         });
