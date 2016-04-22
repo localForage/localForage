@@ -16,6 +16,7 @@
     "url": "git://github.com/mozilla/localForage.git"
   },
   "scripts": {
+    "publish-docs": "node -e \"require('grunt').cli()\" null copy build-rules-html publish-rules",
     "test": "node -e \"require('grunt').cli()\" null test"
   },
   "devDependencies": {
