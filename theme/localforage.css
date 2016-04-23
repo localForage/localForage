@@ -1,0 +1,79 @@
+@font-face {
+  font-family: 'icomoon';
+  src: url("../fonts/icomoon.eot");
+  src: url("../fonts/icomoon.eot?#iefix") format("embedded-opentype"),
+       url("../fonts/icomoon.ttf") format("truetype"),
+       url("../fonts/icomoon.woff") format("woff"),
+       url("../fonts/icomoon.svg#icomoon") format("svg");
+  font-weight:normal;
+  font-style:normal;
+}
+
+body:not(.no-literate) .content > pre + p,
+body:not(.no-literate) .content > blockquote + p,
+body:not(.no-literate) .content > pre + ul,
+body:not(.no-literate) .content > blockquote + ul,
+body:not(.no-literate) .content > pre + dl,
+body:not(.no-literate) .content > blockquote + dl,
+body:not(.no-literate) .content > pre + ol,
+body:not(.no-literate) .content > blockquote + ol,
+body:not(.no-literate) .content > pre + h4,
+body:not(.no-literate) .content > blockquote + h4,
+body:not(.no-literate) .content > pre + h5,
+body:not(.no-literate) .content > blockquote + h5,
+body:not(.no-literate) .content > pre + h6,
+body:not(.no-literate) .content > blockquote + h6 {
+  clear: left;
+}
+
+body:not(.no-literate) .content > p,
+body:not(.no-literate) .content > ul,
+body:not(.no-literate) .content > dl,
+body:not(.no-literate) .content > ol,
+body:not(.no-literate) .content > h4,
+body:not(.no-literate) .content > h5,
+body:not(.no-literate) .content > h6 {
+  float: none;
+}
+
+.content dl > dt {
+  font-weight: bold;
+  margin-left: -1.5em;
+}
+
+.content dl > dd {
+  width: 85%;
+}
+
+aside {
+  box-sizing: border-box;
+  clear: left;
+  display: block;
+  margin: 10px 40px;
+  padding: 10px;
+  max-width: 50%;
+}
+
+aside a,
+aside a:focus,
+aside a:hover {
+  display: inline-block;
+  color: #000;
+  padding: 0 1px;
+  text-decoration: underline;
+}
+
+aside a:active {
+  background: #f3f6fb;
+}
+
+aside.notice {
+  background: #d2dbeb;
+}
+
+aside.notice::before {
+  content: "\e602";
+  display: inline-block;
+  font-family: 'icomoon';
+  margin: 0 0.5em;
+}
