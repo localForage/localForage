@@ -139,11 +139,6 @@ module.exports = exports = function(grunt) {
                 }
             }
         },
-        open: {
-            site: {
-                path: 'http://localhost:4567/'
-            }
-        },
         'saucelabs-mocha': {
             all: {
                 options: {
@@ -158,25 +153,13 @@ module.exports = exports = function(grunt) {
                 }
             }
         },
-        shell: {
-            options: {
-                stdout: true
-            },
-            'publish-site': {
-                command: 'rake publish ALLOW_DIRTY=true'
-            },
-            'serve-site': {
-                command: 'bundle exec middleman server'
-            }
-        },
         uglify: {
             localforage: {
                 files: {
                     'dist/localforage.min.js': ['dist/localforage.js'],
                     'dist/localforage.nopromises.min.js': [
                         'dist/localforage.nopromises.js'
-                    ],
-                    'site/localforage.min.js': ['dist/localforage.js']
+                    ]
                 },
                 options: {
                     banner: BANNER
@@ -235,9 +218,7 @@ module.exports = exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'connect', 'watch']);
     grunt.registerTask('build', ['webpack:localforage_nopromises', 'concat', 'es3_safe_recast', 'uglify']);
-    grunt.registerTask('publish', ['build', 'shell:publish-site']);
     grunt.registerTask('serve', ['build', 'connect:test', 'watch']);
-    grunt.registerTask('site', ['shell:serve-site']);
 
     // These are the test tasks we run regardless of Sauce Labs credentials.
     var testTasks = [
