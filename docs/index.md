@@ -14,18 +14,11 @@ localforage.setItem('key', 'value').then(doSomethingElse);
 localforage.setItem('key', 'value', doSomethingElse);
 ```
 
-localForage is a JavaScript library that improves the offline experience of
-your web app by using an asynchronous data store with a simple,
-`localStorage`-like API. It allows developers to
-[store many types of data](#setitem) instead of just strings.
+localForage is a JavaScript library that improves the offline experience of your web app by using an asynchronous data store with a simple, `localStorage`-like API. It allows developers to [store many types of data](#setitem) instead of just strings.
 
-localForage includes a localStorage-backed fallback store for browsers with no
-IndexedDB or WebSQL support. Asynchronous storage is available in the current
-versions of all major browsers: Chrome, Firefox, IE, and Safari
-(including Safari Mobile).
+localForage includes a localStorage-backed fallback store for browsers with no IndexedDB or WebSQL support. Asynchronous storage is available in the current versions of all major browsers: Chrome, Firefox, IE, and Safari (including Safari Mobile).
 
-**localForage offers a callback API as well as support for the
-[ES6 Promises API][]**, so you can use whichever you prefer.
+**localForage offers a callback API as well as support for the [ES6 Promises API][]**, so you can use whichever you prefer.
 
 [Download localforage.min.js][download]
 
@@ -49,9 +42,7 @@ bower install localforage
 
 To use localForage, [download the latest release](https://github.com/mozilla/localForage/releases) or install with [npm](https://www.npmjs.org/) (`npm install localforage`) or [bower](http://bower.io/) (`bower install localforage`).
 
-Then simply include the JS file and start using localForage:
-`<script src="localforage.js"></script>`. You don't need to run any init method
-or wait for any `onready` events.
+Then simply include the JS file and start using localForage: `<script src="localforage.js"></script>`. You don't need to run any init method or wait for any `onready` events.
 
 # Data API
 
@@ -79,14 +70,10 @@ localforage.getItem('somekey', function(err, value) {
 
 `getItem(key, successCallback)`
 
-Gets an item from the storage library and supplies the result to a callback.
-If the key does not exist, `getItem()` will return `null`.
+Gets an item from the storage library and supplies the result to a callback. If the key does not exist, `getItem()` will return `null`.
 
 <aside class="notice">
-  Even if `undefined` is saved, `null` will be returned by `getItem()`. This
-  is due to a
-  [limitation in localStorage](https://github.com/mozilla/localForage/pull/42),
-  and for compatibility reasons localForage cannot store the value `undefined`.
+  Even if `undefined` is saved, `null` will be returned by `getItem()`. This is due to a [limitation in localStorage](https://github.com/mozilla/localForage/pull/42), and for compatibility reasons localForage cannot store the value `undefined`.
 </aside>
 
 ## setItem
@@ -130,8 +117,7 @@ req.addEventListener('readystatechange', function() {
 
 `setItem(key, value, successCallback)`
 
-Saves data to an offline store. You can store the following types of JavaScript
-objects:
+Saves data to an offline store. You can store the following types of JavaScript objects:
 
 * **`Array`**
 * **`ArrayBuffer`**
@@ -150,9 +136,7 @@ objects:
 * **`String`**
 
 <aside class="notice">
-  When using localStorage and WebSQL backends, binary data will be serialized
-  before being saved (and retrieved). This serialization will incur a size
-  increase when binary data is saved.
+  When using localStorage and WebSQL backends, binary data will be serialized before being saved (and retrieved). This serialization will incur a size increase when binary data is saved.
 </aside>
 
 <a href="http://jsfiddle.net/ryfo1jk4/">Live demo</a>
@@ -192,8 +176,7 @@ localforage.clear().then(function() {
 Removes every key from the database, returning it to a blank slate.
 
 <aside class="warning">
-  `localforage.clear()` will remove **every item in the offline store**. Use
-  this method with caution.
+  `localforage.clear()` will remove **every item in the offline store**. Use this method with caution.
 </aside>
 
 ## length
@@ -229,8 +212,7 @@ localforage.key(2).then(function(keyName) {
 Get the name of a key based on its ID.
 
 <aside class="notice">
-  This method is inherited from the localStorage API, but is acknowledged to
-  be kinda weird.
+  This method is inherited from the localStorage API, but is acknowledged to be kinda weird.
 </aside>
 
 ## keys
@@ -292,19 +274,14 @@ Iterate over all value/key pairs in datastore.
 3. iterationNumber - one-based number
 
 <aside class="notice">
-  <code>iterate</code> supports early exit by returning non `undefined`
-  value inside `iteratorCallback` callback. Resulting value will be passed
-  to `successCallback` as the result of iteration.
+  <code>iterate</code> supports early exit by returning non `undefined` value inside `iteratorCallback` callback. Resulting value will be passed to `successCallback` as the result of iteration.
 
-  This means if you're using CoffeeScript, you'll need to manually `return`
-  nothing to keep iterating through each key/value pair.
+  This means if you're using CoffeeScript, you'll need to manually `return` nothing to keep iterating through each key/value pair.
 </aside>
 
 # Settings API
 
-These methods allow driver selection and database configuration. These methods
-should generally be called before the first _data_ API call to localForage (
-i.e. before you call `getItem()` or `length()`, etc.)
+These methods allow driver selection and database configuration. These methods should generally be called before the first _data_ API call to localForage (i.e. before you call `getItem()` or `length()`, etc.)
 
 ## setDriver
 
@@ -321,25 +298,20 @@ localforage.setDriver([localforage.WEBSQL, localforage.INDEXEDDB]);
 
 Force usage of a particular driver or drivers, if available.
 
-By default, localForage selects backend drivers for the datastore in this
-order:
+By default, localForage selects backend drivers for the datastore in this order:
 
 1. IndexedDB
 2. WebSQL
 3. localStorage
 
-If you would like to force usage of a particular driver you can use
-`setDriver()` with one or more of the following arguments:
+If you would like to force usage of a particular driver you can use `setDriver()` with one or more of the following arguments:
 
 * `localforage.INDEXEDDB`
 * `localforage.WEBSQL`
 * `localforage.LOCALSTORAGE`
 
 <aside class="notice">
-  If the backend you're trying to load isn't available on the user's browser,
-  localForage will continue to use whatever backend driver it was previously
-  using. This means that if you try to force a Gecko browser to use WebSQL,
-  it will fail and continue using IndexedDB.
+  If the backend you're trying to load isn't available on the user's browser, localForage will continue to use whatever backend driver it was previously using. This means that if you try to force a Gecko browser to use WebSQL, it will fail and continue using IndexedDB.
 </aside>
 
 ## config
@@ -370,11 +342,7 @@ localforage.config({
 
 `config(options)`
 
-Set and persist localForage options. This must be called *before* any other
-calls to localForage are made, but can be called after localForage is loaded.
-If you set any config values with this method they will persist after driver
-changes, so you can call `config()` then `setDriver()`. The following config
-values can be set:
+Set and persist localForage options. This must be called *before* any other calls to localForage are made, but can be called after localForage is loaded. If you set any config values with this method they will persist after driver changes, so you can call `config()` then `setDriver()`. The following config values can be set:
 
 <dl>
   <dt>driver</dt>
@@ -384,9 +352,7 @@ values can be set:
   </dd>
   <dt>name</dt>
   <dd>
-    The name of the database. May appear during storage limit prompts.
-    Useful to use the name of your app here. In localStorage, this is used as a
-    key prefix for all keys stored in localStorage.<br>
+    The name of the database. May appear during storage limit prompts. Useful to use the name of your app here. In localStorage, this is used as a key prefix for all keys stored in localStorage.<br>
     Default: <code>'localforage'</code>
   </dd>
   <dt>size</dt>
@@ -396,17 +362,12 @@ values can be set:
   </dd>
   <dt>storeName</dt>
   <dd>
-    The name of the datastore. In IndexedDB this is the
-    <code>dataStore</code>, in WebSQL this is the name of the key/value
-    table in the database. <strong>Must be alphanumeric,
-    with underscores.</strong> Any non-alphanumeric characters will be converted
-    to underscores.<br>
+    The name of the datastore. In IndexedDB this is the <code>dataStore</code>, in WebSQL this is the name of the key/value table in the database. <strong>Must be alphanumeric, with underscores.</strong> Any non-alphanumeric characters will be converted to underscores.<br>
     Default: <code>'keyvaluepairs'</code>
   </dd>
   <dt>version</dt>
   <dd>
-    The version of your database. May be used for upgrades in the future;
-    currently unused.<br>
+    The version of your database. May be used for upgrades in the future; currently unused.<br>
     Default: <code>1.0</code>
   </dd>
   <dt>description</dt>
@@ -417,8 +378,7 @@ values can be set:
 </dl>
 
 <aside class="notice">
-  Unlike most of the localForage API, the <code>config</code> method is
-  synchronous.
+  Unlike most of the localForage API, the <code>config</code> method is synchronous.
 </aside>
 
 # Custom Driver API
@@ -461,19 +421,12 @@ var myCustomDriver = {
 localforage.defineDriver(myCustomDriver);
 ```
 
-You'll want to make sure you accept a `callback` argument and that you pass
-the same arguments to callbacks as the default drivers do. You'll also want to
-resolve or reject promises. Check any of the [default drivers][] for an idea
-of how to implement your own, custom driver.
+You'll want to make sure you accept a `callback` argument and that you pass the same arguments to callbacks as the default drivers do. You'll also want to resolve or reject promises. Check any of the [default drivers][] for an idea of how to implement your own, custom driver.
 
-The custom implementation may contain a `_support` property that is either
-boolean (`true`/`false`) or returns a `Promise` that resolves to a boolean
-value. If `_support` is omitted, then `true` is the default value. You can
-use this to make sure the browser in use supports your custom driver.
+The custom implementation may contain a `_support` property that is either boolean (`true`/`false`) or returns a `Promise` that resolves to a boolean value. If `_support` is omitted, then `true` is the default value. You can use this to make sure the browser in use supports your custom driver.
 
 <aside class="notice">
-  These drivers are available to every instance of localForage on the page,
-  regardless of which instance you use to add the implementation.
+  These drivers are available to every instance of localForage on the page, regardless of which instance you use to add the implementation.
 </aside>
 
 [default drivers]: https://github.com/mozilla/localForage/tree/master/src/drivers
@@ -504,8 +457,7 @@ See <a href="#setdriver"><code>setDriver</code></a> for default driver names.
 
 # Multiple Instances
 
-You can create multiple instances of localForage that point to different stores.
-All the configuration options used by [config](#config) are supported.
+You can create multiple instances of localForage that point to different stores. All the configuration options used by [config](#config) are supported.
 
 ## createInstance
 
@@ -523,5 +475,4 @@ store.setItem("key", "value");
 otherStore.setItem("key", "value2");
 ```
 
-Creates a new instance of localForage and returns it. Each object contains its
-own database and doesn't affect other instances of localForage.
+Creates a new instance of localForage and returns it. Each object contains its own database and doesn't affect other instances of localForage.
