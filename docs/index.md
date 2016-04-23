@@ -1,16 +1,3 @@
-<!-- ---
-title: localForage API Reference
-
-async_tabs:
-  - promises
-  - callbacks
-
-toc_footers:
-  - <a href="https://github.com/mozilla/localForage">Contribute to localForage</a>
-  - <a href="https://github.com/tripit/slate">(Docs Powered by Slate)</a>
-
---- -->
-
 # localForage
 
 **Offline storage, improved.**

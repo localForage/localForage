@@ -56,7 +56,7 @@ aside a:active {
 }
 
 aside.notice {
-  background: #62defd;
+  background: #d2dbeb;
 }
 
 aside.notice::before {
