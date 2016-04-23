@@ -22,18 +22,18 @@
 
   <!-- Meta -->
   <meta content="localForage" property="og:title">
-  <meta content="localForage description goes here." name="description">
+  <meta content="localForage is a JavaScript library that improves the offline experience of your web app by using an asynchronous data store with a simple, localStorage-like API." name="description">
 
   <!-- Initializer -->
   <script>
     Flatdoc.run({
-      // fetcher: Flatdoc.github("mozilla/localForage", "site/index.md")
-      fetcher: Flatdoc.file("index.md")
+      fetcher: (window.location.host === 'mozilla.github.io') ?
+        Flatdoc.github('mozilla/localForage', 'docs/api.md') :
+        Flatdoc.file('index.md')
     });
   </script>
 </head>
-<body role="flatdoc" class="">
-
+<body role="flatdoc">
   <div class="header">
     <div class="left">
       <h1>localForage</h1>
@@ -54,6 +54,5 @@
     </div>
     <div role="flatdoc-content" class="content"></div>
   </div>
-
 </body>
 </html>
