@@ -333,6 +333,14 @@ function race(iterable) {
 }
 
 },{"1":1}],3:[function(_dereq_,module,exports){
+(function (global){
+'use strict';
+if (typeof global.Promise !== 'function') {
+  global.Promise = _dereq_(2);
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"2":2}],4:[function(_dereq_,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
@@ -430,7 +438,8 @@ function createBlob(parts, properties) {
 
 // This is CommonJS because lie is an external dependency, so Rollup
 // can just ignore it.
-var Promise$1 = typeof Promise === 'function' ? Promise : _dereq_(2);
+_dereq_(3);
+var Promise$1 = Promise;
 
 function executeCallback(promise, callback) {
     if (callback) {
@@ -2313,5 +2322,5 @@ var localforage_js = new LocalForage();
 
 module.exports = localforage_js;
 
-},{"2":2}]},{},[3])(3)
+},{"3":3}]},{},[4])(4)
 });

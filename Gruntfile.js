@@ -76,7 +76,7 @@ module.exports = exports = function(grunt) {
                     },
                     transform: ['rollupify', 'babelify'],
                     plugin: ['bundle-collapser/plugin'],
-                    exclude: ['lie']
+                    exclude: ['lie/polyfill']
                 }
             }
         },
