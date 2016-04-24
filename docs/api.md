@@ -14,7 +14,7 @@ localforage.setItem('key', 'value').then(doSomethingElse);
 localforage.setItem('key', 'value', doSomethingElse);
 ```
 
-localForage is a JavaScript library that improves the offline experience of your web app by using an asynchronous data store with a simple, `localStorage`-like API. It allows developers to [store many types of data](#setitem) instead of just strings.
+localForage is a JavaScript library that improves the offline experience of your web app by using an asynchronous data store with a simple, `localStorage`-like API. It allows developers to [store many types of data](#data-api-setitem) instead of just strings.
 
 localForage includes a localStorage-backed fallback store for browsers with no IndexedDB or WebSQL support. Asynchronous storage is available in the current versions of all major browsers: Chrome, Firefox, IE, and Safari (including Safari Mobile).
 
@@ -347,7 +347,7 @@ Set and persist localForage options. This must be called *before* any other call
 <dl>
   <dt>driver</dt>
   <dd>
-    The preferred driver(s) to use. Same format as what is passed to <a href="#setdriver"><code>setDriver</code></a>, above.<br>
+    The preferred driver(s) to use. Same format as what is passed to <a href="#settings-api-setdriver"><code>setDriver</code></a>, above.<br>
     Default: <code>[localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE]</code>
   </dd>
   <dt>name</dt>
@@ -453,7 +453,7 @@ localforage.supports(localforage.INDEXEDDB);
 
 Returns (boolean) whether `driverName` is supported by the browser.
 
-See <a href="#setdriver"><code>setDriver</code></a> for default driver names.
+See <a href="#settings-api-setdriver"><code>setDriver</code></a> for default driver names.
 
 # Multiple Instances
 
