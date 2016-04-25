@@ -1,4 +1,4 @@
-/* global after:true, afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Promise:true, require:true */
+/* global after:true, afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Promise:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
@@ -15,20 +15,10 @@ var driverApiMethods = [
     'keys'
 ];
 
-var componentBuild = window.require && window.require.modules &&
-                     window.require.modules.localforage &&
-                     window.require.modules.localforage.component;
-
 describe('localForage API', function() {
-    // If this test is failing, you are likely missing the Promises polyfill,
-    // installed via bower. Read more here:
     // https://github.com/mozilla/localForage#working-on-localforage
     it('has Promises available', function() {
-        if (componentBuild) {
-            expect(require('promise')).to.be.a('function');
-        } else {
-            expect(Promise).to.be.a('function');
-        }
+        expect(Promise).to.be.a('function');
     });
 });
 
@@ -866,10 +856,8 @@ DRIVERS.forEach(function(driverName) {
 
         var localforage2 = null;
         var localforage3 = null;
-        var Promise;
 
         before(function(done) {
-            Promise = window.Promise || require('promise');
 
             prepareStorage('storage2').then(function() {
                 localforage2 = localforage.createInstance({
@@ -1130,11 +1118,6 @@ DRIVERS.forEach(function(driverName) {
         this.timeout(30000);
 
         var _oldReady;
-        var Promise;
-
-        before(function() {
-            Promise = window.Promise || require('promise');
-        });
 
         beforeEach(function(done) {
             _oldReady = localforage.ready;

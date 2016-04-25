@@ -50,27 +50,12 @@ if (!Array.prototype.forEach) {
 
 var require = this.require;
 if (require) {
-    if (this.requireUnbundledLocalForage) {
-        requirejs.config({
-            paths: {
-                localforage: '/build/es5src/localforage',
-                localforageSerializer: '/build/es5src/utils/serializer',
-                asyncStorage: '/build/es5src/drivers/indexeddb',
-                localStorageWrapper: '/build/es5src/drivers/localstorage',
-                webSQLStorage: '/build/es5src/drivers/websql',
-                Promise: '/bower_components/es6-promise/promise'
-            },
-            shim: {
-                localforage: ['Promise']
-            }
-        });
-    } else {
-        requirejs.config({
-            paths: {
-                localforage: '/dist/localforage'
-            }
-        });
-    }
+
+    requirejs.config({
+        paths: {
+            localforage: '/dist/localforage'
+        }
+    });
     require(['localforage'], function(localforage) {
         window.localforage = localforage;
 

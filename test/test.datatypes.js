@@ -1,14 +1,8 @@
 /* global before:true, beforeEach:true, describe:true, expect:true, it:true */
-var DRIVERS = [
-    localforage.INDEXEDDB,
-    localforage.LOCALSTORAGE,
-    localforage.WEBSQL
-];
 
-// Abstracts constructing a Blob object, so it also works in older
-// browsers that don't support the native Blob constructor. (i.e.
-// old QtWebKit versions, at least).
-function _createBlob(parts, properties) {
+// kinda lame to define this twice, but it seems require() isn't available here
+function createBlob(parts, properties) {
+    /* global BlobBuilder,MSBlobBuilder,MozBlobBuilder,WebKitBlobBuilder */
     parts = parts || [];
     properties = properties || {};
     try {
@@ -17,17 +11,23 @@ function _createBlob(parts, properties) {
         if (e.name !== 'TypeError') {
             throw e;
         }
-        var BlobBuilder = window.BlobBuilder ||
-            window.MSBlobBuilder ||
-            window.MozBlobBuilder ||
-            window.WebKitBlobBuilder;
-        var builder = new BlobBuilder();
+        var Builder = typeof BlobBuilder !== 'undefined' ? BlobBuilder :
+            typeof MSBlobBuilder !== 'undefined' ? MSBlobBuilder :
+                typeof MozBlobBuilder !== 'undefined' ? MozBlobBuilder :
+                    WebKitBlobBuilder;
+        var builder = new Builder();
         for (var i = 0; i < parts.length; i += 1) {
             builder.append(parts[i]);
         }
         return builder.getBlob(properties.type);
     }
 }
+
+var DRIVERS = [
+    localforage.INDEXEDDB,
+    localforage.LOCALSTORAGE,
+    localforage.WEBSQL
+];
 
 DRIVERS.forEach(function(driverName) {
     if ((!localforage.supports(localforage.INDEXEDDB) &&
@@ -324,7 +324,7 @@ DRIVERS.forEach(function(driverName) {
                 var fileParts = ['<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>'];
                 var mimeString = 'text\/html';
 
-                var testBlob = _createBlob(fileParts, { 'type' : mimeString });
+                var testBlob = createBlob(fileParts, { 'type' : mimeString });
 
                 localforage.setItem('blob', testBlob, function(err, blob) {
                     expect(err).to.be(null);
@@ -356,7 +356,7 @@ DRIVERS.forEach(function(driverName) {
                 var fileParts = ['<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>'];
                 var mimeString = 'text\/html';
 
-                var testBlob = _createBlob(fileParts, { 'type' : mimeString });
+                var testBlob = createBlob(fileParts, { 'type' : mimeString });
 
                 localforage.setItem('blob', testBlob, function(err, blob) {
                     expect(err).to.be(null);
