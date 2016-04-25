@@ -1,6 +1,6 @@
 before_install:
-- npm install -g bower
-- bower install
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
 language: node_js
 node_js:
 - '0.10'

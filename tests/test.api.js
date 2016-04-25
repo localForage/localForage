@@ -175,162 +175,157 @@ DRIVERS.forEach(function(driverName) {
       assert.typeOf(localforage.removeItem, 'function');
       assert.typeOf(localforage.key, 'function');
     });
-//
-//     it('has the localForage API', function() {
-//       expect(localforage._initStorage).to.be.a('function');
-//       expect(localforage.config).to.be.a('function');
-//       expect(localforage.defineDriver).to.be.a('function');
-//       expect(localforage.driver).to.be.a('function');
-//       expect(localforage.supports).to.be.a('function');
-//       expect(localforage.iterate).to.be.a('function');
-//       expect(localforage.getItem).to.be.a('function');
-//       expect(localforage.setItem).to.be.a('function');
-//       expect(localforage.clear).to.be.a('function');
-//       expect(localforage.length).to.be.a('function');
-//       expect(localforage.removeItem).to.be.a('function');
-//       expect(localforage.key).to.be.a('function');
-//       expect(localforage.getDriver).to.be.a('function');
-//       expect(localforage.setDriver).to.be.a('function');
-//       expect(localforage.ready).to.be.a('function');
-//       expect(localforage.createInstance).to.be.a('function');
-//       expect(localforage.getSerializer).to.be.a('function');
-//     });
-//
-//     // Make sure we don't support bogus drivers.
-//     it('supports ' + driverName + ' database driver', function() {
-//       expect(localforage.supports(driverName) === true);
-//       expect(localforage.supports('I am not a driver') === false);
-//     });
-//
-//     it('sets the right database driver', function() {
-//       expect(localforage.driver() === driverName);
-//     });
-//
-//     it('has an empty length by default', function(done) {
-//       localforage.length(function(err, length) {
-//         expect(length).to.be(0);
-//         done();
-//       });
-//     });
-//
-//     if (driverName === localforage.INDEXEDDB) {
-//       describe('Blob support', function() {
-//         var transaction;
-//         var called;
-//         var db;
-//         var blob = new Blob([''], {type: 'image/png'});
-//
-//         before(function() {
-//           db = localforage._dbInfo.db;
-//           transaction = db.transaction;
-//           db.transaction = function() {
-//             called += 1;
-//             return transaction.apply(db, arguments);
-//           };
-//         });
-//
-//         beforeEach(function() {
-//           called = 0;
-//         });
-//
-//         it('not check for non Blob', function(done) {
-//           localforage.setItem('key', {}).then(function() {
-//             expect(called).to.be(1);
-//             done();
-//           }, function(error) {
-//             done(error || 'error');
-//           });
-//         });
-//
-//         it('check for Blob', function(done) {
-//           localforage.setItem('key', blob).then(function() {
-//             expect(called).to.be.above(1);
-//             done();
-//           }, function(error) {
-//             done(error || 'error');
-//           });
-//         });
-//
-//         it('check for Blob once', function(done) {
-//           localforage.setItem('key', blob).then(function() {
-//             expect(called).to.be(1);
-//             done();
-//           }, function(error) {
-//             done(error || 'error');
-//           });
-//         });
-//
-//         after(function() {
-//           localforage._dbInfo.db.transaction = transaction;
-//         });
-//       });
-//     }
-//
-//     it('should iterate [callback]', function(done) {
-//       localforage.setItem('officeX', 'InitechX', function(err, setValue) {
-//         expect(setValue).to.be('InitechX');
-//
-//         localforage.getItem('officeX', function(err, value) {
-//           expect(value).to.be(setValue);
-//
-//           localforage.setItem('officeY', 'InitechY',
-//                     function(err, setValue) {
-//             expect(setValue).to.be('InitechY');
-//
-//             localforage.getItem('officeY', function(err, value) {
-//               expect(value).to.be(setValue);
-//
-//               var accumulator = {};
-//               var iterationNumbers = [];
-//
-//               localforage.iterate(function(value, key, iterationNumber) {
-//                 accumulator[key] = value;
-//                 iterationNumbers.push(iterationNumber);
-//               }, function() {
-//                 try {
-//                   expect(accumulator.officeX).to.be('InitechX');
-//                   expect(accumulator.officeY).to.be('InitechY');
-//                   expect(iterationNumbers).to.eql([1, 2]);
-//                   done();
-//                 } catch (e) {
-//                   done(e);
-//                 }
-//               });
-//             });
-//           });
-//         });
-//       });
-//     });
-//
-//     it('should iterate [promise]', function(done) {
-//       var accumulator = {};
-//       var iterationNumbers = [];
-//
-//       return localforage.setItem('officeX',
-//                      'InitechX').then(function(setValue) {
-//         expect(setValue).to.be('InitechX');
-//         return localforage.getItem('officeX');
-//       }).then(function(value) {
-//         expect(value).to.be('InitechX');
-//         return localforage.setItem('officeY', 'InitechY');
-//       }).then(function(setValue) {
-//         expect(setValue).to.be('InitechY');
-//         return localforage.getItem('officeY');
-//       }).then(function(value) {
-//         expect(value).to.be('InitechY');
-//
-//         return localforage.iterate(function(value, key,
-//                           iterationNumber) {
-//           accumulator[key] = value;
-//           iterationNumbers.push(iterationNumber);
-//         });
-//       }).then(function() {
-//         expect(accumulator.officeX).to.be('InitechX');
-//         expect(accumulator.officeY).to.be('InitechY');
-//         expect(iterationNumbers).to.eql([1, 2]);
-//         done();
-//       });
-//     });
+
+    it('has the localForage API', function() {
+      assert.typeOf(localforage._initStorage, 'function');
+      assert.typeOf(localforage.config, 'function');
+      assert.typeOf(localforage.defineDriver, 'function');
+      assert.typeOf(localforage.driver, 'function');
+      assert.typeOf(localforage.supports, 'function');
+      assert.typeOf(localforage.iterate, 'function');
+      assert.typeOf(localforage.getItem, 'function');
+      assert.typeOf(localforage.setItem, 'function');
+      assert.typeOf(localforage.clear, 'function');
+      assert.typeOf(localforage.length, 'function');
+      assert.typeOf(localforage.removeItem, 'function');
+      assert.typeOf(localforage.key, 'function');
+      assert.typeOf(localforage.getDriver, 'function');
+      assert.typeOf(localforage.setDriver, 'function');
+      assert.typeOf(localforage.ready, 'function');
+      assert.typeOf(localforage.createInstance, 'function');
+      assert.typeOf(localforage.getSerializer, 'function');
+    });
+
+    // Make sure we don't support bogus drivers.
+    it(`supports ${driverName} database driver`, () => {
+      assert.isTrue(localforage.supports(driverName));
+      assert.isFalse(localforage.supports('I am not a driver'));
+    });
+
+    it('sets the right database driver', () => {
+      assert.equal(localforage.driver(), driverName);
+    });
+
+    it('has an empty length by default', (done) => {
+      localforage.length(function(err, length) {
+        assert.equal(length, 0);
+        done();
+      });
+    });
+
+    if (driverName === localforage.INDEXEDDB) {
+      describe('Blob support', () => {
+        var transaction;
+        var called = false;
+        var db;
+        var blob = new Blob([''], {type: 'image/png'});
+
+        before(function() {
+          db = localforage._dbInfo.db;
+          transaction = db.transaction;
+          db.transaction = function() {
+            called = true;
+            return transaction.apply(db, arguments);
+          };
+        });
+
+        beforeEach(function() {
+          called = false;
+        });
+
+        it('not check for non Blob', () => {
+          assert.isFalse(called);
+          return localforage.setItem('key', {})
+            .then(() => {
+              assert.isTrue(called);
+            });
+        });
+
+        it('check for Blob', () => {
+          assert.isFalse(called);
+          return localforage.setItem('key', blob)
+            .then(() => {
+              assert.isTrue(called);
+            });
+        });
+
+        it('check for Blob once', () => {
+          assert.isFalse(called);
+          return localforage.setItem('key', blob)
+            .then(() => {
+              assert.isTrue(called);
+            });
+        });
+
+        after(() => {
+          localforage._dbInfo.db.transaction = transaction;
+        });
+      });
+    }
+
+    it('should iterate [callback]', function(done) {
+      localforage.setItem('officeX', 'InitechX', function(err, setValue) {
+        assert.equal(setValue, 'InitechX');
+
+        localforage.getItem('officeX', function(err, value) {
+          assert.equal(value, setValue);
+
+          localforage.setItem('officeY', 'InitechY',
+                    function(err, setValue) {
+            assert.equal(setValue, 'InitechY');
+
+            localforage.getItem('officeY', function(err, value) {
+              assert.equal(value, setValue);
+
+              var accumulator = {};
+              var iterationNumbers = [];
+
+              localforage.iterate(function(value, key, iterationNumber) {
+                accumulator[key] = value;
+                iterationNumbers.push(iterationNumber);
+              }, function() {
+                try {
+                  assert.equal(accumulator.officeX, 'InitechX');
+                  assert.equal(accumulator.officeY, 'InitechY');
+                  assert.deepEqual(iterationNumbers, [1, 2]);
+                  done();
+                } catch (e) {
+                  done(e);
+                }
+              });
+            });
+          });
+        });
+      });
+    });
+
+    it('should iterate [promise]', () => {
+      var accumulator = {};
+      var iterationNumbers = [];
+
+      return localforage.setItem('officeX', 'InitechX')
+        .then((setValue) => {
+          assert.equal(setValue, 'InitechX');
+          return localforage.getItem('officeX');
+        }).then((value) => {
+          assert.equal(value, 'InitechX');
+          return localforage.setItem('officeY', 'InitechY');
+        }).then((setValue) => {
+          assert.equal(setValue, 'InitechY');
+          return localforage.getItem('officeY');
+        }).then((value) => {
+          assert.equal(value, 'InitechY');
+
+          return localforage.iterate((value, key, iterationNumber) => {
+            accumulator[key] = value;
+            iterationNumbers.push(iterationNumber);
+          });
+        }).then(() => {
+          assert.equal(accumulator.officeX, 'InitechX');
+          assert.equal(accumulator.officeY, 'InitechY');
+          assert.deepEqual(iterationNumbers, [1, 2]);
+        });
+    });
 //
 //     it('should break iteration with defined return value [callback]',
 //        function(done) {
