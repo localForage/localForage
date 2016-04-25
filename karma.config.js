@@ -5,8 +5,7 @@ module.exports = function(config) {
     browsers: [
       'Chrome',
       'Firefox',
-      'PhantomJS',
-      'Safari'
+      'PhantomJS'
     ],
     coverageReporter: {
       reporters: [
