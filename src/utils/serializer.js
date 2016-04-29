@@ -219,7 +219,7 @@ function deserialize(value) {
         case TYPE_FLOAT64ARRAY:
             return new Float64Array(buffer);
         default:
-            throw new Error('Unkown type: ' + type);
+            throw new Error('Unknown type: ' + type);
     }
 }
 
