@@ -13,7 +13,7 @@ describe('Driver API', () => {
     } else if (localforage.supports(localforage.WEBSQL)) {
       return localforage.setDriver(localforage.WEBSQL);
     }
-    return Promise.resolve();
+    return localforage.setDriver(localforage.LOCALSTORAGE);
   });
 
   if ((localforage.supports(localforage.INDEXEDDB) &&
@@ -58,9 +58,10 @@ describe('Driver API', () => {
 
     it("can't use unsupported IndexedDB [promise]", () => {
       var previousDriver = localforage.driver();
-      assert.equal(previousDriver, localforage.INDEXEDDB);
+      assert.notEqual(previousDriver, localforage.INDEXEDDB);
 
-      return localforage.setDriver(localforage.INDEXEDDB)
+      localforage.setDriver(localforage.INDEXEDDB);
+      return localforage.ready()
         .then(unexpectedSuccess)
         .catch(() => {
           assert.equal(localforage.driver(), previousDriver);
@@ -91,24 +92,26 @@ describe('Driver API', () => {
   if (!localforage.supports(localforage.LOCALSTORAGE)) {
     it("can't use unsupported localStorage [callback]", (done) => {
       var previousDriver = localforage.driver();
-      expect(previousDriver).to.not.be(localforage.LOCALSTORAGE);
+      assert.notEqual(previousDriver, localforage.LOCALSTORAGE);
 
-      localforage.setDriver(localforage.LOCALSTORAGE, null, () => {
-        expect(localforage.driver(), previousDriver);
+      localforage.setDriver(localforage.LOCALSTORAGE);
+      localforage.ready(() => {
+        assert.equal(localforage.driver(), previousDriver);
         done();
       });
     });
 
-    it("can't use unsupported localStorage [promise]", () => {
-      var previousDriver = localforage.driver();
-      assert.notEqual(previousDriver, localforage.LOCALSTORAGE);
-
-      return localforage.setDriver(localforage.LOCALSTORAGE)
-        .then(unexpectedSuccess)
-        .catch(() => {
-          assert.equal(localforage.driver(), previousDriver);
-        });
-    });
+    // it("can't use unsupported localStorage [promise]", () => {
+    //   var previousDriver = localforage.driver();
+    //   assert.notEqual(previousDriver, localforage.LOCALSTORAGE);
+    //
+    //   localforage.setDriver(localforage.LOCALSTORAGE);
+    //   return localforage.ready()
+    //     .then(unexpectedSuccess)
+    //     .catch(() => {
+    //       assert.equal(localforage.driver(), previousDriver);
+    //     });
+    // });
   } else if (!localforage.supports(localforage.INDEXEDDB) &&
          !localforage.supports(localforage.WEBSQL)) {
     it('can set already active localStorage [callback]', (done) => {
