@@ -25,6 +25,7 @@ module.exports = exports = function(grunt) {
             'src/utils/serializer': 'localforageSerializer',
             'src/drivers/indexeddb': 'asyncStorage',
             'src/drivers/localstorage': 'localStorageWrapper',
+            'src/drivers/memory': 'memoryStorageWrapper',
             'src/drivers/websql': 'webSQLStorage'
         };
 
@@ -45,6 +46,7 @@ module.exports = exports = function(grunt) {
                     'build/es5src/utils/serializer.js': 'src/utils/serializer.js',
                     'build/es5src/drivers/indexeddb.js': 'src/drivers/indexeddb.js',
                     'build/es5src/drivers/localstorage.js': 'src/drivers/localstorage.js',
+                    'build/es5src/drivers/memory.js': 'src/drivers/memory.js',
                     'build/es5src/drivers/websql.js': 'src/drivers/websql.js'
                 }
             }

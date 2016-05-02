@@ -4,6 +4,7 @@ import isLocalStorageValid from './utils/isLocalStorageValid';
 import idbDriver from './drivers/indexeddb';
 import websqlDriver from './drivers/websql';
 import localstorageDriver from './drivers/localstorage';
+import memoryDriver from './drivers/memory';
 import serializer from './utils/serializer';
 import Promise from './utils/promise';
 import executeTwoCallbacks from './utils/executeTwoCallbacks';
@@ -15,13 +16,15 @@ var CustomDrivers = {};
 var DriverType = {
     INDEXEDDB: 'asyncStorage',
     LOCALSTORAGE: 'localStorageWrapper',
-    WEBSQL: 'webSQLStorage'
+    WEBSQL: 'webSQLStorage',
+    MEMORY: 'memoryStorageWrapper'
 };
 
 var DefaultDriverOrder = [
     DriverType.INDEXEDDB,
     DriverType.WEBSQL,
-    DriverType.LOCALSTORAGE
+    DriverType.LOCALSTORAGE,
+    DriverType.MEMORY
 ];
 
 var LibraryMethods = [
@@ -57,6 +60,10 @@ driverSupport[DriverType.INDEXEDDB] = isIndexedDBValid();
 driverSupport[DriverType.WEBSQL] = isWebSQLValid();
 
 driverSupport[DriverType.LOCALSTORAGE] = isLocalStorageValid();
+
+driverSupport[DriverType.MEMORY] = function() {
+    return true;
+};
 
 var isArray = Array.isArray || function(arg) {
         return Object.prototype.toString.call(arg) === '[object Array]';
@@ -106,6 +113,7 @@ class LocalForage {
     constructor(options) {
         this.INDEXEDDB = DriverType.INDEXEDDB;
         this.LOCALSTORAGE = DriverType.LOCALSTORAGE;
+        this.MEMORY = DriverType.MEMORY;
         this.WEBSQL = DriverType.WEBSQL;
 
         this._defaultConfig = extend({}, DefaultConfig);
@@ -228,6 +236,8 @@ class LocalForage {
                         return idbDriver;
                     case self.LOCALSTORAGE:
                         return localstorageDriver;
+                    case self.MEMORY:
+                        return memoryDriver;
                     case self.WEBSQL:
                         return websqlDriver;
                 }
