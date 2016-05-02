@@ -1,0 +1,247 @@
+// If no driver is available, we'll fall back to simple in memory storage.
+// Note that this will have considerable performance and storage
+// side-effects and data will be lost when the user reloads the page
+
+import serializer from '../utils/serializer';
+import Promise from '../utils/promise';
+import executeCallback from '../utils/executeCallback';
+
+var STORAGE = {};
+
+// Config the backend, using options set in the config.
+function _initStorage(options) {
+    var self = this;
+    var dbInfo = {};
+    if (options) {
+        for (var i in options) {
+            dbInfo[i] = options[i];
+        }
+    }
+
+    dbInfo.keyPrefix = dbInfo.name + '/';
+
+    if (dbInfo.storeName !== self._defaultConfig.storeName) {
+        dbInfo.keyPrefix += dbInfo.storeName + '/';
+    }
+
+    self._dbInfo = dbInfo;
+    dbInfo.serializer = serializer;
+
+    return Promise.resolve();
+}
+
+// Remove all keys from the datastore, effectively destroying all data in
+// the app's key/value store!
+function clear(callback) {
+    var self = this;
+    var promise = self.ready().then(function() {
+        var keyPrefix = self._dbInfo.keyPrefix;
+
+        var keys = Object.keys(STORAGE);
+        for (var i = keys.length - 1; i >= 0; i--) {
+            var key = keys[i];
+
+            if (key.indexOf(keyPrefix) === 0) {
+                delete STORAGE[key];
+            }
+        }
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+// Retrieve an item from the store. Unlike the original async_storage
+// library in Gaia, we don't modify return values at all. If a key's value
+// is `undefined`, we pass that value to the callback function.
+function getItem(key, callback) {
+    var self = this;
+
+    // Cast the key to a string, as that's all we can set as a key.
+    if (typeof key !== 'string') {
+        console.warn(key +
+            ' used as a key, but it is not a string.');
+        key = String(key);
+    }
+
+    var promise = self.ready().then(function() {
+        var dbInfo = self._dbInfo;
+        var result = STORAGE[dbInfo.keyPrefix + key];
+
+        return result;
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+// Iterate over all items in the store.
+function iterate(iterator, callback) {
+    var self = this;
+
+    var promise = self.ready().then(function() {
+        var dbInfo = self._dbInfo;
+        var keyPrefix = dbInfo.keyPrefix;
+        var keyPrefixLength = keyPrefix.length;
+        var keys = Object.keys(STORAGE);
+        var length = keys.length;
+
+        // We use a dedicated iterator instead of the `i` variable below
+        // so other keys we fetch in localStorage aren't counted in
+        // the `iterationNumber` argument passed to the `iterate()`
+        // callback.
+        //
+        // See: github.com/mozilla/localForage/pull/435#discussion_r38061530
+        var iterationNumber = 1;
+
+        for (var i = 0; i < length; i++) {
+            var key = keys[i];
+            if (key.indexOf(keyPrefix) !== 0) {
+                continue;
+            }
+            var value = STORAGE[key];
+
+            // If a result was found, parse it from the serialized
+            // string into a JS object. If result isn't truthy, the
+            // key is likely undefined and we'll pass it straight
+            // to the iterator.
+            if (value) {
+                value = dbInfo.serializer.deserialize(value);
+            }
+
+            value = iterator(value, key.substring(keyPrefixLength),
+                iterationNumber++);
+
+            if (value !== void(0)) {
+                return value;
+            }
+        }
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+// Same as localStorage's key() method, except takes a callback.
+function key(n, callback) {
+    var self = this;
+    var keys = Object.keys(STORAGE);
+    var promise = self.ready().then(function() {
+        var dbInfo = self._dbInfo;
+        var result;
+        try {
+            result = keys[n];
+        } catch (error) {
+            result = null;
+        }
+
+        // Remove the prefix from the key, if a key is found.
+        if (result) {
+            result = result.substring(dbInfo.keyPrefix.length);
+        }
+
+        return result;
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+function keys(callback) {
+    var self = this;
+    var promise = self.ready().then(function() {
+        var dbInfo = self._dbInfo;
+        var output = [];
+        var keys = Object.keys(STORAGE);
+
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].indexOf(dbInfo.keyPrefix) === 0) {
+                output.push(keys[i].substring(dbInfo.keyPrefix.length));
+            }
+        }
+
+        return keys;
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+// Supply the number of keys in the datastore to the callback function.
+function length(callback) {
+    var self = this;
+    var promise = self.keys().then(function(keys) {
+        return keys.length;
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+// Remove an item from the store, nice and simple.
+function removeItem(key, callback) {
+    var self = this;
+
+    // Cast the key to a string, as that's all we can set as a key.
+    if (typeof key !== 'string') {
+        console.warn(key +
+            ' used as a key, but it is not a string.');
+        key = String(key);
+    }
+
+    var promise = self.ready().then(function() {
+        var dbInfo = self._dbInfo;
+        delete STORAGE[dbInfo.keyPrefix + key];
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+// Set a key's value and run an optional callback once the value is set.
+// Unlike Gaia's implementation, the callback function is passed the value,
+// in case you want to operate on that value only after you're sure it
+// saved, or something like that.
+function setItem(key, value, callback) {
+    var self = this;
+
+    // Cast the key to a string, as that's all we can set as a key.
+    if (typeof key !== 'string') {
+        console.warn(key +
+            ' used as a key, but it is not a string.');
+        key = String(key);
+    }
+
+    var promise = self.ready().then(function() {
+        // Convert undefined values to null.
+        // https://github.com/mozilla/localForage/pull/42
+        if (value === undefined) {
+            value = null;
+        }
+
+        return new Promise(function(resolve) {
+            var dbInfo = self._dbInfo;
+            STORAGE[dbInfo.keyPrefix + key] = value;
+            resolve(value);
+        });
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+var memoryStorageWrapper = {
+    _driver: 'memoryStorageWrapper',
+    _initStorage: _initStorage,
+    // Default API, from Gaia/localStorage.
+    iterate: iterate,
+    getItem: getItem,
+    setItem: setItem,
+    removeItem: removeItem,
+    clear: clear,
+    length: length,
+    key: key,
+    keys: keys
+};
+
+export default memoryStorageWrapper;
