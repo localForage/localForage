@@ -22,10 +22,9 @@
     "prepublish": "npm run build",
     "clean": "rimraf dist build",
     "lint": "eslint src",
-    "test": "karma start --single-run --no-auto-watch karma.config.js"
+    "test": "karma start --single-run --no-auto-watch karma.conf.js"
   },
   "devDependencies": {
-    "assert": "~1.0.0",
     "babel-core": "^6.4.0",
     "babel-eslint": "^4.1.6",
     "babel-istanbul": "^0.6.0",
@@ -71,18 +70,21 @@
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-safari-launcher": "^0.1.1",
     "karma-sauce-launcher": "^0.3.1",
+    "karma-sinon": "^1.0.5",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^1.7.0",
     "load-grunt-tasks": "^0.4.0",
     "loader-utils": "^0.2.12",
     "mocha": "^1.18.2",
     "ncp": "^2.0.0",
+    "npm-modernizr": "^2.8.3",
     "phantomjs": "^1.9.20",
     "phantomjs-prebuilt": "^2.1.7",
     "requirejs": "~2.1.10",
     "rimraf": "^2.5.2",
     "rollupify": "^0.1.0",
     "script-loader": "^0.6.1",
+    "sinon": "^1.17.4",
     "uglify-js": "^2.3.x",
     "webpack": "^1.12.13",
     "webpack-dev-server": "^1.10.1"

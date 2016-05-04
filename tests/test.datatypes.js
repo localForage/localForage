@@ -23,11 +23,6 @@ function createBlob(parts, properties) {
   }
 }
 
-// function isSerializeSkip() {
-//   return (localforage.driver() === localforage.LOCALSTORAGE &&
-//           );
-// }
-
 function isSerializeSkip() {
   if (/Chrome/.test(navigator.userAgent) &&
       /Google Inc/.test(navigator.vendor) &&
