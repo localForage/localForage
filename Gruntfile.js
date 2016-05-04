@@ -231,6 +231,22 @@ module.exports = exports = function(grunt) {
                     path: 'test/',
                     filename: 'localforage.webpack.js'
                 }
+            },
+            localforage_nopromises: {
+                entry: './src/localforage.js',
+                output: {
+                    path: 'dist/',
+                    filename: 'localforage.nopromises.js',
+                    library: ['localforage'],
+                    libraryTarget: 'umd'
+                },
+                module: {
+                    loaders: [{
+                        test: /\.js?$/,
+                        exclude: /(node_modules)/,
+                        loader: 'babel'
+                    }]
+                }
             }
         }
     });
@@ -255,6 +271,8 @@ module.exports = exports = function(grunt) {
         'mocha'
     ];
     grunt.registerTask('test:local', testTasks.slice());
+    grunt.registerTask('testtest', 'Run the unit tests',
+                 ['karma:run']);
 
     // Run tests using Sauce Labs if we are on Travis or have locally
     // available Sauce Labs credentials. Use `grunt test:local` to skip
