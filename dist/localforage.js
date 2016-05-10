@@ -1,6 +1,6 @@
 /*!
     localForage -- Offline Storage, Improved
-    Version 1.4.0
+    Version 1.4.1
     https://mozilla.github.io/localForage
     (c) 2013-2015 Mozilla, Apache License 2.0
 */
@@ -473,73 +473,41 @@ function _binStringToArrayBuffer(bin) {
     return buf;
 }
 
-// Fetch a blob using ajax. This reveals bugs in Chrome < 43.
-// For details on all this junk:
-// https://github.com/nolanlawson/state-of-binary-data-in-the-browser#readme
-function _blobAjax(url) {
-    return new Promise$1(function (resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url);
-        xhr.withCredentials = true;
-        xhr.responseType = 'arraybuffer';
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState !== 4) {
-                return;
-            }
-            if (xhr.status === 200) {
-                return resolve({
-                    response: xhr.response,
-                    type: xhr.getResponseHeader('Content-Type')
-                });
-            }
-            reject({ status: xhr.status, response: xhr.response });
-        };
-        xhr.send();
-    });
-}
-
 //
-// Detect blob support. Chrome didn't support it until version 38.
-// In version 37 they had a broken version where PNGs (and possibly
-// other binary types) aren't stored correctly, because when you fetch
-// them, the content type is always null.
+// Blobs are not supported in all versions of IndexedDB, notably
+// Chrome <37 and Android <5. In those versions, storing a blob will throw.
 //
-// Furthermore, they have some outstanding bugs where blobs occasionally
-// are read by FileReader as null, or by ajax as 404s.
+// Various other blob bugs exist in Chrome v37-42 (inclusive).
+// Detecting them is expensive and confusing to users, and Chrome 37-42
+// is at very low usage worldwide, so we do a hacky userAgent check instead.
 //
-// Sadly we use the 404 bug to detect the FileReader bug, so if they
-// get fixed independently and released in different versions of Chrome,
-// then the bug could come back. So it's worthwhile to watch these issues:
+// content-type bug: https://code.google.com/p/chromium/issues/detail?id=408120
 // 404 bug: https://code.google.com/p/chromium/issues/detail?id=447916
 // FileReader bug: https://code.google.com/p/chromium/issues/detail?id=447836
 //
-function _checkBlobSupportWithoutCaching(idb) {
-    return new Promise$1(function (resolve, reject) {
-        var blob = createBlob([''], { type: 'image/png' });
-        var txn = idb.transaction([DETECT_BLOB_SUPPORT_STORE], 'readwrite');
+// Code borrowed from PouchDB. See:
+// https://github.com/pouchdb/pouchdb/blob/9c25a23/src/adapters/idb/blobSupport.js
+//
+function _checkBlobSupportWithoutCaching(txn) {
+    return new Promise$1(function (resolve) {
+        var blob = createBlob(['']);
         txn.objectStore(DETECT_BLOB_SUPPORT_STORE).put(blob, 'key');
-        txn.oncomplete = function () {
-            // have to do it in a separate transaction, else the correct
-            // content type is always returned
-            var blobTxn = idb.transaction([DETECT_BLOB_SUPPORT_STORE], 'readwrite');
-            var getBlobReq = blobTxn.objectStore(DETECT_BLOB_SUPPORT_STORE).get('key');
-            getBlobReq.onerror = reject;
-            getBlobReq.onsuccess = function (e) {
 
-                var storedBlob = e.target.result;
-                var url = URL.createObjectURL(storedBlob);
-
-                _blobAjax(url).then(function (res) {
-                    resolve(!!(res && res.type === 'image/png'));
-                }, function () {
-                    resolve(false);
-                }).then(function () {
-                    URL.revokeObjectURL(url);
-                });
-            };
+        txn.onabort = function (e) {
+            // If the transaction aborts now its due to not being able to
+            // write to the database, likely due to the disk being full
+            e.preventDefault();
+            e.stopPropagation();
+            resolve(false);
         };
-        txn.onerror = txn.onabort = reject;
+
+        txn.oncomplete = function () {
+            var matchedChrome = navigator.userAgent.match(/Chrome\/(\d+)/);
+            var matchedEdge = navigator.userAgent.match(/Edge\//);
+            // MS Edge pretends to be Chrome 42:
+            // https://msdn.microsoft.com/en-us/library/hh869301%28v=vs.85%29.aspx
+            resolve(matchedEdge || !matchedChrome || parseInt(matchedChrome[1], 10) >= 43);
+        };
     })["catch"](function () {
         return false; // error, so assume unsupported
     });
