@@ -55,7 +55,7 @@ It's otherwise exactly the same as the
 [localStorage API](https://hacks.mozilla.org/2009/06/localstorage/).
 
 localForage has a dual API that allows you to either use Node-style callbacks 
-or [Promises](https://www.promisejs.org/). If you are unsure which one is right for you, it's recommend to use Promises.
+or [Promises](https://www.promisejs.org/). If you are unsure which one is right for you, it's recommended to use Promises.
 
 Here's an example of the Node-style callback form:
 
