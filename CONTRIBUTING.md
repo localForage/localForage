@@ -5,7 +5,7 @@ Please
 make sure your issue hasn't already been filed.
 
 If you have a bug to report, please file it.
-You are also encouradged to create an example (or [edit an existing one](http://codepen.io/thgreasi/pen/ojYKeE)) to showcase your issue.
+You are also encouraged to create an example (or [edit an existing one](http://codepen.io/thgreasi/pen/ojYKeE)) to showcase your issue.
 
 If you'd like to see a feature
 implemented, you can file an issue, but know that pull requests for small
