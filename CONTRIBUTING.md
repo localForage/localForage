@@ -4,7 +4,10 @@ Please
 [check the existing issues](https://github.com/mozilla/localForage/issues) to
 make sure your issue hasn't already been filed.
 
-If you have a bug to report, please file it. If you'd like to see a feature
+If you have a bug to report, please file it.
+You are also encouraged to create an example (or [edit an existing one](http://codepen.io/thgreasi/pen/ojYKeE)) to showcase your issue.
+
+If you'd like to see a feature
 implemented, you can file an issue, but know that pull requests for small
 things like adding a line in a config file will get more attention than an
 issue asking someone else to do it.
