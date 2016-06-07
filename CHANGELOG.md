@@ -3,6 +3,15 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [1.4.2](https://github.com/mozilla/localForage/releases/tag/1.4.2)
+* Fixes #562.
+
+### [1.4.1](https://github.com/mozilla/localForage/releases/tag/1.4.1)
+* Fixes #520; browserify builds work propertly
+
+### [1.4](https://github.com/mozilla/localForage/releases/tag/1.4.0)
+* Fixes #516; this version should always load the correct driver without that bug.
+
 ### [1.3](https://github.com/mozilla/localForage/releases/tag/1.3.0)
 * We now use ES6 for our source code and `webpack` to bundle the `dist/` files.
 
