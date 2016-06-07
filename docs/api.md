@@ -22,7 +22,7 @@ localForage includes a localStorage-backed fallback store for browsers with no I
 
 [Download localforage.min.js][download]
 
-[download]: https://mozilla.github.io/localForage/localforage.min.js
+[download]: https://raw.githubusercontent.com/mozilla/localForage/master/dist/localforage.min.js
 [ES6 Promises API]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
 # Installation
