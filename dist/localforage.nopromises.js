@@ -133,6 +133,7 @@ function executeTwoCallbacks(promise, callback, errorCallback) {
 var DETECT_BLOB_SUPPORT_STORE = 'local-forage-detect-blob-support';
 var supportsBlobs;
 var dbContexts;
+var toString = Object.prototype.toString;
 
 // Transform a binary string to an array buffer, because otherwise
 // weird stuff happens when you try to work with the binary string directly.
@@ -563,7 +564,7 @@ function setItem(key, value, callback) {
         var dbInfo;
         self.ready().then(function () {
             dbInfo = self._dbInfo;
-            if (value instanceof Blob) {
+            if (toString.call(value) === '[object Blob]') {
                 return _checkBlobSupport(dbInfo.db).then(function (blobSupport) {
                     if (blobSupport) {
                         return value;
@@ -823,6 +824,8 @@ var TYPE_FLOAT32ARRAY = 'fl32';
 var TYPE_FLOAT64ARRAY = 'fl64';
 var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
 
+var toString$1 = Object.prototype.toString;
+
 function stringToBuffer(serializedString) {
     // Fill the string into a ArrayBuffer.
     var bufferLength = serializedString.length * 0.75;
@@ -884,16 +887,16 @@ function bufferToString(buffer) {
 // instructs the `setItem()` callback/promise to be executed). This is how
 // we store binary data with localStorage.
 function serialize(value, callback) {
-    var valueString = '';
+    var valueType = '';
     if (value) {
-        valueString = value.toString();
+        valueType = toString$1.call(value);
     }
 
     // Cannot use `value instanceof ArrayBuffer` or such here, as these
     // checks fail when running the tests using casper.js...
     //
     // TODO: See why those tests fail and use a better solution.
-    if (value && (value.toString() === '[object ArrayBuffer]' || value.buffer && value.buffer.toString() === '[object ArrayBuffer]')) {
+    if (value && (valueType === '[object ArrayBuffer]' || value.buffer && toString$1.call(value.buffer) === '[object ArrayBuffer]')) {
         // Convert binary arrays to a string and prefix the string with
         // a special marker.
         var buffer;
@@ -905,23 +908,23 @@ function serialize(value, callback) {
         } else {
             buffer = value.buffer;
 
-            if (valueString === '[object Int8Array]') {
+            if (valueType === '[object Int8Array]') {
                 marker += TYPE_INT8ARRAY;
-            } else if (valueString === '[object Uint8Array]') {
+            } else if (valueType === '[object Uint8Array]') {
                 marker += TYPE_UINT8ARRAY;
-            } else if (valueString === '[object Uint8ClampedArray]') {
+            } else if (valueType === '[object Uint8ClampedArray]') {
                 marker += TYPE_UINT8CLAMPEDARRAY;
-            } else if (valueString === '[object Int16Array]') {
+            } else if (valueType === '[object Int16Array]') {
                 marker += TYPE_INT16ARRAY;
-            } else if (valueString === '[object Uint16Array]') {
+            } else if (valueType === '[object Uint16Array]') {
                 marker += TYPE_UINT16ARRAY;
-            } else if (valueString === '[object Int32Array]') {
+            } else if (valueType === '[object Int32Array]') {
                 marker += TYPE_INT32ARRAY;
-            } else if (valueString === '[object Uint32Array]') {
+            } else if (valueType === '[object Uint32Array]') {
                 marker += TYPE_UINT32ARRAY;
-            } else if (valueString === '[object Float32Array]') {
+            } else if (valueType === '[object Float32Array]') {
                 marker += TYPE_FLOAT32ARRAY;
-            } else if (valueString === '[object Float64Array]') {
+            } else if (valueType === '[object Float64Array]') {
                 marker += TYPE_FLOAT64ARRAY;
             } else {
                 callback(new Error('Failed to get type for BinaryArray'));
@@ -929,7 +932,7 @@ function serialize(value, callback) {
         }
 
         callback(marker + bufferToString(buffer));
-    } else if (valueString === '[object Blob]') {
+    } else if (valueType === '[object Blob]') {
         // Conver the blob to a binaryArray and then to a string.
         var fileReader = new FileReader();
 
