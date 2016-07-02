@@ -75,6 +75,17 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
+        it('saves a string like "[object Blob]" [promise]', function(done) {
+            localforage.setItem('fake Blob', '[object Blob]').then(function(setValue) {
+                expect(setValue).to.be('[object Blob]');
+
+                return localforage.getItem('fake Blob');
+            }).then(function(value) {
+                expect(value).to.be('[object Blob]');
+                done();
+            });
+        });
+
         it('saves a number [callback]', function(done) {
             localforage.setItem('number', 546, function(err, setValue) {
                 expect(setValue).to.be(546);

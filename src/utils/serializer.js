@@ -98,9 +98,9 @@ function serialize(value, callback) {
     // checks fail when running the tests using casper.js...
     //
     // TODO: See why those tests fail and use a better solution.
-    if (value && (value.toString() === '[object ArrayBuffer]' ||
+    if (value && (valueType === '[object ArrayBuffer]' ||
         value.buffer &&
-        value.buffer.toString() === '[object ArrayBuffer]')) {
+        toString.call(value.buffer) === '[object ArrayBuffer]')) {
         // Convert binary arrays to a string and prefix the string with
         // a special marker.
         var buffer;
