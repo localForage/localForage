@@ -10,10 +10,10 @@
     "websql"
   ],
   "version": "1.4.2",
-  "homepage": "https://github.com/mozilla/localForage",
+  "homepage": "https://github.com/localForage/localForage",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mozilla/localForage.git"
+    "url": "git://github.com/localForage/localForage.git"
   },
   "scripts": {
     "publish-docs": "node -e \"require('grunt').cli()\" null copy build-rules-html publish-rules",
@@ -58,7 +58,7 @@
   },
   "main": "dist/localforage.js",
   "bugs": {
-    "url": "http://github.com/mozilla/localForage/issues"
+    "url": "http://github.com/localForage/localForage/issues"
   },
   "dependencies": {
     "lie": "3.0.2"
