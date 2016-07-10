@@ -15,5 +15,5 @@ deploy:
     secure: Ep7wUn/nAejJQRRoYa3DVqJ4vdy/2N7O4/w/dkfB6jWGSnqDLVtjx9ZrYg92ms0Ttr0FaN1r7U4Qqa7Q8/0FcMOtPwSGnguqHe+3sya/2tt8MkiKiSj5TNfyYjsr6457iIitz/K6adacqsOp9XdYKtuRJudvPXkEH4aeKNeyrbY=
   on:
     tags: true
-    repo: mozilla/localForage
+    repo: localForage/localForage
     branch: master
