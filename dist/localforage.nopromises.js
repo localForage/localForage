@@ -117,6 +117,16 @@ function executeCallback(promise, callback) {
     }
 }
 
+function executeTwoCallbacks(promise, callback, errorCallback) {
+    if (typeof callback === 'function') {
+        promise.then(callback);
+    }
+
+    if (typeof errorCallback === 'function') {
+        promise["catch"](errorCallback);
+    }
+}
+
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
 
@@ -362,7 +372,7 @@ function _fullyReady(callback) {
         }
     });
 
-    promise.then(callback, callback);
+    executeTwoCallbacks(promise, callback, callback);
     return promise;
 }
 
@@ -1589,16 +1599,6 @@ var localStorageWrapper = {
     key: key$2,
     keys: keys$2
 };
-
-function executeTwoCallbacks(promise, callback, errorCallback) {
-    if (typeof callback === 'function') {
-        promise.then(callback);
-    }
-
-    if (typeof errorCallback === 'function') {
-        promise["catch"](errorCallback);
-    }
-}
 
 // Custom drivers are stored here when `defineDriver()` is called.
 // They are shared across all instances of localForage.

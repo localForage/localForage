@@ -2,6 +2,7 @@ import createBlob from '../utils/createBlob';
 import idb from '../utils/idb';
 import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
+import executeTwoCallbacks from '../utils/executeTwoCallbacks';
 
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
@@ -254,7 +255,7 @@ function _fullyReady(callback) {
         }
     });
 
-    promise.then(callback, callback);
+    executeTwoCallbacks(promise, callback, callback);
     return promise;
 }
 
