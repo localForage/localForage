@@ -1,4 +1,4 @@
-# localForage [![Build Status](https://travis-ci.org/mozilla/localForage.svg?branch=master)](http://travis-ci.org/mozilla/localForage)
+# localForage [![Build Status](https://travis-ci.org/localForage/localForage.svg?branch=master)](http://travis-ci.org/localForage/localForage)
 
 localForage is a fast and simple storage library for JavaScript. localForage
 improves the offline experience of your web app by using asynchronous storage
@@ -14,7 +14,7 @@ To use localForage, just drop a single JavaScript file into your page:
 <script>localforage.getItem('something', myCallback);</script>
 ```
 
-Download the [latest localForage from GitHub](https://github.com/mozilla/localForage/releases/latest), or install with
+Download the [latest localForage from GitHub](https://github.com/localForage/localForage/releases/latest), or install with
 [npm](https://www.npmjs.com/):
 
 ```bash
@@ -29,12 +29,12 @@ bower install localforage
 
 localForage is compatible with [browserify](http://browserify.org/).
 
-[supported browsers]: https://github.com/mozilla/localForage/wiki/Supported-Browsers-Platforms
+[supported browsers]: https://github.com/localForage/localForage/wiki/Supported-Browsers-Platforms
 
 ## Support
 
 Lost? Need help? Try the
-[localForage API documentation](https://mozilla.github.io/localForage).
+[localForage API documentation](https://localForage.github.io/localForage).
 
 If you're stuck using the library, running the tests, or want to contribute
 to localForage, you can visit
@@ -80,7 +80,7 @@ localforage.setItem('key', 'value').then(function () {
 });
 ```
 
-For more examples, please visit [the API docs](http://mozilla.github.io/localForage). 
+For more examples, please visit [the API docs](https://localForage.github.io/localForage). 
 
 ## Storing Blobs, TypedArrays, and other JS objects
 
@@ -96,7 +96,7 @@ JSON, as well as ArrayBuffers, Blobs, and TypedArrays. Check the
 All types are supported in every storage backend, though storage limits in
 localStorage make storing many large Blobs impossible.
 
-[api]: https://mozilla.github.io/localForage/#setitem
+[api]: https://localForage.github.io/localForage/#setitem
 
 ## Configuration
 
@@ -162,7 +162,7 @@ Webpack, please upgrade to 1.3.0 or above.
 
 If you're using localForage in your own build system (eg. browserify or
 webpack) make sure you have the
-[required plugins and transformers](https://github.com/mozilla/localForage/blob/master/package.json#L24)
+[required plugins and transformers](https://github.com/localForage/localForage/blob/master/package.json#L24)
 installed (eg. `npm install --save-dev babel-plugin-system-import-transformer`).
 
 ## TypeScript
@@ -184,21 +184,21 @@ models in your framework so you can store data offline with localForage. We
 have drivers for the following frameworks:
 
 * [AngularJS](https://github.com/ocombe/angular-localForage)
-* [Backbone](https://github.com/mozilla/localForage-backbone)
+* [Backbone](https://github.com/localForage/localForage-backbone)
 * [Ember](https://github.com/genkgo/ember-localforage-adapter)
 
 If you have a driver you'd like listed, please
-[open an issue](https://github.com/mozilla/localForage/issues/new) to have it
+[open an issue](https://github.com/localForage/localForage/issues/new) to have it
 added to this list.
 
 ## Custom Drivers
 
 You can create your own driver if you want; see the
-[`defineDriver`](https://mozilla.github.io/localForage/#definedriver) API docs.
+[`defineDriver`](https://localForage.github.io/localForage/#definedriver) API docs.
 
 There is a [list of custom drivers on the wiki][custom drivers].
 
-[custom drivers]: https://github.com/mozilla/localForage/wiki/Custom-Drivers
+[custom drivers]: https://github.com/localForage/localForage/wiki/Custom-Drivers
 
 # Working on localForage
 
@@ -206,7 +206,7 @@ You'll need [node/npm](http://nodejs.org/) and
 [bower](http://bower.io/#installing-bower).
 
 To work on localForage, you should start by
-[forking it](https://github.com/mozilla/localForage/fork) and installing its
+[forking it](https://github.com/localForage/localForage/fork) and installing its
 dependencies. Replace `USERNAME` with your GitHub username and run the
 following:
 
@@ -236,33 +236,12 @@ a browser environment. Local tests are run on a headless WebKit (using
 When you submit a pull request, tests will be run against all browsers that
 localForage supports on Travis CI using [Sauce Labs](https://saucelabs.com/).
 
-## Building the API Documentation
-
-We currently use a Ruby tool to build our
-[API documentation](https://mozilla.github.io/localForage). You can install the Ruby dependencies with [Bundler](http://bundler.io):
-
-```bash
-# From inside the localForage directory
-bundle install
-```
-
-Then use `grunt` to serve the site:
-
-```bash
-grunt site
-```
-
-Navigate to [localhost:4567](http://localhost:4567/) in your browser to see the
-docs.
-
-There is an [open issue to move to a node tool for the docs](https://github.com/mozilla/localForage/issues/192).
-
 # License
 
 This program is free software; it is distributed under an
-[Apache License](https://github.com/mozilla/localForage/blob/master/LICENSE).
+[Apache License](https://github.com/localForage/localForage/blob/master/LICENSE).
 
 ---
 
-Copyright (c) 2013-2015 [Mozilla](https://mozilla.org)
-([Contributors](https://github.com/mozilla/localForage/graphs/contributors)).
+Copyright (c) 2013-2016 [Mozilla](https://mozilla.org)
+([Contributors](https://github.com/localForage/localForage/graphs/contributors)).
