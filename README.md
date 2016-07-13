@@ -34,7 +34,7 @@ localForage is compatible with [browserify](http://browserify.org/).
 ## Support
 
 Lost? Need help? Try the
-[localForage API documentation](https://localForage.github.io/localForage).
+[localForage API documentation](https://localforage.github.io/localForage).
 
 If you're stuck using the library, running the tests, or want to contribute
 to localForage, you can visit
@@ -80,7 +80,7 @@ localforage.setItem('key', 'value').then(function () {
 });
 ```
 
-For more examples, please visit [the API docs](https://localForage.github.io/localForage). 
+For more examples, please visit [the API docs](https://localforage.github.io/localForage). 
 
 ## Storing Blobs, TypedArrays, and other JS objects
 
@@ -96,7 +96,7 @@ JSON, as well as ArrayBuffers, Blobs, and TypedArrays. Check the
 All types are supported in every storage backend, though storage limits in
 localStorage make storing many large Blobs impossible.
 
-[api]: https://localForage.github.io/localForage/#setitem
+[api]: https://localforage.github.io/localForage/#setitem
 
 ## Configuration
 
@@ -194,7 +194,7 @@ added to this list.
 ## Custom Drivers
 
 You can create your own driver if you want; see the
-[`defineDriver`](https://localForage.github.io/localForage/#definedriver) API docs.
+[`defineDriver`](https://localforage.github.io/localForage/#definedriver) API docs.
 
 There is a [list of custom drivers on the wiki][custom drivers].
 
