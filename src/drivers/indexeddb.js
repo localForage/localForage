@@ -10,6 +10,7 @@ import executeTwoCallbacks from '../utils/executeTwoCallbacks';
 var DETECT_BLOB_SUPPORT_STORE = 'local-forage-detect-blob-support';
 var supportsBlobs;
 var dbContexts;
+var toString = Object.prototype.toString;
 
 // Transform a binary string to an array buffer, because otherwise
 // weird stuff happens when you try to work with the binary string directly.
@@ -449,7 +450,7 @@ function setItem(key, value, callback) {
         var dbInfo;
         self.ready().then(function() {
             dbInfo = self._dbInfo;
-            if (value instanceof Blob) {
+            if (toString.call(value) === '[object Blob]') {
                 return _checkBlobSupport(dbInfo.db).then(function(blobSupport) {
                     if (blobSupport) {
                         return value;
