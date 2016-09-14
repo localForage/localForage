@@ -7,6 +7,7 @@ import localstorageDriver from './drivers/localstorage';
 import serializer from './utils/serializer';
 import Promise from './utils/promise';
 import executeTwoCallbacks from './utils/executeTwoCallbacks';
+import isArray from './utils/isArray';
 
 // Custom drivers are stored here when `defineDriver()` is called.
 // They are shared across all instances of localForage.
@@ -57,10 +58,6 @@ driverSupport[DriverType.INDEXEDDB] = isIndexedDBValid();
 driverSupport[DriverType.WEBSQL] = isWebSQLValid();
 
 driverSupport[DriverType.LOCALSTORAGE] = isLocalStorageValid();
-
-var isArray = Array.isArray || function(arg) {
-        return Object.prototype.toString.call(arg) === '[object Array]';
-    };
 
 function callWhenReady(localForageInstance, libraryMethod) {
     localForageInstance[libraryMethod] = function() {

@@ -395,6 +395,106 @@ DRIVERS.forEach(function(driverName) {
         } else {
             it.skip('saves binary (Blob) data (Blob type does not exist)');
         }
+
+        if (typeof Blob === 'function') {
+            it('saves Blobs nested within objects', function(done) {
+                var fileParts1 = ['<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>'];
+                var fileParts2 = ['test blob'];
+                var fileParts3 = ['<?xml version=\"1.0\"><test />'];
+
+                var mimeString1 = 'text\/html';
+                var mimeString2 = 'text\/plain';
+                var mimeString3 = 'text\/xml';
+
+                var testBlob1 = createBlob(fileParts1, { 'type' : mimeString1 });
+                var testBlob2 = createBlob(fileParts2, { 'type' : mimeString2 });
+                var testBlob3 = createBlob(fileParts3, { 'type' : mimeString3 });
+
+                var nestedBlobs = {
+                    blob: testBlob1,
+                    array: [testBlob2],
+                    nested: [
+                        {
+                            blob: testBlob3,
+                            value: true
+                        }
+                    ]
+                };
+
+                localforage.setItem('nestedBlobs', nestedBlobs, function(err, result) {
+                    expect(err).to.be(null);
+
+                    expect(Object.keys(result).length)
+                        .to.be(Object.keys(nestedBlobs).length);
+                    expect(result.array.length)
+                        .to.be(nestedBlobs.array.length);
+                    expect(result.nested.length)
+                        .to.be(nestedBlobs.nested.length);
+                    expect(Object.keys(result.nested[0]).length)
+                        .to.be(Object.keys(nestedBlobs.nested[0]).length);
+
+                    expect(result.blob.toString())
+                        .to.be('[object Blob]');
+                    expect(result.array[0].toString())
+                        .to.be('[object Blob]');
+                    expect(result.nested[0].blob.toString())
+                        .to.be('[object Blob]');
+
+                    expect(result.blob.size)
+                        .to.be(testBlob1.size);
+                    expect(result.array[0].type)
+                        .to.be(testBlob2.type);
+                    expect(result.nested[0].blob.type)
+                        .to.be(testBlob3.type);
+
+                    expect(result.blob.size)
+                        .to.be(testBlob1.size);
+                    expect(result.array[0].size)
+                        .to.be(testBlob2.size);
+                    expect(result.nested[0].blob.size)
+                        .to.be(testBlob3.size);
+
+                }).then(function() {
+                    localforage.getItem('nestedBlobs', function(err, result) {
+                        expect(err).to.be(null);
+
+                        expect(Object.keys(result).length)
+                            .to.be(Object.keys(nestedBlobs).length);
+                        expect(result.array.length)
+                            .to.be(nestedBlobs.array.length);
+                        expect(result.nested.length)
+                            .to.be(nestedBlobs.nested.length);
+                        expect(Object.keys(result.nested[0]).length)
+                            .to.be(Object.keys(nestedBlobs.nested[0]).length);
+
+                        expect(result.blob.toString())
+                            .to.be('[object Blob]');
+                        expect(result.array[0].toString())
+                            .to.be('[object Blob]');
+                        expect(result.nested[0].blob.toString())
+                            .to.be('[object Blob]');
+
+                        expect(result.blob.size)
+                            .to.be(testBlob1.size);
+                        expect(result.array[0].type)
+                            .to.be(testBlob2.type);
+                        expect(result.nested[0].blob.type)
+                            .to.be(testBlob3.type);
+
+                        expect(result.blob.size)
+                            .to.be(testBlob1.size);
+                        expect(result.array[0].size)
+                            .to.be(testBlob2.size);
+                        expect(result.nested[0].blob.size)
+                            .to.be(testBlob3.size);
+
+                        done();
+                    });
+                });
+            });
+        } else {
+            it.skip('saves Blobs nested within objects (Blob type does not exist)');
+        }
     });
 
     describe('Typed Array handling in ' + driverName, function() {
