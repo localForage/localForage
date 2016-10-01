@@ -171,16 +171,17 @@ installed (eg. `npm install --save-dev babel-plugin-system-import-transformer`).
 
 ## TypeScript
 
-To import localForage in TypeScript:
+To import localForage in TypeScript use:
+
+```javascript
+import * as localForage from "localforage";
+```
+
+For older versions of Typescript, where ES6 style imports are not supported for UMD modules like localForage, you should use:
 
 ```javascript
 import localForage = require("localforage");
 ```
-
-Note that the ES6 style import is not supported for our module type. Check out the following to know why:
-* https://www.typescriptlang.org/docs/handbook/modules.html#export--and-import--require
-* http://stackoverflow.com/questions/29596714/new-es6-syntax-for-importing-commonjs-amd-modules-i-e-import-foo-require
-* http://www.jbrantly.com/es6-modules-with-typescript-and-webpack/
 
 ## Framework Support
 
