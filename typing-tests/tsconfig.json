@@ -1,0 +1,19 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "es2015"
+    ],
+    "module": "es2015",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "target": "es5"
+  },
+  "files": [
+    "../typings/localforage.d.ts",
+    "./localforage-tests.ts"
+  ]
+}
