@@ -1,4 +1,6 @@
 import createBlob from './createBlob';
+import isArray from './isArray';
+import Promise from './promise';
 
 // Sadly, the best way to save binary data in WebSQL/localStorage is serializing
 // it to Base64, so this is how we store it to prevent very strange errors with less
@@ -27,6 +29,10 @@ var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH +
     TYPE_ARRAYBUFFER.length;
 
 var toString = Object.prototype.toString;
+
+var options = {
+    recursive: true
+};
 
 function stringToBuffer(serializedString) {
     // Fill the string into a ArrayBuffer.
@@ -88,7 +94,7 @@ function bufferToString(buffer) {
 // Serialize a value, afterwards executing a callback (which usually
 // instructs the `setItem()` callback/promise to be executed). This is how
 // we store binary data with localStorage.
-function serialize(value, callback) {
+function serializeValues(value, callback) {
     var valueType = '';
     if (value) {
         valueType = toString.call(value);
@@ -149,16 +155,55 @@ function serialize(value, callback) {
         };
 
         fileReader.readAsArrayBuffer(value);
-    } else {
-        try {
-            callback(JSON.stringify(value));
-        } catch (e) {
-            console.error("Couldn't convert value into a JSON string: ",
-                value);
+    } else if (value instanceof Object && options.recursive) {
+        var queue = [],
+            serializePromise = val => new Promise(
+                resolve => {
+                    serializeValues(val, resolve);
+                }
+            );
 
-            callback(null, e);
+        if (isArray(value)) {
+            for (var i = 0; i < value.length; i++) {
+                queue.push(serializePromise(value[i]));
+            }
+            Promise.all(queue).then(function(results) {
+                callback(results, true);
+            });
+        } else {
+            var keys = [];
+            for (var key in value) {
+                if (value.hasOwnProperty(key)) {
+                    keys.push(key);
+                    queue.push(serializePromise(value[key]));
+                }
+            }
+            Promise.all(queue).then(function(results) {
+                var result = {};
+                for (var i = 0; i < keys.length; i++) {
+                    result[keys[i]] = results[i];
+                }
+                callback(result, true);
+            });
         }
+    } else {
+        callback(value, true);
     }
+}
+
+function serialize(value, callback) {
+    serializeValues(value, function(result, isJson) {
+        if (isJson) {
+            try {
+                callback(JSON.stringify(result));
+            } catch (e) {
+                console.error("Couldn't convert value into a JSON string: ", value);
+                callback(null, e);
+            }
+        } else {
+            callback(result);
+        }
+    });
 }
 
 // Deserialize data we've inserted into a value column/field. We place
@@ -169,13 +214,27 @@ function serialize(value, callback) {
 // Oftentimes this will just deserialize JSON content, but if we have a
 // special marker (SERIALIZED_MARKER, defined above), we will extract
 // some kind of arraybuffer/binary data/typed array out of the string.
-function deserialize(value) {
-    // If we haven't marked this string as being specially serialized (i.e.
-    // something other than serialized JSON), we can just return it and be
-    // done with it.
-    if (value.substring(0,
-            SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
-        return JSON.parse(value);
+function deserializeValues(value) {
+    if (value instanceof Object && options.recursive) {
+        if (isArray(value)) {
+            for (var i = 0; i < value.length; i++) {
+                value[i] = deserializeValues(value[i]);
+            }
+        } else {
+            for (var key in value) {
+                if (value.hasOwnProperty(key)) {
+                    value[key] = deserializeValues(value[key]);
+                }
+            }
+        }
+        return value;
+    } else if (typeof value !== 'string') {
+        return value;
+    } else if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
+        // If we haven't marked this string as being specially serialized (i.e.
+        // something other than a JSON value), we can just return it and be
+        // done with it.
+        return value;
     }
 
     // The following code deals with deserializing some kind of Blob or
@@ -225,11 +284,21 @@ function deserialize(value) {
     }
 }
 
+function deserialize(value) {
+    if (value.substring(0,
+            SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
+        return deserializeValues(JSON.parse(value));
+    } else {
+        return deserializeValues(value);
+    }
+}
+
 var localforageSerializer = {
     serialize: serialize,
     deserialize: deserialize,
     stringToBuffer: stringToBuffer,
-    bufferToString: bufferToString
+    bufferToString: bufferToString,
+    options: options
 };
 
 export default localforageSerializer;
