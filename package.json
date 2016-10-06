@@ -9,7 +9,7 @@
     "storage",
     "websql"
   ],
-  "version": "1.4.2",
+  "version": "1.4.3",
   "homepage": "https://github.com/localForage/localForage",
   "repository": {
     "type": "git",

@@ -16,7 +16,7 @@ module.exports = exports = function(grunt) {
                  '    localForage -- Offline Storage, Improved\n' +
                  '    Version ' + grunt.file.readJSON('package.json').version + '\n' +
                  '    https://mozilla.github.io/localForage\n' +
-                 '    (c) 2013-2015 Mozilla, Apache License 2.0\n' +
+                 '    (c) 2013-2016 Mozilla, Apache License 2.0\n' +
                  '*/\n';
 
     var babelModuleIdProvider = function getModuleId(moduleName) {
