@@ -171,6 +171,17 @@ installed (eg. `npm install --save-dev babel-plugin-system-import-transformer`).
 
 ## TypeScript
 
+First make sure to have `allowSyntheticDefaultImports` set to `true` for
+`compilerOptions` inside of [**tsconfig.json**](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) file (or `--allowSyntheticDefaultImports` during Command-Line invocation):
+
+```json
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true
+  }
+}
+```
+
 To import localForage in TypeScript v2.0 ([sample repo](https://github.com/thgreasi/localForage-cordovaSQLiteDriver-TestIonic2App)) use:
 
 ```javascript
