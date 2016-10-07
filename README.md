@@ -171,15 +171,18 @@ installed (eg. `npm install --save-dev babel-plugin-system-import-transformer`).
 
 ## TypeScript
 
-To import localForage in TypeScript use:
+To import localForage in TypeScript v2.0 ([sample repo](https://github.com/thgreasi/localForage-cordovaSQLiteDriver-TestIonic2App)) use:
+
+```javascript
+import localForage from "localforage";
+```
+
+For older versions of Typescript you should use one of the following:
 
 ```javascript
 import * as localForage from "localforage";
-```
-
-For older versions of Typescript, where ES6 style imports are not supported for UMD modules like localForage, you should use:
-
-```javascript
+// or, in case that the typescript version that you are using
+// doesn't support ES6 style imports for UMD modules like localForage
 import localForage = require("localforage");
 ```
 
