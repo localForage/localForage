@@ -171,15 +171,18 @@ installed (eg. `npm install --save-dev babel-plugin-system-import-transformer`).
 
 ## TypeScript
 
-To import localForage in TypeScript use:
+If you have the [`allowSyntheticDefaultImports` compiler option](https://www.typescriptlang.org/docs/handbook/compiler-options.html) set to `true` in your [tsconfig.json](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) (supported in TypeScript v1.8+), you should use:
+
+```javascript
+import localForage from "localforage";
+```
+
+Otherwise you should use one of the following:
 
 ```javascript
 import * as localForage from "localforage";
-```
-
-For older versions of Typescript, where ES6 style imports are not supported for UMD modules like localForage, you should use:
-
-```javascript
+// or, in case that the typescript version that you are using
+// doesn't support ES6 style imports for UMD modules like localForage
 import localForage = require("localforage");
 ```
 
