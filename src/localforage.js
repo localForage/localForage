@@ -275,6 +275,14 @@ class LocalForage {
             self._config.driver = self.driver();
         }
 
+        function extendSelfWithDriver(driver) {
+            self._extend(driver);
+            setDriverToConfig();
+
+            self._ready = self._initStorage(self._config);
+            return self._ready;
+        }
+
         function initDriver(supportedDrivers) {
             return function() {
                 var currentDriverIndex = 0;
@@ -288,13 +296,7 @@ class LocalForage {
                         self._ready = null;
 
                         return self.getDriver(driverName)
-                            .then(driver => {
-                                self._extend(driver);
-                                setDriverToConfig();
-
-                                self._ready = self._initStorage(self._config);
-                                return self._ready;
-                            })
+                            .then(extendSelfWithDriver)
                             .catch(driverPromiseLoop);
                     }
 
