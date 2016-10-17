@@ -343,7 +343,7 @@ if (typeof global.Promise !== 'function') {
 },{"2":2}],4:[function(_dereq_,module,exports){
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -914,6 +914,7 @@ function setItem(key, value, callback) {
         }).then(function (value) {
             var transaction = dbInfo.db.transaction(dbInfo.storeName, 'readwrite');
             var store = transaction.objectStore(dbInfo.storeName);
+            var req = store.put(value, key);
 
             // The reason we don't _save_ null is because IE 10 does
             // not support saving the `null` type in IndexedDB. How
@@ -940,8 +941,6 @@ function setItem(key, value, callback) {
                 var err = req.error ? req.error : req.transaction.error;
                 reject(err);
             };
-
-            var req = store.put(value, key);
         })["catch"](reject);
     });
 
@@ -2193,6 +2192,14 @@ var LocalForage = function () {
             self._config.driver = self.driver();
         }
 
+        function extendSelfWithDriver(driver) {
+            self._extend(driver);
+            setDriverToConfig();
+
+            self._ready = self._initStorage(self._config);
+            return self._ready;
+        }
+
         function initDriver(supportedDrivers) {
             return function () {
                 var currentDriverIndex = 0;
@@ -2205,13 +2212,7 @@ var LocalForage = function () {
                         self._dbInfo = null;
                         self._ready = null;
 
-                        return self.getDriver(driverName).then(function (driver) {
-                            self._extend(driver);
-                            setDriverToConfig();
-
-                            self._ready = self._initStorage(self._config);
-                            return self._ready;
-                        })["catch"](driverPromiseLoop);
+                        return self.getDriver(driverName).then(extendSelfWithDriver)["catch"](driverPromiseLoop);
                     }
 
                     setDriverToConfig();

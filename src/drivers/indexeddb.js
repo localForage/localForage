@@ -462,6 +462,7 @@ function setItem(key, value, callback) {
         }).then(function(value) {
             var transaction = dbInfo.db.transaction(dbInfo.storeName, 'readwrite');
             var store = transaction.objectStore(dbInfo.storeName);
+            var req = store.put(value, key);
 
             // The reason we don't _save_ null is because IE 10 does
             // not support saving the `null` type in IndexedDB. How
@@ -488,8 +489,6 @@ function setItem(key, value, callback) {
                 var err = req.error ? req.error : req.transaction.error;
                 reject(err);
             };
-
-            var req = store.put(value, key);
         }).catch(reject);
     });
 
