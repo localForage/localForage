@@ -15,6 +15,12 @@
     "type": "git",
     "url": "git://github.com/localForage/localForage.git"
   },
+  "files": [
+    "dist",
+    "docs",
+    "examples",
+    "*.md"
+  ],
   "scripts": {
     "build": "npm run clean && webpack --mode production",
     "build:dev": "webpack --mode development",
