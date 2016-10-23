@@ -92,6 +92,9 @@ module.exports = exports = function(grunt) {
                 '< dist/localforage.nopromises.js > dist/localforage.nopromises.tmp ' +
                 '&& ncp dist/localforage.nopromises.tmp dist/localforage.nopromises.js' +
                 '&& rimraf dist/localforage.nopromises.tmp'
+            },
+            typescript_test: {
+                exec: 'node_modules/.bin/tsc --project typing-tests'
             }
         },
         concat: {
@@ -249,6 +252,7 @@ module.exports = exports = function(grunt) {
         'babel',
         'jshint',
         'jscs',
+        'run:typescript_test',
         'browserify:package_bundling_test',
         'webpack:package_bundling_test',
         'connect:test',
