@@ -140,6 +140,10 @@ class LocalForage {
                     options[i] = options[i].replace(/\W/g, '_');
                 }
 
+                if (i === 'version' && typeof options[i] !== 'number') {
+                    return new Error('Database version must be a number.');
+                }
+
                 this._config[i] = options[i];
             }
 

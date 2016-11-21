@@ -228,4 +228,16 @@ describe('Config API', function() {
             done();
         });
     });
+
+    it('returns error if database version is not a number', function(done) {
+        var configResult = localforage.config({
+            version: '2.0'
+        });
+
+        var error = 'Error: Database version must be a number.';
+
+        expect(configResult).to.not.be(true);
+        expect(configResult.toString()).to.be(error);
+        done();
+    });
 });
