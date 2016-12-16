@@ -116,7 +116,7 @@ class LocalForage {
         this._dbInfo = null;
 
         this._wrapLibraryMethodsWithReady();
-        this.setDriver(this._config.driver);
+        this.setDriver(this._config.driver).catch(() => {});
     }
 
     // Set any config values for localForage; can be called anytime before
