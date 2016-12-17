@@ -1700,7 +1700,7 @@ var LocalForage = function () {
         this._dbInfo = null;
 
         this._wrapLibraryMethodsWithReady();
-        this.setDriver(this._config.driver);
+        this.setDriver(this._config.driver)["catch"](function () {});
     }
 
     // Set any config values for localForage; can be called anytime before
