@@ -108,13 +108,16 @@ describe('Config API', function() {
         it('sets new driver using preference order', function(done) {
             var otherSupportedDrivers = supportedDrivers.slice(1);
 
-            localforage.config({
+            var configResult = localforage.config({
                 driver: otherSupportedDrivers
             });
 
+            expect(configResult).to.be.a(Promise);
             localforage.ready(function() {
                 expect(localforage.config('driver')).to
                                   .be(otherSupportedDrivers[0]);
+                return configResult;
+            }).then(function() {
                 done();
             });
         });
@@ -122,13 +125,19 @@ describe('Config API', function() {
 
     it('it does not set an unsupported driver', function(done) {
         var oldDriver = localforage.driver();
-        localforage.config({
+        var configResult = localforage.config({
             driver: 'I am a not supported driver'
         });
 
+        expect(configResult).to.be.a(Promise);
         localforage.ready(function() {
             expect(localforage.config('driver')).to
                               .be(oldDriver);
+            return configResult;
+        }).catch(function(error) {
+            expect(error).to.be.an(Error);
+            expect(error.message).to
+                .be('No available storage method found.');
             done();
         });
     });
