@@ -49,11 +49,11 @@ interface LocalForageDriver extends LocalForageDbMethods {
 
     _initStorage(options: LocalForageOptions): void;
 
-    _support: boolean | LocalForageDriverSupportFunc;
+    _support?: boolean | LocalForageDriverSupportFunc;
 }
 
 interface LocalForageSerializer {
-    serialize<T>(value: T | ArrayBuffer | Blob, callback: (value: string, error: any) => {}): void;
+    serialize<T>(value: T | ArrayBuffer | Blob, callback: (value: string, error: any) => void): void;
 
     deserialize<T>(value: string): T | ArrayBuffer | Blob;
 
@@ -103,6 +103,9 @@ interface LocalForage extends LocalForageDbMethods {
     getSerializer(callback: (serializer: LocalForageSerializer) => void): void;
 
     supports(driverName: string): boolean;
+
+    ready(callback: () => void): void;
+    ready(): Promise<void>;
 }
 
 declare module "localforage" {
