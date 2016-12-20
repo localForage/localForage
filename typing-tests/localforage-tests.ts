@@ -113,4 +113,16 @@ namespace LocalForageTest {
             testSerializer = serializer;
         });
     }
+
+    {
+        localForage.ready().then(() => {});
+
+        localForage.ready((error) => {
+            if (error) {
+
+            } else {
+                
+            }
+        });
+    }
 }
