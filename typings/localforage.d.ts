@@ -104,7 +104,7 @@ interface LocalForage extends LocalForageDbMethods {
 
     supports(driverName: string): boolean;
 
-    ready(callback: () => void): void;
+    ready(callback: (error: any) => void): void;
     ready(): Promise<void>;
 }
 
