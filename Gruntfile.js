@@ -15,7 +15,7 @@ module.exports = exports = function(grunt) {
     var BANNER = '/*!\n' +
                  '    localForage -- Offline Storage, Improved\n' +
                  '    Version ' + grunt.file.readJSON('package.json').version + '\n' +
-                 '    https://mozilla.github.io/localForage\n' +
+                 '    https://localforage.github.io/localForage\n' +
                  '    (c) 2013-2016 Mozilla, Apache License 2.0\n' +
                  '*/\n';
 
