@@ -164,10 +164,13 @@ localForage 1.3+ works with both Browserify and Webpack. If you're using an
 earlier version of localForage and are having issues with Browserify or
 Webpack, please upgrade to 1.3.0 or above.
 
-If you're using localForage in your own build system (eg. browserify or
-webpack) make sure you have the
-[required plugins and transformers](https://github.com/localForage/localForage/blob/master/package.json#L24)
-installed (eg. `npm install --save-dev babel-plugin-system-import-transformer`).
+Webpack will emit a warning about using a prebuilt javascript file which is fine. If you want to remove the warning you should exclude `localforage` from being parsed by webpack using the following conf :
+
+```javascript
+module: {
+  noParse: /node_modules\/localforage\/dist\/localforage.js/,
+  loaders: [...],
+```
 
 ## TypeScript
 
