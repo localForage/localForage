@@ -137,7 +137,7 @@ function iterate(iterator, callback) {
     return promise;
 }
 
-function setItem(key, value, callback) {
+function _setItem(key, value, callback, retriesLeft) {
     var self = this;
 
     // Cast the key to a string, as that's all we can set as a key.
@@ -183,7 +183,11 @@ function setItem(key, value, callback) {
                             // more storage on Safari, this error will
                             // be called.
                             //
-                            // TODO: Try to re-run the transaction.
+                            // Try to re-run the transaction.
+                            if (retriesLeft > 0) {
+                                resolve(_setItem.apply(self, [key, originalValue, callback, retriesLeft - 1]));
+                                return;
+                            }
                             reject(sqlError);
                         }
                     });
@@ -194,6 +198,10 @@ function setItem(key, value, callback) {
 
     executeCallback(promise, callback);
     return promise;
+}
+
+function setItem(key, value, callback) {
+    return _setItem.apply(this, [key, value, callback, 1]);
 }
 
 function removeItem(key, callback) {
