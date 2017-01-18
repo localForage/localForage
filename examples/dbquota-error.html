@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <title>Simple localForage example</title>
+  </head>
+  <body>
+    <script src="../dist/localforage.js"></script>
+    <script>
+      // Forcing WEBSQL here. Feel free to switch to other drivers :)
+      localforage.setDriver(localforage.WEBSQL).then(function() {
+        return localforage.ready();
+      }).then(() => {
+        console.log('ready: ' + localforage.driver());
+      }).then(() => {
+        var overall = Promise.resolve();
+        for (let i = 0; i < 1; i++) {
+          overall = overall.then(() => {
+            return wait(2000).then(() => (+new Date()) / 1000 | 0);
+          }).then((timestamp) => {
+            var data = new Uint32Array(2*1024*1024);
+            data[0] = timestamp;
+            return localforage.setItem(`bigdata${i}`, data).then(
+              data => console.log(`setItem${i} resolved`, data[0]),
+              e => {
+                console.log(`setItem${i} rejected`, e);
+                return Promise.reject(e);
+              }).then(() => {
+                return localforage.getItem(`bigdata${i}`);
+              }).then(
+              data => {
+                if (data && data[0] === timestamp) {
+                  console.log(`getItem${i} data matches`, data[0]);
+                } else {
+                  console.log(`getItem${i} data missmatch`, timestamp, data[0]);
+                }
+              },
+              e => {
+                console.log('rejected', e);
+                return Promise.reject(e);
+              });
+          });
+        }
+        return overall;
+      }).then(
+        () => console.log('all done'),
+        e => console.log('Error', e));
+
+      function wait(ms) {
+        return new Promise(function(resolve) {
+          resolve();
+        });
+      }
+    </script>
+  </body>
+</html>
