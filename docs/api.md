@@ -139,7 +139,7 @@ Saves data to an offline store. You can store the following types of JavaScript 
   When using localStorage and WebSQL backends, binary data will be serialized before being saved (and retrieved). This serialization will incur a size increase when binary data is saved.
 </aside>
 
-<a href="http://jsfiddle.net/ryfo1jk4/">Live demo</a>
+<a href="http://jsfiddle.net/ryfo1jk4/161/">Live demo</a>
 
 ## removeItem
 
@@ -157,7 +157,7 @@ localforage.removeItem('somekey').then(function() {
 
 Removes the value of a key from the offline store.
 
-<a href="http://jsfiddle.net/y1Ly0hk1/1/">Live demo</a>
+<a href="http://jsfiddle.net/y1Ly0hk1/37/">Live demo</a>
 
 ## clear
 
