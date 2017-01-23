@@ -278,7 +278,8 @@ function _getConnection(dbInfo, upgradeNeeded) {
             };
         }
 
-        openreq.onerror = function () {
+        openreq.onerror = function (e) {
+            e.preventDefault();
             reject(openreq.error);
         };
 
