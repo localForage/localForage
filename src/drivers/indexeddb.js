@@ -40,10 +40,11 @@ function _binStringToArrayBuffer(bin) {
 // FileReader bug: https://code.google.com/p/chromium/issues/detail?id=447836
 //
 // Code borrowed from PouchDB. See:
-// https://github.com/pouchdb/pouchdb/blob/9c25a23/src/adapters/idb/blobSupport.js
+// https://github.com/pouchdb/pouchdb/blob/master/packages/node_modules/pouchdb-adapter-idb/src/blobSupport.js
 //
-function _checkBlobSupportWithoutCaching(txn) {
+function _checkBlobSupportWithoutCaching(idb) {
     return new Promise(function(resolve) {
+        var txn = idb.transaction(DETECT_BLOB_SUPPORT_STORE, 'readwrite');
         var blob = createBlob(['']);
         txn.objectStore(DETECT_BLOB_SUPPORT_STORE).put(blob, 'key');
 
