@@ -63,7 +63,7 @@ module.exports = exports = function(grunt) {
                         standalone: 'localforage'
                     },
                     transform: ['rollupify', 'babelify'],
-                    plugin: ['bundle-collapser/plugin']
+                    plugin: ['bundle-collapser/plugin', 'browserify-derequire']
                 }
             },
             no_promises: {
@@ -75,26 +75,9 @@ module.exports = exports = function(grunt) {
                         standalone: 'localforage'
                     },
                     transform: ['rollupify', 'babelify'],
-                    plugin: ['bundle-collapser/plugin'],
+                    plugin: ['bundle-collapser/plugin', 'browserify-derequire'],
                     exclude: ['lie/polyfill']
                 }
-            }
-        },
-        run: {
-            derequire: {
-                exec: 'derequire ' +
-                  '< dist/localforage.js > dist/localforage.tmp ' +
-                  '&& ncp dist/localforage.tmp dist/localforage.js' +
-                  '&& rimraf dist/localforage.tmp'
-            },
-            derequire_no_promises: {
-                exec: 'derequire ' +
-                '< dist/localforage.nopromises.js > dist/localforage.nopromises.tmp ' +
-                '&& ncp dist/localforage.nopromises.tmp dist/localforage.nopromises.js' +
-                '&& rimraf dist/localforage.nopromises.tmp'
-            },
-            typescript_test: {
-                exec: 'node_modules/.bin/tsc --project typing-tests'
             }
         },
         concat: {
@@ -193,6 +176,14 @@ module.exports = exports = function(grunt) {
                 }
             }
         },
+        ts: {
+            typing_tests: {
+                tsconfig: {
+                    tsconfig: 'typing-tests',
+                    passThrough: true
+                }
+            }
+        },
         uglify: {
             localforage: {
                 files: {
@@ -242,7 +233,6 @@ module.exports = exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'connect', 'watch']);
     grunt.registerTask('build', ['browserify:main', 'browserify:no_promises',
-        'run:derequire', 'run:derequire_no_promises',
         'concat', 'es3_safe_recast', 'uglify']);
     grunt.registerTask('serve', ['build', 'connect:test', 'watch']);
 
@@ -252,7 +242,7 @@ module.exports = exports = function(grunt) {
         'babel',
         'jshint',
         'jscs',
-        'run:typescript_test',
+        'ts:typing_tests',
         'browserify:package_bundling_test',
         'webpack:package_bundling_test',
         'connect:test',
