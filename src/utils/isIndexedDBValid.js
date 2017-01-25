@@ -7,28 +7,25 @@ function isIndexedDBValid() {
         if (!idb) {
             return false;
         }
-        // We mimic PouchDB here; just UA test for Safari (which, as of
-        // iOS 8/Yosemite, doesn't properly support IndexedDB).
-        // IndexedDB support is broken and different from Blink's.
-        // This is faster than the test case (and it's sync), so we just
-        // do this. *SIGH*
-        // http://bl.ocks.org/nolanlawson/raw/c83e9039edf2278047e9/
+        // We mimic PouchDB here;
         //
         // We test for openDatabase because IE Mobile identifies itself
         // as Safari. Oh the lulz...
-        if (typeof openDatabase !== 'undefined' && typeof navigator !== 'undefined' &&
-            navigator.userAgent &&
-            /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)) {
-            return false;
-        }
+        var isSafari = typeof openDatabase !== 'undefined' &&
+        /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) &&
+        !/Chrome/.test(navigator.userAgent) &&
+        !/BlackBerry/.test(navigator.platform);
 
-        return idb &&
-            typeof idb.open === 'function' &&
-                // Some Samsung/HTC Android 4.0-4.3 devices
-                // have older IndexedDB specs; if this isn't available
-                // their IndexedDB is too old for us to use.
-                // (Replaces the onupgradeneeded test.)
-            typeof IDBKeyRange !== 'undefined';
+        var hasFetch = typeof fetch === 'function' &&
+        fetch.toString().indexOf('[native code') !== -1;
+
+        // Safari <10.1 does not meet our requirements for IDB support (#5572)
+        // since Safari 10.1 shipped with fetch, we can use that to detect it
+        return (!isSafari || hasFetch) &&
+        typeof indexedDB !== 'undefined' &&
+        // some outdated implementations of IDB that appear on Samsung
+        // and HTC Android devices <4.4 are missing IDBKeyRange
+        typeof IDBKeyRange !== 'undefined';
     } catch (e) {
         return false;
     }
