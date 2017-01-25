@@ -178,7 +178,10 @@ module.exports = exports = function(grunt) {
         },
         ts: {
             typing_tests: {
-                files: 'typing-tests'
+                tsconfig: {
+                    tsconfig: 'typing-tests',
+                    passThrough: true
+                }
             }
         },
         uglify: {
