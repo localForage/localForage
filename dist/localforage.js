@@ -343,7 +343,7 @@ if (typeof global.Promise !== 'function') {
 },{"2":2}],4:[function(_dereq_,module,exports){
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -435,7 +435,9 @@ function createBlob(parts, properties) {
 
 // This is CommonJS because lie is an external dependency, so Rollup
 // can just ignore it.
-if (typeof Promise === 'undefined' && typeof _dereq_ !== 'undefined') {
+if (typeof Promise === 'undefined') {
+    // In the "nopromises" build this will just throw if you don't have
+    // a global promise object, but it would throw anyway later.
     _dereq_(3);
 }
 var Promise$1 = Promise;
@@ -1484,7 +1486,7 @@ function iterate$1(iterator, callback) {
     return promise;
 }
 
-function setItem$1(key, value, callback) {
+function _setItem(key, value, callback, retriesLeft) {
     var self = this;
 
     // Cast the key to a string, as that's all we can set as a key.
@@ -1526,7 +1528,11 @@ function setItem$1(key, value, callback) {
                             // more storage on Safari, this error will
                             // be called.
                             //
-                            // TODO: Try to re-run the transaction.
+                            // Try to re-run the transaction.
+                            if (retriesLeft > 0) {
+                                resolve(_setItem.apply(self, [key, originalValue, callback, retriesLeft - 1]));
+                                return;
+                            }
                             reject(sqlError);
                         }
                     });
@@ -1537,6 +1543,10 @@ function setItem$1(key, value, callback) {
 
     executeCallback(promise, callback);
     return promise;
+}
+
+function setItem$1(key, value, callback) {
+    return _setItem.apply(this, [key, value, callback, 1]);
 }
 
 function removeItem$1(key, callback) {
