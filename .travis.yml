@@ -3,7 +3,7 @@ before_install:
 - bower install
 language: node_js
 node_js:
-- '0.10'
+- '6'
 env:
   global:
     secure: LSmHs32nmcjgp3/5hQASgIPUDF/zexvwV/XASRYCDkwJRllDZ8n8wIvHx+D1QVcotx7jSAVEKM2tcfMq/JLXVHUmNNpeG9maUMfZAHA7xFlAo5GNAG3p/rqYe3tan9Xum+Is6A71kXTVnaVyOTG5ApEyj8QUwPfHpv1ziGJu72Y=
