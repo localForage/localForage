@@ -35,3 +35,6 @@ build/
 .yardoc
 _yardoc
 doc/
+
+# typescript cache
+.tscache
