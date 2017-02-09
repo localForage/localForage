@@ -266,6 +266,58 @@ DRIVERS.forEach(function(driverName) {
             });
         }
 
+        if (driverName === localforage.WEBSQL) {
+            describe('on QUOTA ERROR', function() {
+                var transaction;
+                var called;
+                var db;
+
+                function getQuotaErrorCode(transaction) {
+                    return new Promise(function(resolve) {
+                        transaction(function(t) {
+                            t.executeSql('');
+                        }, function(err) {
+                            resolve(err.QUOTA_ERR);
+                        });
+                    }).catch(function(err) {
+                        return err.QUOTA_ERR;
+                    });
+                }
+
+                beforeEach(function() {
+                    called = 0;
+                    db = localforage._dbInfo.db;
+                    transaction = db.transaction;
+
+                    db.transaction = function(fn, errFn) {
+                        called += 1;
+                        // restore the normal transaction,
+                        // so that subsequent operations work
+                        db.transaction = transaction;
+
+                        getQuotaErrorCode(transaction).then(function(QUOTA_ERR) {
+                            var error = new Error();
+                            error.code = QUOTA_ERR;
+                            errFn(error);
+                        });
+                    };
+                });
+
+                it('should retry setItem', function(done) {
+                    localforage.setItem('key', {}).then(function() {
+                        expect(called).to.be(1);
+                        done();
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+
+                after(function() {
+                    db.transaction = transaction || db.transaction;
+                });
+            });
+        }
+
         it('should iterate [callback]', function(done) {
             localforage.setItem('officeX', 'InitechX', function(err, setValue) {
                 expect(setValue).to.be('InitechX');
