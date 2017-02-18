@@ -50,6 +50,10 @@ is usually online from 8am-8pm GMT (London Time).
 
 [tofumatt]: http://tofumatt.com/
 
+## Safari 10.1+
+
+Since Safari 10.1 we default to IndexedDB; see the [CHANGELOG](https://github.com/localForage/localForage/blob/master/CHANGELOG.md) for more info.
+
 # How to use localForage
 
 ## Callbacks vs Promises
@@ -58,7 +62,7 @@ Because localForage uses async storage, it has an async API.
 It's otherwise exactly the same as the
 [localStorage API](https://hacks.mozilla.org/2009/06/localstorage/).
 
-localForage has a dual API that allows you to either use Node-style callbacks 
+localForage has a dual API that allows you to either use Node-style callbacks
 or [Promises](https://www.promisejs.org/). If you are unsure which one is right for you, it's recommended to use Promises.
 
 Here's an example of the Node-style callback form:
@@ -67,7 +71,7 @@ Here's an example of the Node-style callback form:
 localforage.setItem('key', 'value', function (err) {
   // if err is non-null, we got an error
   localforage.getItem('key', function (err, value) {
-    // if err is non-null, we got an error. otherwise, value is the value 
+    // if err is non-null, we got an error. otherwise, value is the value
   });
 });
 ```
@@ -84,7 +88,7 @@ localforage.setItem('key', 'value').then(function () {
 });
 ```
 
-For more examples, please visit [the API docs](https://localforage.github.io/localForage). 
+For more examples, please visit [the API docs](https://localforage.github.io/localForage).
 
 ## Storing Blobs, TypedArrays, and other JS objects
 
