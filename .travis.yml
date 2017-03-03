@@ -1,3 +1,7 @@
+os:
+  - linux
+  - osx
+
 before_install:
 - npm install -g bower
 - bower install
