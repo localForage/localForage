@@ -343,7 +343,7 @@ if (typeof global.Promise !== 'function') {
 },{"2":2}],4:[function(_dereq_,module,exports){
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1158,6 +1158,8 @@ var TYPE_UINT16ARRAY = 'ur16';
 var TYPE_UINT32ARRAY = 'ui32';
 var TYPE_FLOAT32ARRAY = 'fl32';
 var TYPE_FLOAT64ARRAY = 'fl64';
+var TYPE_ES6MAP = '6map';
+var TYPE_ES6SET = '6set';
 var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
 
 var toString$1 = Object.prototype.toString;
@@ -1280,6 +1282,10 @@ function serialize(value, callback) {
         };
 
         fileReader.readAsArrayBuffer(value);
+    } else if (valueType === '[object Map]') {
+        callback(SERIALIZED_MARKER + TYPE_ES6MAP + JSON.stringify(Array.from(value)));
+    } else if (valueType === '[object Set]') {
+        callback(SERIALIZED_MARKER + TYPE_ES6SET + JSON.stringify(Array.from(value)));
     } else {
         try {
             callback(JSON.stringify(value));
@@ -1348,6 +1354,10 @@ function deserialize(value) {
             return new Float32Array(buffer);
         case TYPE_FLOAT64ARRAY:
             return new Float64Array(buffer);
+        case TYPE_ES6MAP:
+            return new Map(JSON.parse(serializedString));
+        case TYPE_ES6SET:
+            return new Set(JSON.parse(serializedString));
         default:
             throw new Error('Unkown type: ' + type);
     }
