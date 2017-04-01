@@ -1,6 +1,5 @@
 import createBlob from '../utils/createBlob';
 import idb from '../utils/idb';
-import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
 import executeTwoCallbacks from '../utils/executeTwoCallbacks';
 

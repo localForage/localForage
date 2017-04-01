@@ -5,7 +5,6 @@ import idbDriver from './drivers/indexeddb';
 import websqlDriver from './drivers/websql';
 import localstorageDriver from './drivers/localstorage';
 import serializer from './utils/serializer';
-import Promise from './utils/promise';
 import executeTwoCallbacks from './utils/executeTwoCallbacks';
 
 // Custom drivers are stored here when `defineDriver()` is called.

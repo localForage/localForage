@@ -4,7 +4,6 @@
 // can be converted to a string via `JSON.stringify()` will be saved).
 
 import serializer from '../utils/serializer';
-import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
 
 // Config the localStorage backend, using options set in the config.
