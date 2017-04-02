@@ -1,6 +1,7 @@
 /* jshint node:true */
 var path = require('path');
 var saucelabsBrowsers = require(path.resolve('test', 'saucelabs-browsers.js'));
+var webpack = require('webpack');
 
 var sourceFiles = [
     'Gruntfile.js',
@@ -250,7 +251,12 @@ module.exports = exports = function(grunt) {
                         exclude: /node_modules/,
                         loader: 'babel-loader'
                     }]
-                }
+                },
+                plugins: [
+                    new webpack.ProvidePlugin({
+                        Promise: 'lie'
+                    })
+                ]
             }
         }
     });
