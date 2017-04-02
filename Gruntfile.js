@@ -78,7 +78,7 @@ module.exports = exports = function(grunt) {
                         standalone: 'localforage',
                         insertGlobalVars: {
                             Promise: function() { 
-                                return 'Promise || require("lie")';
+                                return 'require("lie/polyfill") && Promise';
                             }
                         }
                     },

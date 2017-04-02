@@ -333,6 +333,14 @@ function race(iterable) {
 }
 
 },{"1":1}],3:[function(_dereq_,module,exports){
+(function (global){
+'use strict';
+if (typeof global.Promise !== 'function') {
+  global.Promise = _dereq_(2);
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"2":2}],4:[function(_dereq_,module,exports){
 (function (Promise){
 'use strict';
 
@@ -2293,6 +2301,6 @@ var localforage_js = new LocalForage();
 
 module.exports = localforage_js;
 
-}).call(this,Promise || _dereq_(2))
-},{"2":2}]},{},[3])(3)
+}).call(this,_dereq_(3) && Promise)
+},{"3":3}]},{},[4])(4)
 });
