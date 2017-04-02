@@ -1,5 +1,4 @@
 import serializer from '../utils/serializer';
-import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
 
 /*

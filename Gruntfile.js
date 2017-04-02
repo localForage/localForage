@@ -1,6 +1,7 @@
 /* jshint node:true */
 var path = require('path');
 var saucelabsBrowsers = require(path.resolve('test', 'saucelabs-browsers.js'));
+var webpack = require('webpack');
 
 var sourceFiles = [
     'Gruntfile.js',
@@ -33,20 +34,35 @@ module.exports = exports = function(grunt) {
 
     grunt.initConfig({
         babel: {
-            options: {
-                babelrc: false,
-                extends: path.resolve('.babelrc-umd'),
-                moduleIds: true,
-                getModuleId: babelModuleIdProvider
-            },
-            dist: {
-                files: {
-                    'build/es5src/localforage.js': 'src/localforage.js',
-                    'build/es5src/utils/serializer.js': 'src/utils/serializer.js',
-                    'build/es5src/drivers/indexeddb.js': 'src/drivers/indexeddb.js',
-                    'build/es5src/drivers/localstorage.js': 'src/drivers/localstorage.js',
-                    'build/es5src/drivers/websql.js': 'src/drivers/websql.js'
+            umd: {
+                options: {
+                    babelrc: false,
+                    extends: path.resolve('.babelrc-umd'),
+                    moduleIds: true,
+                    getModuleId: babelModuleIdProvider
+                },
+                dist: {
+                    files: {
+                        'build/es5src/localforage.js': 'src/localforage.js',
+                        'build/es5src/utils/serializer.js': 'src/utils/serializer.js',
+                        'build/es5src/drivers/indexeddb.js': 'src/drivers/indexeddb.js',
+                        'build/es5src/drivers/localstorage.js': 'src/drivers/localstorage.js',
+                        'build/es5src/drivers/websql.js': 'src/drivers/websql.js'
+                    }
                 }
+            },
+            es: {
+                options: {
+                    babelrc: false,
+                    presets: [['es2015', { modules: false, loose: true }]],
+                    moduleIds: true
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'src/', 
+                    src: ['**/!(promise).js'],
+                    dest: 'es/'
+                }]
             }
         },
         browserify: {
@@ -60,7 +76,12 @@ module.exports = exports = function(grunt) {
                 },
                 options: {
                     browserifyOptions: {
-                        standalone: 'localforage'
+                        standalone: 'localforage',
+                        insertGlobalVars: {
+                            Promise: function() { 
+                                return 'require("lie/polyfill") && Promise';
+                            }
+                        }
                     },
                     transform: ['rollupify', 'babelify'],
                     plugin: ['bundle-collapser/plugin', 'browserify-derequire']
@@ -75,8 +96,7 @@ module.exports = exports = function(grunt) {
                         standalone: 'localforage'
                     },
                     transform: ['rollupify', 'babelify'],
-                    plugin: ['bundle-collapser/plugin', 'browserify-derequire'],
-                    exclude: ['lie/polyfill']
+                    plugin: ['bundle-collapser/plugin', 'browserify-derequire']
                 }
             }
         },
@@ -224,7 +244,19 @@ module.exports = exports = function(grunt) {
                 output: {
                     path: 'test/',
                     filename: 'localforage.webpack.js'
-                }
+                },
+                module: {
+                    loaders: [{
+                        test: /\.js$/,
+                        exclude: /node_modules/,
+                        loader: 'babel-loader'
+                    }]
+                },
+                plugins: [
+                    new webpack.ProvidePlugin({
+                        Promise: 'lie'
+                    })
+                ]
             }
         }
     });
@@ -233,7 +265,7 @@ module.exports = exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'connect', 'watch']);
     grunt.registerTask('build', ['browserify:main', 'browserify:no_promises',
-        'concat', 'es3_safe_recast', 'uglify']);
+        'babel:es','concat', 'es3_safe_recast', 'uglify']);
     grunt.registerTask('serve', ['build', 'connect:test', 'watch']);
 
     // These are the test tasks we run regardless of Sauce Labs credentials.
