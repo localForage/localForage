@@ -196,20 +196,21 @@ class LocalForage {
                     }
                 }
 
-                var supportPromise = Promise.resolve(true);
-                if ('_support' in driverObject) {
-                    if (driverObject._support && typeof driverObject._support === 'function') {
-                        supportPromise = driverObject._support();
-                    } else {
-                        supportPromise = Promise.resolve(!!driverObject._support);
-                    }
-                }
-
-                supportPromise.then(function(supportResult) {
-                    driverSupport[driverName] = supportResult;
+                var setDriverSupport = function(support) {
+                    driverSupport[driverName] = support;
                     CustomDrivers[driverName] = driverObject;
                     resolve();
-                }, reject);
+                };
+
+                if ('_support' in driverObject) {
+                    if (driverObject._support && typeof driverObject._support === 'function') {
+                        driverObject._support().then(setDriverSupport, reject);
+                    } else {
+                        setDriverSupport(!!driverObject._support);
+                    }
+                } else {
+                    setDriverSupport(true);
+                }
             } catch (e) {
                 reject(e);
             }
