@@ -343,7 +343,7 @@ if (typeof global.Promise !== 'function') {
 },{"2":2}],4:[function(_dereq_,module,exports){
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2120,20 +2120,21 @@ var LocalForage = function () {
                     }
                 }
 
-                var supportPromise = Promise$1.resolve(true);
-                if ('_support' in driverObject) {
-                    if (driverObject._support && typeof driverObject._support === 'function') {
-                        supportPromise = driverObject._support();
-                    } else {
-                        supportPromise = Promise$1.resolve(!!driverObject._support);
-                    }
-                }
-
-                supportPromise.then(function (supportResult) {
-                    driverSupport[driverName] = supportResult;
+                var setDriverSupport = function setDriverSupport(support) {
+                    driverSupport[driverName] = support;
                     CustomDrivers[driverName] = driverObject;
                     resolve();
-                }, reject);
+                };
+
+                if ('_support' in driverObject) {
+                    if (driverObject._support && typeof driverObject._support === 'function') {
+                        driverObject._support().then(setDriverSupport, reject);
+                    } else {
+                        setDriverSupport(!!driverObject._support);
+                    }
+                } else {
+                    setDriverSupport(true);
+                }
             } catch (e) {
                 reject(e);
             }
