@@ -285,8 +285,10 @@ function _tryReconnect(dbInfo) {
     var forages = dbContext.forages;
 
     for (var i = 0; i < forages.length; i++) {
-        forages[i]._dbInfo.db.close();
-        forages[i]._dbInfo.db = null;
+        if (forages[i]._dbInfo.db) {
+            forages[i]._dbInfo.db.close();
+            forages[i]._dbInfo.db = null;
+        }
     }
 
     return _getConnection(dbInfo, false).then(function(db) {
