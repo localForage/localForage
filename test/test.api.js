@@ -264,6 +264,38 @@ DRIVERS.forEach(function(driverName) {
                     localforage._dbInfo.db.transaction = transaction;
                 });
             });
+
+            describe('recover (reconnect) from IDBDatabase InvalidStateError', function() {
+
+                beforeEach(function(done) {
+                    localforage.setItem('key', 'value1').then(function() {
+                        localforage._dbInfo.db.close();
+                        done();
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+
+                it('retrieves an item from the storage', function(done) {
+                    localforage.getItem('key').then(function(value) {
+                        expect(value).to.be('value1');
+                        done();
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+
+                it('stores and retrieves an item from the storage', function(done) {
+                    localforage.setItem('key', 'value2').then(function() {
+                        return localforage.getItem('key');
+                    }).then(function(value) {
+                        expect(value).to.be('value2');
+                        done();
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+            });
         }
 
         if (driverName === localforage.WEBSQL) {
