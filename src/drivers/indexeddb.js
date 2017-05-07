@@ -301,22 +301,26 @@ function _tryReconnect(dbInfo) {
     });
 }
 
-function createTransaction(dbInfo, mode) {
+
+// FF doesn't like Promises (micro-tasks) and IDDB store operations,
+// so we have to do it with callbacks
+function createTransaction(dbInfo, mode, callback) {
     try {
         var tx = dbInfo.db.transaction(dbInfo.storeName, mode);
-        return Promise.resolve(tx);
+        callback(null, tx);
     } catch (err) {
         if (err.name === 'InvalidStateError') {
             return _tryReconnect(dbInfo).then(function() {
 
                 var tx = dbInfo.db.transaction(dbInfo.storeName, mode);
-                return Promise.resolve(tx);
+                callback(null, tx);
             });
         }
 
-        return Promise.reject(err);
+        callback(err);
     }
 }
+
 
 // Open the IndexedDB database (automatically creates one if one didn't
 // previously exist), using any options set in the config.
@@ -424,25 +428,33 @@ function getItem(key, callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            return createTransaction(self._dbInfo, 'readonly');
-        }).then(function(transaction) {
-            var store = transaction.objectStore(self._dbInfo.storeName);
-            var req = store.get(key);
-
-            req.onsuccess = function() {
-                var value = req.result;
-                if (value === undefined) {
-                    value = null;
+            createTransaction(self._dbInfo, 'readonly', function(err, transaction) {
+                if (err) {
+                    return reject(err);
                 }
-                if (_isEncodedBlob(value)) {
-                    value = _decodeBlob(value);
-                }
-                resolve(value);
-            };
 
-            req.onerror = function() {
-                reject(req.error);
-            };
+                try {
+                    var store = transaction.objectStore(self._dbInfo.storeName);
+                    var req = store.get(key);
+
+                    req.onsuccess = function() {
+                        var value = req.result;
+                        if (value === undefined) {
+                            value = null;
+                        }
+                        if (_isEncodedBlob(value)) {
+                            value = _decodeBlob(value);
+                        }
+                        resolve(value);
+                    };
+
+                    req.onerror = function() {
+                        reject(req.error);
+                    };
+                } catch (e) {
+                    reject(e);
+                }
+            });
         }).catch(reject);
     });
 
@@ -456,36 +468,44 @@ function iterate(iterator, callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            return createTransaction(self._dbInfo, 'readonly');
-        }).then(function(transaction) {
-            var store = transaction.objectStore(self._dbInfo.storeName);
-            var req = store.openCursor();
-            var iterationNumber = 1;
-
-            req.onsuccess = function() {
-                var cursor = req.result;
-
-                if (cursor) {
-                    var value = cursor.value;
-                    if (_isEncodedBlob(value)) {
-                        value = _decodeBlob(value);
-                    }
-                    var result = iterator(value, cursor.key,
-                        iterationNumber++);
-
-                    if (result !== void(0)) {
-                        resolve(result);
-                    } else {
-                        cursor.continue();
-                    }
-                } else {
-                    resolve();
+            createTransaction(self._dbInfo, 'readonly', function(err, transaction) {
+                if (err) {
+                    return reject(err);
                 }
-            };
 
-            req.onerror = function() {
-                reject(req.error);
-            };
+                try {
+                    var store = transaction.objectStore(self._dbInfo.storeName);
+                    var req = store.openCursor();
+                    var iterationNumber = 1;
+
+                    req.onsuccess = function() {
+                        var cursor = req.result;
+
+                        if (cursor) {
+                            var value = cursor.value;
+                            if (_isEncodedBlob(value)) {
+                                value = _decodeBlob(value);
+                            }
+                            var result = iterator(value, cursor.key,
+                                iterationNumber++);
+
+                            if (result !== void(0)) {
+                                resolve(result);
+                            } else {
+                                cursor.continue();
+                            }
+                        } else {
+                            resolve();
+                        }
+                    };
+
+                    req.onerror = function() {
+                        reject(req.error);
+                    };
+                } catch (e) {
+                    reject(e);
+                }
+            });
         }).catch(reject);
     });
 
@@ -518,40 +538,44 @@ function setItem(key, value, callback) {
             }
             return value;
         }).then(function(value) {
-            return createTransaction(self._dbInfo, 'readwrite').then(function(transaction) {
-                return [transaction, value];
-            });
-        }).then(function(txAndValue) {
-            var transaction = txAndValue[0];
-            var value = txAndValue[1];
-            var store = transaction.objectStore(self._dbInfo.storeName);
-            var req = store.put(value, key);
-
-            // The reason we don't _save_ null is because IE 10 does
-            // not support saving the `null` type in IndexedDB. How
-            // ironic, given the bug below!
-            // See: https://github.com/mozilla/localForage/issues/161
-            if (value === null) {
-                value = undefined;
-            }
-
-            transaction.oncomplete = function() {
-                // Cast to undefined so the value passed to
-                // callback/promise is the same as what one would get out
-                // of `getItem()` later. This leads to some weirdness
-                // (setItem('foo', undefined) will return `null`), but
-                // it's not my fault localStorage is our baseline and that
-                // it's weird.
-                if (value === undefined) {
-                    value = null;
+            createTransaction(self._dbInfo, 'readwrite', function(err, transaction) {
+                if (err) {
+                    return reject(err);
                 }
 
-                resolve(value);
-            };
-            transaction.onabort = transaction.onerror = function() {
-                var err = req.error ? req.error : req.transaction.error;
-                reject(err);
-            };
+                try {
+                    var store = transaction.objectStore(self._dbInfo.storeName);
+                    var req = store.put(value, key);
+
+                    // The reason we don't _save_ null is because IE 10 does
+                    // not support saving the `null` type in IndexedDB. How
+                    // ironic, given the bug below!
+                    // See: https://github.com/mozilla/localForage/issues/161
+                    if (value === null) {
+                        value = undefined;
+                    }
+
+                    transaction.oncomplete = function() {
+                        // Cast to undefined so the value passed to
+                        // callback/promise is the same as what one would get out
+                        // of `getItem()` later. This leads to some weirdness
+                        // (setItem('foo', undefined) will return `null`), but
+                        // it's not my fault localStorage is our baseline and that
+                        // it's weird.
+                        if (value === undefined) {
+                            value = null;
+                        }
+
+                        resolve(value);
+                    };
+                    transaction.onabort = transaction.onerror = function() {
+                        var err = req.error ? req.error : req.transaction.error;
+                        reject(err);
+                    };
+                } catch (e) {
+                    reject(e);
+                }
+            });
         }).catch(reject);
     });
 
@@ -571,30 +595,37 @@ function removeItem(key, callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            return createTransaction(self._dbInfo, 'readwrite');
-        }).then(function(transaction) {
-            var store = transaction.objectStore(self._dbInfo.storeName);
+            createTransaction(self._dbInfo, 'readwrite', function(err, transaction) {
+                if (err) {
+                    return reject(err);
+                }
 
-            // We use a Grunt task to make this safe for IE and some
-            // versions of Android (including those used by Cordova).
-            // Normally IE won't like `.delete()` and will insist on
-            // using `['delete']()`, but we have a build step that
-            // fixes this for us now.
-            var req = store.delete(key);
-            transaction.oncomplete = function() {
-                resolve();
-            };
+                try {
+                    var store = transaction.objectStore(self._dbInfo.storeName);
+                    // We use a Grunt task to make this safe for IE and some
+                    // versions of Android (including those used by Cordova).
+                    // Normally IE won't like `.delete()` and will insist on
+                    // using `['delete']()`, but we have a build step that
+                    // fixes this for us now.
+                    var req = store.delete(key);
+                    transaction.oncomplete = function() {
+                        resolve();
+                    };
 
-            transaction.onerror = function() {
-                reject(req.error);
-            };
+                    transaction.onerror = function() {
+                        reject(req.error);
+                    };
 
-            // The request will be also be aborted if we've exceeded our storage
-            // space.
-            transaction.onabort = function() {
-                var err = req.error ? req.error : req.transaction.error;
-                reject(err);
-            };
+                    // The request will be also be aborted if we've exceeded our storage
+                    // space.
+                    transaction.onabort = function() {
+                        var err = req.error ? req.error : req.transaction.error;
+                        reject(err);
+                    };
+                } catch (e) {
+                    reject(e);
+                }
+            });
         }).catch(reject);
     });
 
@@ -607,19 +638,27 @@ function clear(callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            return createTransaction(self._dbInfo, 'readwrite');
-        }).then(function(transaction) {
-            var store = transaction.objectStore(self._dbInfo.storeName);
-            var req = store.clear();
+            createTransaction(self._dbInfo, 'readwrite', function(err, transaction) {
+                if (err) {
+                    return reject(err);
+                }
 
-            transaction.oncomplete = function() {
-                resolve();
-            };
+                try {
+                    var store = transaction.objectStore(self._dbInfo.storeName);
+                    var req = store.clear();
 
-            transaction.onabort = transaction.onerror = function() {
-                var err = req.error ? req.error : req.transaction.error;
-                reject(err);
-            };
+                    transaction.oncomplete = function() {
+                        resolve();
+                    };
+
+                    transaction.onabort = transaction.onerror = function() {
+                        var err = req.error ? req.error : req.transaction.error;
+                        reject(err);
+                    };
+                } catch (e) {
+                    reject(e);
+                }
+            });
         }).catch(reject);
     });
 
@@ -632,18 +671,26 @@ function length(callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            return createTransaction(self._dbInfo, 'readonly');
-        }).then(function(transaction) {
-            var store = transaction.objectStore(self._dbInfo.storeName);
-            var req = store.count();
+            createTransaction(self._dbInfo, 'readonly', function(err, transaction) {
+                if (err) {
+                    return reject(err);
+                }
 
-            req.onsuccess = function() {
-                resolve(req.result);
-            };
+                try {
+                    var store = transaction.objectStore(self._dbInfo.storeName);
+                    var req = store.count();
 
-            req.onerror = function() {
-                reject(req.error);
-            };
+                    req.onsuccess = function() {
+                        resolve(req.result);
+                    };
+
+                    req.onerror = function() {
+                        reject(req.error);
+                    };
+                } catch (e) {
+                    reject(e);
+                }
+            });
         }).catch(reject);
     });
 
@@ -662,41 +709,49 @@ function key(n, callback) {
         }
 
         self.ready().then(function() {
-            return createTransaction(self._dbInfo, 'readonly');
-        }).then(function(transaction) {
-            var store = transaction.objectStore(self._dbInfo.storeName);
-            var advanced = false;
-            var req = store.openCursor();
-
-            req.onsuccess = function() {
-                var cursor = req.result;
-                if (!cursor) {
-                    // this means there weren't enough keys
-                    resolve(null);
-
-                    return;
+            createTransaction(self._dbInfo, 'readonly', function(err, transaction) {
+                if (err) {
+                    return reject(err);
                 }
 
-                if (n === 0) {
-                    // We have the first key, return it if that's what they
-                    // wanted.
-                    resolve(cursor.key);
-                } else {
-                    if (!advanced) {
-                        // Otherwise, ask the cursor to skip ahead n
-                        // records.
-                        advanced = true;
-                        cursor.advance(n);
-                    } else {
-                        // When we get here, we've got the nth key.
-                        resolve(cursor.key);
-                    }
-                }
-            };
+                try {
+                    var store = transaction.objectStore(self._dbInfo.storeName);
+                    var advanced = false;
+                    var req = store.openCursor();
 
-            req.onerror = function() {
-                reject(req.error);
-            };
+                    req.onsuccess = function() {
+                        var cursor = req.result;
+                        if (!cursor) {
+                            // this means there weren't enough keys
+                            resolve(null);
+
+                            return;
+                        }
+
+                        if (n === 0) {
+                            // We have the first key, return it if that's what they
+                            // wanted.
+                            resolve(cursor.key);
+                        } else {
+                            if (!advanced) {
+                                // Otherwise, ask the cursor to skip ahead n
+                                // records.
+                                advanced = true;
+                                cursor.advance(n);
+                            } else {
+                                // When we get here, we've got the nth key.
+                                resolve(cursor.key);
+                            }
+                        }
+                    };
+
+                    req.onerror = function() {
+                        reject(req.error);
+                    };
+                } catch (e) {
+                    reject(e);
+                }
+            });
         }).catch(reject);
     });
 
@@ -709,27 +764,35 @@ function keys(callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            return createTransaction(self._dbInfo, 'readonly');
-        }).then(function(transaction) {
-            var store = transaction.objectStore(self._dbInfo.storeName);
-            var req = store.openCursor();
-            var keys = [];
-
-            req.onsuccess = function() {
-                var cursor = req.result;
-
-                if (!cursor) {
-                    resolve(keys);
-                    return;
+            createTransaction(self._dbInfo, 'readonly', function(err, transaction) {
+                if (err) {
+                    return reject(err);
                 }
 
-                keys.push(cursor.key);
-                cursor.continue();
-            };
+                try {
+                    var store = transaction.objectStore(self._dbInfo.storeName);
+                    var req = store.openCursor();
+                    var keys = [];
 
-            req.onerror = function() {
-                reject(req.error);
-            };
+                    req.onsuccess = function() {
+                        var cursor = req.result;
+
+                        if (!cursor) {
+                            resolve(keys);
+                            return;
+                        }
+
+                        keys.push(cursor.key);
+                        cursor.continue();
+                    };
+
+                    req.onerror = function() {
+                        reject(req.error);
+                    };
+                } catch (e) {
+                    reject(e);
+                }
+            });
         }).catch(reject);
     });
 
