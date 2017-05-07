@@ -14,9 +14,10 @@ WebSQL support. See [the wiki for detailed compatibility info][supported browser
 To use localForage, just drop a single JavaScript file into your page:
 
 ```html
-<script src="localforage.js"></script>
+<script src="localforage/dist/localforage.js"></script>
 <script>localforage.getItem('something', myCallback);</script>
 ```
+Try the [live example](http://codepen.io/thgreasi/pen/ojYKeE).
 
 Download the [latest localForage from GitHub](https://github.com/localForage/localForage/releases/latest), or install with
 [npm](https://www.npmjs.com/):

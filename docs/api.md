@@ -381,7 +381,7 @@ Set and persist localForage options. This must be called *before* any other call
   Unlike most of the localForage API, the <code>config</code> method is synchronous.
 </aside>
 
-# Custom Driver API
+# Driver API
 
 You can write your own, custom driver for localForage since **version 1.1**.
 
@@ -441,6 +441,26 @@ localforage.driver();
 `driver()`
 
 Returns the name of the driver being used, or `null` if none can be used.
+
+<aside class="notice">
+  In case that a driver fails during or right after the initialization process, then localForage will try to use the next in order driver. That is with respect to the default driver order while loading localForage or to the order the drivers were passed to `setDriver()`.
+</aside>
+
+## ready
+
+```js
+localforage.ready().then(function() {
+    // This code runs once localforage
+    // has fully initialized the selected driver.
+    console.log(localforage.driver()); // LocalStorage
+}).catch(function (e) {
+    console.log(e); // `No available storage method found.`
+    // One of the cases that `ready()` rejects,
+    // is when no usable storage driver is found
+});
+```
+
+Even though localForage queues up all of its data API method calls, `ready()` provides a way to determine whether the asynchronous driver initialization process has finished. That's useful in cases like when we want to know which driver localForage has settled down using.
 
 ## supports
 
