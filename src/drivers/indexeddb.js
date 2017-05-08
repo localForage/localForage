@@ -115,6 +115,19 @@ function _advanceReadiness(dbInfo) {
     }
 }
 
+function _rejectReadiness(dbInfo, err) {
+    var dbContext = dbContexts[dbInfo.name];
+
+    // Dequeue a deferred operation.
+    var deferredOperation = dbContext.deferredOperations.pop();
+
+    // Reject its promise (which is part of the database readiness
+    // chain of promises).
+    if (deferredOperation) {
+        deferredOperation.reject(err);
+    }
+}
+
 function _getConnection(dbInfo, upgradeNeeded) {
     return new Promise(function(resolve, reject) {
 
@@ -262,6 +275,29 @@ function _fullyReady(callback) {
     return promise;
 }
 
+// Try to establish a new db connection to replace the
+// current one which is broken (i.e. experiencing
+// InvalidStateError while creating a transaction).
+function _tryReconnect(dbInfo) {
+    _deferReadiness(dbInfo);
+
+    var dbContext = dbContexts[dbInfo.name];
+    var forages = dbContext.forages;
+
+    for (var i = 0; i < forages.length; i++) {
+        forages[i]._dbInfo.db.close();
+        forages[i]._dbInfo.db = null;
+    }
+
+    _getConnection(dbInfo, false).then(function(db) {
+        for (var j = 0; j < forages.length; j++) {
+            forages[j]._dbInfo.db = db;
+        }
+    }).catch(function(err) {
+        _rejectReadiness(dbInfo, err);
+    });
+}
+
 // Open the IndexedDB database (automatically creates one if one didn't
 // previously exist), using any options set in the config.
 function _initStorage(options) {
@@ -355,6 +391,7 @@ function _initStorage(options) {
     });
 }
 
+
 function getItem(key, callback) {
     var self = this;
 
@@ -386,7 +423,13 @@ function getItem(key, callback) {
             req.onerror = function() {
                 reject(req.error);
             };
-        }).catch(reject);
+        }).catch(function(err) {
+            if (err.name === 'InvalidStateError') {
+                _tryReconnect(self._dbInfo);
+            }
+
+            reject(err);
+        });
     });
 
     executeCallback(promise, callback);
@@ -430,7 +473,13 @@ function iterate(iterator, callback) {
             req.onerror = function() {
                 reject(req.error);
             };
-        }).catch(reject);
+        }).catch(function(err) {
+            if (err.name === 'InvalidStateError') {
+                _tryReconnect(self._dbInfo);
+            }
+
+            reject(err);
+        });
     });
 
     executeCallback(promise, callback);
@@ -491,7 +540,13 @@ function setItem(key, value, callback) {
                 var err = req.error ? req.error : req.transaction.error;
                 reject(err);
             };
-        }).catch(reject);
+        }).catch(function(err) {
+            if (err.name === 'InvalidStateError') {
+                _tryReconnect(self._dbInfo);
+            }
+
+            reject(err);
+        });
     });
 
     executeCallback(promise, callback);
@@ -534,7 +589,13 @@ function removeItem(key, callback) {
                 var err = req.error ? req.error : req.transaction.error;
                 reject(err);
             };
-        }).catch(reject);
+        }).catch(function(err) {
+            if (err.name === 'InvalidStateError') {
+                _tryReconnect(self._dbInfo);
+            }
+
+            reject(err);
+        });
     });
 
     executeCallback(promise, callback);
@@ -559,7 +620,13 @@ function clear(callback) {
                 var err = req.error ? req.error : req.transaction.error;
                 reject(err);
             };
-        }).catch(reject);
+        }).catch(function(err) {
+            if (err.name === 'InvalidStateError') {
+                _tryReconnect(self._dbInfo);
+            }
+
+            reject(err);
+        });
     });
 
     executeCallback(promise, callback);
@@ -583,7 +650,13 @@ function length(callback) {
             req.onerror = function() {
                 reject(req.error);
             };
-        }).catch(reject);
+        }).catch(function(err) {
+            if (err.name === 'InvalidStateError') {
+                _tryReconnect(self._dbInfo);
+            }
+
+            reject(err);
+        });
     });
 
     executeCallback(promise, callback);
@@ -636,7 +709,13 @@ function key(n, callback) {
             req.onerror = function() {
                 reject(req.error);
             };
-        }).catch(reject);
+        }).catch(function(err) {
+            if (err.name === 'InvalidStateError') {
+                _tryReconnect(self._dbInfo);
+            }
+
+            reject(err);
+        });
     });
 
     executeCallback(promise, callback);
@@ -670,7 +749,13 @@ function keys(callback) {
             req.onerror = function() {
                 reject(req.error);
             };
-        }).catch(reject);
+        }).catch(function(err) {
+            if (err.name === 'InvalidStateError') {
+                _tryReconnect(self._dbInfo);
+            }
+
+            reject(err);
+        });
     });
 
     executeCallback(promise, callback);
