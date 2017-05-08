@@ -115,6 +115,19 @@ function _advanceReadiness(dbInfo) {
     }
 }
 
+function _rejectReadiness(dbInfo, err) {
+    var dbContext = dbContexts[dbInfo.name];
+
+    // Dequeue a deferred operation.
+    var deferredOperation = dbContext.deferredOperations.pop();
+
+    // Reject its promise (which is part of the database readiness
+    // chain of promises).
+    if (deferredOperation) {
+        deferredOperation.reject(err);
+    }
+}
+
 function _getConnection(dbInfo, upgradeNeeded) {
     return new Promise(function(resolve, reject) {
 
@@ -262,6 +275,47 @@ function _fullyReady(callback) {
     return promise;
 }
 
+// Try to establish a new db connection to replace the
+// current one which is broken (i.e. experiencing
+// InvalidStateError while creating a transaction).
+function _tryReconnect(dbInfo) {
+    _deferReadiness(dbInfo);
+
+    var dbContext = dbContexts[dbInfo.name];
+    var forages = dbContext.forages;
+
+    for (var i = 0; i < forages.length; i++) {
+        forages[i]._dbInfo.db.close();
+        forages[i]._dbInfo.db = null;
+    }
+
+    return _getConnection(dbInfo, false).then(function(db) {
+        for (var j = 0; j < forages.length; j++) {
+            forages[j]._dbInfo.db = db;
+        }
+    }).catch(function(err) {
+        _rejectReadiness(dbInfo, err);
+        throw err;
+    });
+}
+
+function createTransaction(dbInfo, mode) {
+    try {
+        var tx = dbInfo.db.transaction(dbInfo.storeName, mode);
+        return Promise.resolve(tx);
+    } catch (err) {
+        if (err.name === 'InvalidStateError') {
+            return _tryReconnect(dbInfo).then(function() {
+
+                var tx = dbInfo.db.transaction(dbInfo.storeName, mode);
+                return Promise.resolve(tx);
+            });
+        }
+
+        return Promise.reject(err);
+    }
+}
+
 // Open the IndexedDB database (automatically creates one if one didn't
 // previously exist), using any options set in the config.
 function _initStorage(options) {
@@ -355,6 +409,7 @@ function _initStorage(options) {
     });
 }
 
+
 function getItem(key, callback) {
     var self = this;
 
@@ -367,9 +422,9 @@ function getItem(key, callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            var dbInfo = self._dbInfo;
-            var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
-                .objectStore(dbInfo.storeName);
+            return createTransaction(self._dbInfo, 'readonly');
+        }).then(function(transaction) {
+            var store = transaction.objectStore(self._dbInfo.storeName);
             var req = store.get(key);
 
             req.onsuccess = function() {
@@ -399,10 +454,9 @@ function iterate(iterator, callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            var dbInfo = self._dbInfo;
-            var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
-                .objectStore(dbInfo.storeName);
-
+            return createTransaction(self._dbInfo, 'readonly');
+        }).then(function(transaction) {
+            var store = transaction.objectStore(self._dbInfo.storeName);
             var req = store.openCursor();
             var iterationNumber = 1;
 
@@ -462,8 +516,13 @@ function setItem(key, value, callback) {
             }
             return value;
         }).then(function(value) {
-            var transaction = dbInfo.db.transaction(dbInfo.storeName, 'readwrite');
-            var store = transaction.objectStore(dbInfo.storeName);
+            return createTransaction(self._dbInfo, 'readwrite').then(function(transaction) {
+                return [transaction, value];
+            });
+        }).then(function(txAndValue) {
+            var transaction = txAndValue[0];
+            var value = txAndValue[1];
+            var store = transaction.objectStore(self._dbInfo.storeName);
             var req = store.put(value, key);
 
             // The reason we don't _save_ null is because IE 10 does
@@ -510,9 +569,9 @@ function removeItem(key, callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            var dbInfo = self._dbInfo;
-            var transaction = dbInfo.db.transaction(dbInfo.storeName, 'readwrite');
-            var store = transaction.objectStore(dbInfo.storeName);
+            return createTransaction(self._dbInfo, 'readwrite');
+        }).then(function(transaction) {
+            var store = transaction.objectStore(self._dbInfo.storeName);
 
             // We use a Grunt task to make this safe for IE and some
             // versions of Android (including those used by Cordova).
@@ -546,9 +605,9 @@ function clear(callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            var dbInfo = self._dbInfo;
-            var transaction = dbInfo.db.transaction(dbInfo.storeName, 'readwrite');
-            var store = transaction.objectStore(dbInfo.storeName);
+            return createTransaction(self._dbInfo, 'readwrite');
+        }).then(function(transaction) {
+            var store = transaction.objectStore(self._dbInfo.storeName);
             var req = store.clear();
 
             transaction.oncomplete = function() {
@@ -571,9 +630,9 @@ function length(callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            var dbInfo = self._dbInfo;
-            var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
-                .objectStore(dbInfo.storeName);
+            return createTransaction(self._dbInfo, 'readonly');
+        }).then(function(transaction) {
+            var store = transaction.objectStore(self._dbInfo.storeName);
             var req = store.count();
 
             req.onsuccess = function() {
@@ -601,12 +660,12 @@ function key(n, callback) {
         }
 
         self.ready().then(function() {
-            var dbInfo = self._dbInfo;
-            var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
-                .objectStore(dbInfo.storeName);
-
+            return createTransaction(self._dbInfo, 'readonly');
+        }).then(function(transaction) {
+            var store = transaction.objectStore(self._dbInfo.storeName);
             var advanced = false;
             var req = store.openCursor();
+
             req.onsuccess = function() {
                 var cursor = req.result;
                 if (!cursor) {
@@ -648,10 +707,9 @@ function keys(callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            var dbInfo = self._dbInfo;
-            var store = dbInfo.db.transaction(dbInfo.storeName, 'readonly')
-                .objectStore(dbInfo.storeName);
-
+            return createTransaction(self._dbInfo, 'readonly');
+        }).then(function(transaction) {
+            var store = transaction.objectStore(self._dbInfo.storeName);
             var req = store.openCursor();
             var keys = [];
 
