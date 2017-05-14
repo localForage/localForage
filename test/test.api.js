@@ -264,6 +264,83 @@ DRIVERS.forEach(function(driverName) {
                     localforage._dbInfo.db.transaction = transaction;
                 });
             });
+
+            describe('recover (reconnect) from IDBDatabase InvalidStateError', function() {
+
+                beforeEach(function(done) {
+                    Promise.all([
+                        localforage.setItem('key', 'value1'),
+                        localforage.setItem('key1', 'value1'),
+                        localforage.setItem('key2', 'value2'),
+                        localforage.setItem('key3', 'value3')
+                    ]).then(function() {
+                        localforage._dbInfo.db.close();
+                        done();
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+
+                it('retrieves an item from the storage', function(done) {
+                    localforage.getItem('key').then(function(value) {
+                        expect(value).to.be('value1');
+                        done();
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+
+                it('retrieves more than one items from the storage', function(done) {
+                    Promise.all([
+                        localforage.getItem('key1'),
+                        localforage.getItem('key2'),
+                        localforage.getItem('key3')
+                    ]).then(function(values) {
+                        expect(values).to.eql([
+                            'value1',
+                            'value2',
+                            'value3'
+                        ]);
+                        done();
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+
+                it('stores and retrieves an item from the storage', function(done) {
+                    localforage.setItem('key', 'value1b').then(function() {
+                        return localforage.getItem('key');
+                    }).then(function(value) {
+                        expect(value).to.be('value1b');
+                        done();
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+
+                it('stores and retrieves more than one items from the storage', function(done) {
+                    Promise.all([
+                        localforage.setItem('key1', 'value1b'),
+                        localforage.setItem('key2', 'value2b'),
+                        localforage.setItem('key3', 'value3b')
+                    ]).then(function() {
+                        return Promise.all([
+                            localforage.getItem('key1'),
+                            localforage.getItem('key2'),
+                            localforage.getItem('key3')
+                        ]);
+                    }).then(function(values) {
+                        expect(values).to.eql([
+                            'value1b',
+                            'value2b',
+                            'value3b'
+                        ]);
+                        done();
+                    }, function(error) {
+                        done(error || 'error');
+                    });
+                });
+            });
         }
 
         if (driverName === localforage.WEBSQL) {
