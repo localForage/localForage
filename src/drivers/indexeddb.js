@@ -309,7 +309,8 @@ function createTransaction(dbInfo, mode, callback) {
         var tx = dbInfo.db.transaction(dbInfo.storeName, mode);
         callback(null, tx);
     } catch (err) {
-        if (err.name === 'InvalidStateError') {
+        if (!dbInfo.db ||
+            err.name === 'InvalidStateError') {
             return _tryReconnect(dbInfo).then(function() {
 
                 var tx = dbInfo.db.transaction(dbInfo.storeName, mode);
