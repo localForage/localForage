@@ -7,18 +7,17 @@
   <body>
     <script src="../dist/localforage.js"></script>
     <script>
-      // Forcing localstorage here. Feel free to switch to other drivers :)
+      // Forcing IndexedDB here.
       localforage.setDriver(localforage.INDEXEDDB).then(function() {
         var key = 'STORE_KEY';
-        // var value = 'What we save offline';
         var value = new Uint8Array(8);
         value[0] = 65
-        // var value = undefined;
         var UNKNOWN_KEY = 'unknown_key';
 
         localforage.setItem(key, value, function() {
           console.log('Saved: ' + value);
 
+          // causes InvalidState erros
           localforage._dbInfo.db.close();
 
           localforage.getItem(key).then(function(readValue) {
@@ -28,7 +27,7 @@
           });
 
           // Since this key hasn't been set yet, we'll get a null value
-          localforage.getItem(UNKNOWN_KEY, function(err, readValue) {
+          localforage.getItem(UNKNOWN_KEY).then(function(err, readValue) {
             console.log('Result of reading ' + UNKNOWN_KEY, readValue);
           });
         });
