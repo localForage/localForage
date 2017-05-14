@@ -6,6 +6,7 @@ import websqlDriver from './drivers/websql';
 import localstorageDriver from './drivers/localstorage';
 import serializer from './utils/serializer';
 import Promise from './utils/promise';
+import executeCallback from './utils/executeCallback';
 import executeTwoCallbacks from './utils/executeTwoCallbacks';
 
 // Custom drivers are stored here when `defineDriver()` is called.
@@ -24,6 +25,10 @@ var DefaultDriverOrder = [
     DriverType.LOCALSTORAGE
 ];
 
+var OptionalDriverMethods = [
+    'dropInstance'
+];
+
 var LibraryMethods = [
     'clear',
     'getItem',
@@ -32,7 +37,8 @@ var LibraryMethods = [
     'keys',
     'length',
     'removeItem',
-    'setItem'
+    'setItem',
+    'dropInstance'
 ];
 
 var DefaultConfig = {
@@ -189,12 +195,36 @@ class LocalForage {
                 var customDriverMethods = LibraryMethods.concat('_initStorage');
                 for (var i = 0; i < customDriverMethods.length; i++) {
                     var customDriverMethod = customDriverMethods[i];
-                    if (!customDriverMethod || !driverObject[customDriverMethod] ||
+
+                    // when the property is there,
+                    // it should be a method even when optional
+                    var isRequired = OptionalDriverMethods.indexOf(customDriverMethod) < 0;
+                    if ((isRequired || driverObject[customDriverMethod]) &&
                         typeof driverObject[customDriverMethod] !== 'function') {
                         reject(complianceError);
                         return;
                     }
                 }
+
+                var configureMissingMethods = function() {
+                    var methodNotImplementedFactory = function(methodName) {
+                        return function() {
+                            var error = new Error(`Method ${methodName} is not implemented by the current driver`);
+                            var promise = Promise.reject(error);
+                            executeCallback(promise, arguments[arguments.length - 1]);
+                            return promise;
+                        };
+                    };
+
+                    for (var i = 0, len = OptionalDriverMethods.length; i < len; i++) {
+                        var optionalDriverMethod = OptionalDriverMethods[i];
+                        if (!driverObject[optionalDriverMethod]) {
+                            driverObject[optionalDriverMethod] = methodNotImplementedFactory(optionalDriverMethod);
+                        }
+                    }
+                };
+
+                configureMissingMethods();
 
                 var setDriverSupport = function(support) {
                     driverSupport[driverName] = support;
