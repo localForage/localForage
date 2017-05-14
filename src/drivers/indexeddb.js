@@ -490,6 +490,9 @@ function iterate(iterator, callback) {
                             var result = iterator(value, cursor.key,
                                 iterationNumber++);
 
+                            // when the iterator callback retuns any
+                            // (non-`undefined`) value, then we stop
+                            // the iteration immediately
                             if (result !== void(0)) {
                                 resolve(result);
                             } else {
