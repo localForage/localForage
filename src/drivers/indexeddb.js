@@ -12,6 +12,10 @@ var supportsBlobs;
 var dbContexts;
 var toString = Object.prototype.toString;
 
+// Transaction Modes
+var READ_ONLY = 'readonly';
+var READ_WRITE = 'readwrite';
+
 // Transform a binary string to an array buffer, because otherwise
 // weird stuff happens when you try to work with the binary string directly.
 // It is known.
@@ -44,7 +48,7 @@ function _binStringToArrayBuffer(bin) {
 //
 function _checkBlobSupportWithoutCaching(idb) {
     return new Promise(function(resolve) {
-        var txn = idb.transaction(DETECT_BLOB_SUPPORT_STORE, 'readwrite');
+        var txn = idb.transaction(DETECT_BLOB_SUPPORT_STORE, READ_WRITE);
         var blob = createBlob(['']);
         txn.objectStore(DETECT_BLOB_SUPPORT_STORE).put(blob, 'key');
 
@@ -429,7 +433,7 @@ function getItem(key, callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            createTransaction(self._dbInfo, 'readonly', function(err, transaction) {
+            createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
                 if (err) {
                     return reject(err);
                 }
@@ -469,7 +473,7 @@ function iterate(iterator, callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            createTransaction(self._dbInfo, 'readonly', function(err, transaction) {
+            createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
                 if (err) {
                     return reject(err);
                 }
@@ -542,7 +546,7 @@ function setItem(key, value, callback) {
             }
             return value;
         }).then(function(value) {
-            createTransaction(self._dbInfo, 'readwrite', function(err, transaction) {
+            createTransaction(self._dbInfo, READ_WRITE, function(err, transaction) {
                 if (err) {
                     return reject(err);
                 }
@@ -599,7 +603,7 @@ function removeItem(key, callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            createTransaction(self._dbInfo, 'readwrite', function(err, transaction) {
+            createTransaction(self._dbInfo, READ_WRITE, function(err, transaction) {
                 if (err) {
                     return reject(err);
                 }
@@ -642,7 +646,7 @@ function clear(callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            createTransaction(self._dbInfo, 'readwrite', function(err, transaction) {
+            createTransaction(self._dbInfo, READ_WRITE, function(err, transaction) {
                 if (err) {
                     return reject(err);
                 }
@@ -675,7 +679,7 @@ function length(callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            createTransaction(self._dbInfo, 'readonly', function(err, transaction) {
+            createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
                 if (err) {
                     return reject(err);
                 }
@@ -713,7 +717,7 @@ function key(n, callback) {
         }
 
         self.ready().then(function() {
-            createTransaction(self._dbInfo, 'readonly', function(err, transaction) {
+            createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
                 if (err) {
                     return reject(err);
                 }
@@ -768,7 +772,7 @@ function keys(callback) {
 
     var promise = new Promise(function(resolve, reject) {
         self.ready().then(function() {
-            createTransaction(self._dbInfo, 'readonly', function(err, transaction) {
+            createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
                 if (err) {
                     return reject(err);
                 }
