@@ -2,7 +2,7 @@
   "name": "localforage",
   "version": "1.5.0",
   "dependencies": {
-    "then/promise": "5.0.0"
+    "then/promise": "6.0.0"
   },
   "scripts": [
     "build/es5src/localforage.js",
