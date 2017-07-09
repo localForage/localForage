@@ -9,6 +9,24 @@
   font-style:normal;
 }
 
+body,
+td,
+textarea,
+input {
+  font-family: "Helvetica Neue", "Open Sans", sans-serif;
+  line-height: 1.6;
+  font-size: 16px;
+  color: #505050;
+}
+@media (max-width: 480px) {
+  body,
+  td,
+  textarea,
+  input {
+    font-size: 14px;
+  }
+}
+
 body:not(.no-literate) .content > pre + p,
 body:not(.no-literate) .content > blockquote + p,
 body:not(.no-literate) .content > pre + ul,
