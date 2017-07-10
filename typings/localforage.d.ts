@@ -1,12 +1,14 @@
-
-interface LocalForageOptions {
-    driver?: string | string[];
-
+interface LocalForageDbInstanceOptions {
     name?: string;
 
-    size?: number;
-
     storeName?: string;
+}
+
+
+interface LocalForageOptions extends LocalForageDbInstanceOptions {
+    driver?: string | string[];
+
+    size?: number;
 
     version?: number;
 
@@ -38,6 +40,9 @@ interface LocalForageDbMethods {
     iterate(iteratee: (value: any, key: string, iterationNumber: number) => any): Promise<any>;
     iterate(iteratee: (value: any, key: string, iterationNumber: number) => any,
             callback: (err: any, result: any) => void): void;
+
+    dropInstance(callback?: (err: any) => void): Promise<void>;
+    dropInstance(dbInstanceOptions?: LocalForageDbInstanceOptions, callback?: (err: any) => void): Promise<void>;
 }
 
 interface LocalForageDriverSupportFunc {
