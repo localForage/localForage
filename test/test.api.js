@@ -5,6 +5,10 @@ var DRIVERS = [
     localforage.WEBSQL
 ];
 
+var SUPPORTED_DRIVERS = DRIVERS.filter(function(driverName) {
+    return localforage.supports(driverName);
+});
+
 var driverApiMethods = [
     'getItem',
     'setItem',
@@ -14,6 +18,11 @@ var driverApiMethods = [
     'key',
     'keys'
 ];
+
+var indexedDB = (indexedDB || window.indexedDB ||
+                 window.webkitIndexedDB ||
+                 window.mozIndexedDB || window.OIndexedDB ||
+                 window.msIndexedDB);
 
 describe('localForage API', function() {
     // https://github.com/mozilla/localForage#working-on-localforage
@@ -139,18 +148,7 @@ describe('localForage', function() {
     });
 });
 
-DRIVERS.forEach(function(driverName) {
-    if ((!localforage.supports(localforage.INDEXEDDB) &&
-         driverName === localforage.INDEXEDDB) ||
-        (!localforage.supports(localforage.LOCALSTORAGE) &&
-         driverName === localforage.LOCALSTORAGE) ||
-        (!localforage.supports(localforage.WEBSQL) &&
-         driverName === localforage.WEBSQL)) {
-        // Browser doesn't support this storage library, so we exit the API
-        // tests.
-        return;
-    }
-
+SUPPORTED_DRIVERS.forEach(function(driverName) {
     describe(driverName + ' driver', function() {
         'use strict';
 
@@ -194,6 +192,7 @@ DRIVERS.forEach(function(driverName) {
             expect(localforage.ready).to.be.a('function');
             expect(localforage.createInstance).to.be.a('function');
             expect(localforage.getSerializer).to.be.a('function');
+            expect(localforage.dropInstance).to.be.a('function');
         });
 
         // Make sure we don't support bogus drivers.
@@ -965,11 +964,6 @@ DRIVERS.forEach(function(driverName) {
         // Refers to issue #492 - https://github.com/mozilla/localForage/issues/492
         if (driverName === localforage.INDEXEDDB) {
             return new Promise(function(resolve) {
-                var indexedDB = (indexedDB || window.indexedDB ||
-                                 window.webkitIndexedDB ||
-                                 window.mozIndexedDB || window.OIndexedDB ||
-                                 window.msIndexedDB);
-
                 indexedDB.deleteDatabase(storageName).onsuccess = resolve;
             });
         }
@@ -1295,6 +1289,257 @@ DRIVERS.forEach(function(driverName) {
             }, function() {
                 expect(localforage2.driver()).to.be(null);
                 done();
+            });
+        });
+    });
+});
+
+SUPPORTED_DRIVERS.forEach(function(driverName) {
+    describe(driverName + ' driver dropInstance', function() {
+
+        this.timeout(30000);
+
+        var nodropInstance;
+        var nodropInstanceOptions = {
+            name: 'dropStoreDb',
+            driver: driverName,
+            size: 1024,
+            storeName: 'nodropStore'
+        };
+
+        var dropStoreInstance1;
+        var dropStoreInstance1Options = {
+            name: 'dropStoreDb',
+            driver: driverName,
+            size: 1024,
+            storeName: 'dropStore'
+        };
+
+        var dropStoreInstance2;
+        var dropStoreInstance2Options = {
+            name: 'dropStoreDb',
+            driver: driverName,
+            size: 1024,
+            storeName: 'dropStore2'
+        };
+
+        var dropStoreInstance3;
+        var dropStoreInstance3Options = {
+            name: 'dropStoreDb',
+            driver: driverName,
+            size: 1024,
+            storeName: 'dropStore3'
+        };
+
+        var dropDbInstance;
+        var dropDbInstanceOptions = {
+            name: 'dropDb',
+            driver: driverName,
+            size: 1024,
+            storeName: 'dropStore'
+        };
+
+        var dropDb2Instance;
+        var dropDb2InstanceOptions = {
+            name: 'dropDb2',
+            driver: driverName,
+            size: 1024,
+            storeName: 'dropStore'
+        };
+
+        before(function() {
+            nodropInstance = localforage.createInstance(nodropInstanceOptions);
+            dropStoreInstance1 = localforage.createInstance(dropStoreInstance1Options);
+            dropStoreInstance2 = localforage.createInstance(dropStoreInstance2Options);
+            dropStoreInstance3 = localforage.createInstance(dropStoreInstance2Options);
+            dropDbInstance = localforage.createInstance(dropDbInstanceOptions);
+            dropDb2Instance = localforage.createInstance(dropDb2InstanceOptions);
+            return Promise.resolve().then(function() {
+                return nodropInstance.setItem('key1', 'value0');
+            }).then(function() {
+                return dropStoreInstance1.setItem('key1', 'value1');
+            }).then(function() {
+                return dropStoreInstance2.setItem('key1', 'value2');
+            }).then(function() {
+                return dropStoreInstance3.setItem('key1', 'value3');
+            }).then(function() {
+                return dropDbInstance.setItem('key1', 'value3');
+            }).then(function() {
+                return dropDb2Instance.setItem('key1', 'value3');
+            });
+        });
+
+        function expectStoreToNotExistAsync(options) {
+            return new Promise(function(resolve, reject) {
+                if (driverName === localforage.INDEXEDDB) {
+                    var req = indexedDB.open(options.name);
+                    req.onsuccess = function() {
+                        var db = req.result;
+                        if (!db) {
+                            reject();
+                            return;
+                        }
+                        expect(db.objectStoreNames.contains(options.storeName)).to.be(false);
+                        db.close();
+                        resolve();
+                    };
+                    req.onerror = req.onblocked = reject;
+                } else if (driverName === localforage.WEBSQL) {
+                    var db = openDatabase(options.name, '', '', 0);
+                    db.transaction(function(t) {
+                        t.executeSql(
+                            "SELECT name FROM sqlite_master WHERE type='table' AND name = ?",
+                            [options.storeName],
+                            function(t, results) {
+                                expect(results.rows.length).to.be(0);
+                                resolve();
+                            },
+                            reject
+                        );
+                    }, reject);
+                } else if (driverName === localforage.LOCALSTORAGE) {
+                    var keyPrefix = (function _getKeyPrefix(options, defaultConfig) {
+                        var keyPrefix = options.name + '/';
+
+                        if (options.storeName !== defaultConfig.storeName) {
+                            keyPrefix += options.storeName + '/';
+                        }
+                        return keyPrefix;
+                    })(options, {
+                        name: 'localforage',
+                        storeName: 'keyvaluepairs'
+                    });
+
+                    var foundLocalStorageKey = false;
+                    for (var i = 0, length = localStorage.length; i < length; i++) {
+                        if (localStorage.key(i).indexOf(keyPrefix) === 0) {
+                            foundLocalStorageKey = true;
+                            break;
+                        }
+                    }
+                    expect(foundLocalStorageKey).to.be(false);
+                    resolve();
+                } else {
+                    throw new Error('Not Implemented Exception');
+                }
+            });
+        }
+
+        it('drops the current instance without affecting the rest', function() {
+            return dropStoreInstance1.dropInstance().then(function() {
+                return nodropInstance.getItem('key1');
+            }).then(function(value) {
+                expect(value).to.be('value0');
+            });
+        });
+
+        it('can recreate and set values to previously dropped instances', function() {
+            return dropStoreInstance1.dropInstance().then(function() {
+                return dropStoreInstance1.getItem('key1');
+            }).then(function(value) {
+                expect(value).to.be(null);
+                return dropStoreInstance1.length();
+            }).then(function(length) {
+                expect(length).to.be(0);
+            }).then(function() {
+                return dropStoreInstance1.setItem('key1', 'newvalue2');
+            }).then(function() {
+                return dropStoreInstance1.getItem('key1');
+            }).then(function(value) {
+                expect(value).to.be('newvalue2');
+            });
+        });
+
+        it('drops an other instance without affecting the rest', function() {
+            var opts = {
+                name: dropStoreInstance2Options.name,
+                storeName: dropStoreInstance2Options.storeName
+            };
+            return nodropInstance.dropInstance(opts).then(function() {
+                return nodropInstance.getItem('key1');
+            }).then(function(value) {
+                expect(value).to.be('value0');
+            });
+        });
+
+        it('the dropped instance is completely removed', function() {
+            var opts = {
+                name: dropStoreInstance3Options.name,
+                storeName: dropStoreInstance3Options.storeName
+            };
+            return dropStoreInstance3.dropInstance().then(function() {
+                return expectStoreToNotExistAsync(opts);
+            });
+        });
+
+        function expectDBToNotExistAsync(options) {
+            return new Promise(function(resolve, reject) {
+                if (driverName === localforage.INDEXEDDB) {
+                    var req = indexedDB.open(options.name);
+                    req.onsuccess = function() {
+                        var db = req.result;
+                        if (!db) {
+                            reject();
+                            return;
+                        }
+                        expect(db.objectStoreNames.length).to.be(0);
+                        db.close();
+                        resolve();
+                    };
+                    req.onerror = req.onblocked = reject;
+                } else if (driverName === localforage.WEBSQL) {
+                    var db = openDatabase(options.name, '', '', 0);
+                    db.transaction(function(t) {
+                        t.executeSql(
+                            "SELECT name FROM sqlite_master WHERE type='table'",
+                            [],
+                            function(t, results) {
+                                var stores = Array.prototype.filter.call(results.rows, function(obj) {
+                                    return obj && obj.name && obj.name.indexOf('__') !== 0;
+                                });
+                                expect(stores.length).to.be(0);
+                                resolve();
+                            },
+                            reject
+                        );
+                    }, reject);
+                } else if (driverName === localforage.LOCALSTORAGE) {
+                    var keyPrefix = (function _getKeyPrefix(options) {
+                        return options.name + '/';
+                    })(options);
+
+                    var foundLocalStorageKey = false;
+                    for (var i = 0, length = localStorage.length; i < length; i++) {
+                        if (localStorage.key(i).indexOf(keyPrefix) === 0) {
+                            foundLocalStorageKey = true;
+                            break;
+                        }
+                    }
+                    expect(foundLocalStorageKey).to.be(false);
+                    resolve();
+                } else {
+                    throw new Error('Not Implemented Exception');
+                }
+            });
+        }
+
+        it('the dropped "DB" can be recreated', function() {
+            var opts = {
+                name: dropDbInstanceOptions.name
+            };
+            return dropDbInstance.dropInstance(opts).then(function() {
+                return dropDbInstance.getItem('key1');
+            }).then(function(value) {
+                expect(value).to.be(null);
+            });
+        });
+
+        it('the dropped "DB" is completely removed', function() {
+            var opts = {
+                name: dropDb2InstanceOptions.name
+            };
+            return dropDb2Instance.dropInstance(opts).then(function() {
+                return expectDBToNotExistAsync(opts);
             });
         });
     });
