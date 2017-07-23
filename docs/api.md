@@ -496,3 +496,28 @@ otherStore.setItem("key", "value2");
 ```
 
 Creates a new instance of localForage and returns it. Each object contains its own database and doesn't affect other instances of localForage.
+
+## dropInstance
+
+```js
+localforage.dropInstance().then(function() {
+  console.log('Dropped the store of the current instance').
+});
+
+localforage.dropInstance({
+  name: "otherName",
+  storeName: "otherStore"
+}).then(function() {
+  console.log('Dropped otherStore').
+});
+
+localforage.dropInstance({
+  name: "otherName"
+}).then(function() {
+  console.log('Dropped otherName database').
+});
+```
+
+When invoked with no arguments, it drops the "store" of the current instance.
+When invoked with an object specifying both `name` and `storeName` properties, it drops the specified "store".
+When invoked with an object specifying only a `name` property, it drops the specified "database" (and all its stores).
