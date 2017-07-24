@@ -10,7 +10,7 @@ localForage's lifetime.
 * Fixes #562.
 
 ### [1.4.1](https://github.com/mozilla/localForage/releases/tag/1.4.1)
-* Fixes #520; browserify builds work propertly
+* Fixes #520; browserify builds work properly
 
 ### [1.4](https://github.com/mozilla/localForage/releases/tag/1.4.0)
 * Fixes #516; this version should always load the correct driver without that bug.
