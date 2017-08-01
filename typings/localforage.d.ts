@@ -35,9 +35,9 @@ interface LocalForageDbMethods {
     keys(): Promise<string[]>;
     keys(callback: (err: any, keys: string[]) => void): void;
 
-    iterate(iteratee: (value: any, key: string, iterationNumber: number) => any): Promise<any>;
-    iterate(iteratee: (value: any, key: string, iterationNumber: number) => any,
-            callback: (err: any, result: any) => void): void;
+    iterate<T, U>(iteratee: (value: T, key: string, iterationNumber: number) => U): Promise<U>;
+    iterate<T, U>(iteratee: (value: T, key: string, iterationNumber: number) => U,
+            callback: (err: any, result: U) => void): void;
 }
 
 interface LocalForageDriverSupportFunc {
