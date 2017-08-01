@@ -105,7 +105,7 @@ JSON, as well as ArrayBuffers, Blobs, and TypedArrays. Check the
 All types are supported in every storage backend, though storage limits in
 localStorage make storing many large Blobs impossible.
 
-[api]: https://localforage.github.io/localForage/#setitem
+[api]: https://localforage.github.io/localForage/#data-api-setitem
 
 ## Configuration
 
@@ -211,7 +211,7 @@ added to this list.
 ## Custom Drivers
 
 You can create your own driver if you want; see the
-[`defineDriver`](https://localforage.github.io/localForage/#definedriver) API docs.
+[`defineDriver`](https://localforage.github.io/localForage/#driver-api-definedriver) API docs.
 
 There is a [list of custom drivers on the wiki][custom drivers].
 
