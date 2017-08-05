@@ -15,10 +15,67 @@ namespace LocalForageTest {
         typeof serializer.stringToBuffer === "function";
     });
 
+    localForage.iterate((value, key: string, num: number) => {
+        let newStr: any = value;
+        let newKey: string = key;
+        let newNum: number = num;
+    });
+
+    localForage.iterate((value: any, key: string, num: number) => {
+        let newStr: any = value;
+        let newKey: string = key;
+        let newNum: number = num;
+    });
+
+    localForage.iterate<any, void>((value: any, key: string, num: number) => {
+        let newStr: any = value;
+        let newKey: string = key;
+        let newNum: number = num;
+    });
+
     localForage.iterate((str: string, key: string, num: number) => {
         let newStr: string = str;
         let newKey: string = key;
         let newNum: number = num;
+    });
+
+    localForage.iterate((str: string, key: string, num: number) => {
+        let newStr: string = str;
+        let newKey: string = key;
+        let newNum: number = num;
+        if (newStr === 'END') {
+            return newNum;
+        }
+    }).then((result: number | undefined) => {
+        if (result) {
+            let numResult: number = result;
+        }
+    });
+
+    localForage.iterate<string, number | void>((str, key: string, num: number) => {
+        let newStr: string = str;
+        let newKey: string = key;
+        let newNum: number = num;
+        if (newStr === 'END') {
+            return newNum;
+        }
+    }).then((result: number | void) => {
+        if (result) {
+            let numResult: number = result;
+        }
+    });
+
+    localForage.iterate<string, number | void>((str: string, key: string, num: number) => {
+        let newStr: string = str;
+        let newKey: string = key;
+        let newNum: number = num;
+        if (newStr === 'END') {
+            return newNum;
+        }
+    }).then((result: number | void) => {
+        if (result) {
+            let numResult: number = result;
+        }
     });
 
     localForage.length((err: any, num: number) => {
