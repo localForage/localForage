@@ -2,7 +2,8 @@
 var DRIVERS = [
     localforage.INDEXEDDB,
     localforage.LOCALSTORAGE,
-    localforage.WEBSQL
+    localforage.WEBSQL,
+    localforage.MEMORY
 ];
 
 DRIVERS.forEach(function(driverName) {

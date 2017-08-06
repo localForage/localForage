@@ -1,8 +1,9 @@
 /* global after:true, afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Promise:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
+    localforage.WEBSQL,
     localforage.LOCALSTORAGE,
-    localforage.WEBSQL
+    localforage.MEMORY
 ];
 
 var driverApiMethods = [
@@ -23,26 +24,19 @@ describe('localForage API', function() {
 });
 
 describe('localForage', function() {
-    var appropriateDriver =
-        (localforage.supports(localforage.INDEXEDDB) &&
-         localforage.INDEXEDDB) ||
-        (localforage.supports(localforage.WEBSQL) &&
-         localforage.WEBSQL) ||
-        (localforage.supports(localforage.LOCALSTORAGE) &&
-         localforage.LOCALSTORAGE);
+    var appropriateDriver = DRIVERS.filter(function(driverName) {
+        return localforage.supports(driverName);
+    })[0];
 
-    it('automatically selects the most appropriate driver (' +
-       appropriateDriver + ')', function(done) {
+    it('automatically selects the most appropriate driver (' + appropriateDriver + ')', function() {
         this.timeout(10000);
-        localforage.ready().then(function() {
+        return localforage.ready().then(function() {
             expect(localforage.driver()).to.be(appropriateDriver);
-            done();
         }, function(error) {
             expect(error).to.be.an(Error);
             expect(error.message).to
                                  .be('No available storage method found.');
             expect(localforage.driver()).to.be(null);
-            done();
         });
     });
 
@@ -87,6 +81,7 @@ describe('localForage', function() {
             '0': localforage.INDEXEDDB,
             '1': localforage.WEBSQL,
             '2': localforage.LOCALSTORAGE,
+            '3': localforage.MEMORY,
             length: 3
         };
 
@@ -124,7 +119,8 @@ describe('localForage', function() {
             failingStorageDriver._driver,
             localforage.INDEXEDDB,
             localforage.WEBSQL,
-            localforage.LOCALSTORAGE
+            localforage.LOCALSTORAGE,
+            localforage.MEMORY
         ];
 
         localforage.defineDriver(failingStorageDriver).then(function() {
@@ -553,24 +549,22 @@ DRIVERS.forEach(function(driverName) {
         });
 
         // Test for https://github.com/mozilla/localForage/issues/175
-        it('nested getItem inside clear works [callback]', function(done) {
-            localforage.setItem('hello', 'Hello World !', function() {
+        it('nested getItem inside clear works [callback]', function() {
+            return localforage.setItem('hello', 'Hello World !', function() {
                 localforage.clear(function() {
                     localforage.getItem('hello', function(secondValue) {
                         expect(secondValue).to.be(null);
-                        done();
                     });
                 });
             });
         });
-        it('nested getItem inside clear works [promise]', function(done) {
-            localforage.setItem('hello', 'Hello World !').then(function() {
+        it('nested getItem inside clear works [promise]', function() {
+            return localforage.setItem('hello', 'Hello World !').then(function() {
                 return localforage.clear();
             }).then(function() {
                 return localforage.getItem('hello');
             }).then(function(secondValue) {
                 expect(secondValue).to.be(null);
-                done();
             });
         });
 

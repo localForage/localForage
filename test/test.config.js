@@ -5,7 +5,8 @@ describe('Config API', function() {
     var DRIVERS = [
         localforage.INDEXEDDB,
         localforage.LOCALSTORAGE,
-        localforage.WEBSQL
+        localforage.WEBSQL,
+        localforage.MEMORY
     ];
     var supportedDrivers = [];
 
