@@ -25,7 +25,7 @@ module.exports = exports = function(grunt) {
             'src/utils/serializer': 'localforageSerializer',
             'src/drivers/indexeddb': 'asyncStorage',
             'src/drivers/localstorage': 'localStorageWrapper',
-            'src/drivers/memory': 'memoryStorageWrapper',
+            'src/drivers/memory': 'memoryStorage',
             'src/drivers/websql': 'webSQLStorage'
         };
 

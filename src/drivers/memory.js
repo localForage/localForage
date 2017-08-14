@@ -6,11 +6,12 @@ import serializer from '../utils/serializer';
 import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
 
-var STORAGE = {};
+var storageRepository = {};
 
 // Config the backend, using options set in the config.
 function _initStorage(options) {
     var self = this;
+
     var dbInfo = {};
     if (options) {
         for (var i in options) {
@@ -18,11 +19,9 @@ function _initStorage(options) {
         }
     }
 
-    dbInfo.keyPrefix = dbInfo.name + '/';
-
-    if (dbInfo.storeName !== self._defaultConfig.storeName) {
-        dbInfo.keyPrefix += dbInfo.storeName + '/';
-    }
+    var database = storageRepository[dbInfo.name] = storageRepository[dbInfo.name] || {};
+    var table = database[dbInfo.storeName] = database[dbInfo.storeName] || {};
+    dbInfo.db = table;
 
     self._dbInfo = dbInfo;
     dbInfo.serializer = serializer;
@@ -35,14 +34,11 @@ function _initStorage(options) {
 function clear(callback) {
     var self = this;
     var promise = self.ready().then(function() {
-        var keyPrefix = self._dbInfo.keyPrefix;
+        var db = self._dbInfo.db;
 
-        var keys = Object.keys(STORAGE);
-        for (var i = keys.length - 1; i >= 0; i--) {
-            var key = keys[i];
-
-            if (key.indexOf(keyPrefix) === 0) {
-                delete STORAGE[key];
+        for (var key in db) {
+            if (db.hasOwnProperty(key)) {
+                delete db[key];
             }
         }
     });
@@ -65,8 +61,16 @@ function getItem(key, callback) {
     }
 
     var promise = self.ready().then(function() {
-        var dbInfo = self._dbInfo;
-        var result = STORAGE[dbInfo.keyPrefix + key];
+        var db = self._dbInfo.db;
+        var result = db[key];
+
+        if (result === undefined) {
+            return null;
+        }
+
+        if (result) {
+            result = self._dbInfo.serializer.deserialize(result);
+        }
 
         return result;
     });
@@ -80,40 +84,22 @@ function iterate(iterator, callback) {
     var self = this;
 
     var promise = self.ready().then(function() {
-        var dbInfo = self._dbInfo;
-        var keyPrefix = dbInfo.keyPrefix;
-        var keyPrefixLength = keyPrefix.length;
-        var keys = Object.keys(STORAGE);
-        var length = keys.length;
+        var db = self._dbInfo.db;
 
-        // We use a dedicated iterator instead of the `i` variable below
-        // so other keys we fetch in localStorage aren't counted in
-        // the `iterationNumber` argument passed to the `iterate()`
-        // callback.
-        //
-        // See: github.com/mozilla/localForage/pull/435#discussion_r38061530
         var iterationNumber = 1;
+        for (var key in db) {
+            if (db.hasOwnProperty(key)) {
+                var value = db[key];
 
-        for (var i = 0; i < length; i++) {
-            var key = keys[i];
-            if (key.indexOf(keyPrefix) !== 0) {
-                continue;
-            }
-            var value = STORAGE[key];
+                if (value) {
+                    value = self._dbInfo.serializer.deserialize(value);
+                }
 
-            // If a result was found, parse it from the serialized
-            // string into a JS object. If result isn't truthy, the
-            // key is likely undefined and we'll pass it straight
-            // to the iterator.
-            if (value) {
-                value = dbInfo.serializer.deserialize(value);
-            }
+                value = iterator(value, key, iterationNumber++);
 
-            value = iterator(value, key.substring(keyPrefixLength),
-                iterationNumber++);
-
-            if (value !== void(0)) {
-                return value;
+                if (value !== void(0)) {
+                    return value;
+                }
             }
         }
     });
@@ -125,19 +111,19 @@ function iterate(iterator, callback) {
 // Same as localStorage's key() method, except takes a callback.
 function key(n, callback) {
     var self = this;
-    var keys = Object.keys(STORAGE);
     var promise = self.ready().then(function() {
-        var dbInfo = self._dbInfo;
-        var result;
-        try {
-            result = keys[n];
-        } catch (error) {
-            result = null;
-        }
+        var db = self._dbInfo.db;
+        var result = null;
+        var index = 0;
 
-        // Remove the prefix from the key, if a key is found.
-        if (result) {
-            result = result.substring(dbInfo.keyPrefix.length);
+        for (var key in db) {
+            if (db.hasOwnProperty(key)) {
+                if (n === index) {
+                    result = key;
+                    break;
+                }
+                index++;
+            }
         }
 
         return result;
@@ -150,13 +136,12 @@ function key(n, callback) {
 function keys(callback) {
     var self = this;
     var promise = self.ready().then(function() {
-        var dbInfo = self._dbInfo;
-        var output = [];
-        var keys = Object.keys(STORAGE);
+        var db = self._dbInfo.db;
+        var keys = [];
 
-        for (var i = 0; i < keys.length; i++) {
-            if (keys[i].indexOf(dbInfo.keyPrefix) === 0) {
-                output.push(keys[i].substring(dbInfo.keyPrefix.length));
+        for (var key in db) {
+            if (db.hasOwnProperty(key)) {
+                keys.push(key);
             }
         }
 
@@ -190,8 +175,10 @@ function removeItem(key, callback) {
     }
 
     var promise = self.ready().then(function() {
-        var dbInfo = self._dbInfo;
-        delete STORAGE[dbInfo.keyPrefix + key];
+        var db = self._dbInfo.db;
+        if (db.hasOwnProperty(key)) {
+            delete db[key];
+        }
     });
 
     executeCallback(promise, callback);
@@ -219,10 +206,25 @@ function setItem(key, value, callback) {
             value = null;
         }
 
-        return new Promise(function(resolve) {
-            var dbInfo = self._dbInfo;
-            STORAGE[dbInfo.keyPrefix + key] = value;
-            resolve(value);
+        // Save the original value to pass to the callback.
+        var originalValue = value;
+
+        function serializeAsync(value) {
+            return new Promise(function(resolve, reject) {
+                self._dbInfo.serializer.serialize(value, function(value, error) {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(value);
+                    }
+                });
+            });
+        }
+
+        return serializeAsync(value).then(function(value) {
+            var db = self._dbInfo.db;
+            db[key] = value;
+            return originalValue;
         });
     });
 
@@ -230,10 +232,9 @@ function setItem(key, value, callback) {
     return promise;
 }
 
-var memoryStorageWrapper = {
-    _driver: 'memoryStorageWrapper',
+var memoryStorage = {
+    _driver: 'memoryStorage',
     _initStorage: _initStorage,
-    // Default API, from Gaia/localStorage.
     iterate: iterate,
     getItem: getItem,
     setItem: setItem,
@@ -244,4 +245,4 @@ var memoryStorageWrapper = {
     keys: keys
 };
 
-export default memoryStorageWrapper;
+export default memoryStorage;
