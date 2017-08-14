@@ -3,6 +3,7 @@
 // side-effects (all data will be serialized on save and only data that
 // can be converted to a string via `JSON.stringify()` will be saved).
 
+import isLocalStorageValid from '../utils/isLocalStorageValid';
 import serializer from '../utils/serializer';
 import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
@@ -242,7 +243,7 @@ function setItem(key, value, callback) {
 var localStorageWrapper = {
     _driver: 'localStorageWrapper',
     _initStorage: _initStorage,
-    // Default API, from Gaia/localStorage.
+    _support: isLocalStorageValid(),
     iterate: iterate,
     getItem: getItem,
     setItem: setItem,
