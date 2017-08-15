@@ -126,6 +126,16 @@ function executeTwoCallbacks(promise, callback, errorCallback) {
     }
 }
 
+function normalizeKey(key) {
+    // Cast the key to a string, as that's all we can set as a key.
+    if (typeof key !== 'string') {
+        console.warn(key + ' used as a key, but it is not a string.');
+        key = String(key);
+    }
+
+    return key;
+}
+
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
 
@@ -538,11 +548,7 @@ function _initStorage(options) {
 function getItem(key, callback) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key + ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = new Promise$1(function (resolve, reject) {
         self.ready().then(function () {
@@ -637,11 +643,7 @@ function iterate(iterator, callback) {
 function setItem(key, value, callback) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key + ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = new Promise$1(function (resolve, reject) {
         var dbInfo;
@@ -705,11 +707,7 @@ function setItem(key, value, callback) {
 function removeItem(key, callback) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key + ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = new Promise$1(function (resolve, reject) {
         self.ready().then(function () {
@@ -1206,11 +1204,7 @@ function _initStorage$1(options) {
 function getItem$1(key, callback) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key + ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = new Promise$1(function (resolve, reject) {
         self.ready().then(function () {
@@ -1285,11 +1279,7 @@ function iterate$1(iterator, callback) {
 function _setItem(key, value, callback, retriesLeft) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key + ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = new Promise$1(function (resolve, reject) {
         self.ready().then(function () {
@@ -1348,11 +1338,7 @@ function setItem$1(key, value, callback) {
 function removeItem$1(key, callback) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key + ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = new Promise$1(function (resolve, reject) {
         self.ready().then(function () {
@@ -1536,11 +1522,7 @@ function clear$2(callback) {
 function getItem$2(key, callback) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key + ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = self.ready().then(function () {
         var dbInfo = self._dbInfo;
@@ -1665,11 +1647,7 @@ function length$2(callback) {
 function removeItem$2(key, callback) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key + ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = self.ready().then(function () {
         var dbInfo = self._dbInfo;
@@ -1687,11 +1665,7 @@ function removeItem$2(key, callback) {
 function setItem$2(key, value, callback) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key + ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = self.ready().then(function () {
         // Convert undefined values to null.
