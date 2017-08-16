@@ -6,6 +6,7 @@
 import serializer from '../utils/serializer';
 import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
+import normalizeKey from '../utils/normalizeKey';
 
 // Config the localStorage backend, using options set in the config.
 function _initStorage(options) {
@@ -55,12 +56,7 @@ function clear(callback) {
 function getItem(key, callback) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key +
-            ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = self.ready().then(function() {
         var dbInfo = self._dbInfo;
@@ -186,12 +182,7 @@ function length(callback) {
 function removeItem(key, callback) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key +
-            ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = self.ready().then(function() {
         var dbInfo = self._dbInfo;
@@ -209,12 +200,7 @@ function removeItem(key, callback) {
 function setItem(key, value, callback) {
     var self = this;
 
-    // Cast the key to a string, as that's all we can set as a key.
-    if (typeof key !== 'string') {
-        console.warn(key +
-            ' used as a key, but it is not a string.');
-        key = String(key);
-    }
+    key = normalizeKey(key);
 
     var promise = self.ready().then(function() {
         // Convert undefined values to null.
