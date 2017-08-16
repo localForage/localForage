@@ -1,3 +1,4 @@
+/* global requirejs:true */
 // Run before window.onload to make sure the specs have access to describe()
 // and other mocha methods. All feels very hacky though :-/
 this.mocha.setup('bdd');
@@ -7,7 +8,7 @@ function runTests() {
 
     var failedTests = [];
 
-    runner.on('end', function(){
+    runner.on('end', function() {
         window.mochaResults = runner.stats;
         window.mochaResults.reports = failedTests;
     });
@@ -38,8 +39,8 @@ function runTests() {
 
 if (!Array.prototype.forEach) {
     Array.prototype.forEach = function(callback, thisArg) {
-        if (typeof(callback) !== "function") {
-            throw new TypeError(callback + " is not a function!");
+        if (typeof(callback) !== 'function') {
+            throw new TypeError(callback + ' is not a function!');
         }
         var len = this.length;
         for (var i = 0; i < len; i++) {

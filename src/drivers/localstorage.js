@@ -111,7 +111,7 @@ function iterate(iterator, callback) {
             }
 
             value = iterator(value, key.substring(keyPrefixLength),
-                iterationNumber++);
+                             iterationNumber++);
 
             if (value !== void(0)) {
                 return value;

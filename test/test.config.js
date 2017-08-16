@@ -200,8 +200,7 @@ describe('Config API', function() {
                 window.openDatabase('My Cool App', String(2.0), '',
                                     4980736).transaction(function(t) {
                     t.executeSql('SELECT * FROM myStoreName WHERE key = ? ' +
-                                 'LIMIT 1', ['some key'],
-                                 function(t, results) {
+                                 'LIMIT 1', ['some key'], function(t, results) {
                         var dbValue = JSON.parse(results.rows.item(0).value);
 
                         expect(dbValue).to.be(value);
@@ -210,7 +209,7 @@ describe('Config API', function() {
                 });
             } else if (localforage.driver() === localforage.LOCALSTORAGE) {
                 var dbValue = JSON.parse(
-                  localStorage['My Cool App/myStoreName/some key']);
+                    localStorage['My Cool App/myStoreName/some key']);
 
                 expect(dbValue).to.be(value);
                 done();

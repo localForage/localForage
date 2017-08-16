@@ -59,8 +59,8 @@ driverSupport[DriverType.WEBSQL] = isWebSQLValid();
 driverSupport[DriverType.LOCALSTORAGE] = isLocalStorageValid();
 
 var isArray = Array.isArray || function(arg) {
-        return Object.prototype.toString.call(arg) === '[object Array]';
-    };
+    return Object.prototype.toString.call(arg) === '[object Array]';
+};
 
 function callWhenReady(localForageInstance, libraryMethod) {
     localForageInstance[libraryMethod] = function() {

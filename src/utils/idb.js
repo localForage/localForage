@@ -16,7 +16,9 @@ function getIDB() {
         if (typeof msIndexedDB !== 'undefined') {
             return msIndexedDB;
         }
-    } catch (e) { }
+    } catch (e) {
+        return;
+    }
 }
 
 var idb = getIDB();
