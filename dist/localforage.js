@@ -365,7 +365,9 @@ function getIDB() {
         if (typeof msIndexedDB !== 'undefined') {
             return msIndexedDB;
         }
-    } catch (e) {}
+    } catch (e) {
+        return;
+    }
 }
 
 var idb = getIDB();
@@ -1683,7 +1685,6 @@ function removeItem$1(key, callback) {
                 t.executeSql('DELETE FROM ' + dbInfo.storeName + ' WHERE key = ?', [key], function () {
                     resolve();
                 }, function (t, error) {
-
                     reject(error);
                 });
             });
@@ -1731,7 +1732,6 @@ function length$1(callback) {
 
                     resolve(result);
                 }, function (t, error) {
-
                     reject(error);
                 });
             });
@@ -1786,7 +1786,6 @@ function keys$1(callback) {
 
                     resolve(keys);
                 }, function (t, error) {
-
                     reject(error);
                 });
             });
