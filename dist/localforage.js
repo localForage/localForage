@@ -383,7 +383,7 @@ function isIndexedDBValid() {
         // as Safari. Oh the lulz...
         var isSafari = typeof openDatabase !== 'undefined' && /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) && !/BlackBerry/.test(navigator.platform);
 
-        var hasFetch = typeof fetch === 'function' && fetch.toString().indexOf('[native code') !== -1;
+        var hasFetch = typeof fetch === 'function';
 
         // Safari <10.1 does not meet our requirements for IDB support (#5572)
         // since Safari 10.1 shipped with fetch, we can use that to detect it
