@@ -1090,55 +1090,241 @@ DRIVERS.forEach(function(driverName) {
 
         this.timeout(30000);
 
-        it('chains operation on multiple stores', function(done) {
+        before(function() {
+            return Promise.all([
+                prepareStorage('storage3'),
+                prepareStorage('commonStorage'),
+                prepareStorage('commonStorage2'),
+                prepareStorage('commonStorage3')
+            ]);
+        });
 
-            prepareStorage('storage3').then(function() {
-                var localforage1 = localforage.createInstance({
-                    name: 'storage3',
-                    storeName: 'store1',
+        it('chains operation on multiple stores', function() {
+            var localforage1 = localforage.createInstance({
+                name: 'storage3',
+                storeName: 'store1',
+                size: 1024
+            });
+
+            var localforage2 = localforage.createInstance({
+                name: 'storage3',
+                storeName: 'store2',
+                size: 1024
+            });
+
+            var localforage3 = localforage.createInstance({
+                name: 'storage3',
+                storeName: 'store3',
+                size: 1024
+            });
+
+            var promise1 = localforage1.setItem('key', 'value1').then(function() {
+                return localforage1.getItem('key');
+            }).then(function(value) {
+                expect(value).to.be('value1');
+            });
+
+            var promise2 = localforage2.setItem('key', 'value2').then(function() {
+                return localforage2.getItem('key');
+            }).then(function(value) {
+                expect(value).to.be('value2');
+            });
+
+            var promise3 = localforage3.setItem('key', 'value3').then(function() {
+                return localforage3.getItem('key');
+            }).then(function(value) {
+                expect(value).to.be('value3');
+            });
+
+            return Promise.all([
+                promise1,
+                promise2,
+                promise3
+            ]);
+        });
+
+        it('can create multiple instances of the same store', function() {
+            var localforage1;
+            var localforage2;
+            var localforage3;
+
+            Promise.resolve()
+            .then(function() {
+                localforage1 = localforage.createInstance({
+                    name: 'commonStorage',
+                    storeName: 'commonStore',
                     size: 1024
                 });
-
-                var localforage2 = localforage.createInstance({
-                    name: 'storage3',
-                    storeName: 'store2',
+                return localforage1.ready();
+            })
+            .then(function() {
+                localforage2 = localforage.createInstance({
+                    name: 'commonStorage',
+                    storeName: 'commonStore',
                     size: 1024
                 });
-
-                var localforage3 = localforage.createInstance({
-                    name: 'storage3',
-                    storeName: 'store3',
+                return localforage2.ready();
+            })
+            .then(function() {
+                localforage3 = localforage.createInstance({
+                    name: 'commonStorage',
+                    storeName: 'commonStore',
                     size: 1024
                 });
+                return localforage3.ready();
+            }).then(function() {
+                return Promise.resolve()
+                .then(function() {
+                    return localforage1.setItem('key1', 'value1').then(function() {
+                        return localforage1.getItem('key1');
+                    }).then(function(value) {
+                        expect(value).to.be('value1');
+                    });
+                })
+                .then(function() {
+                    return localforage2.setItem('key2', 'value2').then(function() {
+                        return localforage2.getItem('key2');
+                    }).then(function(value) {
+                        expect(value).to.be('value2');
+                    });
+                })
+                .then(function() {
+                    return localforage3.setItem('key3', 'value3').then(function() {
+                        return localforage3.getItem('key3');
+                    }).then(function(value) {
+                        expect(value).to.be('value3');
+                    });
+                });
+            });
+        });
 
-                var promise1 = localforage1.setItem('key', 'value1').then(function() {
-                    return localforage1.getItem('key');
+        it('can create multiple instances of the same store and do concurrent operations', function() {
+            var localforage1;
+            var localforage2;
+            var localforage3;
+            var localforage3b;
+
+            Promise.resolve()
+            .then(function() {
+                localforage1 = localforage.createInstance({
+                    name: 'commonStorage2',
+                    storeName: 'commonStore',
+                    size: 1024
+                });
+                return localforage1.ready();
+            })
+            .then(function() {
+                localforage2 = localforage.createInstance({
+                    name: 'commonStorage2',
+                    storeName: 'commonStore',
+                    size: 1024
+                });
+                return localforage2.ready();
+            })
+            .then(function() {
+                localforage3 = localforage.createInstance({
+                    name: 'commonStorage2',
+                    storeName: 'commonStore',
+                    size: 1024
+                });
+                return localforage3.ready();
+            })
+            .then(function() {
+                localforage3b = localforage.createInstance({
+                    name: 'commonStorage2',
+                    storeName: 'commonStore',
+                    size: 1024
+                });
+                return localforage3b.ready();
+            }).then(function() {
+                var promise1 = localforage1.setItem('key1', 'value1').then(function() {
+                    return localforage1.getItem('key1');
                 }).then(function(value) {
                     expect(value).to.be('value1');
                 });
 
-                var promise2 = localforage2.setItem('key', 'value2').then(function() {
-                    return localforage2.getItem('key');
+                var promise2 = localforage2.setItem('key2', 'value2').then(function() {
+                    return localforage2.getItem('key2');
                 }).then(function(value) {
                     expect(value).to.be('value2');
                 });
 
-                var promise3 = localforage3.setItem('key', 'value3').then(function() {
-                    return localforage3.getItem('key');
+                var promise3 = localforage3.setItem('key3', 'value3').then(function() {
+                    return localforage3.getItem('key3');
                 }).then(function(value) {
                     expect(value).to.be('value3');
                 });
 
-                Promise.all([
+                var promise4 = localforage3b.setItem('key3', 'value3').then(function() {
+                    return localforage3.getItem('key3');
+                }).then(function(value) {
+                    expect(value).to.be('value3');
+                });
+
+                return Promise.all([
                     promise1,
                     promise2,
-                    promise3
-                ]).then(function() {
-                    done();
-                }).catch(function(errors) {
-                    done(new Error(errors));
-                });
+                    promise3,
+                    promise4
+                ]);
             });
+        });
+
+        it('can create multiple instances of the same store concurrently', function() {
+            var localforage1 = localforage.createInstance({
+                name: 'commonStorage3',
+                storeName: 'commonStore',
+                size: 1024
+            });
+
+            var localforage2 = localforage.createInstance({
+                name: 'commonStorage3',
+                storeName: 'commonStore',
+                size: 1024
+            });
+
+            var localforage3 = localforage.createInstance({
+                name: 'commonStorage3',
+                storeName: 'commonStore',
+                size: 1024
+            });
+
+            var localforage3b = localforage.createInstance({
+                name: 'commonStorage3',
+                storeName: 'commonStore',
+                size: 1024
+            });
+
+            var promise1 = localforage1.setItem('key1', 'value1').then(function() {
+                return localforage1.getItem('key1');
+            }).then(function(value) {
+                expect(value).to.be('value1');
+            });
+
+            var promise2 = localforage2.setItem('key2', 'value2').then(function() {
+                return localforage2.getItem('key2');
+            }).then(function(value) {
+                expect(value).to.be('value2');
+            });
+
+            var promise3 = localforage3.setItem('key3', 'value3').then(function() {
+                return localforage3.getItem('key3');
+            }).then(function(value) {
+                expect(value).to.be('value3');
+            });
+
+            var promise4 = localforage3b.setItem('key3', 'value3').then(function() {
+                return localforage3.getItem('key3');
+            }).then(function(value) {
+                expect(value).to.be('value3');
+            });
+
+            return Promise.all([
+                promise1,
+                promise2,
+                promise3,
+                promise4
+            ]);
         });
     });
 
