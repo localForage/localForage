@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 import createBlob from './createBlob';
 
 // Sadly, the best way to save binary data in WebSQL/localStorage is serializing
@@ -154,7 +155,7 @@ function serialize(value, callback) {
             callback(JSON.stringify(value));
         } catch (e) {
             console.error("Couldn't convert value into a JSON string: ",
-                value);
+                          value);
 
             callback(null, e);
         }
@@ -173,8 +174,7 @@ function deserialize(value) {
     // If we haven't marked this string as being specially serialized (i.e.
     // something other than serialized JSON), we can just return it and be
     // done with it.
-    if (value.substring(0,
-            SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
+    if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
         return JSON.parse(value);
     }
 
@@ -183,7 +183,7 @@ function deserialize(value) {
     // with from the data itself.
     var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);
     var type = value.substring(SERIALIZED_MARKER_LENGTH,
-        TYPE_SERIALIZED_MARKER_LENGTH);
+                               TYPE_SERIALIZED_MARKER_LENGTH);
 
     var blobType;
     // Backwards-compatible blob type serialization strategy.

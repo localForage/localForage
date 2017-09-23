@@ -23,7 +23,7 @@ function _initStorage(options) {
     if (options) {
         for (var i in options) {
             dbInfo[i] = typeof(options[i]) !== 'string' ?
-                        options[i].toString() : options[i];
+                options[i].toString() : options[i];
         }
     }
 
@@ -39,14 +39,15 @@ function _initStorage(options) {
 
         // Create our key/value table if it doesn't exist.
         dbInfo.db.transaction(function(t) {
-            t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
-                         ' (id INTEGER PRIMARY KEY, key unique, value)', [],
-                         function() {
-                self._dbInfo = dbInfo;
-                resolve();
-            }, function(t, error) {
-                reject(error);
-            });
+            t.executeSql(
+                'CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
+                ' (id INTEGER PRIMARY KEY, key unique, value)', [],
+                function() {
+                    self._dbInfo = dbInfo;
+                    resolve();
+                }, function(t, error) {
+                    reject(error);
+                });
         });
     });
 
@@ -63,23 +64,24 @@ function getItem(key, callback) {
         self.ready().then(function() {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
-                t.executeSql('SELECT * FROM ' + dbInfo.storeName +
-                             ' WHERE key = ? LIMIT 1', [key],
-                             function(t, results) {
-                    var result = results.rows.length ?
-                                 results.rows.item(0).value : null;
+                t.executeSql(
+                    'SELECT * FROM ' + dbInfo.storeName +
+                    ' WHERE key = ? LIMIT 1', [key],
+                    function(t, results) {
+                        var result = results.rows.length ?
+                            results.rows.item(0).value : null;
 
-                    // Check to see if this is serialized content we need to
-                    // unpack.
-                    if (result) {
-                        result = dbInfo.serializer.deserialize(result);
-                    }
+                        // Check to see if this is serialized content we need to
+                        // unpack.
+                        if (result) {
+                            result = dbInfo.serializer.deserialize(result);
+                        }
 
-                    resolve(result);
-                }, function(t, error) {
+                        resolve(result);
+                    }, function(t, error) {
 
-                    reject(error);
-                });
+                        reject(error);
+                    });
             });
         }).catch(reject);
     });
@@ -96,7 +98,8 @@ function iterate(iterator, callback) {
             var dbInfo = self._dbInfo;
 
             dbInfo.db.transaction(function(t) {
-                t.executeSql('SELECT * FROM ' + dbInfo.storeName, [],
+                t.executeSql(
+                    'SELECT * FROM ' + dbInfo.storeName, [],
                     function(t, results) {
                         var rows = results.rows;
                         var length = rows.length;
@@ -156,14 +159,16 @@ function _setItem(key, value, callback, retriesLeft) {
                     reject(error);
                 } else {
                     dbInfo.db.transaction(function(t) {
-                        t.executeSql('INSERT OR REPLACE INTO ' +
-                                     dbInfo.storeName +
-                                     ' (key, value) VALUES (?, ?)',
-                                     [key, value], function() {
-                            resolve(originalValue);
-                        }, function(t, error) {
-                            reject(error);
-                        });
+                        t.executeSql(
+                            'INSERT OR REPLACE INTO ' +
+                            dbInfo.storeName +
+                            ' (key, value) VALUES (?, ?)',
+                            [key, value],
+                            function() {
+                                resolve(originalValue);
+                            }, function(t, error) {
+                                reject(error);
+                            });
                     }, function(sqlError) {
                         // The transaction failed; check
                         // to see if it's a quota error.
@@ -204,14 +209,14 @@ function removeItem(key, callback) {
         self.ready().then(function() {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
-                t.executeSql('DELETE FROM ' + dbInfo.storeName +
-                             ' WHERE key = ?', [key],
-                             function() {
-                    resolve();
-                }, function(t, error) {
-
-                    reject(error);
-                });
+                t.executeSql(
+                    'DELETE FROM ' + dbInfo.storeName +
+                    ' WHERE key = ?', [key],
+                    function() {
+                        resolve();
+                    }, function(t, error) {
+                        reject(error);
+                    });
             });
         }).catch(reject);
     });
@@ -229,12 +234,13 @@ function clear(callback) {
         self.ready().then(function() {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
-                t.executeSql('DELETE FROM ' + dbInfo.storeName, [],
-                             function() {
-                    resolve();
-                }, function(t, error) {
-                    reject(error);
-                });
+                t.executeSql(
+                    'DELETE FROM ' + dbInfo.storeName, [],
+                    function() {
+                        resolve();
+                    }, function(t, error) {
+                        reject(error);
+                    });
             });
         }).catch(reject);
     });
@@ -253,15 +259,16 @@ function length(callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 // Ahhh, SQL makes this one soooooo easy.
-                t.executeSql('SELECT COUNT(key) as c FROM ' +
-                             dbInfo.storeName, [], function(t, results) {
-                    var result = results.rows.item(0).c;
+                t.executeSql(
+                    'SELECT COUNT(key) as c FROM ' +
+                    dbInfo.storeName, [],
+                    function(t, results) {
+                        var result = results.rows.item(0).c;
 
-                    resolve(result);
-                }, function(t, error) {
-
-                    reject(error);
-                });
+                        resolve(result);
+                    }, function(t, error) {
+                        reject(error);
+                    });
             });
         }).catch(reject);
     });
@@ -284,15 +291,16 @@ function key(n, callback) {
         self.ready().then(function() {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
-                t.executeSql('SELECT key FROM ' + dbInfo.storeName +
-                             ' WHERE id = ? LIMIT 1', [n + 1],
-                             function(t, results) {
-                    var result = results.rows.length ?
-                                 results.rows.item(0).key : null;
-                    resolve(result);
-                }, function(t, error) {
-                    reject(error);
-                });
+                t.executeSql(
+                    'SELECT key FROM ' + dbInfo.storeName +
+                    ' WHERE id = ? LIMIT 1', [n + 1],
+                    function(t, results) {
+                        var result = results.rows.length ?
+                            results.rows.item(0).key : null;
+                        resolve(result);
+                    }, function(t, error) {
+                        reject(error);
+                    });
             });
         }).catch(reject);
     });
@@ -308,19 +316,19 @@ function keys(callback) {
         self.ready().then(function() {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
-                t.executeSql('SELECT key FROM ' + dbInfo.storeName, [],
-                             function(t, results) {
-                    var keys = [];
+                t.executeSql(
+                    'SELECT key FROM ' + dbInfo.storeName, [],
+                    function(t, results) {
+                        var keys = [];
 
-                    for (var i = 0; i < results.rows.length; i++) {
-                        keys.push(results.rows.item(i).key);
-                    }
+                        for (var i = 0; i < results.rows.length; i++) {
+                            keys.push(results.rows.item(i).key);
+                        }
 
-                    resolve(keys);
-                }, function(t, error) {
-
-                    reject(error);
-                });
+                        resolve(keys);
+                    }, function(t, error) {
+                        reject(error);
+                    });
             });
         }).catch(reject);
     });

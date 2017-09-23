@@ -402,8 +402,7 @@ DRIVERS.forEach(function(driverName) {
                 localforage.getItem('officeX', function(err, value) {
                     expect(value).to.be(setValue);
 
-                    localforage.setItem('officeY', 'InitechY',
-                                        function(err, setValue) {
+                    localforage.setItem('officeY', 'InitechY', function(err, setValue) {
                         expect(setValue).to.be('InitechY');
 
                         localforage.getItem('officeY', function(err, value) {
@@ -461,8 +460,7 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        it('should break iteration with defined return value [callback]',
-           function(done) {
+        it('should break iteration with defined return value [callback]', function(done) {
             var breakCondition = 'Some value!';
 
             localforage.setItem('officeX', 'InitechX', function(err, setValue) {
@@ -471,8 +469,7 @@ DRIVERS.forEach(function(driverName) {
                 localforage.getItem('officeX', function(err, value) {
                     expect(value).to.be(setValue);
 
-                    localforage.setItem('officeY', 'InitechY',
-                                        function(err, setValue) {
+                    localforage.setItem('officeY', 'InitechY', function(err, setValue) {
                         expect(setValue).to.be('InitechY');
 
                         localforage.getItem('officeY', function(err, value) {
@@ -495,8 +492,7 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
-        it('should break iteration with defined return value [promise]',
-           function(done) {
+        it('should break iteration with defined return value [promise]', function(done) {
             var breakCondition = 'Some value!';
 
             localforage.setItem('officeX', 'InitechX').then(function(setValue) {
@@ -615,12 +611,10 @@ DRIVERS.forEach(function(driverName) {
         });
 
         it('saves an item over an existing key [callback]', function(done) {
-            localforage.setItem('4th floor', 'Mozilla',
-                                function(err, setValue) {
+            localforage.setItem('4th floor', 'Mozilla', function(err, setValue) {
                 expect(setValue).to.be('Mozilla');
 
-                localforage.setItem('4th floor', 'Quora',
-                                    function(err, newValue) {
+                localforage.setItem('4th floor', 'Quora', function(err, newValue) {
                     expect(newValue).to.not.be(setValue);
                     expect(newValue).to.be('Quora');
 
@@ -727,12 +721,10 @@ DRIVERS.forEach(function(driverName) {
             localforage.setItem('office', 'Initech', function() {
                 localforage.setItem('otherOffice', 'Initrode', function() {
                     localforage.removeItem('office', function() {
-                        localforage.getItem('office',
-                                            function(err, emptyValue) {
+                        localforage.getItem('office', function(err, emptyValue) {
                             expect(emptyValue).to.be(null);
 
-                            localforage.getItem('otherOffice',
-                                                function(err, value) {
+                            localforage.getItem('otherOffice', function(err, value) {
                                 expect(value).to.be('Initrode');
 
                                 done();
@@ -965,6 +957,7 @@ DRIVERS.forEach(function(driverName) {
         // Refers to issue #492 - https://github.com/mozilla/localForage/issues/492
         if (driverName === localforage.INDEXEDDB) {
             return new Promise(function(resolve) {
+                // eslint-disable-next-line no-use-before-define
                 var indexedDB = (indexedDB || window.indexedDB ||
                                  window.webkitIndexedDB ||
                                  window.mozIndexedDB || window.OIndexedDB ||

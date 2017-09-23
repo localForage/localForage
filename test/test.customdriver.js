@@ -43,8 +43,7 @@ describe('When Custom Drivers are used', function() {
         });
     });
 
-    it('fails to define a custom driver with overlapping driver name',
-       function(done) {
+    it('fails to define a custom driver with overlapping driver name', function(done) {
         localforage.defineDriver({
             _driver: localforage.INDEXEDDB,
             _initStorage: function() {},
@@ -63,8 +62,7 @@ describe('When Custom Drivers are used', function() {
         });
     });
 
-    it('fails to define a custom driver with overlapping driver name [promise]',
-       function(done) {
+    it('fails to define a custom driver with overlapping driver name [promise]', function(done) {
         localforage.defineDriver({
             _driver: localforage.INDEXEDDB,
             _initStorage: function() {},
@@ -99,8 +97,7 @@ describe('When Custom Drivers are used', function() {
         });
     });
 
-    it('fails to define a custom driver with missing methods [promise]',
-       function(done) {
+    it('fails to define a custom driver with missing methods [promise]', function(done) {
         localforage.defineDriver({
             _driver: 'missingMethodsDriver',
             _initStorage: function() {},
@@ -219,11 +216,9 @@ describe('When Custom Drivers are used', function() {
         localforage.defineDriver(dummyStorageDriver, function() {
             localforage.setDriver(dummyStorageDriver._driver, function(err) {
                 expect(err).to.be(undefined);
-                localforage.setItem('testCallbackKey', 'testCallbackValue',
-                                    function(err) {
+                localforage.setItem('testCallbackKey', 'testCallbackValue', function(err) {
                     expect(err).to.be(null);
-                    localforage.getItem('testCallbackKey',
-                                        function(err, value) {
+                    localforage.getItem('testCallbackKey', function(err, value) {
                         expect(err).to.be(null);
                         expect(value).to.be('testCallbackValue');
                         done();

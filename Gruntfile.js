@@ -1,4 +1,3 @@
-/* jshint node:true */
 var path = require('path');
 var saucelabsBrowsers = require(path.resolve('test', 'saucelabs-browsers.js'));
 
@@ -136,14 +135,8 @@ module.exports = exports = function(grunt) {
                 }]
             }
         },
-        jscs: {
-            source: sourceFiles
-        },
-        jshint: {
-            options: {
-                jshintrc: '.jshintrc'
-            },
-            source: sourceFiles
+        eslint: {
+            target: sourceFiles
         },
         mocha: {
             unit: {
@@ -202,7 +195,6 @@ module.exports = exports = function(grunt) {
                 files: ['src/*.js', 'src/**/*.js'],
                 tasks: ['build']
             },
-            /*jshint scripturl:true */
             'mocha:unit': {
                 files: [
                     'dist/localforage.js',
@@ -210,8 +202,7 @@ module.exports = exports = function(grunt) {
                     'test/test.*.*'
                 ],
                 tasks: [
-                    'jshint',
-                    'jscs',
+                    'eslint',
                     'browserify:package_bundling_test',
                     'webpack:package_bundling_test',
                     'mocha:unit'
@@ -240,8 +231,7 @@ module.exports = exports = function(grunt) {
     var testTasks = [
         'build',
         'babel',
-        'jshint',
-        'jscs',
+        'eslint',
         'ts:typing_tests',
         'browserify:package_bundling_test',
         'webpack:package_bundling_test',

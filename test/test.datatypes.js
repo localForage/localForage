@@ -13,8 +13,8 @@ function createBlob(parts, properties) {
         }
         var Builder = typeof BlobBuilder !== 'undefined' ? BlobBuilder :
             typeof MSBlobBuilder !== 'undefined' ? MSBlobBuilder :
-                typeof MozBlobBuilder !== 'undefined' ? MozBlobBuilder :
-                    WebKitBlobBuilder;
+            typeof MozBlobBuilder !== 'undefined' ? MozBlobBuilder :
+            WebKitBlobBuilder;
         var builder = new Builder();
         for (var i = 0; i < parts.length; i += 1) {
             builder.append(parts[i]);
@@ -332,8 +332,8 @@ DRIVERS.forEach(function(driverName) {
         // Skip binary(Blob) data tests if Blob isn't supported.
         if (typeof Blob === 'function') {
             it('saves binary (Blob) data', function(done) {
-                var fileParts = ['<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>'];
-                var mimeString = 'text\/html';
+                var fileParts = ['<a id="a"><b id="b">hey!</b></a>'];
+                var mimeString = 'text/html';
 
                 var testBlob = createBlob(fileParts, { 'type' : mimeString });
 
@@ -364,8 +364,8 @@ DRIVERS.forEach(function(driverName) {
 
         if (typeof Blob === 'function') {
             it('saves binary (Blob) data, iterate back', function(done) {
-                var fileParts = ['<a id=\"a\"><b id=\"b\">hey!<\/b><\/a>'];
-                var mimeString = 'text\/html';
+                var fileParts = ['<a id="a"><b id="b">hey!</b></a>'];
+                var mimeString = 'text/html';
 
                 var testBlob = createBlob(fileParts, { 'type' : mimeString });
 

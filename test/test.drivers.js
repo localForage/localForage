@@ -60,8 +60,8 @@ describe('Driver API', function() {
 
             // These should be rejected in component builds but aren't.
             // TODO: Look into why.
-            localforage.setDriver(localforage.INDEXEDDB).then(null,
-                                                              function() {
+            localforage.setDriver(localforage.INDEXEDDB)
+            .then(null, function() {
                 expect(localforage.driver()).to.be(previousDriver);
                 done();
             });
@@ -101,8 +101,8 @@ describe('Driver API', function() {
             var previousDriver = localforage.driver();
             expect(previousDriver).to.not.be(localforage.LOCALSTORAGE);
 
-            localforage.setDriver(localforage.LOCALSTORAGE).then(null,
-                                                              function() {
+            localforage.setDriver(localforage.LOCALSTORAGE)
+            .then(null, function() {
                 expect(localforage.driver()).to.be(previousDriver);
                 done();
             });
@@ -143,8 +143,8 @@ describe('Driver API', function() {
             var previousDriver = localforage.driver();
             expect(previousDriver).to.not.be(localforage.WEBSQL);
 
-            localforage.setDriver(localforage.WEBSQL).then(null,
-                                                              function() {
+            localforage.setDriver(localforage.WEBSQL)
+            .then(null, function() {
                 expect(localforage.driver()).to.be(previousDriver);
                 done();
             });

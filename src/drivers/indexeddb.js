@@ -488,7 +488,7 @@ function iterate(iterator, callback) {
                                 value = _decodeBlob(value);
                             }
                             var result = iterator(value, cursor.key,
-                                iterationNumber++);
+                                                  iterationNumber++);
 
                             // when the iterator callback retuns any
                             // (non-`undefined`) value, then we stop
