@@ -19,6 +19,7 @@ var driverApiMethods = [
     'keys'
 ];
 
+// eslint-disable-next-line no-use-before-define
 var indexedDB = (indexedDB || window.indexedDB ||
                  window.webkitIndexedDB ||
                  window.mozIndexedDB || window.OIndexedDB ||

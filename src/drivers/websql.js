@@ -76,10 +76,10 @@ function tryExecuteSql(t, dbInfo, sqlStatement, args, callback, errorCallback) {
                         // if the table is missing (was deleted)
                         // re-create it table and retry
                         createDbTable(t, dbInfo,
-                            function() {
-                                t.executeSql(sqlStatement, args, callback, errorCallback);
-                            },
-                            errorCallback
+                                      function() {
+                                          t.executeSql(sqlStatement, args, callback, errorCallback);
+                                      },
+                                      errorCallback
                         );
                     } else {
                         errorCallback(t, error);
@@ -102,24 +102,24 @@ function getItem(key, callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 tryExecuteSql(t, dbInfo,
-                    `SELECT * FROM ${dbInfo.storeName} WHERE key = ? LIMIT 1`,
-                    [key],
-                    function(t, results) {
-                        var result = results.rows.length ?
-                                     results.rows.item(0).value : null;
+                              `SELECT * FROM ${dbInfo.storeName} WHERE key = ? LIMIT 1`,
+                              [key],
+                              function(t, results) {
+                                  var result = results.rows.length ?
+                                      results.rows.item(0).value : null;
 
-                        // Check to see if this is serialized content we need to
-                        // unpack.
-                        if (result) {
-                            result = dbInfo.serializer.deserialize(result);
-                        }
+                                  // Check to see if this is serialized content we need to
+                                  // unpack.
+                                  if (result) {
+                                      result = dbInfo.serializer.deserialize(result);
+                                  }
 
-                        resolve(result);
-                    },
-                    function(t, error) {
+                                  resolve(result);
+                              },
+                              function(t, error) {
 
-                        reject(error);
-                    }
+                                  reject(error);
+                              }
                 );
             });
         }).catch(reject);
@@ -138,37 +138,37 @@ function iterate(iterator, callback) {
 
             dbInfo.db.transaction(function(t) {
                 tryExecuteSql(t, dbInfo,
-                    `SELECT * FROM ${dbInfo.storeName}`,
-                    [],
-                    function(t, results) {
-                        var rows = results.rows;
-                        var length = rows.length;
+                              `SELECT * FROM ${dbInfo.storeName}`,
+                              [],
+                              function(t, results) {
+                                  var rows = results.rows;
+                                  var length = rows.length;
 
-                        for (var i = 0; i < length; i++) {
-                            var item = rows.item(i);
-                            var result = item.value;
+                                  for (var i = 0; i < length; i++) {
+                                      var item = rows.item(i);
+                                      var result = item.value;
 
-                            // Check to see if this is serialized content
-                            // we need to unpack.
-                            if (result) {
-                                result = dbInfo.serializer.deserialize(result);
-                            }
+                                      // Check to see if this is serialized content
+                                      // we need to unpack.
+                                      if (result) {
+                                          result = dbInfo.serializer.deserialize(result);
+                                      }
 
-                            result = iterator(result, item.key, i + 1);
+                                      result = iterator(result, item.key, i + 1);
 
-                            // void(0) prevents problems with redefinition
-                            // of `undefined`.
-                            if (result !== void(0)) {
-                                resolve(result);
-                                return;
-                            }
-                        }
+                                      // void(0) prevents problems with redefinition
+                                      // of `undefined`.
+                                      if (result !== void(0)) {
+                                          resolve(result);
+                                          return;
+                                      }
+                                  }
 
-                        resolve();
-                    },
-                    function(t, error) {
-                        reject(error);
-                    }
+                                  resolve();
+                              },
+                              function(t, error) {
+                                  reject(error);
+                              }
                 );
             });
         }).catch(reject);
@@ -202,16 +202,16 @@ function _setItem(key, value, callback, retriesLeft) {
                 } else {
                     dbInfo.db.transaction(function(t) {
                         tryExecuteSql(t, dbInfo,
-                            `INSERT OR REPLACE INTO
+                                      `INSERT OR REPLACE INTO
                              ${dbInfo.storeName}
                              (key, value) VALUES (?, ?)`,
-                            [key, value],
-                            function() {
-                                resolve(originalValue);
-                            },
-                            function(t, error) {
-                                reject(error);
-                            }
+                                      [key, value],
+                                      function() {
+                                          resolve(originalValue);
+                                      },
+                                      function(t, error) {
+                                          reject(error);
+                                      }
                         );
                     }, function(sqlError) {
                         // The transaction failed; check
@@ -254,15 +254,15 @@ function removeItem(key, callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 tryExecuteSql(t, dbInfo,
-                    `DELETE FROM ${dbInfo.storeName}
+                              `DELETE FROM ${dbInfo.storeName}
                      WHERE key = ?`,
-                    [key],
-                    function() {
-                        resolve();
-                    },
-                    function(t, error) {
-                        reject(error);
-                    }
+                              [key],
+                              function() {
+                                  resolve();
+                              },
+                              function(t, error) {
+                                  reject(error);
+                              }
                 );
             });
         }).catch(reject);
@@ -282,14 +282,14 @@ function clear(callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 tryExecuteSql(t, dbInfo,
-                    `DELETE FROM ${dbInfo.storeName}`,
-                    [],
-                    function() {
-                        resolve();
-                    },
-                    function(t, error) {
-                        reject(error);
-                    }
+                              `DELETE FROM ${dbInfo.storeName}`,
+                              [],
+                              function() {
+                                  resolve();
+                              },
+                              function(t, error) {
+                                  reject(error);
+                              }
                 );
             });
         }).catch(reject);
@@ -310,15 +310,15 @@ function length(callback) {
             dbInfo.db.transaction(function(t) {
                 // Ahhh, SQL makes this one soooooo easy.
                 tryExecuteSql(t, dbInfo,
-                    `SELECT COUNT(key) as c FROM ${dbInfo.storeName}`,
-                    [],
-                    function(t, results) {
-                        var result = results.rows.item(0).c;
-                        resolve(result);
-                    },
-                    function(t, error) {
-                        reject(error);
-                    }
+                              `SELECT COUNT(key) as c FROM ${dbInfo.storeName}`,
+                              [],
+                              function(t, results) {
+                                  var result = results.rows.item(0).c;
+                                  resolve(result);
+                              },
+                              function(t, error) {
+                                  reject(error);
+                              }
                 );
             });
         }).catch(reject);
@@ -343,17 +343,17 @@ function key(n, callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 tryExecuteSql(t, dbInfo,
-                    `SELECT key FROM ${dbInfo.storeName}
+                              `SELECT key FROM ${dbInfo.storeName}
                      WHERE id = ? LIMIT 1`,
-                    [n + 1],
-                    function(t, results) {
-                        var result = results.rows.length ?
-                                     results.rows.item(0).key : null;
-                        resolve(result);
-                    },
-                    function(t, error) {
-                        reject(error);
-                    }
+                              [n + 1],
+                              function(t, results) {
+                                  var result = results.rows.length ?
+                                      results.rows.item(0).key : null;
+                                  resolve(result);
+                              },
+                              function(t, error) {
+                                  reject(error);
+                              }
                 );
             });
         }).catch(reject);
@@ -371,20 +371,20 @@ function keys(callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 tryExecuteSql(t, dbInfo,
-                    `SELECT key FROM ${dbInfo.storeName}`,
-                    [],
-                    function(t, results) {
-                        var keys = [];
+                              `SELECT key FROM ${dbInfo.storeName}`,
+                              [],
+                              function(t, results) {
+                                  var keys = [];
 
-                        for (var i = 0; i < results.rows.length; i++) {
-                            keys.push(results.rows.item(i).key);
-                        }
+                                  for (var i = 0; i < results.rows.length; i++) {
+                                      keys.push(results.rows.item(i).key);
+                                  }
 
-                        resolve(keys);
-                    },
-                    function(t, error) {
-                        reject(error);
-                    }
+                                  resolve(keys);
+                              },
+                              function(t, error) {
+                                  reject(error);
+                              }
                 );
             });
         }).catch(reject);

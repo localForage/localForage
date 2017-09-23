@@ -335,12 +335,14 @@ function createTransaction(dbInfo, mode, callback, retries) {
              err.name === 'NotFoundError')) {
 
             return Promise.resolve().then(() => {
-                if (!dbInfo.db ||
-                    (err.name === 'NotFoundError' &&
-                     !dbInfo.db.objectStoreNames.contains(dbInfo.storeName) &&
-                     dbInfo.version <= dbInfo.db.version)
-                    ) {
-                    // increase the db version, to create the new OnjectStore
+                if (!dbInfo.db || (
+                    err.name === 'NotFoundError' &&
+                    !dbInfo.db.objectStoreNames.contains(
+                        dbInfo.storeName
+                    ) &&
+                    dbInfo.version <= dbInfo.db.version
+                )) {
+                    // increase the db version, to create the new ObjectStore
                     if (dbInfo.db) {
                         dbInfo.version = dbInfo.db.version + 1;
                     }
