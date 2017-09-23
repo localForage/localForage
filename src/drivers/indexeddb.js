@@ -352,8 +352,6 @@ function createTransaction(dbInfo, mode, callback, retries) {
             }).then(() => {
                 return _tryReconnect(dbInfo).then(function() {
                     createTransaction(dbInfo, mode, callback, retries - 1);
-                    // var tx = dbInfo.db.transaction(dbInfo.storeName, mode);
-                    // callback(null, tx);
                 });
             }).catch(callback);
         }
@@ -904,7 +902,6 @@ function dropInstance(options, callback) {
                 }
 
                 var dropObjectPromise = new Promise(function(resolve, reject) {
-
                     var req = idb.open(options.name, newVersion);
 
                     req.onerror = reject;
