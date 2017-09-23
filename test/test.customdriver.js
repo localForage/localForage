@@ -241,4 +241,62 @@ describe('When Custom Drivers are used', function() {
         });
     });
 
+    describe('when dropInstance is not defined', function() {
+        it('rejects when it is used', function(done) {
+            var customDriver = {
+                _driver: 'dummyStorageDriver' + (+new Date()),
+                _initStorage: function() { },
+                _support: function() {
+                    return Promise.resolve(true);
+                },
+                iterate: function() { },
+                getItem: function() { },
+                setItem: function() { },
+                removeItem: function() { },
+                clear: function() { },
+                length: function() { },
+                key: function() { },
+                keys: function() { }
+            };
+
+            localforage.defineDriver(customDriver).then(function() {
+                return localforage.setDriver(customDriver._driver);
+            }).then(function() {
+                return localforage.dropInstance();
+            }).catch(function(err) {
+                expect(err.message).to.be('Method dropInstance is not implemented by the current driver');
+                done();
+            });
+        });
+    });
+
+    describe('when dropInstance is defined', function() {
+        it('is does not reject', function(done) {
+            var customDriver = {
+                _driver: 'dummyStorageDriver' + (+new Date()),
+                _initStorage: function() { },
+                _support: function() {
+                    return Promise.resolve(true);
+                },
+                iterate: function() { },
+                getItem: function() { },
+                setItem: function() { },
+                removeItem: function() { },
+                clear: function() { },
+                length: function() { },
+                key: function() { },
+                keys: function() { },
+                dropInstance: function() { }
+            };
+
+            localforage.defineDriver(customDriver).then(function() {
+                return localforage.setDriver(customDriver._driver);
+            }).then(function() {
+                return localforage.dropInstance();
+            }).then(function() {
+                done();
+            });
+        });
+    });
+
 });

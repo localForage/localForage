@@ -2,6 +2,7 @@ import serializer from '../utils/serializer';
 import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
 import normalizeKey from '../utils/normalizeKey';
+import getCallback from '../utils/getCallback';
 
 /*
  * Includes code from:
@@ -12,6 +13,17 @@ import normalizeKey from '../utils/normalizeKey';
  * Copyright (c) 2012 Niklas von Hertzen
  * Licensed under the MIT license.
  */
+
+function createDbTable(t, dbInfo, callback, errorCallback) {
+    t.executeSql(
+        `CREATE TABLE IF NOT EXISTS ${dbInfo.storeName}
+         (id INTEGER PRIMARY KEY, key unique, value)`,
+        [],
+        callback,
+        errorCallback
+    );
+}
+
 // Open the WebSQL database (automatically creates one if one didn't
 // previously exist), using any options set in the config.
 function _initStorage(options) {
@@ -39,20 +51,45 @@ function _initStorage(options) {
 
         // Create our key/value table if it doesn't exist.
         dbInfo.db.transaction(function(t) {
-            t.executeSql(
-                'CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
-                ' (id INTEGER PRIMARY KEY, key unique, value)', [],
-                function() {
-                    self._dbInfo = dbInfo;
-                    resolve();
-                }, function(t, error) {
-                    reject(error);
-                });
-        });
+            createDbTable(t, dbInfo, function() {
+                self._dbInfo = dbInfo;
+                resolve();
+            }, function(t, error) {
+                reject(error);
+            });
+        }, reject);
     });
 
     dbInfo.serializer = serializer;
     return dbInfoPromise;
+}
+
+function tryExecuteSql(t, dbInfo, sqlStatement, args, callback, errorCallback) {
+    t.executeSql(sqlStatement, args, callback, function(t, error) {
+        if (error.code === error.SYNTAX_ERR) {
+            t.executeSql(
+                `SELECT name FROM sqlite_master
+                 WHERE type='table' AND name = ?`,
+                [name],
+                function(t, results) {
+                    if (!results.rows.length) {
+                        // if the table is missing (was deleted)
+                        // re-create it table and retry
+                        createDbTable(t, dbInfo,
+                            function() {
+                                t.executeSql(sqlStatement, args, callback, errorCallback);
+                            },
+                            errorCallback
+                        );
+                    } else {
+                        errorCallback(t, error);
+                    }
+                },
+                errorCallback);
+        } else {
+            errorCallback(t, error);
+        }
+    }, errorCallback);
 }
 
 function getItem(key, callback) {
@@ -64,12 +101,12 @@ function getItem(key, callback) {
         self.ready().then(function() {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
-                t.executeSql(
-                    'SELECT * FROM ' + dbInfo.storeName +
-                    ' WHERE key = ? LIMIT 1', [key],
+                tryExecuteSql(t, dbInfo,
+                    `SELECT * FROM ${dbInfo.storeName} WHERE key = ? LIMIT 1`,
+                    [key],
                     function(t, results) {
                         var result = results.rows.length ?
-                            results.rows.item(0).value : null;
+                                     results.rows.item(0).value : null;
 
                         // Check to see if this is serialized content we need to
                         // unpack.
@@ -78,10 +115,12 @@ function getItem(key, callback) {
                         }
 
                         resolve(result);
-                    }, function(t, error) {
+                    },
+                    function(t, error) {
 
                         reject(error);
-                    });
+                    }
+                );
             });
         }).catch(reject);
     });
@@ -98,8 +137,9 @@ function iterate(iterator, callback) {
             var dbInfo = self._dbInfo;
 
             dbInfo.db.transaction(function(t) {
-                t.executeSql(
-                    'SELECT * FROM ' + dbInfo.storeName, [],
+                tryExecuteSql(t, dbInfo,
+                    `SELECT * FROM ${dbInfo.storeName}`,
+                    [],
                     function(t, results) {
                         var rows = results.rows;
                         var length = rows.length;
@@ -125,9 +165,11 @@ function iterate(iterator, callback) {
                         }
 
                         resolve();
-                    }, function(t, error) {
+                    },
+                    function(t, error) {
                         reject(error);
-                    });
+                    }
+                );
             });
         }).catch(reject);
     });
@@ -159,16 +201,18 @@ function _setItem(key, value, callback, retriesLeft) {
                     reject(error);
                 } else {
                     dbInfo.db.transaction(function(t) {
-                        t.executeSql(
-                            'INSERT OR REPLACE INTO ' +
-                            dbInfo.storeName +
-                            ' (key, value) VALUES (?, ?)',
+                        tryExecuteSql(t, dbInfo,
+                            `INSERT OR REPLACE INTO
+                             ${dbInfo.storeName}
+                             (key, value) VALUES (?, ?)`,
                             [key, value],
                             function() {
                                 resolve(originalValue);
-                            }, function(t, error) {
+                            },
+                            function(t, error) {
                                 reject(error);
-                            });
+                            }
+                        );
                     }, function(sqlError) {
                         // The transaction failed; check
                         // to see if it's a quota error.
@@ -209,14 +253,17 @@ function removeItem(key, callback) {
         self.ready().then(function() {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
-                t.executeSql(
-                    'DELETE FROM ' + dbInfo.storeName +
-                    ' WHERE key = ?', [key],
+                tryExecuteSql(t, dbInfo,
+                    `DELETE FROM ${dbInfo.storeName}
+                     WHERE key = ?`,
+                    [key],
                     function() {
                         resolve();
-                    }, function(t, error) {
+                    },
+                    function(t, error) {
                         reject(error);
-                    });
+                    }
+                );
             });
         }).catch(reject);
     });
@@ -234,13 +281,16 @@ function clear(callback) {
         self.ready().then(function() {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
-                t.executeSql(
-                    'DELETE FROM ' + dbInfo.storeName, [],
+                tryExecuteSql(t, dbInfo,
+                    `DELETE FROM ${dbInfo.storeName}`,
+                    [],
                     function() {
                         resolve();
-                    }, function(t, error) {
+                    },
+                    function(t, error) {
                         reject(error);
-                    });
+                    }
+                );
             });
         }).catch(reject);
     });
@@ -259,16 +309,17 @@ function length(callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 // Ahhh, SQL makes this one soooooo easy.
-                t.executeSql(
-                    'SELECT COUNT(key) as c FROM ' +
-                    dbInfo.storeName, [],
+                tryExecuteSql(t, dbInfo,
+                    `SELECT COUNT(key) as c FROM ${dbInfo.storeName}`,
+                    [],
                     function(t, results) {
                         var result = results.rows.item(0).c;
-
                         resolve(result);
-                    }, function(t, error) {
+                    },
+                    function(t, error) {
                         reject(error);
-                    });
+                    }
+                );
             });
         }).catch(reject);
     });
@@ -291,16 +342,19 @@ function key(n, callback) {
         self.ready().then(function() {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
-                t.executeSql(
-                    'SELECT key FROM ' + dbInfo.storeName +
-                    ' WHERE id = ? LIMIT 1', [n + 1],
+                tryExecuteSql(t, dbInfo,
+                    `SELECT key FROM ${dbInfo.storeName}
+                     WHERE id = ? LIMIT 1`,
+                    [n + 1],
                     function(t, results) {
                         var result = results.rows.length ?
-                            results.rows.item(0).key : null;
+                                     results.rows.item(0).key : null;
                         resolve(result);
-                    }, function(t, error) {
+                    },
+                    function(t, error) {
                         reject(error);
-                    });
+                    }
+                );
             });
         }).catch(reject);
     });
@@ -316,8 +370,9 @@ function keys(callback) {
         self.ready().then(function() {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
-                t.executeSql(
-                    'SELECT key FROM ' + dbInfo.storeName, [],
+                tryExecuteSql(t, dbInfo,
+                    `SELECT key FROM ${dbInfo.storeName}`,
+                    [],
                     function(t, results) {
                         var keys = [];
 
@@ -326,12 +381,117 @@ function keys(callback) {
                         }
 
                         resolve(keys);
-                    }, function(t, error) {
+                    },
+                    function(t, error) {
                         reject(error);
-                    });
+                    }
+                );
             });
         }).catch(reject);
     });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+// https://www.w3.org/TR/webdatabase/#databases
+// > There is no way to enumerate or delete the databases available for an origin from this API.
+function getAllStoreNames(db) {
+    return new Promise(function(resolve, reject) {
+        db.transaction(function(t) {
+            t.executeSql(
+                `SELECT name FROM sqlite_master
+                 WHERE type='table' AND name <> '__WebKitDatabaseInfoTable__'`,
+                [],
+                function(t, results) {
+                    var storeNames = [];
+
+                    for (var i = 0; i < results.rows.length; i++) {
+                        storeNames.push(results.rows.item(i).name);
+                    }
+
+                    resolve({
+                        db,
+                        storeNames
+                    });
+                },
+                function(t, error) {
+                    reject(error);
+                }
+            );
+        }, function(sqlError) {
+            reject(sqlError);
+        });
+    });
+}
+
+function dropInstance(options, callback) {
+    callback = getCallback.apply(this, arguments);
+
+    var currentConfig = this.config();
+    options = typeof options !== 'function' && options || {};
+    if (!options.name) {
+        options.name = options.name || currentConfig.name;
+        options.storeName = options.storeName || currentConfig.storeName;
+    }
+
+    var self = this;
+    var promise;
+    if (!options.name) {
+        promise = Promise.reject('Invalid arguments');
+    } else {
+        promise = new Promise(function(resolve) {
+            var db;
+            if (options.name === currentConfig.name) {
+                // use the db reference of the current instance
+                db = self._dbInfo.db;
+            } else {
+                db = openDatabase(options.name, '', '', 0);
+            }
+
+            if (!options.storeName) {
+                // drop all database tables
+                resolve(getAllStoreNames(db));
+            } else {
+                resolve({
+                    db,
+                    storeNames: [options.storeName]
+                });
+            }
+        }).then(function(operationInfo) {
+            return new Promise(function(resolve, reject) {
+                operationInfo.db.transaction(function(t) {
+                    function dropTable(storeName) {
+                        return new Promise(function(resolve, reject) {
+                            t.executeSql(
+                                `DROP TABLE IF EXISTS ${storeName}`,
+                                [],
+                                function() {
+                                    resolve();
+                                },
+                                function(t, error) {
+                                    reject(error);
+                                }
+                            );
+                        });
+                    }
+
+                    var operations = [];
+                    for (var i = 0, len = operationInfo.storeNames.length; i < len; i++) {
+                        operations.push(dropTable(operationInfo.storeNames[i]));
+                    }
+
+                    Promise.all(operations).then(function() {
+                        resolve();
+                    }).catch(function(e) {
+                        reject(e);
+                    });
+                }, function(sqlError) {
+                    reject(sqlError);
+                });
+            });
+        });
+    }
 
     executeCallback(promise, callback);
     return promise;
@@ -347,7 +507,8 @@ var webSQLStorage = {
     clear: clear,
     length: length,
     key: key,
-    keys: keys
+    keys: keys,
+    dropInstance: dropInstance
 };
 
 export default webSQLStorage;
