@@ -3,9 +3,6 @@ describe('When Custom Drivers are used', function() {
     'use strict';
     var errorMessage = 'Custom driver not compliant; see ' +
                        'https://mozilla.github.io/localForage/#definedriver';
-    var nameErrorMessage = function(driverName) {
-        return 'Custom driver name already in use: ' + driverName;
-    };
 
     it('fails to define a no-name custom driver', function(done) {
         localforage.defineDriver({
@@ -39,44 +36,6 @@ describe('When Custom Drivers are used', function() {
         }).then(null, function(err) {
             expect(err).to.be.an(Error);
             expect(err.message).to.be(errorMessage);
-            done();
-        });
-    });
-
-    it('fails to define a custom driver with overlapping driver name', function(done) {
-        localforage.defineDriver({
-            _driver: localforage.INDEXEDDB,
-            _initStorage: function() {},
-            iterate: function() {},
-            getItem: function() {},
-            setItem: function() {},
-            removeItem: function() {},
-            clear: function() {},
-            length: function() {},
-            key: function() {},
-            keys: function() {}
-        }, null,  function(err) {
-            expect(err).to.be.an(Error);
-            expect(err.message).to.be(nameErrorMessage(localforage.INDEXEDDB));
-            done();
-        });
-    });
-
-    it('fails to define a custom driver with overlapping driver name [promise]', function(done) {
-        localforage.defineDriver({
-            _driver: localforage.INDEXEDDB,
-            _initStorage: function() {},
-            iterate: function() {},
-            getItem: function() {},
-            setItem: function() {},
-            removeItem: function() {},
-            clear: function() {},
-            length: function() {},
-            key: function() {},
-            keys: function() {}
-        }).then(null, function(err) {
-            expect(err).to.be.an(Error);
-            expect(err.message).to.be(nameErrorMessage(localforage.INDEXEDDB));
             done();
         });
     });

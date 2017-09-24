@@ -2,7 +2,7 @@ function isLocalStorageValid() {
     try {
         return typeof localStorage !== 'undefined' &&
             ('setItem' in localStorage) &&
-            localStorage.setItem;
+            typeof localStorage.setItem === 'function';
     } catch (e) {
         return false;
     }

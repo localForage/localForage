@@ -1,3 +1,4 @@
+import isIndexedDBValid from '../utils/isIndexedDBValid';
 import createBlob from '../utils/createBlob';
 import idb from '../utils/idb';
 import Promise from '../utils/promise';
@@ -797,6 +798,7 @@ function keys(callback) {
 var asyncStorage = {
     _driver: 'asyncStorage',
     _initStorage: _initStorage,
+    _support: isIndexedDBValid(),
     iterate: iterate,
     getItem: getItem,
     setItem: setItem,

@@ -1,3 +1,4 @@
+import isWebSQLValid from '../utils/isWebSQLValid';
 import serializer from '../utils/serializer';
 import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
@@ -340,6 +341,7 @@ function keys(callback) {
 var webSQLStorage = {
     _driver: 'webSQLStorage',
     _initStorage: _initStorage,
+    _support: isWebSQLValid(),
     iterate: iterate,
     getItem: getItem,
     setItem: setItem,
