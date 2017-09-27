@@ -203,6 +203,7 @@ have drivers for the following frameworks:
 * [AngularJS](https://github.com/ocombe/angular-localForage)
 * [Backbone](https://github.com/localForage/localForage-backbone)
 * [Ember](https://github.com/genkgo/ember-localforage-adapter)
+* [Vue](https://github.com/dmlzj/vlf)
 
 If you have a driver you'd like listed, please
 [open an issue](https://github.com/localForage/localForage/issues/new) to have it
