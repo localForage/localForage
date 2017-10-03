@@ -16,7 +16,7 @@
     "url": "git://github.com/localForage/localForage.git"
   },
   "scripts": {
-    "build": "node -e \"require('').cli()\" null build",
+    "build": "node -e \"require('grunt').cli()\" null build",
     "publish-docs": "node -e \"require('grunt').cli()\" null copy build-rules-html publish-rules",
     "serve": "node -e \"require('grunt').cli()\" null serve",
     "test": "node -e \"require('grunt').cli()\" null test"
