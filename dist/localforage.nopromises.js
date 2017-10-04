@@ -286,7 +286,7 @@ function _getConnection(dbInfo, upgradeNeeded) {
                     }
                 } catch (ex) {
                     if (ex.name === 'ConstraintError') {
-                        console.warn('The database "' + dbInfo.name + '"' + ' has been upgraded from version ' + e.oldVersion + ' to version ' + e.newVersion + ', but the storage "' + dbInfo.storeName + '" already exists.');
+                        console.warn('The database ' + dbInfo.name + ' has been upgraded from version ' + e.oldVersion + ' to version ' + e.newVersion + ', but the storage ' + dbInfo.storeName + ' already exists.');
                     } else {
                         throw ex;
                     }
@@ -327,7 +327,7 @@ function _isUpgradeNeeded(dbInfo, defaultVersion) {
         // If the version is not the default one
         // then warn for impossible downgrade.
         if (dbInfo.version !== defaultVersion) {
-            console.warn('The database "' + dbInfo.name + '"' + ' can\'t be downgraded from version ' + dbInfo.db.version + ' to version ' + dbInfo.version + '.');
+            console.warn('The database ' + dbInfo.name + ' can\'t be downgraded from version ' + dbInfo.db.version + ' to version ' + dbInfo.version + '.');
         }
         // Align the versions to prevent errors.
         dbInfo.version = dbInfo.db.version;
@@ -1065,7 +1065,7 @@ function serialize(value, callback) {
 
         fileReader.onload = function () {
             // Backwards-compatible prefix for the blob type.
-            var str = BLOB_TYPE_PREFIX + value.type + '~' + bufferToString(this.result);
+            var str = '' + BLOB_TYPE_PREFIX + value.type + '~' + bufferToString(this.result);
 
             callback(SERIALIZED_MARKER + TYPE_BLOB + str);
         };
@@ -1075,7 +1075,7 @@ function serialize(value, callback) {
         try {
             callback(JSON.stringify(value));
         } catch (e) {
-            console.error("Couldn't convert value into a JSON string: ", value);
+            console.error('Couldn\'t convert value into a JSON string: ' + value);
 
             callback(null, e);
         }
