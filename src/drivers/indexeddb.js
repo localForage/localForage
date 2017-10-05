@@ -166,7 +166,7 @@ function _getConnection(dbInfo, upgradeNeeded) {
                 } catch (ex) {
                     if (ex.name === 'ConstraintError') {
                         console.warn(
-                            `The database ${dbInfo.name} has been upgraded from version ${e.oldVersion} to version ${e.newVersion}, but the storage ${dbInfo.storeName} already exists.`
+                            `The database "${dbInfo.name}" has been upgraded from version ${e.oldVersion} to version ${e.newVersion}, but the storage "${dbInfo.storeName}" already exists.`
                         );
                     } else {
                         throw ex;
@@ -209,7 +209,7 @@ function _isUpgradeNeeded(dbInfo, defaultVersion) {
         // then warn for impossible downgrade.
         if (dbInfo.version !== defaultVersion) {
             console.warn(
-                `The database ${dbInfo.name} can't be downgraded from version ${dbInfo.db.version} to version ${dbInfo.version}.`
+                `The database "${dbInfo.name}" can't be downgraded from version ${dbInfo.db.version} to version ${dbInfo.version}.`
             );
         }
         // Align the versions to prevent errors.
