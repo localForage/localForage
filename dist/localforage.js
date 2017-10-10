@@ -1,6 +1,6 @@
 /*!
     localForage -- Offline Storage, Improved
-    Version 1.5.0
+    Version 1.5.1
     https://localforage.github.io/localForage
     (c) 2013-2017 Mozilla, Apache License 2.0
 */
@@ -2072,13 +2072,7 @@ var DefaultDrivers = {
     LOCALSTORAGE: localStorageWrapper
 };
 
-var DriverType = {
-    INDEXEDDB: asyncStorage._driver,
-    WEBSQL: webSQLStorage._driver,
-    LOCALSTORAGE: localStorageWrapper._driver
-};
-
-var DefaultDriverOrder = [DriverType.INDEXEDDB, DriverType.WEBSQL, DriverType.LOCALSTORAGE];
+var DefaultDriverOrder = [DefaultDrivers.INDEXEDDB._driver, DefaultDrivers.WEBSQL._driver, DefaultDrivers.LOCALSTORAGE._driver];
 
 var LibraryMethods = ['clear', 'getItem', 'iterate', 'key', 'keys', 'length', 'removeItem', 'setItem'];
 
@@ -2126,15 +2120,17 @@ var LocalForage = function () {
     function LocalForage(options) {
         _classCallCheck(this, LocalForage);
 
-        for (var driverTypeKey in DriverType) {
-            if (DriverType.hasOwnProperty(driverTypeKey)) {
-                this[driverTypeKey] = DriverType[driverTypeKey];
+        for (var driverTypeKey in DefaultDrivers) {
+            if (DefaultDrivers.hasOwnProperty(driverTypeKey)) {
+                var driver = DefaultDrivers[driverTypeKey];
+                var driverName = driver._driver;
+                this[driverTypeKey] = driverName;
 
-                if (!DefinedDrivers[driverTypeKey]) {
+                if (!DefinedDrivers[driverName]) {
                     // we don't need to wait for the promise,
                     // since the default drivers can be defined
                     // in a blocking manner
-                    this.defineDriver(DefaultDrivers[driverTypeKey]);
+                    this.defineDriver(driver);
                 }
             }
         }

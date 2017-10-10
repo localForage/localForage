@@ -18,16 +18,10 @@ const DefaultDrivers = {
     LOCALSTORAGE: localstorageDriver
 };
 
-const DriverType = {
-    INDEXEDDB: idbDriver._driver,
-    WEBSQL: websqlDriver._driver,
-    LOCALSTORAGE: localstorageDriver._driver
-};
-
 const DefaultDriverOrder = [
-    DriverType.INDEXEDDB,
-    DriverType.WEBSQL,
-    DriverType.LOCALSTORAGE
+    DefaultDrivers.INDEXEDDB._driver,
+    DefaultDrivers.WEBSQL._driver,
+    DefaultDrivers.LOCALSTORAGE._driver
 ];
 
 const LibraryMethods = [
@@ -83,15 +77,17 @@ function extend() {
 
 class LocalForage {
     constructor(options) {
-        for (let driverTypeKey in DriverType) {
-            if (DriverType.hasOwnProperty(driverTypeKey)) {
-                this[driverTypeKey] = DriverType[driverTypeKey];
+        for (let driverTypeKey in DefaultDrivers) {
+            if (DefaultDrivers.hasOwnProperty(driverTypeKey)) {
+                const driver = DefaultDrivers[driverTypeKey];
+                const driverName = driver._driver;
+                this[driverTypeKey] = driverName;
 
-                if (!DefinedDrivers[driverTypeKey]) {
+                if (!DefinedDrivers[driverName]) {
                     // we don't need to wait for the promise,
                     // since the default drivers can be defined
                     // in a blocking manner
-                    this.defineDriver(DefaultDrivers[driverTypeKey]);
+                    this.defineDriver(driver);
                 }
             }
         }

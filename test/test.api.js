@@ -137,6 +137,41 @@ describe('localForage', function() {
         });
 
     });
+
+    describe('createInstance()', function() {
+        var oldConsoleInfo;
+
+        before(function() {
+            oldConsoleInfo = console.info;
+            var logs = [];
+            console.info = function() {
+                console.info.logs.push({
+                    args: arguments
+                });
+                oldConsoleInfo.apply(this, arguments);
+            };
+            console.info.logs = logs;
+        });
+
+        after(function() {
+            console.info = oldConsoleInfo;
+        });
+
+        it('does not log unnecessary messages', function() {
+            var oldLogCount = console.info.logs.length;
+            var localforage2 = localforage.createInstance();
+            var localforage3 = localforage.createInstance();
+
+            return Promise.all([
+                localforage.ready(),
+                localforage2.ready(),
+                localforage3.ready()
+            ]).then(function() {
+                expect(console.info.logs.length).to.be(oldLogCount);
+            });
+        });
+    });
+
 });
 
 DRIVERS.forEach(function(driverName) {
