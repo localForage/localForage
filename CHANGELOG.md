@@ -4,7 +4,9 @@ This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
 ### [1.5](https://github.com/mozilla/localForage/releases/tag/1.5.0)
-* **Major storage engine change for Safari**: We now use IndexedDB as the storage engine for Safari v10.1 (and above). This means sites using localForage for data storage with users using Safari `< 10.1` will experience "data loss". In fact no data is lost but the engine will change so localForage will seem empty. You can still force a connection to WebSQL using [localForage's config](https://localforage.github.io/localForage/#settings-api-setdriver) to either keep using your existing WebSQL database or migrate to IndexedDB.
+* **Major storage engine change for Safari**: We now use IndexedDB as the storage engine for Safari v10.1 (and above). This means that **pre-existing Safari** `>= 10.1` users will experience "data loss" **after upgrading your site from a previous version of localForage to v1.5**. In fact no data is lost but the engine will change so localForage will seem empty.
+  * You can use the [localForage 1.4 compatibility plugin](https://github.com/localForage/localForage-compatibility-1-4) after the upgrade so that all your Safari users (both old & new) continue to use the WebSQL driver.
+  * Alternativelly you can force a connection to WebSQL using [localForage's config](https://localforage.github.io/localForage/#settings-api-setdriver) to either keep using your existing WebSQL database or migrate to IndexedDB.
 
 ### [1.4.2](https://github.com/mozilla/localForage/releases/tag/1.4.2)
 * Fixes #562.
