@@ -5,6 +5,7 @@ import serializer from './utils/serializer';
 import Promise from './utils/promise';
 import executeTwoCallbacks from './utils/executeTwoCallbacks';
 import isArray from './utils/isArray';
+import oneLine from './utils/oneLine';
 
 // Drivers are stored here when `defineDriver()` is called.
 // They are shared across all instances of localForage.
@@ -115,8 +116,12 @@ class LocalForage {
             // If localforage is ready and fully initialized, we can't set
             // any new configuration values. Instead, we return an error.
             if (this._ready) {
-                return new Error('Can\'t call config() after localforage ' +
-                    'has been used.');
+                return new Error(
+                    oneLine(
+                        `Can't call config() after localforage
+                         has been used.`
+                    )
+                );
             }
 
             for (let i in options) {
@@ -152,8 +157,10 @@ class LocalForage {
             try {
                 const driverName = driverObject._driver;
                 const complianceError = new Error(
-                    'Custom driver not compliant; see ' +
-                    'https://mozilla.github.io/localForage/#definedriver'
+                    oneLine(
+                        `Custom driver not compliant; see
+                         https://mozilla.github.io/localForage/#definedriver`
+                    )
                 );
 
                 // A driver name should be defined and not overlap with the

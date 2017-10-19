@@ -143,8 +143,7 @@ function serialize(value, callback) {
 
         fileReader.onload = function() {
             // Backwards-compatible prefix for the blob type.
-            var str = BLOB_TYPE_PREFIX + value.type + '~' +
-                bufferToString(this.result);
+            var str = `${BLOB_TYPE_PREFIX}${value.type}~${bufferToString(this.result)}`;
 
             callback(SERIALIZED_MARKER + TYPE_BLOB + str);
         };
@@ -154,8 +153,7 @@ function serialize(value, callback) {
         try {
             callback(JSON.stringify(value));
         } catch (e) {
-            console.error("Couldn't convert value into a JSON string: ",
-                          value);
+            console.error(`Couldn't convert value into a JSON string: ${value}`);
 
             callback(null, e);
         }
@@ -221,7 +219,7 @@ function deserialize(value) {
         case TYPE_FLOAT64ARRAY:
             return new Float64Array(buffer);
         default:
-            throw new Error('Unkown type: ' + type);
+            throw new Error(`Unkown type: ${type}`);
     }
 }
 

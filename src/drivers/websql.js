@@ -3,6 +3,7 @@ import serializer from '../utils/serializer';
 import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
 import normalizeKey from '../utils/normalizeKey';
+import oneLine from '../utils/oneLine';
 
 /*
  * Includes code from:
@@ -41,8 +42,11 @@ function _initStorage(options) {
         // Create our key/value table if it doesn't exist.
         dbInfo.db.transaction(function(t) {
             t.executeSql(
-                'CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName +
-                ' (id INTEGER PRIMARY KEY, key unique, value)', [],
+                oneLine(
+                    `CREATE TABLE IF NOT EXISTS ${dbInfo.storeName}
+                     (id INTEGER PRIMARY KEY, key unique, value)`
+                ),
+                [],
                 function() {
                     self._dbInfo = dbInfo;
                     resolve();
@@ -66,8 +70,12 @@ function getItem(key, callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 t.executeSql(
-                    'SELECT * FROM ' + dbInfo.storeName +
-                    ' WHERE key = ? LIMIT 1', [key],
+                    oneLine(
+                        `SELECT *
+                         FROM ${dbInfo.storeName}
+                         WHERE key = ? LIMIT 1`
+                    ),
+                    [key],
                     function(t, results) {
                         var result = results.rows.length ?
                             results.rows.item(0).value : null;
@@ -100,7 +108,10 @@ function iterate(iterator, callback) {
 
             dbInfo.db.transaction(function(t) {
                 t.executeSql(
-                    'SELECT * FROM ' + dbInfo.storeName, [],
+                    oneLine(
+                        `SELECT *
+                         FROM ${dbInfo.storeName}`
+                    ), [],
                     function(t, results) {
                         var rows = results.rows;
                         var length = rows.length;
@@ -161,9 +172,10 @@ function _setItem(key, value, callback, retriesLeft) {
                 } else {
                     dbInfo.db.transaction(function(t) {
                         t.executeSql(
-                            'INSERT OR REPLACE INTO ' +
-                            dbInfo.storeName +
-                            ' (key, value) VALUES (?, ?)',
+                            oneLine(
+                                `INSERT OR REPLACE INTO ${dbInfo.storeName}
+                                 (key, value) VALUES (?, ?)`
+                            ),
                             [key, value],
                             function() {
                                 resolve(originalValue);
@@ -211,8 +223,11 @@ function removeItem(key, callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 t.executeSql(
-                    'DELETE FROM ' + dbInfo.storeName +
-                    ' WHERE key = ?', [key],
+                    oneLine(
+                        `DELETE FROM ${dbInfo.storeName}
+                         WHERE key = ?`
+                    ),
+                    [key],
                     function() {
                         resolve();
                     }, function(t, error) {
@@ -236,7 +251,8 @@ function clear(callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 t.executeSql(
-                    'DELETE FROM ' + dbInfo.storeName, [],
+                    `DELETE FROM ${dbInfo.storeName}`,
+                    [],
                     function() {
                         resolve();
                     }, function(t, error) {
@@ -261,8 +277,11 @@ function length(callback) {
             dbInfo.db.transaction(function(t) {
                 // Ahhh, SQL makes this one soooooo easy.
                 t.executeSql(
-                    'SELECT COUNT(key) as c FROM ' +
-                    dbInfo.storeName, [],
+                    oneLine(
+                        `SELECT COUNT(key) as c
+                         FROM ${dbInfo.storeName}`
+                    ),
+                    [],
                     function(t, results) {
                         var result = results.rows.item(0).c;
 
@@ -293,8 +312,12 @@ function key(n, callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 t.executeSql(
-                    'SELECT key FROM ' + dbInfo.storeName +
-                    ' WHERE id = ? LIMIT 1', [n + 1],
+                    oneLine(
+                        `SELECT key
+                         FROM ${dbInfo.storeName}
+                         WHERE id = ? LIMIT 1`
+                    ),
+                    [n + 1],
                     function(t, results) {
                         var result = results.rows.length ?
                             results.rows.item(0).key : null;
@@ -318,7 +341,11 @@ function keys(callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function(t) {
                 t.executeSql(
-                    'SELECT key FROM ' + dbInfo.storeName, [],
+                    oneLine(
+                        `SELECT key
+                         FROM ${dbInfo.storeName}`
+                    ),
+                    [],
                     function(t, results) {
                         var keys = [];
 
