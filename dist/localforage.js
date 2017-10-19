@@ -464,6 +464,10 @@ function normalizeKey(key) {
     return key;
 }
 
+function oneLine(str) {
+    return str.replace(/(\n\s+)/g, ' ');
+}
+
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
 
@@ -622,7 +626,7 @@ function _getConnection(dbInfo, upgradeNeeded) {
                     }
                 } catch (ex) {
                     if (ex.name === 'ConstraintError') {
-                        console.warn('The database "' + dbInfo.name + '" has been upgraded from version ' + e.oldVersion + ' to version ' + e.newVersion + ', but the storage "' + dbInfo.storeName + '" already exists.');
+                        console.warn(oneLine('The database "' + dbInfo.name + '"\n                                 has been upgraded from version ' + e.oldVersion + '\n                                 to version ' + e.newVersion + ',\n                                 but the storage "' + dbInfo.storeName + '" already exists.'));
                     } else {
                         throw ex;
                     }
@@ -663,7 +667,7 @@ function _isUpgradeNeeded(dbInfo, defaultVersion) {
         // If the version is not the default one
         // then warn for impossible downgrade.
         if (dbInfo.version !== defaultVersion) {
-            console.warn('The database "' + dbInfo.name + '" can\'t be downgraded from version ' + dbInfo.db.version + ' to version ' + dbInfo.version + '.');
+            console.warn(oneLine('The database "' + dbInfo.name + '"\n                     can\'t be downgraded from version ' + dbInfo.db.version + '\n                     to version ' + dbInfo.version + '.'));
         }
         // Align the versions to prevent errors.
         dbInfo.version = dbInfo.db.version;
@@ -1521,7 +1525,7 @@ function _initStorage$1(options) {
 
         // Create our key/value table if it doesn't exist.
         dbInfo.db.transaction(function (t) {
-            t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName + ' (id INTEGER PRIMARY KEY, key unique, value)', [], function () {
+            t.executeSql(oneLine('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName + '\n                     (id INTEGER PRIMARY KEY, key unique, value)'), [], function () {
                 self._dbInfo = dbInfo;
                 resolve();
             }, function (t, error) {
@@ -1543,7 +1547,7 @@ function getItem$1(key, callback) {
         self.ready().then(function () {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function (t) {
-                t.executeSql('SELECT * FROM ' + dbInfo.storeName + ' WHERE key = ? LIMIT 1', [key], function (t, results) {
+                t.executeSql(oneLine('SELECT *\n                         FROM ' + dbInfo.storeName + '\n                         WHERE key = ? LIMIT 1'), [key], function (t, results) {
                     var result = results.rows.length ? results.rows.item(0).value : null;
 
                     // Check to see if this is serialized content we need to
@@ -1573,7 +1577,7 @@ function iterate$1(iterator, callback) {
             var dbInfo = self._dbInfo;
 
             dbInfo.db.transaction(function (t) {
-                t.executeSql('SELECT * FROM ' + dbInfo.storeName, [], function (t, results) {
+                t.executeSql(oneLine('SELECT *\n                         FROM ' + dbInfo.storeName), [], function (t, results) {
                     var rows = results.rows;
                     var length = rows.length;
 
@@ -1632,7 +1636,7 @@ function _setItem(key, value, callback, retriesLeft) {
                     reject(error);
                 } else {
                     dbInfo.db.transaction(function (t) {
-                        t.executeSql('INSERT OR REPLACE INTO ' + dbInfo.storeName + ' (key, value) VALUES (?, ?)', [key, value], function () {
+                        t.executeSql(oneLine('INSERT OR REPLACE INTO ' + dbInfo.storeName + '\n                                 (key, value) VALUES (?, ?)'), [key, value], function () {
                             resolve(originalValue);
                         }, function (t, error) {
                             reject(error);
@@ -1677,7 +1681,7 @@ function removeItem$1(key, callback) {
         self.ready().then(function () {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function (t) {
-                t.executeSql('DELETE FROM ' + dbInfo.storeName + ' WHERE key = ?', [key], function () {
+                t.executeSql(oneLine('DELETE FROM ' + dbInfo.storeName + '\n                         WHERE key = ?'), [key], function () {
                     resolve();
                 }, function (t, error) {
                     reject(error);
@@ -1722,7 +1726,7 @@ function length$1(callback) {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function (t) {
                 // Ahhh, SQL makes this one soooooo easy.
-                t.executeSql('SELECT COUNT(key) as c FROM ' + dbInfo.storeName, [], function (t, results) {
+                t.executeSql(oneLine('SELECT COUNT(key) as c\n                         FROM ' + dbInfo.storeName), [], function (t, results) {
                     var result = results.rows.item(0).c;
 
                     resolve(result);
@@ -1751,7 +1755,7 @@ function key$1(n, callback) {
         self.ready().then(function () {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function (t) {
-                t.executeSql('SELECT key FROM ' + dbInfo.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {
+                t.executeSql(oneLine('SELECT key\n                         FROM ' + dbInfo.storeName + '\n                         WHERE id = ? LIMIT 1'), [n + 1], function (t, results) {
                     var result = results.rows.length ? results.rows.item(0).key : null;
                     resolve(result);
                 }, function (t, error) {
@@ -1772,7 +1776,7 @@ function keys$1(callback) {
         self.ready().then(function () {
             var dbInfo = self._dbInfo;
             dbInfo.db.transaction(function (t) {
-                t.executeSql('SELECT key FROM ' + dbInfo.storeName, [], function (t, results) {
+                t.executeSql(oneLine('SELECT key\n                         FROM ' + dbInfo.storeName), [], function (t, results) {
                     var keys = [];
 
                     for (var i = 0; i < results.rows.length; i++) {
@@ -2160,7 +2164,7 @@ var LocalForage = function () {
             // If localforage is ready and fully initialized, we can't set
             // any new configuration values. Instead, we return an error.
             if (this._ready) {
-                return new Error('Can\'t call config() after localforage ' + 'has been used.');
+                return new Error(oneLine('Can\'t call config() after localforage\n                         has been used.'));
             }
 
             for (var i in options) {
@@ -2197,7 +2201,7 @@ var LocalForage = function () {
         var promise = new Promise$1(function (resolve, reject) {
             try {
                 var driverName = driverObject._driver;
-                var complianceError = new Error('Custom driver not compliant; see ' + 'https://mozilla.github.io/localForage/#definedriver');
+                var complianceError = new Error(oneLine('Custom driver not compliant; see\n                         https://mozilla.github.io/localForage/#definedriver'));
 
                 // A driver name should be defined and not overlap with the
                 // library-defined, default drivers.
