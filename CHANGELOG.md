@@ -3,6 +3,17 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [1.5.2]
+
+* Prevent some unnecessary logs when calling `createInstance()`.
+
+### [1.5.1]
+
+* Try to re-establish IDB connection after an InvalidStateError.
+* Added Generics to `iterate()` TS Typings.
+* Define custom drivers syncronously when `_support` isn't a function.
+* Use the custom driver API for internal drivers, which makes possible to override parts of their implementation.
+
 ### [1.5](https://github.com/mozilla/localForage/releases/tag/1.5.0)
 * **Major storage engine change for Safari**: We now use IndexedDB as the storage engine for Safari v10.1 (and above). This means that **pre-existing Safari** `>= 10.1` users will experience "data loss" **after upgrading your site from a previous version of localForage to v1.5**. In fact no data is lost but the engine will change so localForage will seem empty.
   * You can use the [localForage 1.4 compatibility plugin](https://github.com/localForage/localForage-compatibility-1-4) after the upgrade so that all your Safari users (both old & new) continue to use the WebSQL driver.
