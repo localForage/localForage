@@ -3,6 +3,10 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [1.5.3]
+
+* Check whether localStorage is actually usable.
+
 ### [1.5.2]
 
 * Prevent some unnecessary logs when calling `createInstance()`.
