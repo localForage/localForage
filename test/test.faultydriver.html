@@ -14,15 +14,30 @@
     <script>
 
         try {
+            window.originalIdbOpen = window.indexedDB.open;
+            window.indexedDB.open = function faultyIdbOpen() {
+                var openreq = {};
+                setTimeout(function() {
+                    if (typeof openreq.onerror === 'function') {
+                        openreq.onerror(new Event(new Error('OpenDatabase Faulty Driver Test!')));
+                    }
+                });
+                return openreq;
+            };
+        } catch (error) { }
+
+        try {
             window.originalOpenDatabase = window.openDatabase;
-            window.openDatabase = function faultyOpenDatabase () {
+            window.openDatabase = function faultyOpenDatabase() {
                 throw new Error('OpenDatabase Faulty Driver Test!');
             };
+        } catch (error) { }
 
+        try {
             window.originalLocalStorageSetItem = window.localStorage.setItem;
             window.localStorage.setItem = function faultySetItemQuotaError() {
-              throw new DOMException('The quota has been exceeded.', 'QuotaExceededError')
-            }
+              throw new DOMException('The quota has been exceeded.', 'QuotaExceededError');
+            };
 
         } catch (error) { }
 
