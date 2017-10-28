@@ -1,10 +1,15 @@
-/* global describe:true, expect:true, it:true */
+/* global beforeEach:true, describe:true, expect:true, it:true */
 describe('When Driver Fails to Initialize', function() {
     'use strict';
 
     var FAULTYDRIVERS = [
-        localforage.WEBSQL
+        localforage.WEBSQL,
+        localforage.LOCALSTORAGE
     ];
+
+    beforeEach(function() {
+        localStorage.clear();
+    });
 
     FAULTYDRIVERS.forEach(function(driverName) {
         it('fails to setDriver ' + driverName + ' [callback]', function(done) {

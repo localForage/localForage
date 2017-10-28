@@ -18,6 +18,12 @@
             window.openDatabase = function faultyOpenDatabase () {
                 throw new Error('OpenDatabase Faulty Driver Test!');
             };
+
+            window.originalLocalStorageSetItem = window.localStorage.setItem;
+            window.localStorage.setItem = function faultySetItemQuotaError() {
+              throw new DOMException('The quota has been exceeded.', 'QuotaExceededError')
+            }
+
         } catch (error) { }
 
     </script>
