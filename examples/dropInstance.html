@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <title>LocalForage dropInstance example</title>
+  </head>
+  <body>
+    <script src="../dist/localforage.js"></script>
+    <script>
+      var driverOrder = [
+        localforage.INDEXEDDB,
+        localforage.WEBSQL,
+        localforage.LOCALSTORAGE,
+      ];
+      localforage.setDriver(driverOrder).then(function() {
+        console.log(localforage.driver());
+        var key = 'STORE_KEY';
+        var value = new Uint8Array(8);
+        value[0] = 65
+        var UNKNOWN_KEY = 'unknown_key';
+
+        return Promise.resolve().then(function() {
+          return localforage.setItem(key, value);
+        }).then(function() {
+          console.log('Saved: ' + value);
+        }).then(function() {
+          return Promise.all([
+            localforage.getItem(key).then(function(readValue) {
+              console.log('Read: ', readValue);
+            }),
+
+            // Since this key hasn't been set yet, we'll get a null value
+            localforage.getItem(UNKNOWN_KEY).then(function(readValue) {
+              console.log('Result of reading ' + UNKNOWN_KEY, readValue);
+            })
+          ]);
+        }).then(function() {
+            return localforage.dropInstance();
+        }).then(function(result) {
+            console.log('dropped', localforage.config().name, localforage.config().storeName);
+        }).then(function() {
+            return localforage.getItem(key);
+        }).then(function(value) {
+            console.log('getItem after delete', value);
+        }).then(function() {
+            var newValue = Date.now();
+            console.log('setItem', newValue);
+            return localforage.setItem(key, newValue);
+        }).then(function() {
+            console.log('setItem resolved');
+            return localforage.getItem(key);
+        }).then(function(value) {
+            console.log('getItem', value);
+            console.log('*** DONE ***');
+        }).catch(function(error) {
+            console.log('err', error);
+        });
+      });
+    </script>
+  </body>
+</html>

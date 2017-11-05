@@ -38,6 +38,9 @@ interface LocalForageDbMethods {
     iterate<T, U>(iteratee: (value: T, key: string, iterationNumber: number) => U): Promise<U>;
     iterate<T, U>(iteratee: (value: T, key: string, iterationNumber: number) => U,
             callback: (err: any, result: U) => void): void;
+
+    dropInstance(callback?: (err: any) => void): Promise<void>;
+    dropInstance(dbInstanceOptions?: LocalForageOptions, callback?: (err: any) => void): Promise<void>;
 }
 
 interface LocalForageDriverSupportFunc {

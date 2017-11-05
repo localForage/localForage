@@ -3,6 +3,7 @@ import websqlDriver from './drivers/websql';
 import localstorageDriver from './drivers/localstorage';
 import serializer from './utils/serializer';
 import Promise from './utils/promise';
+import executeCallback from './utils/executeCallback';
 import executeTwoCallbacks from './utils/executeTwoCallbacks';
 import isArray from './utils/isArray';
 
@@ -24,6 +25,10 @@ const DefaultDriverOrder = [
     DefaultDrivers.LOCALSTORAGE._driver
 ];
 
+const OptionalDriverMethods = [
+    'dropInstance'
+];
+
 const LibraryMethods = [
     'clear',
     'getItem',
@@ -33,7 +38,7 @@ const LibraryMethods = [
     'length',
     'removeItem',
     'setItem'
-];
+].concat(OptionalDriverMethods);
 
 const DefaultConfig = {
     description: '',
@@ -165,13 +170,37 @@ class LocalForage {
 
                 const driverMethods = LibraryMethods.concat('_initStorage');
                 for (let i = 0, len = driverMethods.length; i < len; i++) {
-                    const customDriverMethod = driverMethods[i];
-                    if (!customDriverMethod || !driverObject[customDriverMethod] ||
-                        typeof driverObject[customDriverMethod] !== 'function') {
+                    const driverMethodName = driverMethods[i];
+
+                    // when the property is there,
+                    // it should be a method even when optional
+                    const isRequired = OptionalDriverMethods.indexOf(driverMethodName) < 0;
+                    if ((isRequired || driverObject[driverMethodName]) &&
+                        typeof driverObject[driverMethodName] !== 'function') {
                         reject(complianceError);
                         return;
                     }
                 }
+
+                const configureMissingMethods = function() {
+                    const methodNotImplementedFactory = function(methodName) {
+                        return function() {
+                            const error = new Error(`Method ${methodName} is not implemented by the current driver`);
+                            const promise = Promise.reject(error);
+                            executeCallback(promise, arguments[arguments.length - 1]);
+                            return promise;
+                        };
+                    };
+
+                    for (let i = 0, len = OptionalDriverMethods.length; i < len; i++) {
+                        const optionalDriverMethod = OptionalDriverMethods[i];
+                        if (!driverObject[optionalDriverMethod]) {
+                            driverObject[optionalDriverMethod] = methodNotImplementedFactory(optionalDriverMethod);
+                        }
+                    }
+                };
+
+                configureMissingMethods();
 
                 const setDriverSupport = function(support) {
                     if (DefinedDrivers[driverName]) {

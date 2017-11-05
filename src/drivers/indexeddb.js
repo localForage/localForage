@@ -5,6 +5,7 @@ import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
 import executeTwoCallbacks from '../utils/executeTwoCallbacks';
 import normalizeKey from '../utils/normalizeKey';
+import getCallback from '../utils/getCallback';
 
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
@@ -91,8 +92,9 @@ function _deferReadiness(dbInfo) {
     // Create a deferred object representing the current database operation.
     var deferredOperation = {};
 
-    deferredOperation.promise = new Promise(function(resolve) {
+    deferredOperation.promise = new Promise(function(resolve, reject) {
         deferredOperation.resolve = resolve;
+        deferredOperation.reject = reject;
     });
 
     // Enqueue the deferred operation.
@@ -118,6 +120,7 @@ function _advanceReadiness(dbInfo) {
     // chain of promises).
     if (deferredOperation) {
         deferredOperation.resolve();
+        return deferredOperation.promise;
     }
 }
 
@@ -131,6 +134,7 @@ function _rejectReadiness(dbInfo, err) {
     // chain of promises).
     if (deferredOperation) {
         deferredOperation.reject(err);
+        return deferredOperation.promise;
     }
 }
 
@@ -291,15 +295,22 @@ function _tryReconnect(dbInfo) {
     var forages = dbContext.forages;
 
     for (var i = 0; i < forages.length; i++) {
-        if (forages[i]._dbInfo.db) {
-            forages[i]._dbInfo.db.close();
-            forages[i]._dbInfo.db = null;
+        var forage = forages[i];
+        if (forage._dbInfo.db) {
+            forage._dbInfo.db.close();
+            forage._dbInfo.db = null;
         }
     }
 
-    return _getConnection(dbInfo, false).then(function(db) {
+    return _getOriginalConnection(dbInfo).then(function(db) {
         for (var j = 0; j < forages.length; j++) {
             forages[j]._dbInfo.db = db;
+        }
+        dbInfo.db = db;
+    }).then(function() {
+        if (_isUpgradeNeeded(dbInfo)) {
+            // Reopen the database for upgrading.
+            return _getUpgradedConnection(dbInfo);
         }
     }).catch(function(err) {
         _rejectReadiness(dbInfo, err);
@@ -310,18 +321,40 @@ function _tryReconnect(dbInfo) {
 
 // FF doesn't like Promises (micro-tasks) and IDDB store operations,
 // so we have to do it with callbacks
-function createTransaction(dbInfo, mode, callback) {
+function createTransaction(dbInfo, mode, callback, retries) {
+    if (retries === undefined) {
+        retries = 1;
+    }
+
     try {
         var tx = dbInfo.db.transaction(dbInfo.storeName, mode);
         callback(null, tx);
     } catch (err) {
-        if (!dbInfo.db ||
-            err.name === 'InvalidStateError') {
-            return _tryReconnect(dbInfo).then(function() {
+        if (retries > 0 &&
+            (!dbInfo.db ||
+             err.name === 'InvalidStateError' ||
+             err.name === 'NotFoundError')) {
 
-                var tx = dbInfo.db.transaction(dbInfo.storeName, mode);
-                callback(null, tx);
-            });
+            return Promise.resolve().then(() => {
+                if (!dbInfo.db || (
+                    err.name === 'NotFoundError' &&
+                    !dbInfo.db.objectStoreNames.contains(
+                        dbInfo.storeName
+                    ) &&
+                    dbInfo.version <= dbInfo.db.version
+                )) {
+                    // increase the db version, to create the new ObjectStore
+                    if (dbInfo.db) {
+                        dbInfo.version = dbInfo.db.version + 1;
+                    }
+                    // Reopen the database for upgrading.
+                    return _getUpgradedConnection(dbInfo);
+                }
+            }).then(() => {
+                return _tryReconnect(dbInfo).then(function() {
+                    createTransaction(dbInfo, mode, callback, retries - 1);
+                });
+            }).catch(callback);
         }
 
         callback(err);
@@ -795,6 +828,114 @@ function keys(callback) {
     return promise;
 }
 
+function dropInstance(options, callback) {
+    callback = getCallback.apply(this, arguments);
+
+    var currentConfig = this.config();
+    options = typeof options !== 'function' && options || {};
+    if (!options.name) {
+        options.name = options.name || currentConfig.name;
+        options.storeName = options.storeName || currentConfig.storeName;
+    }
+
+    var self = this;
+    var promise;
+    if (!options.name) {
+        promise = Promise.reject('Invalid arguments');
+    } else {
+        var dbPromise = options.name === currentConfig.name && self._dbInfo.db ?
+            Promise.resolve(self._dbInfo.db) :
+            _getOriginalConnection(options);
+
+        if (!options.storeName) {
+            promise = dbPromise.then(function() {
+
+                _deferReadiness(options);
+
+                var dbContext = dbContexts[options.name];
+                var forages = dbContext.forages;
+
+                for (var i = 0; i < forages.length; i++) {
+                    var forage = forages[i];
+                    if (forage._dbInfo.db) {
+                        forage._dbInfo.db.close();
+                        forage._dbInfo.db = null;
+                    }
+                }
+
+                var dropDBPromise = new Promise(function(resolve, reject) {
+                    var req = idb.deleteDatabase(options.name);
+
+                    req.onerror = req.onblocked = reject;
+
+                    req.onsuccess = resolve;
+                });
+
+                return dropDBPromise.then(function() {
+                    for (var j = 0; j < forages.length; j++) {
+                        _advanceReadiness(forage._dbInfo);
+                    }
+                }).catch(function(err) {
+                    (_rejectReadiness(options, err) || Promise.resolve()).catch(() => {});
+                    throw err;
+                });
+            });
+        } else {
+            promise = dbPromise.then(function(db) {
+                if (!db.objectStoreNames.contains(options.storeName)) {
+                    return;
+                }
+
+                var newVersion = db.version + 1;
+
+                _deferReadiness(options);
+
+                var dbContext = dbContexts[options.name];
+                var forages = dbContext.forages;
+
+                for (var i = 0; i < forages.length; i++) {
+                    var forage = forages[i];
+                    if (forage._dbInfo.db) {
+                        forage._dbInfo.db.close();
+                        forage._dbInfo.db = null;
+                        forage._dbInfo.version = newVersion;
+                    }
+                }
+
+                var dropObjectPromise = new Promise(function(resolve, reject) {
+                    var req = idb.open(options.name, newVersion);
+
+                    req.onerror = reject;
+
+                    req.onupgradeneeded = function() {
+                        var db = req.result;
+                        db.deleteObjectStore(options.storeName);
+                    };
+
+                    req.onsuccess = function() {
+                        var db = req.result;
+                        resolve(db);
+                    };
+                });
+
+                return dropObjectPromise.then(function(db) {
+                    for (var j = 0; j < forages.length; j++) {
+                        var forage = forages[j];
+                        forage._dbInfo.db = db;
+                        _advanceReadiness(forage._dbInfo);
+                    }
+                }).catch(function(err) {
+                    (_rejectReadiness(options, err) || Promise.resolve()).catch(() => {});
+                    throw err;
+                });
+            });
+        }
+    }
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
 var asyncStorage = {
     _driver: 'asyncStorage',
     _initStorage: _initStorage,
@@ -806,6 +947,7 @@ var asyncStorage = {
     clear: clear,
     length: length,
     key: key,
-    keys: keys
+    keys: keys,
+    dropInstance: dropInstance
 };
 export default asyncStorage;

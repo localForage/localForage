@@ -8,6 +8,16 @@ import serializer from '../utils/serializer';
 import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
 import normalizeKey from '../utils/normalizeKey';
+import getCallback from '../utils/getCallback';
+
+function _getKeyPrefix(options, defaultConfig) {
+    var keyPrefix = options.name + '/';
+
+    if (options.storeName !== defaultConfig.storeName) {
+        keyPrefix += options.storeName + '/';
+    }
+    return keyPrefix;
+}
 
 // Check if localStorage throws when saving an item
 function checkIfLocalStorageThrows() {
@@ -41,11 +51,7 @@ function _initStorage(options) {
         }
     }
 
-    dbInfo.keyPrefix = dbInfo.name + '/';
-
-    if (dbInfo.storeName !== self._defaultConfig.storeName) {
-        dbInfo.keyPrefix += dbInfo.storeName + '/';
-    }
+    dbInfo.keyPrefix = _getKeyPrefix(options, self._defaultConfig);
 
     if (!_isLocalStorageUsable()) {
         return Promise.reject();
@@ -267,6 +273,42 @@ function setItem(key, value, callback) {
     return promise;
 }
 
+function dropInstance(options, callback) {
+    callback = getCallback.apply(this, arguments);
+
+    options = typeof options !== 'function' && options || {};
+    if (!options.name) {
+        var currentConfig = this.config();
+        options.name = options.name || currentConfig.name;
+        options.storeName = options.storeName || currentConfig.storeName;
+    }
+
+    var self = this;
+    var promise;
+    if (!options.name) {
+        promise = Promise.reject('Invalid arguments');
+    } else {
+        promise = new Promise(function(resolve) {
+            if (!options.storeName) {
+                resolve(`${options.name}/`);
+            } else {
+                resolve(_getKeyPrefix(options, self._defaultConfig));
+            }
+        }).then(function(keyPrefix) {
+            for (var i = localStorage.length - 1; i >= 0; i--) {
+                var key = localStorage.key(i);
+
+                if (key.indexOf(keyPrefix) === 0) {
+                    localStorage.removeItem(key);
+                }
+            }
+        });
+    }
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
 var localStorageWrapper = {
     _driver: 'localStorageWrapper',
     _initStorage: _initStorage,
@@ -278,7 +320,8 @@ var localStorageWrapper = {
     clear: clear,
     length: length,
     key: key,
-    keys: keys
+    keys: keys,
+    dropInstance: dropInstance
 };
 
 export default localStorageWrapper;
