@@ -693,6 +693,21 @@ DRIVERS.forEach(function(driverName) {
             });
         });
 
+        it('returns null when saving null [callback]', function(done) {
+            localforage.setItem('null', null, function(err, setValue) {
+                expect(setValue).to.be(null);
+
+                done();
+            });
+        });
+        it('returns null when saving null [promise]', function(done) {
+            localforage.setItem('null', null).then(function(setValue) {
+                expect(setValue).to.be(null);
+
+                done();
+            });
+        });
+
         it('returns null for a non-existant key [callback]', function(done) {
             localforage.getItem('undef', function(err, value) {
                 expect(value).to.be(null);

@@ -545,7 +545,6 @@ function setItem(key, value, callback) {
 
                 try {
                     var store = transaction.objectStore(self._dbInfo.storeName);
-                    var req = store.put(value, key);
 
                     // The reason we don't _save_ null is because IE 10 does
                     // not support saving the `null` type in IndexedDB. How
@@ -554,6 +553,8 @@ function setItem(key, value, callback) {
                     if (value === null) {
                         value = undefined;
                     }
+
+                    var req = store.put(value, key);
 
                     transaction.oncomplete = function() {
                         // Cast to undefined so the value passed to
