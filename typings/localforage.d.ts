@@ -1,123 +1,117 @@
-interface LocalForageDbInstanceOptions {
-    name?: string;
+declare module 'localforage' {
 
-    storeName?: string;
-}
+    namespace localForage {
 
-interface LocalForageOptions extends LocalForageDbInstanceOptions {
-    driver?: string | string[];
+        interface DbInstanceOptions {
+            name?: string;
 
-    size?: number;
+            storeName?: string;
+        }
 
-    version?: number;
+        interface LocalForageOptions extends DbInstanceOptions {
+            driver?: string | string[];
 
-    description?: string;
-}
+            size?: number;
 
-interface LocalForageDbMethodsCore {
-    getItem<T>(key: string, callback?: (err: any, value: T) => void): Promise<T>;
+            version?: number;
 
-    setItem<T>(key: string, value: T, callback?: (err: any, value: T) => void): Promise<T>;
+            description?: string;
+        }
 
-    removeItem(key: string, callback?: (err: any) => void): Promise<void>;
+        interface DbMethodsCore {
+            getItem<T>(key: string, callback?: (err: any, value: T) => void): Promise<T>;
 
-    clear(callback?: (err: any) => void): Promise<void>;
+            setItem<T>(key: string, value: T, callback?: (err: any, value: T) => void): Promise<T>;
 
-    length(callback?: (err: any, numberOfKeys: number) => void): Promise<number>;
+            removeItem(key: string, callback?: (err: any) => void): Promise<void>;
 
-    key(keyIndex: number, callback?: (err: any, key: string) => void): Promise<string>;
+            clear(callback?: (err: any) => void): Promise<void>;
 
-    keys(callback?: (err: any, keys: string[]) => void): Promise<string[]>;
+            length(callback?: (err: any, numberOfKeys: number) => void): Promise<number>;
 
-    iterate<T, U>(iteratee: (value: T, key: string, iterationNumber: number) => U,
-            callback?: (err: any, result: U) => void): Promise<U>;
-}
+            key(keyIndex: number, callback?: (err: any, key: string) => void): Promise<string>;
 
-interface LocalForageDropInstanceFn {
-    (dbInstanceOptions?: LocalForageDbInstanceOptions, callback?: (err: any) => void): Promise<void>;
-}
+            keys(callback?: (err: any, keys: string[]) => void): Promise<string[]>;
 
-interface LocalForageDriverMethodsOptional {
-    dropInstance?: LocalForageDropInstanceFn;
-}
+            iterate<T, U>(iteratee: (value: T, key: string, iterationNumber: number) => U,
+                    callback?: (err: any, result: U) => void): Promise<U>;
+        }
 
-// duplicating LocalForageDriverMethodsOptional to preserve TS v2.0 support,
-// since Partial<> isn't supported there
-interface LocalForageDbMethodsOptional {
-    dropInstance: LocalForageDropInstanceFn;
-}
+        interface DbMethodsOptional {
+            dropInstance(dbInstanceOptions?: DbInstanceOptions, callback?: (err: any) => void): Promise<void>;
+        }
 
-interface LocalForageDriverDbMethods extends LocalForageDbMethodsCore, LocalForageDriverMethodsOptional {}
+        interface DriverDbMethods extends DbMethodsCore, Partial<DbMethodsOptional> {}
 
-interface LocalForageDriverSupportFunc {
-    (): Promise<boolean>;
-}
+        interface LocalForageDriverSupportFunc {
+            (): Promise<boolean>;
+        }
 
-interface LocalForageDriver extends LocalForageDriverDbMethods {
-    _driver: string;
+        interface LocalForageDriver extends DriverDbMethods {
+            _driver: string;
 
-    _initStorage(options: LocalForageOptions): void;
+            _initStorage(options: LocalForageOptions): void;
 
-    _support?: boolean | LocalForageDriverSupportFunc;
-}
+            _support?: boolean | LocalForageDriverSupportFunc;
+        }
 
-interface LocalForageSerializer {
-    serialize<T>(value: T | ArrayBuffer | Blob, callback: (value: string, error: any) => void): void;
+        interface LocalForageSerializer {
+            serialize<T>(value: T | ArrayBuffer | Blob, callback: (value: string, error: any) => void): void;
 
-    deserialize<T>(value: string): T | ArrayBuffer | Blob;
+            deserialize<T>(value: string): T | ArrayBuffer | Blob;
 
-    stringToBuffer(serializedString: string): ArrayBuffer;
+            stringToBuffer(serializedString: string): ArrayBuffer;
 
-    bufferToString(buffer: ArrayBuffer): string;
-}
+            bufferToString(buffer: ArrayBuffer): string;
+        }
 
-interface LocalForageDbMethods extends LocalForageDbMethodsCore, LocalForageDbMethodsOptional {}
+        interface DbMethods extends DbMethodsCore, DbMethodsOptional {}
 
-interface LocalForage extends LocalForageDbMethods {
-    LOCALSTORAGE: string;
-    WEBSQL: string;
-    INDEXEDDB: string;
+        interface LocalForage extends DbMethods {
+            LOCALSTORAGE: string;
+            WEBSQL: string;
+            INDEXEDDB: string;
 
-    /**
-     * Set and persist localForage options. This must be called before any other calls to localForage are made, but can be called after localForage is loaded.
-     * If you set any config values with this method they will persist after driver changes, so you can call config() then setDriver()
-     * @param {LocalForageOptions} options?
-     */
-    config(options: LocalForageOptions): boolean;
-    config(options: string): any;
-    config(): LocalForageOptions;
+            /**
+             * Set and persist localForage options. This must be called before any other calls to localForage are made, but can be called after localForage is loaded.
+             * If you set any config values with this method they will persist after driver changes, so you can call config() then setDriver()
+             * @param {LocalForageOptions} options?
+             */
+            config(options: LocalForageOptions): boolean;
+            config(options: string): any;
+            config(): LocalForageOptions;
 
-    /**
-     * Create a new instance of localForage to point to a different store.
-     * All the configuration options used by config are supported.
-     * @param {LocalForageOptions} options
-     */
-    createInstance(options: LocalForageOptions): LocalForage;
+            /**
+             * Create a new instance of localForage to point to a different store.
+             * All the configuration options used by config are supported.
+             * @param {LocalForageOptions} options
+             */
+            createInstance(options: LocalForageOptions): LocalForage;
 
-    driver(): string;
+            driver(): string;
 
-    /**
-     * Force usage of a particular driver or drivers, if available.
-     * @param {string} driver
-     */
-    setDriver(driver: string | string[], callback?: () => void, errorCallback?: (error: any) => void): Promise<void>;
+            /**
+             * Force usage of a particular driver or drivers, if available.
+             * @param {string} driver
+             */
+            setDriver(driver: string | string[], callback?: () => void, errorCallback?: (error: any) => void): Promise<void>;
 
-    defineDriver(driver: LocalForageDriver, callback?: () => void, errorCallback?: (error: any) => void): Promise<void>;
+            defineDriver(driver: LocalForageDriver, callback?: () => void, errorCallback?: (error: any) => void): Promise<void>;
 
-    /**
-     * Return a particular driver
-     * @param {string} driver
-     */
-    getDriver(driver: string): Promise<LocalForageDriver>;
+            /**
+             * Return a particular driver
+             * @param {string} driver
+             */
+            getDriver(driver: string): Promise<LocalForageDriver>;
 
-    getSerializer(callback?: (serializer: LocalForageSerializer) => void): Promise<LocalForageSerializer>;
+            getSerializer(callback?: (serializer: LocalForageSerializer) => void): Promise<LocalForageSerializer>;
 
-    supports(driverName: string): boolean;
+            supports(driverName: string): boolean;
 
-    ready(callback?: (error: any) => void): Promise<void>;
-}
+            ready(callback?: (error: any) => void): Promise<void>;
+        }
+    }
 
-declare module "localforage" {
-    let localforage: LocalForage;
-    export = localforage;
+    const localForage: localForage.LocalForage;
+    export = localForage;
 }

@@ -1,14 +1,14 @@
-﻿import * as localforage from 'localforage';
+﻿import * as LocalForage from 'localforage';
 
-let localForage: LocalForage = localforage;
+let localForage: LocalForage.LocalForage = LocalForage;
 
 namespace LocalForageTest {
     localForage.clear((err: any) => {
         let newError: any = err;
     });
 
-    localForage.getSerializer().then((s: LocalForageSerializer) => {
-        let serializer: LocalForageSerializer = s;
+    localForage.getSerializer().then((s: LocalForage.LocalForageSerializer) => {
+        let serializer: LocalForage.LocalForageSerializer = s;
         typeof serializer.bufferToString === "function";
         typeof serializer.deserialize === "function";
         typeof serializer.serialize === "function";
@@ -126,9 +126,9 @@ namespace LocalForageTest {
     localForage.removeItem("key").then(() => {
     });
 
-    const customDriver: LocalForageDriver = {
+    const customDriver: LocalForage.LocalForageDriver = {
         _driver: "CustomDriver",
-        _initStorage: (options: LocalForageOptions) => {},
+        _initStorage: (options: LocalForage.LocalForageOptions) => {},
         getItem: <T>(key: string, callback?: (err: any, value: T) => void) => Promise.resolve({} as T),
         setItem: <T>(key: string, value: T, callback?: (err: any, value: T) => void) => Promise.resolve(value),
         removeItem: (key: string, callback?: (err: any) => void) => Promise.resolve(),
@@ -140,9 +140,9 @@ namespace LocalForageTest {
     };
     localForage.defineDriver(customDriver);
 
-    const customDriver2: LocalForageDriver = {
+    const customDriver2: LocalForage.LocalForageDriver = {
         _driver: "CustomDriver",
-        _initStorage: (options: LocalForageOptions) => {},
+        _initStorage: (options: LocalForage.LocalForageOptions) => {},
         _support: true,
         getItem: <T>(key: string, callback?: (err: any, value: T) => void) => Promise.resolve({} as T),
         setItem: <T>(key: string, value: T, callback?: (err: any, value: T) => void) => Promise.resolve(value),
@@ -155,9 +155,9 @@ namespace LocalForageTest {
     };
     localForage.defineDriver(customDriver2);
 
-    const customDriver3: LocalForageDriver = {
+    const customDriver3: LocalForage.LocalForageDriver = {
         _driver: "CustomDriver",
-        _initStorage: (options: LocalForageOptions) => {},
+        _initStorage: (options: LocalForage.LocalForageOptions) => {},
         _support: () => Promise.resolve(true),
         getItem: <T>(key: string, callback?: (err: any, value: T) => void) => Promise.resolve({} as T),
         setItem: <T>(key: string, value: T, callback?: (err: any, value: T) => void) => Promise.resolve(value),
@@ -167,12 +167,12 @@ namespace LocalForageTest {
         key: (keyIndex: number, callback?: (err: any, key: string) => void) => Promise.resolve('aKey'),
         keys: (callback?: (err: any, keys: string[]) => void) => Promise.resolve(['1', '2']),
         iterate: <T, U>(iteratee: (value: T, key: string, iterationNumber: number) => U, callback?: (err: any, result: U) => void) => Promise.resolve({} as U),
-        dropInstance: (dbInstanceOptions?: LocalForageDbInstanceOptions, callback?: (err: any) => void) => Promise.resolve(),
+        dropInstance: (dbInstanceOptions?: LocalForage.LocalForageOptions, callback?: (err: any) => void) => Promise.resolve(),
     };
     localForage.defineDriver(customDriver3);
 
-    localForage.getDriver("CustomDriver").then((result: LocalForageDriver) => {
-        var driver: LocalForageDriver = result;
+    localForage.getDriver("CustomDriver").then((result: LocalForage.LocalForageDriver) => {
+        var driver: LocalForage.LocalForageDriver = result;
         // we need to use a variable for proper type guards before TS 2.0
         var _support = driver._support;
         if (typeof _support === "function") {
@@ -188,7 +188,7 @@ namespace LocalForageTest {
     {
         let config: boolean;
 
-        const configOptions: LocalForageOptions = {
+        const configOptions: LocalForage.LocalForageOptions = {
             name: "testyo",
             driver: localForage.LOCALSTORAGE
         };
@@ -201,9 +201,9 @@ namespace LocalForageTest {
     }
 
     {
-        let store: LocalForage;
+        let store: LocalForage.LocalForage;
 
-        const configOptions: LocalForageOptions = {
+        const configOptions: LocalForage.LocalForageOptions = {
             name: "da instance",
             driver: localForage.LOCALSTORAGE
         };
@@ -218,7 +218,7 @@ namespace LocalForageTest {
     {
         localForage.dropInstance().then(() => {});
 
-        const dropInstanceOptions: LocalForageDbInstanceOptions = {
+        const dropInstanceOptions: LocalForage.DbInstanceOptions = {
             name: "da instance",
             storeName: "da store"
         };
@@ -230,7 +230,7 @@ namespace LocalForageTest {
             storeName: "da store"
         }).then(() => {});
 
-        const dropDbOptions: LocalForageDbInstanceOptions = {
+        const dropDbOptions: LocalForage.DbInstanceOptions = {
             name: "da instance",
         };
 
@@ -240,14 +240,14 @@ namespace LocalForageTest {
     }
 
     {
-        let testSerializer: LocalForageSerializer;
+        let testSerializer: LocalForage.LocalForageSerializer;
 
         localForage.getSerializer()
-        .then((serializer: LocalForageSerializer) => {
+        .then((serializer: LocalForage.LocalForageSerializer) => {
             testSerializer = serializer;
         });
 
-        localForage.getSerializer((serializer: LocalForageSerializer) => {
+        localForage.getSerializer((serializer: LocalForage.LocalForageSerializer) => {
             testSerializer = serializer;
         });
     }
