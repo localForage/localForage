@@ -1,4 +1,5 @@
 ﻿import * as LocalForage from 'localforage';
+import * as localForageExt from 'localforage-ext';
 
 let localForage: LocalForage.LocalForage = LocalForage;
 
@@ -262,5 +263,17 @@ namespace LocalForageTest {
                 
             }
         });
+    }
+
+    {
+        localForage.testExtensionMethod();
+
+        localForageExt.extendPrototype(localForage).testExtensionMethod();
+
+        const lfe1: localForageExt.IHaveTestExtensionMethod = localForageExt.extendPrototype(localForage);
+        lfe1.testExtensionMethod();
+
+        const lfe2: localForageExt.LocalForageWithTestExtensionMethod = localForageExt.extendPrototype(localForage);
+        lfe2.testExtensionMethod();
     }
 }

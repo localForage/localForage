@@ -10,10 +10,18 @@
     "noEmit": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "target": "es5"
+    "target": "es5",
+    "baseUrl": ".",
+    "paths": {
+      "localforage": [
+        "../"
+      ],
+      "*": [
+        "./modules/*"
+      ]
+    }
   },
   "files": [
-    "../typings/localforage.d.ts",
     "./localforage-tests.ts"
   ]
 }
