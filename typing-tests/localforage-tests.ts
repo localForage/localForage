@@ -1,5 +1,6 @@
 ﻿import * as LocalForage from 'localforage';
 import * as localForageExt from 'localforage-ext';
+import * as testDriver from 'localforage-testdriver';
 
 let localForage: LocalForage.LocalForage = LocalForage;
 
@@ -263,6 +264,13 @@ namespace LocalForageTest {
                 
             }
         });
+    }
+
+    {
+        const testdriver: LocalForage.LocalForageDriver = testDriver;
+        localForage.defineDriver(testdriver);
+
+        localForage.defineDriver(testDriver);
     }
 
     {
