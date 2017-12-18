@@ -6,12 +6,14 @@ var DRIVERS = [
 ];
 
 DRIVERS.forEach(function(driverName) {
-    if ((!localforage.supports(localforage.INDEXEDDB) &&
-         driverName === localforage.INDEXEDDB) ||
+    if (
+        (!localforage.supports(localforage.INDEXEDDB) &&
+            driverName === localforage.INDEXEDDB) ||
         (!localforage.supports(localforage.LOCALSTORAGE) &&
-         driverName === localforage.LOCALSTORAGE) ||
+            driverName === localforage.LOCALSTORAGE) ||
         (!localforage.supports(localforage.WEBSQL) &&
-         driverName === localforage.WEBSQL)) {
+            driverName === localforage.WEBSQL)
+    ) {
         // Browser doesn't support this storage library, so we exit the API
         // tests.
         return;
@@ -29,12 +31,14 @@ DRIVERS.forEach(function(driverName) {
         });
 
         if (!Modernizr.webworkers) {
-            it.skip('doesn\'t have web worker support');
+            it.skip("doesn't have web worker support");
             return;
         }
 
-        if (driverName === localforage.LOCALSTORAGE ||
-            driverName === localforage.WEBSQL) {
+        if (
+            driverName === localforage.LOCALSTORAGE ||
+            driverName === localforage.WEBSQL
+        ) {
             it.skip(driverName + ' is not supported in web workers');
             return;
         }

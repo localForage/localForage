@@ -6,9 +6,11 @@ var DRIVERS = [
 ];
 
 DRIVERS.forEach(function(driverName) {
-    if ((!Modernizr.indexeddb && driverName === localforage.INDEXEDDB) ||
+    if (
+        (!Modernizr.indexeddb && driverName === localforage.INDEXEDDB) ||
         (!Modernizr.localstorage && driverName === localforage.LOCALSTORAGE) ||
-        (!Modernizr.websqldatabase && driverName === localforage.WEBSQL)) {
+        (!Modernizr.websqldatabase && driverName === localforage.WEBSQL)
+    ) {
         // Browser doesn't support this storage library, so we exit the API
         // tests.
         return;
@@ -65,8 +67,10 @@ DRIVERS.forEach(function(driverName) {
             localforage.clear(done);
         });
 
-        if (driverName === localforage.LOCALSTORAGE ||
-            driverName === localforage.WEBSQL) {
+        if (
+            driverName === localforage.LOCALSTORAGE ||
+            driverName === localforage.WEBSQL
+        ) {
             it.skip(driverName + ' is not supported in service workers');
             return;
         }
@@ -77,8 +81,7 @@ DRIVERS.forEach(function(driverName) {
                     return localforage.getItem('service worker registration');
                 })
                 .then(function(result) {
-                    expect(result)
-                        .to.equal('serviceworker present');
+                    expect(result).to.equal('serviceworker present');
                     done();
                 })
                 .catch(function(error) {
@@ -89,17 +92,21 @@ DRIVERS.forEach(function(driverName) {
         it('saves data', function(done) {
             var messageChannel = new MessageChannel();
             messageChannel.port1.onmessage = function(event) {
-                expect(event.data.body)
-                    .to.be('I have been set using ' + driverName);
+                expect(event.data.body).to.be(
+                    'I have been set using ' + driverName
+                );
                 done();
             };
 
             navigator.serviceWorker.ready
                 .then(function(registration) {
-                    registration.active.postMessage({
-                        driver: driverName,
-                        value: 'I have been set'
-                    }, [messageChannel.port2]);
+                    registration.active.postMessage(
+                        {
+                            driver: driverName,
+                            value: 'I have been set'
+                        },
+                        [messageChannel.port2]
+                    );
                 })
                 .catch(function(error) {
                     done(error);

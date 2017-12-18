@@ -25,10 +25,13 @@ beforeEach(function(done) {
         });
     }
 
-    localforage.ready().then(function() {
-        previousDriver = localforage.driver();
-        rerequirelocalforage();
-    }, function() {
-        rerequirelocalforage();
-    });
+    localforage.ready().then(
+        function() {
+            previousDriver = localforage.driver();
+            rerequirelocalforage();
+        },
+        function() {
+            rerequirelocalforage();
+        }
+    );
 });

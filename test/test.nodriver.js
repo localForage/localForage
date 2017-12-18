@@ -10,17 +10,19 @@ describe('When No Drivers Are Available', function() {
 
     it('agrees with Modernizr on storage drivers support', function() {
         expect(localforage.supports(localforage.INDEXEDDB)).to.be(false);
-        expect(localforage.supports(localforage.INDEXEDDB))
-            .to.be(Modernizr.indexeddb);
+        expect(localforage.supports(localforage.INDEXEDDB)).to.be(
+            Modernizr.indexeddb
+        );
 
-        expect(localforage.supports(localforage.LOCALSTORAGE))
-            .to.be(false);
-        expect(localforage.supports(localforage.LOCALSTORAGE))
-            .to.be(Modernizr.localstorage);
+        expect(localforage.supports(localforage.LOCALSTORAGE)).to.be(false);
+        expect(localforage.supports(localforage.LOCALSTORAGE)).to.be(
+            Modernizr.localstorage
+        );
 
         expect(localforage.supports(localforage.WEBSQL)).to.be(false);
-        expect(localforage.supports(localforage.WEBSQL))
-            .to.be(Modernizr.websqldatabase);
+        expect(localforage.supports(localforage.WEBSQL)).to.be(
+            Modernizr.websqldatabase
+        );
     });
 
     it('fails to load localForage [callback]', function(done) {
@@ -79,5 +81,4 @@ describe('When No Drivers Are Available', function() {
             done();
         });
     });
-
 });

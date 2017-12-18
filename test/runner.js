@@ -39,7 +39,7 @@ function runTests() {
 
 if (!Array.prototype.forEach) {
     Array.prototype.forEach = function(callback, thisArg) {
-        if (typeof(callback) !== 'function') {
+        if (typeof callback !== 'function') {
             throw new TypeError(callback + ' is not a function!');
         }
         var len = this.length;
@@ -51,7 +51,6 @@ if (!Array.prototype.forEach) {
 
 var require = this.require;
 if (require) {
-
     requirejs.config({
         paths: {
             localforage: '/dist/localforage'

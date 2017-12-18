@@ -143,10 +143,13 @@ function iterate(iterator, callback) {
                 value = dbInfo.serializer.deserialize(value);
             }
 
-            value = iterator(value, key.substring(keyPrefixLength),
-                             iterationNumber++);
+            value = iterator(
+                value,
+                key.substring(keyPrefixLength),
+                iterationNumber++
+            );
 
-            if (value !== void(0)) {
+            if (value !== void 0) {
                 return value;
             }
         }
@@ -258,8 +261,10 @@ function setItem(key, value, callback) {
                     } catch (e) {
                         // localStorage capacity exceeded.
                         // TODO: Make this a specific error/event.
-                        if (e.name === 'QuotaExceededError' ||
-                            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                        if (
+                            e.name === 'QuotaExceededError' ||
+                            e.name === 'NS_ERROR_DOM_QUOTA_REACHED'
+                        ) {
                             reject(e);
                         }
                         reject(e);
@@ -276,7 +281,7 @@ function setItem(key, value, callback) {
 function dropInstance(options, callback) {
     callback = getCallback.apply(this, arguments);
 
-    options = typeof options !== 'function' && options || {};
+    options = (typeof options !== 'function' && options) || {};
     if (!options.name) {
         var currentConfig = this.config();
         options.name = options.name || currentConfig.name;

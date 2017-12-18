@@ -6,7 +6,7 @@
     // Config the localStorage backend, using options set in the config.
     function _initStorage(options) {
         var self = this;
-        
+
         var dbInfo = {};
         if (options) {
             for (var i in options) {
@@ -35,24 +35,27 @@
     var TYPE_UINT32ARRAY = 'ui32';
     var TYPE_FLOAT32ARRAY = 'fl32';
     var TYPE_FLOAT64ARRAY = 'fl64';
-    var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH +
-                                        TYPE_ARRAYBUFFER.length;
+    var TYPE_SERIALIZED_MARKER_LENGTH =
+        SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
 
     function clear(callback) {
         var self = this;
         var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var db = self._dbInfo.db;
+            self
+                .ready()
+                .then(function() {
+                    var db = self._dbInfo.db;
 
-                for (var key in db) {
-                    if (db.hasOwnProperty(key)) {
-                        delete db[key];
-                        // db[key] = undefined;
+                    for (var key in db) {
+                        if (db.hasOwnProperty(key)) {
+                            delete db[key];
+                            // db[key] = undefined;
+                        }
                     }
-                }
 
-                resolve();
-            }).catch(reject);
+                    resolve();
+                })
+                .catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -64,26 +67,30 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
-                                ' used as a key, but it is not a string.');
+            window.console.warn(
+                key + ' used as a key, but it is not a string.'
+            );
             key = String(key);
         }
 
         var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                try {
-                    var db = self._dbInfo.db;
-                    var result = db[key];
+            self
+                .ready()
+                .then(function() {
+                    try {
+                        var db = self._dbInfo.db;
+                        var result = db[key];
 
-                    if (result) {
-                        result = _deserialize(result);
+                        if (result) {
+                            result = _deserialize(result);
+                        }
+
+                        resolve(result);
+                    } catch (e) {
+                        reject(e);
                     }
-
-                    resolve(result);
-                } catch (e) {
-                    reject(e);
-                }
-            }).catch(reject);
+                })
+                .catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -94,25 +101,28 @@
         var self = this;
 
         var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                try {
-                    var db = self._dbInfo.db;
+            self
+                .ready()
+                .then(function() {
+                    try {
+                        var db = self._dbInfo.db;
 
-                    for (var key in db) {
-                        var result = db[key];
+                        for (var key in db) {
+                            var result = db[key];
 
-                        if (result) {
-                            result = _deserialize(result);
+                            if (result) {
+                                result = _deserialize(result);
+                            }
+
+                            callback(result, key);
                         }
 
-                        callback(result, key);
+                        resolve();
+                    } catch (e) {
+                        reject(e);
                     }
-
-                    resolve();
-                } catch (e) {
-                    reject(e);
-                }
-            }).catch(reject);
+                })
+                .catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -122,23 +132,26 @@
     function key(n, callback) {
         var self = this;
         var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var db = self._dbInfo.db;
-                var result = null;
-                var index = 0;
+            self
+                .ready()
+                .then(function() {
+                    var db = self._dbInfo.db;
+                    var result = null;
+                    var index = 0;
 
-                for (var key in db) {
-                    if (db.hasOwnProperty(key) && db[key] !== undefined) {
-                        if (n === index) {
-                            result = key;
-                            break;
+                    for (var key in db) {
+                        if (db.hasOwnProperty(key) && db[key] !== undefined) {
+                            if (n === index) {
+                                result = key;
+                                break;
+                            }
+                            index++;
                         }
-                        index++;
                     }
-                }
 
-                resolve(result);
-            }).catch(reject);
+                    resolve(result);
+                })
+                .catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -148,18 +161,21 @@
     function keys(callback) {
         var self = this;
         var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var db = self._dbInfo.db;
-                var keys = [];
+            self
+                .ready()
+                .then(function() {
+                    var db = self._dbInfo.db;
+                    var keys = [];
 
-                for (var key in db) {
-                    if (db.hasOwnProperty(key)) {
-                        keys.push(key);
+                    for (var key in db) {
+                        if (db.hasOwnProperty(key)) {
+                            keys.push(key);
+                        }
                     }
-                }
 
-                resolve(keys);
-            }).catch(reject);
+                    resolve(keys);
+                })
+                .catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -169,9 +185,12 @@
     function length(callback) {
         var self = this;
         var promise = new Promise(function(resolve, reject) {
-            self.keys().then(function(keys) {
-                resolve(keys.length);
-            }).catch(reject);
+            self
+                .keys()
+                .then(function(keys) {
+                    resolve(keys.length);
+                })
+                .catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -183,21 +202,25 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
-                                ' used as a key, but it is not a string.');
+            window.console.warn(
+                key + ' used as a key, but it is not a string.'
+            );
             key = String(key);
         }
 
         var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                var db = self._dbInfo.db;
-                if (db.hasOwnProperty(key)) {
-                    delete db[key];
-                    // db[key] = undefined;
-                }
+            self
+                .ready()
+                .then(function() {
+                    var db = self._dbInfo.db;
+                    if (db.hasOwnProperty(key)) {
+                        delete db[key];
+                        // db[key] = undefined;
+                    }
 
-                resolve();
-            }).catch(reject);
+                    resolve();
+                })
+                .catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -209,36 +232,40 @@
 
         // Cast the key to a string, as that's all we can set as a key.
         if (typeof key !== 'string') {
-            window.console.warn(key +
-                                ' used as a key, but it is not a string.');
+            window.console.warn(
+                key + ' used as a key, but it is not a string.'
+            );
             key = String(key);
         }
 
         var promise = new Promise(function(resolve, reject) {
-            self.ready().then(function() {
-                // Convert undefined values to null.
-                // https://github.com/mozilla/localForage/pull/42
-                if (value === undefined) {
-                    value = null;
-                }
-
-                // Save the original value to pass to the callback.
-                var originalValue = value;
-
-                _serialize(value, function(value, error) {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        try {
-                            var db = self._dbInfo.db;
-                            db[key] = value;
-                            resolve(originalValue);
-                        } catch (e) {
-                            reject(e);
-                        }
+            self
+                .ready()
+                .then(function() {
+                    // Convert undefined values to null.
+                    // https://github.com/mozilla/localForage/pull/42
+                    if (value === undefined) {
+                        value = null;
                     }
-                });
-            }).catch(reject);
+
+                    // Save the original value to pass to the callback.
+                    var originalValue = value;
+
+                    _serialize(value, function(value, error) {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            try {
+                                var db = self._dbInfo.db;
+                                db[key] = value;
+                                resolve(originalValue);
+                            } catch (e) {
+                                reject(e);
+                            }
+                        }
+                    });
+                })
+                .catch(reject);
         });
 
         executeCallback(promise, callback);
@@ -256,9 +283,12 @@
         // checks fail when running the tests using casper.js...
         //
         // TODO: See why those tests fail and use a better solution.
-        if (value && (value.toString() === '[object ArrayBuffer]' ||
-                      value.buffer &&
-                      value.buffer.toString() === '[object ArrayBuffer]')) {
+        if (
+            value &&
+            (value.toString() === '[object ArrayBuffer]' ||
+                (value.buffer &&
+                    value.buffer.toString() === '[object ArrayBuffer]'))
+        ) {
             // Convert binary arrays to a string and prefix the string with
             // a special marker.
             var buffer;
@@ -309,21 +339,24 @@
             try {
                 callback(JSON.stringify(value));
             } catch (e) {
-                window.console.error("Couldn't convert value into a JSON " +
-                                     'string: ', value);
+                window.console.error(
+                    "Couldn't convert value into a JSON " + 'string: ',
+                    value
+                );
 
                 callback(e);
             }
         }
     }
-    
+
     // _deserialize just like in LocalStorage
     function _deserialize(value) {
         // If we haven't marked this string as being specially serialized (i.e.
         // something other than serialized JSON), we can just return it and be
         // done with it.
-        if (value.substring(0,
-            SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
+        if (
+            value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER
+        ) {
             return JSON.parse(value);
         }
 
@@ -331,8 +364,10 @@
         // TypedArray. First we separate out the type of data we're dealing
         // with from the data itself.
         var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);
-        var type = value.substring(SERIALIZED_MARKER_LENGTH,
-                                   TYPE_SERIALIZED_MARKER_LENGTH);
+        var type = value.substring(
+            SERIALIZED_MARKER_LENGTH,
+            TYPE_SERIALIZED_MARKER_LENGTH
+        );
 
         // Fill the string into a ArrayBuffer.
         // 2 bytes for each char.
@@ -392,11 +427,14 @@
 
     function executeCallback(promise, callback) {
         if (callback) {
-            promise.then(function(result) {
-                callback(null, result);
-            }, function(error) {
-                callback(error);
-            });
+            promise.then(
+                function(result) {
+                    callback(null, result);
+                },
+                function(error) {
+                    callback(error);
+                }
+            );
         }
     }
 
@@ -418,9 +456,13 @@
         define('dummyStorageDriver', function() {
             return dummyStorageDriver;
         });
-    } else if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') {
+    } else if (
+        typeof module !== 'undefined' &&
+        module.exports &&
+        typeof require !== 'undefined'
+    ) {
         module.exports = dummyStorageDriver;
     } else {
         this.dummyStorageDriver = dummyStorageDriver;
     }
-}).call(window);
+}.call(window));
