@@ -266,7 +266,6 @@ function _rejectReadiness(dbInfo, err) {
 
 function _getConnection(dbInfo, upgradeNeeded) {
     return new Promise$1(function (resolve, reject) {
-
         if (dbInfo.db) {
             if (upgradeNeeded) {
                 _deferReadiness(dbInfo);
@@ -336,7 +335,7 @@ function _isUpgradeNeeded(dbInfo, defaultVersion) {
         // If the version is not the default one
         // then warn for impossible downgrade.
         if (dbInfo.version !== defaultVersion) {
-            console.warn('The database "' + dbInfo.name + '"' + ' can\'t be downgraded from version ' + dbInfo.db.version + ' to version ' + dbInfo.version + '.');
+            console.warn('The database "' + dbInfo.name + '"' + " can't be downgraded from version " + dbInfo.db.version + ' to version ' + dbInfo.version + '.');
         }
         // Align the versions to prevent errors.
         dbInfo.version = dbInfo.db.version;
@@ -451,7 +450,6 @@ function createTransaction(dbInfo, mode, callback, retries) {
         callback(null, tx);
     } catch (err) {
         if (retries > 0 && (!dbInfo.db || err.name === 'InvalidStateError' || err.name === 'NotFoundError')) {
-
             return Promise$1.resolve().then(function () {
                 if (!dbInfo.db || err.name === 'NotFoundError' && !dbInfo.db.objectStoreNames.contains(dbInfo.storeName) && dbInfo.version <= dbInfo.db.version) {
                     // increase the db version, to create the new ObjectStore
@@ -958,7 +956,6 @@ function dropInstance(options, callback) {
 
         if (!options.storeName) {
             promise = dbPromise.then(function () {
-
                 _deferReadiness(options);
 
                 var dbContext = dbContexts[options.name];
@@ -1381,7 +1378,6 @@ function getItem$1(key, callback) {
 
                     resolve(result);
                 }, function (t, error) {
-
                     reject(error);
                 });
             });
@@ -2150,7 +2146,7 @@ var LocalForage = function () {
             // If localforage is ready and fully initialized, we can't set
             // any new configuration values. Instead, we return an error.
             if (this._ready) {
-                return new Error('Can\'t call config() after localforage ' + 'has been used.');
+                return new Error("Can't call config() after localforage " + 'has been used.');
             }
 
             for (var i in options) {

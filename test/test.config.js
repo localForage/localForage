@@ -49,8 +49,9 @@ describe('Config API', function() {
                 version: 2.0
             });
 
-            var error = "Error: Can't call config() after localforage " +
-                        'has been used.';
+            var error =
+                "Error: Can't call config() after localforage " +
+                'has been used.';
 
             expect(configResult).to.not.be(true);
             expect(configResult.toString()).to.be(error);
@@ -59,8 +60,9 @@ describe('Config API', function() {
             expect(localforage.config('description')).to.not.be('123');
             expect(localforage.config('description')).to.be('');
             expect(localforage.config('driver')).to.be(localforage.driver());
-            expect(localforage.config('driver')).to.not
-                              .be('I a not set driver');
+            expect(localforage.config('driver')).to.not.be(
+                'I a not set driver'
+            );
             expect(localforage.config('name')).to.be('localforage');
             expect(localforage.config('name')).to.not.be('My Cool App');
             expect(localforage.config('size')).to.be(4980736);
@@ -72,7 +74,8 @@ describe('Config API', function() {
     });
 
     it('sets new values and returns them properly', function(done) {
-        var secondSupportedDriver = supportedDrivers.length >= 2 ? supportedDrivers[1] : null;
+        var secondSupportedDriver =
+            supportedDrivers.length >= 2 ? supportedDrivers[1] : null;
 
         localforage.config({
             description: 'The offline datastore for my cool app',
@@ -83,10 +86,10 @@ describe('Config API', function() {
         });
 
         expect(localforage.config('description')).to.not.be('');
-        expect(localforage.config('description')).to
-                          .be('The offline datastore for my cool app');
-        expect(localforage.config('driver')).to
-                          .be(secondSupportedDriver);
+        expect(localforage.config('description')).to.be(
+            'The offline datastore for my cool app'
+        );
+        expect(localforage.config('driver')).to.be(secondSupportedDriver);
         expect(localforage.config('name')).to.be('My Cool App');
         expect(localforage.config('size')).to.be(4980736);
         expect(localforage.config('storeName')).to.be('myStoreName');
@@ -94,11 +97,11 @@ describe('Config API', function() {
 
         localforage.ready(function() {
             if (supportedDrivers.length >= 2) {
-                expect(localforage.config('driver')).to
-                                  .be(secondSupportedDriver);
+                expect(localforage.config('driver')).to.be(
+                    secondSupportedDriver
+                );
             } else {
-                expect(localforage.config('driver')).to
-                                  .be(supportedDrivers[0]);
+                expect(localforage.config('driver')).to.be(supportedDrivers[0]);
             }
             done();
         });
@@ -113,13 +116,16 @@ describe('Config API', function() {
             });
 
             expect(configResult).to.be.a(Promise);
-            localforage.ready(function() {
-                expect(localforage.config('driver')).to
-                                  .be(otherSupportedDrivers[0]);
-                return configResult;
-            }).then(function() {
-                done();
-            });
+            localforage
+                .ready(function() {
+                    expect(localforage.config('driver')).to.be(
+                        otherSupportedDrivers[0]
+                    );
+                    return configResult;
+                })
+                .then(function() {
+                    done();
+                });
         });
     }
 
@@ -130,16 +136,18 @@ describe('Config API', function() {
         });
 
         expect(configResult).to.be.a(Promise);
-        localforage.ready(function() {
-            expect(localforage.config('driver')).to
-                              .be(oldDriver);
-            return configResult;
-        }).catch(function(error) {
-            expect(error).to.be.an(Error);
-            expect(error.message).to
-                .be('No available storage method found.');
-            done();
-        });
+        localforage
+            .ready(function() {
+                expect(localforage.config('driver')).to.be(oldDriver);
+                return configResult;
+            })
+            .catch(function(error) {
+                expect(error).to.be.an(Error);
+                expect(error.message).to.be(
+                    'No available storage method found.'
+                );
+                done();
+            });
     });
 
     it('it does not set an unsupported driver using preference order', function(done) {
@@ -152,8 +160,7 @@ describe('Config API', function() {
         });
 
         localforage.ready(function() {
-            expect(localforage.config('driver')).to
-                              .be(oldDriver);
+            expect(localforage.config('driver')).to.be(oldDriver);
             done();
         });
     });
@@ -182,34 +189,45 @@ describe('Config API', function() {
 
         localforage.setItem('some key', 'some value').then(function(value) {
             if (localforage.driver() === localforage.INDEXEDDB) {
-                var indexedDB = (indexedDB || window.indexedDB ||
-                                 window.webkitIndexedDB ||
-                                 window.mozIndexedDB || window.OIndexedDB ||
-                                 window.msIndexedDB);
+                var indexedDB =
+                    indexedDB ||
+                    window.indexedDB ||
+                    window.webkitIndexedDB ||
+                    window.mozIndexedDB ||
+                    window.OIndexedDB ||
+                    window.msIndexedDB;
                 var req = indexedDB.open('My Cool App', 2.0);
 
                 req.onsuccess = function() {
                     var dbValue = req.result
-                                     .transaction('myStoreName', 'readonly')
-                                     .objectStore('myStoreName')
-                                     .get('some key');
+                        .transaction('myStoreName', 'readonly')
+                        .objectStore('myStoreName')
+                        .get('some key');
                     expect(dbValue).to.be(value);
                     done();
                 };
             } else if (localforage.driver() === localforage.WEBSQL) {
-                window.openDatabase('My Cool App', String(2.0), '',
-                                    4980736).transaction(function(t) {
-                    t.executeSql('SELECT * FROM myStoreName WHERE key = ? ' +
-                                 'LIMIT 1', ['some key'], function(t, results) {
-                        var dbValue = JSON.parse(results.rows.item(0).value);
+                window
+                    .openDatabase('My Cool App', String(2.0), '', 4980736)
+                    .transaction(function(t) {
+                        t.executeSql(
+                            'SELECT * FROM myStoreName WHERE key = ? ' +
+                                'LIMIT 1',
+                            ['some key'],
+                            function(t, results) {
+                                var dbValue = JSON.parse(
+                                    results.rows.item(0).value
+                                );
 
-                        expect(dbValue).to.be(value);
-                        done();
+                                expect(dbValue).to.be(value);
+                                done();
+                            }
+                        );
                     });
-                });
             } else if (localforage.driver() === localforage.LOCALSTORAGE) {
                 var dbValue = JSON.parse(
-                    localStorage['My Cool App/myStoreName/some key']);
+                    localStorage['My Cool App/myStoreName/some key']
+                );
 
                 expect(dbValue).to.be(value);
                 done();
@@ -229,12 +247,15 @@ describe('Config API', function() {
             name: 'Mega Mozilla Dino'
         });
 
-        localforage.length().then(function() {
-            return localforage.setDriver(localforage.LOCALSTORAGE);
-        }).then(function() {
-            expect(localforage.config('name')).to.be('Mega Mozilla Dino');
-            done();
-        });
+        localforage
+            .length()
+            .then(function() {
+                return localforage.setDriver(localforage.LOCALSTORAGE);
+            })
+            .then(function() {
+                expect(localforage.config('name')).to.be('Mega Mozilla Dino');
+                done();
+            });
     });
 
     it('returns error if database version is not a number', function(done) {

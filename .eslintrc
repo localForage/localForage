@@ -63,17 +63,6 @@
     "consistent-this": [
       2,
       "self"
-    ],
-    "indent": [
-      2,
-      4,
-      {
-        "CallExpression": {"arguments": "first"},
-        "flatTernaryExpressions": true,
-        "FunctionExpression": {"parameters": "first"},
-        "MemberExpression": "off",
-        "SwitchCase": 1
-      }
     ]
   },
   "globals": {

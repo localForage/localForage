@@ -1,8 +1,10 @@
 function isLocalStorageValid() {
     try {
-        return typeof localStorage !== 'undefined' &&
-            ('setItem' in localStorage) &&
-            typeof localStorage.setItem === 'function';
+        return (
+            typeof localStorage !== 'undefined' &&
+            'setItem' in localStorage &&
+            typeof localStorage.setItem === 'function'
+        );
     } catch (e) {
         return false;
     }

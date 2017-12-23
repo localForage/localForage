@@ -17,6 +17,8 @@
   },
   "scripts": {
     "build": "node -e \"require('grunt').cli()\" null build",
+    "precommit": "lint-staged",
+    "prettify": "prettier --write \"src/**/*.js\" \"test/**/*.js\"",
     "publish-docs": "node -e \"require('grunt').cli()\" null copy build-rules-html publish-rules",
     "serve": "node -e \"require('grunt').cli()\" null serve",
     "test": "node -e \"require('grunt').cli()\" null test"
@@ -33,6 +35,7 @@
     "browserify-derequire": "^0.9.4",
     "bundle-collapser": "^1.2.1",
     "cors": "^2.3.1",
+    "eslint-config-prettier": "^2.9.0",
     "grunt": "^0.4.2",
     "grunt-babel": "^6.0.0",
     "grunt-browserify": "^3.8.0",
@@ -48,9 +51,12 @@
     "grunt-saucelabs": "^5.1.2",
     "grunt-ts": "^6.0.0-beta.11",
     "grunt-webpack": "^1.0.11",
+    "husky": "^0.14.3",
+    "lint-staged": "^5.0.0",
     "load-grunt-tasks": "^0.4.0",
     "mocha": "^3.4.2",
     "phantomjs": "^2.1.7",
+    "prettier": "^1.9.2",
     "rollupify": "^0.1.0",
     "script-loader": "^0.6.1",
     "typescript": "^2.0.3",
@@ -65,5 +71,11 @@
   },
   "dependencies": {
     "lie": "3.0.2"
+  },
+  "lint-staged": {
+    "{src,test}/**/*.js": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }

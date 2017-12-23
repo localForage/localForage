@@ -4,7 +4,8 @@ import createBlob from './createBlob';
 // Sadly, the best way to save binary data in WebSQL/localStorage is serializing
 // it to Base64, so this is how we store it to prevent very strange errors with less
 // verbose ways of binary <-> string data storage.
-var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+var BASE_CHARS =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 var BLOB_TYPE_PREFIX = '~~local_forage_type~';
 var BLOB_TYPE_PREFIX_REGEX = /^~~local_forage_type~([^~]+)~/;
@@ -24,8 +25,8 @@ var TYPE_UINT16ARRAY = 'ur16';
 var TYPE_UINT32ARRAY = 'ui32';
 var TYPE_FLOAT32ARRAY = 'fl32';
 var TYPE_FLOAT64ARRAY = 'fl64';
-var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH +
-    TYPE_ARRAYBUFFER.length;
+var TYPE_SERIALIZED_MARKER_LENGTH =
+    SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
 
 var toString = Object.prototype.toString;
 
@@ -73,14 +74,16 @@ function bufferToString(buffer) {
         /*jslint bitwise: true */
         base64String += BASE_CHARS[bytes[i] >> 2];
         base64String += BASE_CHARS[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
-        base64String += BASE_CHARS[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+        base64String +=
+            BASE_CHARS[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
         base64String += BASE_CHARS[bytes[i + 2] & 63];
     }
 
-    if ((bytes.length % 3) === 2) {
+    if (bytes.length % 3 === 2) {
         base64String = base64String.substring(0, base64String.length - 1) + '=';
     } else if (bytes.length % 3 === 1) {
-        base64String = base64String.substring(0, base64String.length - 2) + '==';
+        base64String =
+            base64String.substring(0, base64String.length - 2) + '==';
     }
 
     return base64String;
@@ -99,9 +102,12 @@ function serialize(value, callback) {
     // checks fail when running the tests using casper.js...
     //
     // TODO: See why those tests fail and use a better solution.
-    if (value && (valueType === '[object ArrayBuffer]' ||
-        value.buffer &&
-        toString.call(value.buffer) === '[object ArrayBuffer]')) {
+    if (
+        value &&
+        (valueType === '[object ArrayBuffer]' ||
+            (value.buffer &&
+                toString.call(value.buffer) === '[object ArrayBuffer]'))
+    ) {
         // Convert binary arrays to a string and prefix the string with
         // a special marker.
         var buffer;
@@ -143,7 +149,10 @@ function serialize(value, callback) {
 
         fileReader.onload = function() {
             // Backwards-compatible prefix for the blob type.
-            var str = BLOB_TYPE_PREFIX + value.type + '~' +
+            var str =
+                BLOB_TYPE_PREFIX +
+                value.type +
+                '~' +
                 bufferToString(this.result);
 
             callback(SERIALIZED_MARKER + TYPE_BLOB + str);
@@ -154,8 +163,7 @@ function serialize(value, callback) {
         try {
             callback(JSON.stringify(value));
         } catch (e) {
-            console.error("Couldn't convert value into a JSON string: ",
-                          value);
+            console.error("Couldn't convert value into a JSON string: ", value);
 
             callback(null, e);
         }
@@ -182,8 +190,10 @@ function deserialize(value) {
     // TypedArray. First we separate out the type of data we're dealing
     // with from the data itself.
     var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);
-    var type = value.substring(SERIALIZED_MARKER_LENGTH,
-                               TYPE_SERIALIZED_MARKER_LENGTH);
+    var type = value.substring(
+        SERIALIZED_MARKER_LENGTH,
+        TYPE_SERIALIZED_MARKER_LENGTH
+    );
 
     var blobType;
     // Backwards-compatible blob type serialization strategy.
@@ -201,7 +211,7 @@ function deserialize(value) {
         case TYPE_ARRAYBUFFER:
             return buffer;
         case TYPE_BLOB:
-            return createBlob([buffer], {type: blobType});
+            return createBlob([buffer], { type: blobType });
         case TYPE_INT8ARRAY:
             return new Int8Array(buffer);
         case TYPE_UINT8ARRAY:

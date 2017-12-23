@@ -11,10 +11,14 @@ function createBlob(parts, properties) {
         if (e.name !== 'TypeError') {
             throw e;
         }
-        var Builder = typeof BlobBuilder !== 'undefined' ? BlobBuilder :
-            typeof MSBlobBuilder !== 'undefined' ? MSBlobBuilder :
-            typeof MozBlobBuilder !== 'undefined' ? MozBlobBuilder :
-            WebKitBlobBuilder;
+        var Builder =
+            typeof BlobBuilder !== 'undefined'
+                ? BlobBuilder
+                : typeof MSBlobBuilder !== 'undefined'
+                  ? MSBlobBuilder
+                  : typeof MozBlobBuilder !== 'undefined'
+                    ? MozBlobBuilder
+                    : WebKitBlobBuilder;
         var builder = new Builder();
         for (var i = 0; i < parts.length; i += 1) {
             builder.append(parts[i]);
@@ -30,12 +34,14 @@ var DRIVERS = [
 ];
 
 DRIVERS.forEach(function(driverName) {
-    if ((!localforage.supports(localforage.INDEXEDDB) &&
-         driverName === localforage.INDEXEDDB) ||
+    if (
+        (!localforage.supports(localforage.INDEXEDDB) &&
+            driverName === localforage.INDEXEDDB) ||
         (!localforage.supports(localforage.LOCALSTORAGE) &&
-         driverName === localforage.LOCALSTORAGE) ||
+            driverName === localforage.LOCALSTORAGE) ||
         (!localforage.supports(localforage.WEBSQL) &&
-         driverName === localforage.WEBSQL)) {
+            driverName === localforage.WEBSQL)
+    ) {
         // Browser doesn't support this storage library, so we exit the API
         // tests.
         return;
@@ -65,25 +71,31 @@ DRIVERS.forEach(function(driverName) {
             });
         });
         it('saves a string [promise]', function(done) {
-            localforage.setItem('office', 'Initech').then(function(setValue) {
-                expect(setValue).to.be('Initech');
+            localforage
+                .setItem('office', 'Initech')
+                .then(function(setValue) {
+                    expect(setValue).to.be('Initech');
 
-                return localforage.getItem('office');
-            }).then(function(value) {
-                expect(value).to.be('Initech');
-                done();
-            });
+                    return localforage.getItem('office');
+                })
+                .then(function(value) {
+                    expect(value).to.be('Initech');
+                    done();
+                });
         });
 
         it('saves a string like "[object Blob]" [promise]', function(done) {
-            localforage.setItem('fake Blob', '[object Blob]').then(function(setValue) {
-                expect(setValue).to.be('[object Blob]');
+            localforage
+                .setItem('fake Blob', '[object Blob]')
+                .then(function(setValue) {
+                    expect(setValue).to.be('[object Blob]');
 
-                return localforage.getItem('fake Blob');
-            }).then(function(value) {
-                expect(value).to.be('[object Blob]');
-                done();
-            });
+                    return localforage.getItem('fake Blob');
+                })
+                .then(function(value) {
+                    expect(value).to.be('[object Blob]');
+                    done();
+                });
         });
 
         it('saves a number [callback]', function(done) {
@@ -99,16 +111,19 @@ DRIVERS.forEach(function(driverName) {
             });
         });
         it('saves a number [promise]', function(done) {
-            localforage.setItem('number', 546).then(function(setValue) {
-                expect(setValue).to.be(546);
-                expect(setValue).to.be.a('number');
+            localforage
+                .setItem('number', 546)
+                .then(function(setValue) {
+                    expect(setValue).to.be(546);
+                    expect(setValue).to.be.a('number');
 
-                return localforage.getItem('number');
-            }).then(function(value) {
-                expect(value).to.be(546);
-                expect(value).to.be.a('number');
-                done();
-            });
+                    return localforage.getItem('number');
+                })
+                .then(function(value) {
+                    expect(value).to.be(546);
+                    expect(value).to.be.a('number');
+                    done();
+                });
         });
 
         it('saves a boolean [callback]', function(done) {
@@ -124,16 +139,19 @@ DRIVERS.forEach(function(driverName) {
             });
         });
         it('saves a boolean [promise]', function(done) {
-            localforage.setItem('boolean', false).then(function(setValue) {
-                expect(setValue).to.be(false);
-                expect(setValue).to.be.a('boolean');
+            localforage
+                .setItem('boolean', false)
+                .then(function(setValue) {
+                    expect(setValue).to.be(false);
+                    expect(setValue).to.be.a('boolean');
 
-                return localforage.getItem('boolean');
-            }).then(function(value) {
-                expect(value).to.be(false);
-                expect(value).to.be.a('boolean');
-                done();
-            });
+                    return localforage.getItem('boolean');
+                })
+                .then(function(value) {
+                    expect(value).to.be(false);
+                    expect(value).to.be.a('boolean');
+                    done();
+                });
         });
 
         it('saves null [callback]', function(done) {
@@ -147,14 +165,17 @@ DRIVERS.forEach(function(driverName) {
             });
         });
         it('saves null [promise]', function(done) {
-            localforage.setItem('null', null).then(function(setValue) {
-                expect(setValue).to.be(null);
+            localforage
+                .setItem('null', null)
+                .then(function(setValue) {
+                    expect(setValue).to.be(null);
 
-                return localforage.getItem('null');
-            }).then(function(value) {
-                expect(value).to.be(null);
-                done();
-            });
+                    return localforage.getItem('null');
+                })
+                .then(function(value) {
+                    expect(value).to.be(null);
+                    done();
+                });
         });
 
         it('saves undefined as null [callback]', function(done) {
@@ -168,14 +189,17 @@ DRIVERS.forEach(function(driverName) {
             });
         });
         it('saves undefined as null [promise]', function(done) {
-            localforage.setItem('null', undefined).then(function(setValue) {
-                expect(setValue).to.be(null);
+            localforage
+                .setItem('null', undefined)
+                .then(function(setValue) {
+                    expect(setValue).to.be(null);
 
-                return localforage.getItem('null');
-            }).then(function(value) {
-                expect(value).to.be(null);
-                done();
-            });
+                    return localforage.getItem('null');
+                })
+                .then(function(value) {
+                    expect(value).to.be(null);
+                    done();
+                });
         });
 
         it('saves a float [callback]', function(done) {
@@ -191,16 +215,19 @@ DRIVERS.forEach(function(driverName) {
             });
         });
         it('saves a float [promise]', function(done) {
-            localforage.setItem('float', 546.041).then(function(setValue) {
-                expect(setValue).to.be(546.041);
-                expect(setValue).to.be.a('number');
+            localforage
+                .setItem('float', 546.041)
+                .then(function(setValue) {
+                    expect(setValue).to.be(546.041);
+                    expect(setValue).to.be.a('number');
 
-                return localforage.getItem('float');
-            }).then(function(value) {
-                expect(value).to.be(546.041);
-                expect(value).to.be.a('number');
-                done();
-            });
+                    return localforage.getItem('float');
+                })
+                .then(function(value) {
+                    expect(value).to.be(546.041);
+                    expect(value).to.be.a('number');
+                    done();
+                });
         });
 
         var arrayToSave = [2, 'one', true];
@@ -218,17 +245,20 @@ DRIVERS.forEach(function(driverName) {
             });
         });
         it('saves an array [promise]', function(done) {
-            localforage.setItem('array', arrayToSave).then(function(setValue) {
-                expect(setValue.length).to.be(arrayToSave.length);
-                expect(setValue instanceof Array).to.be(true);
+            localforage
+                .setItem('array', arrayToSave)
+                .then(function(setValue) {
+                    expect(setValue.length).to.be(arrayToSave.length);
+                    expect(setValue instanceof Array).to.be(true);
 
-                return localforage.getItem('array');
-            }).then(function(value) {
-                expect(value.length).to.be(arrayToSave.length);
-                expect(value instanceof Array).to.be(true);
-                expect(value[1]).to.be.a('string');
-                done();
-            });
+                    return localforage.getItem('array');
+                })
+                .then(function(value) {
+                    expect(value.length).to.be(arrayToSave.length);
+                    expect(value instanceof Array).to.be(true);
+                    expect(value[1]).to.be.a('string');
+                    done();
+                });
         });
 
         var objectToSave = {
@@ -237,22 +267,24 @@ DRIVERS.forEach(function(driverName) {
                 array: [1, 2, 3]
             },
             nestedObjects: [
-                {truth: true},
-                {theCake: 'is a lie'},
-                {happiness: 'is a warm gun'},
+                { truth: true },
+                { theCake: 'is a lie' },
+                { happiness: 'is a warm gun' },
                 false
             ],
             string: 'bar'
         };
         it('saves a nested object [callback]', function(done) {
             localforage.setItem('obj', objectToSave, function(err, setValue) {
-                expect(Object.keys(setValue).length)
-                    .to.be(Object.keys(objectToSave).length);
+                expect(Object.keys(setValue).length).to.be(
+                    Object.keys(objectToSave).length
+                );
                 expect(setValue).to.be.an('object');
 
                 localforage.getItem('obj', function(err, value) {
-                    expect(Object.keys(value).length)
-                        .to.be(Object.keys(objectToSave).length);
+                    expect(Object.keys(value).length).to.be(
+                        Object.keys(objectToSave).length
+                    );
                     expect(value).to.be.an('object');
                     expect(value.nested).to.be.an('object');
                     expect(value.nestedObjects[0].truth).to.be.a('boolean');
@@ -263,22 +295,27 @@ DRIVERS.forEach(function(driverName) {
             });
         });
         it('saves a nested object [promise]', function(done) {
-            localforage.setItem('obj', objectToSave).then(function(setValue) {
-                expect(Object.keys(setValue).length)
-                    .to.be(Object.keys(objectToSave).length);
-                expect(setValue).to.be.an('object');
+            localforage
+                .setItem('obj', objectToSave)
+                .then(function(setValue) {
+                    expect(Object.keys(setValue).length).to.be(
+                        Object.keys(objectToSave).length
+                    );
+                    expect(setValue).to.be.an('object');
 
-                return localforage.getItem('obj');
-            }).then(function(value) {
-                expect(Object.keys(value).length)
-                    .to.be(Object.keys(objectToSave).length);
-                expect(value).to.be.an('object');
-                expect(value.nested).to.be.an('object');
-                expect(value.nestedObjects[0].truth).to.be.a('boolean');
-                expect(value.nestedObjects[1].theCake).to.be.a('string');
-                expect(value.nestedObjects[3]).to.be(false);
-                done();
-            });
+                    return localforage.getItem('obj');
+                })
+                .then(function(value) {
+                    expect(Object.keys(value).length).to.be(
+                        Object.keys(objectToSave).length
+                    );
+                    expect(value).to.be.an('object');
+                    expect(value.nested).to.be.an('object');
+                    expect(value.nestedObjects[0].truth).to.be.a('boolean');
+                    expect(value.nestedObjects[1].theCake).to.be.a('string');
+                    expect(value.nestedObjects[3]).to.be(false);
+                    done();
+                });
         });
 
         // Skip binary (ArrayBuffer) data tests if Array Buffer isn't supported.
@@ -293,23 +330,32 @@ DRIVERS.forEach(function(driverName) {
                 request.onreadystatechange = function() {
                     if (request.readyState === request.DONE) {
                         var response = request.response;
-                        localforage.setItem('ab', response, function(err, sab) {
-                            expect(sab.toString())
-                                .to.be('[object ArrayBuffer]');
-                            expect(sab.byteLength)
-                                .to.be(response.byteLength);
-                        }).then(function() {
-                            // TODO: Running getItem from inside the setItem
-                            // callback times out on IE 10/11. Could be an
-                            // open transaction issue?
-                            localforage.getItem('ab', function(err, arrayBuff) {
-                                expect(arrayBuff.toString())
-                                    .to.be('[object ArrayBuffer]');
-                                expect(arrayBuff.byteLength)
-                                    .to.be(response.byteLength);
+                        localforage
+                            .setItem('ab', response, function(err, sab) {
+                                expect(sab.toString()).to.be(
+                                    '[object ArrayBuffer]'
+                                );
+                                expect(sab.byteLength).to.be(
+                                    response.byteLength
+                                );
+                            })
+                            .then(function() {
+                                // TODO: Running getItem from inside the setItem
+                                // callback times out on IE 10/11. Could be an
+                                // open transaction issue?
+                                localforage.getItem('ab', function(
+                                    err,
+                                    arrayBuff
+                                ) {
+                                    expect(arrayBuff.toString()).to.be(
+                                        '[object ArrayBuffer]'
+                                    );
+                                    expect(arrayBuff.byteLength).to.be(
+                                        response.byteLength
+                                    );
+                                });
+                                done();
                             });
-                            done();
-                        });
                     }
                 };
 
@@ -324,7 +370,9 @@ DRIVERS.forEach(function(driverName) {
                 runBinaryTest('/test/photo2.jpg', done);
             });
         } else {
-            it.skip('saves binary (ArrayBuffer) data (ArrayBuffer type does not exist)');
+            it.skip(
+                'saves binary (ArrayBuffer) data (ArrayBuffer type does not exist)'
+            );
         }
 
         // This does not run on PhantomJS < 2.0.
@@ -335,28 +383,24 @@ DRIVERS.forEach(function(driverName) {
                 var fileParts = ['<a id="a"><b id="b">hey!</b></a>'];
                 var mimeString = 'text/html';
 
-                var testBlob = createBlob(fileParts, { 'type' : mimeString });
+                var testBlob = createBlob(fileParts, { type: mimeString });
 
-                localforage.setItem('blob', testBlob, function(err, blob) {
-                    expect(err).to.be(null);
-                    expect(blob.toString())
-                        .to.be('[object Blob]');
-                    expect(blob.size)
-                        .to.be(testBlob.size);
-                    expect(blob.type)
-                        .to.be(testBlob.type);
-                }).then(function() {
-                    localforage.getItem('blob', function(err, blob) {
+                localforage
+                    .setItem('blob', testBlob, function(err, blob) {
                         expect(err).to.be(null);
-                        expect(blob.toString())
-                            .to.be('[object Blob]');
-                        expect(blob.size)
-                            .to.be(testBlob.size);
-                        expect(blob.type)
-                            .to.be(testBlob.type);
-                        done();
+                        expect(blob.toString()).to.be('[object Blob]');
+                        expect(blob.size).to.be(testBlob.size);
+                        expect(blob.type).to.be(testBlob.type);
+                    })
+                    .then(function() {
+                        localforage.getItem('blob', function(err, blob) {
+                            expect(err).to.be(null);
+                            expect(blob.toString()).to.be('[object Blob]');
+                            expect(blob.size).to.be(testBlob.size);
+                            expect(blob.type).to.be(testBlob.type);
+                            done();
+                        });
                     });
-                });
             });
         } else {
             it.skip('saves binary (Blob) data (Blob type does not exist)');
@@ -367,30 +411,26 @@ DRIVERS.forEach(function(driverName) {
                 var fileParts = ['<a id="a"><b id="b">hey!</b></a>'];
                 var mimeString = 'text/html';
 
-                var testBlob = createBlob(fileParts, { 'type' : mimeString });
+                var testBlob = createBlob(fileParts, { type: mimeString });
 
-                localforage.setItem('blob', testBlob, function(err, blob) {
-                    expect(err).to.be(null);
-                    expect(blob.toString())
-                        .to.be('[object Blob]');
-                    expect(blob.size)
-                        .to.be(testBlob.size);
-                    expect(blob.type)
-                        .to.be(testBlob.type);
-                }).then(function() {
-                    localforage.iterate(function(blob, key) {
-                        if (key !== 'blob') {
-                            return;
-                        }
-                        expect(blob.toString())
-                            .to.be('[object Blob]');
-                        expect(blob.size)
-                            .to.be(testBlob.size);
-                        expect(blob.type)
-                            .to.be(testBlob.type);
-                        done();
+                localforage
+                    .setItem('blob', testBlob, function(err, blob) {
+                        expect(err).to.be(null);
+                        expect(blob.toString()).to.be('[object Blob]');
+                        expect(blob.size).to.be(testBlob.size);
+                        expect(blob.type).to.be(testBlob.type);
+                    })
+                    .then(function() {
+                        localforage.iterate(function(blob, key) {
+                            if (key !== 'blob') {
+                                return;
+                            }
+                            expect(blob.toString()).to.be('[object Blob]');
+                            expect(blob.size).to.be(testBlob.size);
+                            expect(blob.type).to.be(testBlob.type);
+                            done();
+                        });
                     });
-                });
             });
         } else {
             it.skip('saves binary (Blob) data (Blob type does not exist)');
@@ -449,8 +489,9 @@ DRIVERS.forEach(function(driverName) {
 
                 localforage.setItem('array', array, function(err, writeValue) {
                     localforage.getItem('array', function(err, readValue) {
-                        expect(readValue instanceof Uint8ClampedArray)
-                            .to.be(true);
+                        expect(readValue instanceof Uint8ClampedArray).to.be(
+                            true
+                        );
                         expect(readValue[0]).to.be(array[0]);
                         expect(readValue[1]).to.be(array[1]);
                         expect(readValue[2]).to.be(array[2]);
