@@ -9,7 +9,7 @@
     "storage",
     "websql"
   ],
-  "version": "1.5.3",
+  "version": "1.5.6",
   "homepage": "https://github.com/localForage/localForage",
   "repository": {
     "type": "git",
@@ -64,6 +64,12 @@
     "url": "http://github.com/localForage/localForage/issues"
   },
   "dependencies": {
-    "lie": "3.0.2"
+    "lie": "3.1.1"
+  },
+  "lint-staged": {
+    "{src,test}/**/*.js": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
