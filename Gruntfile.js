@@ -144,6 +144,7 @@ module.exports = exports = function(grunt) {
                     urls: [
                         'http://localhost:9999/test/test.main.html',
                         'http://localhost:9999/test/test.min.html',
+                        'http://localhost:9999/test/test.polyfill.html',
                         'http://localhost:9999/test/test.callwhenready.html',
                         'http://localhost:9999/test/test.customdriver.html',
                         'http://localhost:9999/test/test.faultydriver.html',
