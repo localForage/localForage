@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <title>Simple localForage example</title>
+  </head>
+  <body>
+    <div id="output"></div>
+    <script>
+      window.originalPromise = window.Promise;
+      if (window.Promise) {
+        window.Promise = undefined;
+      }
+    </script>
+    <script src="../dist/localforage.js"></script>
+    <script>
+      function log() {
+        try {
+          console.log.apply(console, arguments);
+        } catch (e) {
+          /**/
+        }
+
+        var output = document.getElementById('output');
+        for (var i = 0, len = arguments.length; i < len; i++) {
+          output.innerHTML += ('<p>' + String(arguments[i]) + '</p>');
+        }
+      }
+
+      log('Promises were available: ' + !!window.originalPromise);
+
+      var key = 'STORE_KEY';
+      // var value = 'What we save offline';
+      var value = typeof Uint8Array !== 'undefined' ? new Uint8Array(8) : [];
+      value[0] = 65;
+      // var value = undefined;
+      var UNKNOWN_KEY = 'unknown_key';
+
+      localforage.setItem(key, value, function() {
+        log('Saved: ' + value);
+
+        localforage.getItem(key, function(err, readValue) {
+          log('Read: ', readValue);
+        });
+
+        // Since this key hasn't been set yet, we'll get a null value
+        localforage.getItem(UNKNOWN_KEY, function(err, readValue) {
+          log('Result of reading ' + UNKNOWN_KEY, readValue);
+        });
+      });
+    </script>
+  </body>
+</html>
