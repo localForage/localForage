@@ -399,7 +399,11 @@ DRIVERS.forEach(function(driverName) {
                             done(e);
                         }
                     })
-                    .then(function() {
+                    .then(function(blob) {
+                        expect(blob.toString()).to.be('[object Blob]');
+                        expect(blob.size).to.be(testBlob.size);
+                        expect(blob.type).to.be(testBlob.type);
+
                         localforage.getItem('blob', function(err, blob) {
                             expect(err).to.be(null);
                             expect(blob.toString()).to.be('[object Blob]');
