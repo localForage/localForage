@@ -404,14 +404,15 @@ DRIVERS.forEach(function(driverName) {
                         expect(blob.size).to.be(testBlob.size);
                         expect(blob.type).to.be(testBlob.type);
 
-                        localforage.getItem('blob', function(err, blob) {
+                        return localforage.getItem('blob', function(err, blob) {
                             expect(err).to.be(null);
                             expect(blob.toString()).to.be('[object Blob]');
                             expect(blob.size).to.be(testBlob.size);
                             expect(blob.type).to.be(testBlob.type);
                             done();
                         });
-                    });
+                    })
+                    .catch(done);
             });
         } else {
             it.skip('saves binary (Blob) data (Blob type does not exist)');
