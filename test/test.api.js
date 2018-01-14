@@ -1,8 +1,8 @@
 /* global after:true, afterEach:true, before:true, beforeEach:true, describe:true, expect:true, it:true, Promise:true */
 var DRIVERS = [
     localforage.INDEXEDDB,
-    localforage.LOCALSTORAGE,
-    localforage.WEBSQL
+    localforage.WEBSQL,
+    localforage.LOCALSTORAGE
 ];
 
 var SUPPORTED_DRIVERS = DRIVERS.filter(function(driverName) {
@@ -1787,6 +1787,30 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
             storeName: 'dropStore'
         };
 
+        var dropDb3Instance1;
+        var dropDb3Instance1Options = {
+            name: 'dropDb3',
+            driver: driverName,
+            size: 1024,
+            storeName: 'dropStore1'
+        };
+
+        var dropDb3Instance2;
+        var dropDb3Instance2Options = {
+            name: 'dropDb3',
+            driver: driverName,
+            size: 1024,
+            storeName: 'dropStore2'
+        };
+
+        var dropDb3Instance3;
+        var dropDb3Instance3Options = {
+            name: 'dropDb3',
+            driver: driverName,
+            size: 1024,
+            storeName: 'dropStore3'
+        };
+
         before(function() {
             nodropInstance = localforage.createInstance(nodropInstanceOptions);
             dropStoreInstance1 = localforage.createInstance(
@@ -1801,6 +1825,15 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
             dropDbInstance = localforage.createInstance(dropDbInstanceOptions);
             dropDb2Instance = localforage.createInstance(
                 dropDb2InstanceOptions
+            );
+            dropDb3Instance1 = localforage.createInstance(
+                dropDb3Instance1Options
+            );
+            dropDb3Instance2 = localforage.createInstance(
+                dropDb3Instance2Options
+            );
+            dropDb3Instance3 = localforage.createInstance(
+                dropDb3Instance3Options
             );
             return Promise.resolve()
                 .then(function() {
@@ -1820,6 +1853,15 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
                 })
                 .then(function() {
                     return dropDb2Instance.setItem('key1', 'value3');
+                })
+                .then(function() {
+                    return dropDb3Instance1.setItem('key1', 'value1');
+                })
+                .then(function() {
+                    return dropDb3Instance2.setItem('key1', 'value2');
+                })
+                .then(function() {
+                    return dropDb3Instance3.setItem('key1', 'value3');
                 });
         });
 
@@ -1948,6 +1990,14 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
             });
         });
 
+        it('resolves when trying to drop a store that does not exit', function() {
+            var opts = {
+                name: dropStoreInstance3Options.name,
+                storeName: 'NotExistingStore' + Date.now()
+            };
+            return dropStoreInstance3.dropInstance(opts);
+        });
+
         function expectDBToNotExistAsync(options) {
             return new Promise(function(resolve, reject) {
                 if (driverName === localforage.INDEXEDDB) {
@@ -2031,6 +2081,53 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
             return dropDb2Instance.dropInstance(opts).then(function() {
                 return expectDBToNotExistAsync(opts);
             });
+        });
+
+        it('resolves when trying to drop a "DB" that does not exist', function() {
+            var opts = {
+                name: 'NotExistingDB' + Date.now()
+            };
+            return dropStoreInstance3.dropInstance(opts);
+        });
+
+        it('drops a "DB" that we previously dropped a store', function() {
+            var opts = {
+                name: dropStoreInstance3Options.name
+            };
+            return dropStoreInstance3.dropInstance(opts).then(function() {
+                return expectDBToNotExistAsync(opts);
+            });
+        });
+
+        it('drops a "DB" after dropping all its stores', function() {
+            var opts = {
+                name: dropDb3Instance1.name
+            };
+            Promise.resolve()
+                .then(function() {
+                    return dropDb3Instance1.dropInstance({
+                        name: dropDb3Instance1.name,
+                        storeName: dropDb3Instance1Options.storeName
+                    });
+                })
+                .then(function() {
+                    return dropDb3Instance1.dropInstance({
+                        name: dropDb3Instance1.name,
+                        storeName: dropDb3Instance2Options.storeName
+                    });
+                })
+                .then(function() {
+                    return dropDb3Instance1.dropInstance({
+                        name: dropDb3Instance1.name,
+                        storeName: dropDb3Instance3Options.storeName
+                    });
+                })
+                .then(function() {
+                    return dropStoreInstance3.dropInstance(opts);
+                })
+                .then(function() {
+                    return expectDBToNotExistAsync(opts);
+                });
         });
     });
 });
