@@ -440,7 +440,7 @@ localforage.driver();
 
 `driver()`
 
-Returns the name of the driver being used, or `null` if none can be used.
+Returns the name of the driver being used, `null` during the asynchronous driver initialization process (see <a href="#driver-api-ready"><code>ready</code></a> for more details), or `null` if the asynchronous driver initialization process failed to find a usable driver.
 
 <aside class="notice">
   In case that a driver fails during or right after the initialization process, then localForage will try to use the next in order driver. That is with respect to the default driver order while loading localForage or to the order the drivers were passed to `setDriver()`.
