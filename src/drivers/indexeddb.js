@@ -314,7 +314,7 @@ function _tryReconnect(dbInfo) {
     var forages = dbContext.forages;
 
     for (var i = 0; i < forages.length; i++) {
-        var forage = forages[i];
+        const forage = forages[i];
         if (forage._dbInfo.db) {
             forage._dbInfo.db.close();
             forage._dbInfo.db = null;
@@ -323,7 +323,7 @@ function _tryReconnect(dbInfo) {
     dbInfo.db = null;
 
     return _getOriginalConnection(dbInfo)
-        .then(function(db) {
+        .then(db => {
             dbInfo.db = db;
             if (_isUpgradeNeeded(dbInfo)) {
                 // Reopen the database for upgrading.
@@ -331,13 +331,15 @@ function _tryReconnect(dbInfo) {
             }
             return db;
         })
-        .then(function(db) {
+        .then(db => {
+            // store the latest db reference
+            // in case the db was upgraded
             dbInfo.db = dbContext.db = db;
-            for (var j = 0; j < forages.length; j++) {
-                forages[j]._dbInfo.db = db;
+            for (var i = 0; i < forages.length; i++) {
+                forages[i]._dbInfo.db = db;
             }
         })
-        .catch(function(err) {
+        .catch(err => {
             _rejectReadiness(dbInfo, err);
             throw err;
         });
@@ -956,7 +958,7 @@ function dropInstance(options, callback) {
 
         const dbPromise = isCurrentDb
             ? Promise.resolve(self._dbInfo.db)
-            : _getOriginalConnection(options).then(function(db) {
+            : _getOriginalConnection(options).then(db => {
                   const dbContext = dbContexts[options.name];
                   const forages = dbContext.forages;
                   dbContext.db = db;
@@ -967,7 +969,7 @@ function dropInstance(options, callback) {
               });
 
         if (!options.storeName) {
-            promise = dbPromise.then(function(db) {
+            promise = dbPromise.then(db => {
                 _deferReadiness(options);
 
                 const dbContext = dbContexts[options.name];
@@ -975,19 +977,19 @@ function dropInstance(options, callback) {
 
                 db.close();
                 for (var i = 0; i < forages.length; i++) {
-                    var forage = forages[i];
+                    const forage = forages[i];
                     forage._dbInfo.db = null;
                 }
 
-                var dropDBPromise = new Promise(function(resolve, reject) {
+                const dropDBPromise = new Promise((resolve, reject) => {
                     var req = idb.deleteDatabase(options.name);
 
-                    req.onerror = req.onblocked = e => {
+                    req.onerror = req.onblocked = err => {
                         const db = req.result;
                         if (db) {
                             db.close();
                         }
-                        reject(e);
+                        reject(err);
                     };
 
                     req.onsuccess = () => {
@@ -1000,13 +1002,14 @@ function dropInstance(options, callback) {
                 });
 
                 return dropDBPromise
-                    .then(function(db) {
+                    .then(db => {
                         dbContext.db = db;
-                        for (var j = 0; j < forages.length; j++) {
+                        for (var i = 0; i < forages.length; i++) {
+                            const forage = forages[i];
                             _advanceReadiness(forage._dbInfo);
                         }
                     })
-                    .catch(function(err) {
+                    .catch(err => {
                         (
                             _rejectReadiness(options, err) || Promise.resolve()
                         ).catch(() => {});
@@ -1014,7 +1017,7 @@ function dropInstance(options, callback) {
                     });
             });
         } else {
-            promise = dbPromise.then(function(db) {
+            promise = dbPromise.then(db => {
                 if (!db.objectStoreNames.contains(options.storeName)) {
                     return;
                 }
@@ -1033,24 +1036,21 @@ function dropInstance(options, callback) {
                     forage._dbInfo.version = newVersion;
                 }
 
-                const dropObjectPromise = new Promise(function(
-                    resolve,
-                    reject
-                ) {
+                const dropObjectPromise = new Promise((resolve, reject) => {
                     const req = idb.open(options.name, newVersion);
 
-                    req.onerror = e => {
+                    req.onerror = err => {
                         const db = req.result;
                         db.close();
-                        reject(e);
+                        reject(err);
                     };
 
-                    req.onupgradeneeded = function() {
+                    req.onupgradeneeded = () => {
                         var db = req.result;
                         db.deleteObjectStore(options.storeName);
                     };
 
-                    req.onsuccess = function() {
+                    req.onsuccess = () => {
                         const db = req.result;
                         db.close();
                         resolve(db);
@@ -1058,7 +1058,7 @@ function dropInstance(options, callback) {
                 });
 
                 return dropObjectPromise
-                    .then(function(db) {
+                    .then(db => {
                         dbContext.db = db;
                         for (let j = 0; j < forages.length; j++) {
                             const forage = forages[j];
@@ -1066,7 +1066,7 @@ function dropInstance(options, callback) {
                             _advanceReadiness(forage._dbInfo);
                         }
                     })
-                    .catch(function(err) {
+                    .catch(err => {
                         (
                             _rejectReadiness(options, err) || Promise.resolve()
                         ).catch(() => {});
