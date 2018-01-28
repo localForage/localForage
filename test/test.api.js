@@ -1739,77 +1739,69 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
     describe(driverName + ' driver dropInstance', function() {
         this.timeout(30000);
 
+        function setCommonOpts(opts) {
+            opts.driver = driverName;
+            opts.size = 1024;
+            return opts;
+        }
+
+        var dropStoreDbName = 'dropStoreDb';
+
         var nodropInstance;
-        var nodropInstanceOptions = {
-            name: 'dropStoreDb',
-            driver: driverName,
-            size: 1024,
+        var nodropInstanceOptions = setCommonOpts({
+            name: dropStoreDbName,
             storeName: 'nodropStore'
-        };
+        });
 
         var dropStoreInstance1;
-        var dropStoreInstance1Options = {
-            name: 'dropStoreDb',
-            driver: driverName,
-            size: 1024,
+        var dropStoreInstance1Options = setCommonOpts({
+            name: dropStoreDbName,
             storeName: 'dropStore'
-        };
+        });
 
         var dropStoreInstance2;
-        var dropStoreInstance2Options = {
-            name: 'dropStoreDb',
-            driver: driverName,
-            size: 1024,
+        var dropStoreInstance2Options = setCommonOpts({
+            name: dropStoreDbName,
             storeName: 'dropStore2'
-        };
+        });
 
         var dropStoreInstance3;
-        var dropStoreInstance3Options = {
-            name: 'dropStoreDb',
-            driver: driverName,
-            size: 1024,
+        var dropStoreInstance3Options = setCommonOpts({
+            name: dropStoreDbName,
             storeName: 'dropStore3'
-        };
+        });
 
         var dropDbInstance;
-        var dropDbInstanceOptions = {
+        var dropDbInstanceOptions = setCommonOpts({
             name: 'dropDb',
-            driver: driverName,
-            size: 1024,
             storeName: 'dropStore'
-        };
+        });
 
         var dropDb2Instance;
-        var dropDb2InstanceOptions = {
+        var dropDb2InstanceOptions = setCommonOpts({
             name: 'dropDb2',
-            driver: driverName,
-            size: 1024,
             storeName: 'dropStore'
-        };
+        });
+
+        var dropDb3name = 'dropDb3';
 
         var dropDb3Instance1;
-        var dropDb3Instance1Options = {
-            name: 'dropDb3',
-            driver: driverName,
-            size: 1024,
+        var dropDb3Instance1Options = setCommonOpts({
+            name: dropDb3name,
             storeName: 'dropStore1'
-        };
+        });
 
         var dropDb3Instance2;
-        var dropDb3Instance2Options = {
-            name: 'dropDb3',
-            driver: driverName,
-            size: 1024,
+        var dropDb3Instance2Options = setCommonOpts({
+            name: dropDb3name,
             storeName: 'dropStore2'
-        };
+        });
 
         var dropDb3Instance3;
-        var dropDb3Instance3Options = {
-            name: 'dropDb3',
-            driver: driverName,
-            size: 1024,
+        var dropDb3Instance3Options = setCommonOpts({
+            name: dropDb3name,
             storeName: 'dropStore3'
-        };
+        });
 
         before(function() {
             nodropInstance = localforage.createInstance(nodropInstanceOptions);
@@ -1820,7 +1812,7 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
                 dropStoreInstance2Options
             );
             dropStoreInstance3 = localforage.createInstance(
-                dropStoreInstance2Options
+                dropStoreInstance3Options
             );
             dropDbInstance = localforage.createInstance(dropDbInstanceOptions);
             dropDb2Instance = localforage.createInstance(
@@ -2083,6 +2075,14 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
             });
         });
 
+        it('resolves when trying to drop a store of a "DB" that does not exit', function() {
+            var opts = {
+                name: 'NotExistingDB' + Date.now(),
+                storeName: 'NotExistingStore' + Date.now()
+            };
+            return dropStoreInstance3.dropInstance(opts);
+        });
+
         it('resolves when trying to drop a "DB" that does not exist', function() {
             var opts = {
                 name: 'NotExistingDB' + Date.now()
@@ -2101,29 +2101,32 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
 
         it('drops a "DB" after dropping all its stores', function() {
             var opts = {
-                name: dropDb3Instance1.name
+                name: dropDb3name
             };
-            Promise.resolve()
+            // Before trying to drop a different store/DB
+            // make sure that the instance that you will use
+            // is configured to use the same driver as well.
+            return Promise.resolve()
                 .then(function() {
                     return dropDb3Instance1.dropInstance({
-                        name: dropDb3Instance1.name,
+                        name: dropDb3name,
                         storeName: dropDb3Instance1Options.storeName
                     });
                 })
                 .then(function() {
                     return dropDb3Instance1.dropInstance({
-                        name: dropDb3Instance1.name,
+                        name: dropDb3name,
                         storeName: dropDb3Instance2Options.storeName
                     });
                 })
                 .then(function() {
                     return dropDb3Instance1.dropInstance({
-                        name: dropDb3Instance1.name,
+                        name: dropDb3name,
                         storeName: dropDb3Instance3Options.storeName
                     });
                 })
                 .then(function() {
-                    return dropStoreInstance3.dropInstance(opts);
+                    return dropDb3Instance1.dropInstance(opts);
                 })
                 .then(function() {
                     return expectDBToNotExistAsync(opts);
