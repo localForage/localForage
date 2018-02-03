@@ -1722,7 +1722,9 @@ var webSQLStorage = {
 
 function isLocalStorageValid() {
     try {
-        return typeof localStorage !== 'undefined' && 'setItem' in localStorage && typeof localStorage.setItem === 'function';
+        return typeof localStorage !== 'undefined' && 'setItem' in localStorage &&
+        // in IE8 typeof localStorage.setItem === 'object'
+        !!localStorage.setItem;
     } catch (e) {
         return false;
     }
@@ -2040,6 +2042,23 @@ var localStorageWrapper = {
     dropInstance: dropInstance$2
 };
 
+var sameValue = function sameValue(x, y) {
+    return x === y || typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y);
+};
+
+var includes = function includes(array, searchElement) {
+    var len = array.length;
+    var i = 0;
+    while (i < len) {
+        if (sameValue(array[i], searchElement)) {
+            return true;
+        }
+        i++;
+    }
+
+    return false;
+};
+
 var isArray = Array.isArray || function (arg) {
     return Object.prototype.toString.call(arg) === '[object Array]';
 };
@@ -2198,7 +2217,7 @@ var LocalForage = function () {
 
                     // when the property is there,
                     // it should be a method even when optional
-                    var isRequired = OptionalDriverMethods.indexOf(driverMethodName) < 0;
+                    var isRequired = !includes(OptionalDriverMethods, driverMethodName);
                     if ((isRequired || driverObject[driverMethodName]) && typeof driverObject[driverMethodName] !== 'function') {
                         reject(complianceError);
                         return;
