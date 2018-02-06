@@ -367,7 +367,7 @@ Set and persist localForage options. This must be called *before* any other call
   </dd>
   <dt>version</dt>
   <dd>
-    The version of your database. May be used for upgrades in the future; currently unused.<br>
+    The schema version of your database. Used only in WebSQL and IndexedDB. In WebSQL, this simply sets the version, and in IndexedDB this may trigger an <code>onupgradeneeded</code> event if a version upgrade is detected. If a new store is detected, localForage will ask IndexedDB to increment the version itself to manually trigger the <code>onupgradeneeded</code> event. As of right now, upgrade events are not customizable, but may be in the future. For drivers that do not support configuration for versioning, this value simply gets thrown away.<br>
     Default: <code>1.0</code>
   </dd>
   <dt>description</dt>
