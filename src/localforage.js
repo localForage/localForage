@@ -5,6 +5,7 @@ import serializer from './utils/serializer';
 import Promise from './utils/promise';
 import executeCallback from './utils/executeCallback';
 import executeTwoCallbacks from './utils/executeTwoCallbacks';
+import includes from './utils/includes';
 import isArray from './utils/isArray';
 
 // Drivers are stored here when `defineDriver()` is called.
@@ -176,8 +177,10 @@ class LocalForage {
 
                     // when the property is there,
                     // it should be a method even when optional
-                    const isRequired =
-                        OptionalDriverMethods.indexOf(driverMethodName) < 0;
+                    const isRequired = !includes(
+                        OptionalDriverMethods,
+                        driverMethodName
+                    );
                     if (
                         (isRequired || driverObject[driverMethodName]) &&
                         typeof driverObject[driverMethodName] !== 'function'
