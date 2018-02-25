@@ -138,8 +138,8 @@ function getCallback() {
 // [Gaia](https://github.com/mozilla-b2g/gaia).
 
 var DETECT_BLOB_SUPPORT_STORE = 'local-forage-detect-blob-support';
-var supportsBlobs;
-var dbContexts;
+var supportsBlobs = void 0;
+var dbContexts = {};
 var toString = Object.prototype.toString;
 
 // Transaction Modes
@@ -266,6 +266,8 @@ function _rejectReadiness(dbInfo, err) {
 
 function _getConnection(dbInfo, upgradeNeeded) {
     return new Promise$1(function (resolve, reject) {
+        dbContexts[dbInfo.name] = dbContexts[dbInfo.name] || createDbContext();
+
         if (dbInfo.db) {
             if (upgradeNeeded) {
                 _deferReadiness(dbInfo);
@@ -421,16 +423,21 @@ function _tryReconnect(dbInfo) {
             forage._dbInfo.db = null;
         }
     }
+    dbInfo.db = null;
 
     return _getOriginalConnection(dbInfo).then(function (db) {
-        for (var j = 0; j < forages.length; j++) {
-            forages[j]._dbInfo.db = db;
-        }
         dbInfo.db = db;
-    }).then(function () {
         if (_isUpgradeNeeded(dbInfo)) {
             // Reopen the database for upgrading.
             return _getUpgradedConnection(dbInfo);
+        }
+        return db;
+    }).then(function (db) {
+        // store the latest db reference
+        // in case the db was upgraded
+        dbInfo.db = dbContext.db = db;
+        for (var i = 0; i < forages.length; i++) {
+            forages[i]._dbInfo.db = db;
         }
     })["catch"](function (err) {
         _rejectReadiness(dbInfo, err);
@@ -470,6 +477,19 @@ function createTransaction(dbInfo, mode, callback, retries) {
     }
 }
 
+function createDbContext() {
+    return {
+        // Running localForages sharing a database.
+        forages: [],
+        // Shared database.
+        db: null,
+        // Database readiness (promise).
+        dbReady: null,
+        // Deferred operations on the database.
+        deferredOperations: []
+    };
+}
+
 // Open the IndexedDB database (automatically creates one if one didn't
 // previously exist), using any options set in the config.
 function _initStorage(options) {
@@ -484,26 +504,12 @@ function _initStorage(options) {
         }
     }
 
-    // Initialize a singleton container for all running localForages.
-    if (!dbContexts) {
-        dbContexts = {};
-    }
-
     // Get the current context of the database;
     var dbContext = dbContexts[dbInfo.name];
 
     // ...or create a new context.
     if (!dbContext) {
-        dbContext = {
-            // Running localForages sharing a database.
-            forages: [],
-            // Shared database.
-            db: null,
-            // Database readiness (promise).
-            dbReady: null,
-            // Deferred operations on the database.
-            deferredOperations: []
-        };
+        dbContext = createDbContext();
         // Register the new context in the global container.
         dbContexts[dbInfo.name] = dbContext;
     }
@@ -952,34 +958,56 @@ function dropInstance(options, callback) {
     if (!options.name) {
         promise = Promise$1.reject('Invalid arguments');
     } else {
-        var dbPromise = options.name === currentConfig.name && self._dbInfo.db ? Promise$1.resolve(self._dbInfo.db) : _getOriginalConnection(options);
+        var isCurrentDb = options.name === currentConfig.name && self._dbInfo.db;
+
+        var dbPromise = isCurrentDb ? Promise$1.resolve(self._dbInfo.db) : _getOriginalConnection(options).then(function (db) {
+            var dbContext = dbContexts[options.name];
+            var forages = dbContext.forages;
+            dbContext.db = db;
+            for (var i = 0; i < forages.length; i++) {
+                forages[i]._dbInfo.db = db;
+            }
+            return db;
+        });
 
         if (!options.storeName) {
-            promise = dbPromise.then(function () {
+            promise = dbPromise.then(function (db) {
                 _deferReadiness(options);
 
                 var dbContext = dbContexts[options.name];
                 var forages = dbContext.forages;
 
+                db.close();
                 for (var i = 0; i < forages.length; i++) {
                     var forage = forages[i];
-                    if (forage._dbInfo.db) {
-                        forage._dbInfo.db.close();
-                        forage._dbInfo.db = null;
-                    }
+                    forage._dbInfo.db = null;
                 }
 
                 var dropDBPromise = new Promise$1(function (resolve, reject) {
                     var req = idb.deleteDatabase(options.name);
 
-                    req.onerror = req.onblocked = reject;
+                    req.onerror = req.onblocked = function (err) {
+                        var db = req.result;
+                        if (db) {
+                            db.close();
+                        }
+                        reject(err);
+                    };
 
-                    req.onsuccess = resolve;
+                    req.onsuccess = function () {
+                        var db = req.result;
+                        if (db) {
+                            db.close();
+                        }
+                        resolve(db);
+                    };
                 });
 
-                return dropDBPromise.then(function () {
-                    for (var j = 0; j < forages.length; j++) {
-                        _advanceReadiness(forage._dbInfo);
+                return dropDBPromise.then(function (db) {
+                    dbContext.db = db;
+                    for (var i = 0; i < forages.length; i++) {
+                        var _forage = forages[i];
+                        _advanceReadiness(_forage._dbInfo);
                     }
                 })["catch"](function (err) {
                     (_rejectReadiness(options, err) || Promise$1.resolve())["catch"](function () {});
@@ -999,19 +1027,21 @@ function dropInstance(options, callback) {
                 var dbContext = dbContexts[options.name];
                 var forages = dbContext.forages;
 
+                db.close();
                 for (var i = 0; i < forages.length; i++) {
                     var forage = forages[i];
-                    if (forage._dbInfo.db) {
-                        forage._dbInfo.db.close();
-                        forage._dbInfo.db = null;
-                        forage._dbInfo.version = newVersion;
-                    }
+                    forage._dbInfo.db = null;
+                    forage._dbInfo.version = newVersion;
                 }
 
                 var dropObjectPromise = new Promise$1(function (resolve, reject) {
                     var req = idb.open(options.name, newVersion);
 
-                    req.onerror = reject;
+                    req.onerror = function (err) {
+                        var db = req.result;
+                        db.close();
+                        reject(err);
+                    };
 
                     req.onupgradeneeded = function () {
                         var db = req.result;
@@ -1020,15 +1050,17 @@ function dropInstance(options, callback) {
 
                     req.onsuccess = function () {
                         var db = req.result;
+                        db.close();
                         resolve(db);
                     };
                 });
 
                 return dropObjectPromise.then(function (db) {
+                    dbContext.db = db;
                     for (var j = 0; j < forages.length; j++) {
-                        var forage = forages[j];
-                        forage._dbInfo.db = db;
-                        _advanceReadiness(forage._dbInfo);
+                        var _forage2 = forages[j];
+                        _forage2._dbInfo.db = db;
+                        _advanceReadiness(_forage2._dbInfo);
                     }
                 })["catch"](function (err) {
                     (_rejectReadiness(options, err) || Promise$1.resolve())["catch"](function () {});
