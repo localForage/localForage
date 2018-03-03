@@ -3,6 +3,27 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [1.6](https://github.com/mozilla/localForage/releases/tag/1.6.0)
+
+* Add `dropInstance()` method to localforage.
+* Improve IDB driver reliability when a connection gets closed.
+
+### [1.5.7]
+
+* Fix IE8 localStorage support detection.
+
+### [1.5.6]
+
+* Upgrade lie to 3.1.1 to work with yarn.
+
+### [1.5.5]
+
+* Roll back dropInstance breaking change.
+
+### [1.5.4]
+
+* Set `null` as `undefined` (for Edge).
+
 ### [1.5.3]
 
 * Check whether localStorage is actually usable.
