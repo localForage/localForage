@@ -202,7 +202,7 @@ models in your framework so you can store data offline with localForage. We
 have drivers for the following frameworks:
 
 * [AngularJS](https://github.com/ocombe/angular-localForage)
-* [Angular 4+](https://www.npmjs.com/package/ngforage)
+* [Angular 4 and up](https://github.com/Alorel/ngforage/)
 * [Backbone](https://github.com/localForage/localForage-backbone)
 * [Ember](https://github.com/genkgo/ember-localforage-adapter)
 * [Vue](https://github.com/dmlzj/vlf)
