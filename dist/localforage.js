@@ -1,6 +1,6 @@
 /*!
     localForage -- Offline Storage, Improved
-    Version 1.6.0
+    Version 1.7.0
     https://localforage.github.io/localForage
     (c) 2013-2017 Mozilla, Apache License 2.0
 */
@@ -90,7 +90,7 @@ var REJECTED = ['REJECTED'];
 var FULFILLED = ['FULFILLED'];
 var PENDING = ['PENDING'];
 
-module.exports = Promise;
+module.exports = exports = Promise;
 
 function Promise(resolver) {
   if (typeof resolver !== 'function') {
@@ -196,7 +196,7 @@ handlers.reject = function (self, error) {
 function getThen(obj) {
   // Make sure we only access the accessor once as required by the spec
   var then = obj && obj.then;
-  if (obj && (typeof obj === 'object' || typeof obj === 'function') && typeof then === 'function') {
+  if (obj && typeof obj === 'object' && typeof then === 'function') {
     return function appyThen() {
       then.apply(obj, arguments);
     };
@@ -244,7 +244,7 @@ function tryCatch(func, value) {
   return out;
 }
 
-Promise.resolve = resolve;
+exports.resolve = resolve;
 function resolve(value) {
   if (value instanceof this) {
     return value;
@@ -252,13 +252,13 @@ function resolve(value) {
   return handlers.resolve(new this(INTERNAL), value);
 }
 
-Promise.reject = reject;
+exports.reject = reject;
 function reject(reason) {
   var promise = new this(INTERNAL);
   return handlers.reject(promise, reason);
 }
 
-Promise.all = all;
+exports.all = all;
 function all(iterable) {
   var self = this;
   if (Object.prototype.toString.call(iterable) !== '[object Array]') {
@@ -297,7 +297,7 @@ function all(iterable) {
   }
 }
 
-Promise.race = race;
+exports.race = race;
 function race(iterable) {
   var self = this;
   if (Object.prototype.toString.call(iterable) !== '[object Array]') {
