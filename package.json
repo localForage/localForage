@@ -9,7 +9,7 @@
     "storage",
     "websql"
   ],
-  "version": "1.7.0",
+  "version": "1.7.1",
   "homepage": "https://github.com/localForage/localForage",
   "repository": {
     "type": "git",
@@ -65,7 +65,6 @@
     "webpack-dev-server": "^1.10.1"
   },
   "main": "dist/localforage.js",
-  "module": "src/localforage.js",
   "typings": "typings/localforage.d.ts",
   "bugs": {
     "url": "http://github.com/localForage/localForage/issues"
