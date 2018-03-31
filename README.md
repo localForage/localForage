@@ -27,12 +27,6 @@ Download the [latest localForage from GitHub](https://github.com/localForage/loc
 npm install localforage
 ```
 
-or [bower](http://bower.io):
-
-```bash
-bower install localforage
-```
-
 localForage is compatible with [browserify](http://browserify.org/).
 
 [supported browsers]: https://github.com/localForage/localForage/wiki/Supported-Browsers-Platforms
@@ -40,14 +34,14 @@ localForage is compatible with [browserify](http://browserify.org/).
 ## Support
 
 Lost? Need help? Try the
-[localForage API documentation](https://localforage.github.io/localForage).
+[localForage API documentation](https://localforage.github.io/localForage). [localForage API文档也有中文版。](https://localforage.docschina.org)
 
-If you're stuck using the library, running the tests, or want to contribute
+If you're having trouble using the library, running the tests, or want to contribute
 to localForage, you can visit
 [irc.freenode.net](https://freenode.net/) and head to the `#localforage`
 channel to ask questions about localForage.
 
-The best person to ask about localForage is [**tofumatt**][tofumatt], who
+You can ask [**tofumatt**][tofumatt] about localForage in IRC, who
 is usually online from 10am-8pm GMT.
 
 [tofumatt]: http://tofumatt.com/
