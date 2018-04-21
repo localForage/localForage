@@ -51,7 +51,7 @@ module.exports = exports = function(grunt) {
         browserify: {
             package_bundling_test: {
                 src: 'test/runner.browserify.js',
-                dest: 'test/localforage.browserify.js'
+                dest: 'build/test/localforage.browserify.js'
             },
             main: {
                 files: {
@@ -214,7 +214,7 @@ module.exports = exports = function(grunt) {
             package_bundling_test: {
                 entry: './test/runner.webpack.js',
                 output: {
-                    path: 'test/',
+                    path: 'build/test/',
                     filename: 'localforage.webpack.js'
                 }
             }

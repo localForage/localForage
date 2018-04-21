@@ -17,11 +17,15 @@
   },
   "scripts": {
     "build": "node -e \"require('grunt').cli()\" null build",
+    "lint": "eslint \"src/**/*.js\" \"test/**/*.js\"",
+    "lint-fix": "eslint --fix \"src/**/*.js\"",
     "precommit": "lint-staged",
     "prettify": "prettier --write \"src/**/*.js\" \"test/**/*.js\"",
     "publish-docs": "node -e \"require('grunt').cli()\" null copy build-rules-html publish-rules",
     "serve": "node -e \"require('grunt').cli()\" null serve",
-    "test": "node -e \"require('grunt').cli()\" null test"
+    "test-unit": "rollup -c rollup.config.test.js && mocha build/test/test-bundle.js",
+    "test-e2e": "node -e \"require('grunt').cli()\" null test",
+    "test": "npm run test-unit && npm run test-e2e"
   },
   "devDependencies": {
     "babel-core": "^6.5.1",
@@ -35,6 +39,7 @@
     "browserify-derequire": "^0.9.4",
     "bundle-collapser": "^1.2.1",
     "cors": "^2.3.1",
+    "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.9.0",
     "grunt": "^0.4.2",
     "grunt-babel": "^6.0.0",
@@ -57,6 +62,8 @@
     "mocha": "^3.4.2",
     "phantomjs": "^2.1.7",
     "prettier": "^1.9.2",
+    "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-multi-entry": "^2.0.2",
     "rollupify": "^0.1.0",
     "script-loader": "^0.6.1",
     "typescript": "^2.0.3",

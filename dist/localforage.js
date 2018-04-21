@@ -372,6 +372,59 @@ function getIDB() {
 
 var idb = getIDB();
 
+function getSafariUserAgentVersion(userAgent) {
+    try {
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
+        var match = /Version\/([0-9._]+)/.exec(userAgent);
+        var versionParts = match && match[1].split(/[._]/).slice(0, 2);
+        if (!versionParts || !versionParts.length) {
+            return;
+        }
+
+        var version = Number(versionParts.join('.'));
+        return version;
+    } catch (e) {
+        return;
+    }
+}
+
+// export for testing, will not end up exported in the dist files
+function isBuggySafariVersion(userAgent) {
+    var version = getSafariUserAgentVersion(userAgent);
+    // if newer versions of Safari start using
+    // a different Version pattern,
+    // then consider them as non-buggy
+    if (!version) {
+        return false;
+    }
+
+    // Safari <10.1 does not meet our requirements for IDB support
+    // https://github.com/pouchdb/pouchdb/issues/5572
+    return version < 10.1;
+}
+
+function hasBuggyIndexedDBImplementation() {
+    // some outdated implementations of IDB that appear on Samsung
+    // and HTC Android devices <4.4 are missing IDBKeyRange
+    // See: https://github.com/mozilla/localForage/issues/128
+    // See: https://github.com/mozilla/localForage/issues/272
+    if (typeof IDBKeyRange === 'undefined') {
+        return true;
+    }
+
+    var _navigator = navigator,
+        userAgent = _navigator.userAgent,
+        platform = _navigator.platform;
+    // We mimic PouchDB here;
+    //
+    // We test for openDatabase because IE Mobile identifies itself
+    // as Safari. Oh the lulz...
+
+    var isSafari = typeof openDatabase !== 'undefined' && /(Safari|iPhone|iPad|iPod)/.test(userAgent) && !/Chrome/.test(userAgent) && !/BlackBerry/.test(platform);
+
+    return isSafari && isBuggySafariVersion(userAgent);
+}
+
 function isIndexedDBValid() {
     try {
         // Initialize IndexedDB; fall back to vendor-prefixed versions
@@ -379,22 +432,8 @@ function isIndexedDBValid() {
         if (!idb) {
             return false;
         }
-        // We mimic PouchDB here;
-        //
-        // We test for openDatabase because IE Mobile identifies itself
-        // as Safari. Oh the lulz...
-        var isSafari = typeof openDatabase !== 'undefined' && /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) && !/BlackBerry/.test(navigator.platform);
 
-        var hasFetch = typeof fetch === 'function' && fetch.toString().indexOf('[native code') !== -1;
-
-        // Safari <10.1 does not meet our requirements for IDB support (#5572)
-        // since Safari 10.1 shipped with fetch, we can use that to detect it
-        return (!isSafari || hasFetch) && typeof indexedDB !== 'undefined' &&
-        // some outdated implementations of IDB that appear on Samsung
-        // and HTC Android devices <4.4 are missing IDBKeyRange
-        // See: https://github.com/mozilla/localForage/issues/128
-        // See: https://github.com/mozilla/localForage/issues/272
-        typeof IDBKeyRange !== 'undefined';
+        return typeof indexedDB !== 'undefined' && !hasBuggyIndexedDBImplementation();
     } catch (e) {
         return false;
     }

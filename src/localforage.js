@@ -67,7 +67,7 @@ function extend() {
         const arg = arguments[i];
 
         if (arg) {
-            for (let key in arg) {
+            for (const key in arg) {
                 if (arg.hasOwnProperty(key)) {
                     if (isArray(arg[key])) {
                         arguments[0][key] = arg[key].slice();
@@ -84,7 +84,7 @@ function extend() {
 
 class LocalForage {
     constructor(options) {
-        for (let driverTypeKey in DefaultDrivers) {
+        for (const driverTypeKey in DefaultDrivers) {
             if (DefaultDrivers.hasOwnProperty(driverTypeKey)) {
                 const driver = DefaultDrivers[driverTypeKey];
                 const driverName = driver._driver;
@@ -127,7 +127,7 @@ class LocalForage {
                 );
             }
 
-            for (let i in options) {
+            for (const i in options) {
                 if (i === 'storeName') {
                     options[i] = options[i].replace(/\W/g, '_');
                 }
@@ -319,7 +319,7 @@ class LocalForage {
 
                 function driverPromiseLoop() {
                     while (currentDriverIndex < supportedDrivers.length) {
-                        let driverName = supportedDrivers[currentDriverIndex];
+                        const driverName = supportedDrivers[currentDriverIndex];
                         currentDriverIndex++;
 
                         self._dbInfo = null;
