@@ -4,7 +4,7 @@ function getSafariUserAgentVersion(userAgent) {
     try {
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
         const match = /Version\/([0-9._]+)/.exec(userAgent);
-        let versionParts = match && match[1].split(/[._]/).slice(0, 2);
+        const versionParts = match && match[1].split(/[._]/).slice(0, 2);
         if (!versionParts || !versionParts.length) {
             return;
         }

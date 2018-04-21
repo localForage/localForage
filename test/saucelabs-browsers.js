@@ -1,5 +1,3 @@
-/*jshint node:true */
-
 var SAUCELAB_BROWSERS = [
     {
         base: 'SauceLabs',

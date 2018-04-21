@@ -1,4 +1,3 @@
-/* global describe:true, it:true */
 import * as assert from 'assert';
 import { isBuggySafariVersion } from '../src/utils/isIndexedDBValid';
 import { validIDB, invalidIDB } from './fixtures/user-agent-strings';

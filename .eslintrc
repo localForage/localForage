@@ -63,7 +63,8 @@
     "consistent-this": [
       2,
       "self"
-    ]
+    ],
+    "prefer-const": 2
   },
   "globals": {
     "define": true,
