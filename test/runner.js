@@ -60,13 +60,18 @@ if (require) {
         window.localforage = localforage;
 
         require([
-            '/test/test.api.js',
-            '/test/test.config.js',
-            '/test/test.datatypes.js',
-            '/test/test.drivers.js',
-            '/test/test.iframes.js',
-            '/test/test.webworkers.js'
-        ], runTests);
+            // load this first, since it contains
+            // the appropriate driver auto-selection test
+            '/test/test.api.js'
+        ], function() {
+            require([
+                '/test/test.config.js',
+                '/test/test.datatypes.js',
+                '/test/test.drivers.js',
+                '/test/test.iframes.js',
+                '/test/test.webworkers.js'
+            ], runTests);
+        });
     });
 } else if (this.addEventListener) {
     this.addEventListener('load', runTests);

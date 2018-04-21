@@ -77,6 +77,7 @@ interface LocalForage extends LocalForageDbMethods {
     LOCALSTORAGE: string;
     WEBSQL: string;
     INDEXEDDB: string;
+    MEMORY: string;
 
     /**
      * Set and persist localForage options. This must be called before any other calls to localForage are made, but can be called after localForage is loaded.

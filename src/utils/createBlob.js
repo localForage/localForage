@@ -18,10 +18,10 @@ function createBlob(parts, properties) {
             typeof BlobBuilder !== 'undefined'
                 ? BlobBuilder
                 : typeof MSBlobBuilder !== 'undefined'
-                  ? MSBlobBuilder
-                  : typeof MozBlobBuilder !== 'undefined'
-                    ? MozBlobBuilder
-                    : WebKitBlobBuilder;
+                    ? MSBlobBuilder
+                    : typeof MozBlobBuilder !== 'undefined'
+                        ? MozBlobBuilder
+                        : WebKitBlobBuilder;
         var builder = new Builder();
         for (var i = 0; i < parts.length; i += 1) {
             builder.append(parts[i]);
