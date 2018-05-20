@@ -1913,6 +1913,9 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
                     }
                     expect(foundLocalStorageKey).to.be(false);
                     resolve();
+                } else if (driverName === localforage.MEMORY) {
+                    // can't think of a good way to test this
+                    resolve();
                 } else {
                     throw new Error('Not Implemented Exception');
                 }
@@ -2043,6 +2046,9 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
                     }
                     expect(foundLocalStorageKey).to.be(false);
                     resolve();
+                } else if (driverName === localforage.MEMORY) {
+                    // can't think of a good way to test this
+                    resolve();
                 } else {
                     throw new Error('Not Implemented Exception');
                 }
@@ -2060,6 +2066,12 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
                 })
                 .then(function(value) {
                     expect(value).to.be(null);
+                })
+                .then(function() {
+                    return dropDbInstance.length();
+                })
+                .then(function(value) {
+                    expect(value).to.be(0);
                 });
         });
 

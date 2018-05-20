@@ -87,6 +87,7 @@ describe('When No Drivers Are Available', function() {
     describe('when not using memory storage driver', function() {
         before(function() {
             this.defaultConfig = localforage.config();
+            // keep a copy of the array
             this.defaultConfig.driver = STORAGE_DRIVERS.slice();
         });
 
@@ -98,6 +99,7 @@ describe('When No Drivers Are Available', function() {
         });
 
         after(function() {
+            // reset `driver` to a copy of the driver preference array
             this.defaultConfig.driver = DRIVERS.slice();
             localforage._ready = null;
             localforage.config(this.defaultConfig);

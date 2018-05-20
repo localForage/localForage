@@ -6,24 +6,27 @@ import serializer from '../utils/serializer';
 import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
 import normalizeKey from '../utils/normalizeKey';
+import getCallback from '../utils/getCallback';
 
-var storageRepository = {};
+const storageRepository = {};
 
-// Config the backend, using options set in the config.
+function _getDB({ name, storeName }) {
+    const database = (storageRepository[name] = storageRepository[name] || {});
+    const table = (database[storeName] = database[storeName] || {});
+    return table;
+}
+
 function _initStorage(options) {
-    var self = this;
+    const self = this;
 
-    var dbInfo = {};
+    const dbInfo = {};
     if (options) {
-        for (var i in options) {
+        for (const i in options) {
             dbInfo[i] = options[i];
         }
     }
 
-    var database = (storageRepository[dbInfo.name] =
-        storageRepository[dbInfo.name] || {});
-    var table = (database[dbInfo.storeName] = database[dbInfo.storeName] || {});
-    dbInfo.db = table;
+    dbInfo._getDB = () => _getDB(dbInfo);
 
     self._dbInfo = dbInfo;
     dbInfo.serializer = serializer;
@@ -31,35 +34,26 @@ function _initStorage(options) {
     return Promise.resolve();
 }
 
-// Remove all keys from the datastore, effectively destroying all data in
-// the app's key/value store!
 function clear(callback) {
-    var self = this;
-    var promise = self.ready().then(function() {
-        var db = self._dbInfo.db;
-
-        for (var key in db) {
-            if (db.hasOwnProperty(key)) {
-                delete db[key];
-            }
-        }
+    const promise = this.ready().then(() => {
+        const { name, storeName } = this._dbInfo;
+        const database = (storageRepository[name] =
+            storageRepository[name] || {});
+        database[storeName] = {};
     });
 
     executeCallback(promise, callback);
     return promise;
 }
 
-// Retrieve an item from the store. Unlike the original async_storage
-// library in Gaia, we don't modify return values at all. If a key's value
-// is `undefined`, we pass that value to the callback function.
 function getItem(key, callback) {
-    var self = this;
+    const self = this;
 
     key = normalizeKey(key);
 
-    var promise = self.ready().then(function() {
-        var db = self._dbInfo.db;
-        var result = db[key];
+    const promise = self.ready().then(function() {
+        const db = self._dbInfo._getDB();
+        let result = db[key];
 
         if (result === undefined) {
             return null;
@@ -76,17 +70,16 @@ function getItem(key, callback) {
     return promise;
 }
 
-// Iterate over all items in the store.
 function iterate(iterator, callback) {
-    var self = this;
+    const self = this;
 
-    var promise = self.ready().then(function() {
-        var db = self._dbInfo.db;
+    const promise = self.ready().then(function() {
+        const db = self._dbInfo._getDB();
 
-        var iterationNumber = 1;
-        for (var key in db) {
+        let iterationNumber = 1;
+        for (const key in db) {
             if (db.hasOwnProperty(key)) {
-                var value = db[key];
+                let value = db[key];
 
                 if (value) {
                     value = self._dbInfo.serializer.deserialize(value);
@@ -105,15 +98,14 @@ function iterate(iterator, callback) {
     return promise;
 }
 
-// Same as localStorage's key() method, except takes a callback.
 function key(n, callback) {
-    var self = this;
-    var promise = self.ready().then(function() {
-        var db = self._dbInfo.db;
-        var result = null;
-        var index = 0;
+    const self = this;
+    const promise = self.ready().then(function() {
+        const db = self._dbInfo._getDB();
+        let result = null;
+        let index = 0;
 
-        for (var key in db) {
+        for (const key in db) {
             if (db.hasOwnProperty(key)) {
                 if (n === index) {
                     result = key;
@@ -131,12 +123,12 @@ function key(n, callback) {
 }
 
 function keys(callback) {
-    var self = this;
-    var promise = self.ready().then(function() {
-        var db = self._dbInfo.db;
-        var keys = [];
+    const self = this;
+    const promise = self.ready().then(function() {
+        const db = self._dbInfo._getDB();
+        const keys = [];
 
-        for (var key in db) {
+        for (const key in db) {
             if (db.hasOwnProperty(key)) {
                 keys.push(key);
             }
@@ -149,10 +141,9 @@ function keys(callback) {
     return promise;
 }
 
-// Supply the number of keys in the datastore to the callback function.
 function length(callback) {
-    var self = this;
-    var promise = self.keys().then(function(keys) {
+    const self = this;
+    const promise = self.keys().then(function(keys) {
         return keys.length;
     });
 
@@ -160,14 +151,13 @@ function length(callback) {
     return promise;
 }
 
-// Remove an item from the store, nice and simple.
 function removeItem(key, callback) {
-    var self = this;
+    const self = this;
 
     key = normalizeKey(key);
 
-    var promise = self.ready().then(function() {
-        var db = self._dbInfo.db;
+    const promise = self.ready().then(function() {
+        const db = self._dbInfo._getDB();
         if (db.hasOwnProperty(key)) {
             delete db[key];
         }
@@ -177,16 +167,24 @@ function removeItem(key, callback) {
     return promise;
 }
 
-// Set a key's value and run an optional callback once the value is set.
-// Unlike Gaia's implementation, the callback function is passed the value,
-// in case you want to operate on that value only after you're sure it
-// saved, or something like that.
+function serializeAsync(serializer, value) {
+    return new Promise(function(resolve, reject) {
+        serializer.serialize(value, function(value, error) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(value);
+            }
+        });
+    });
+}
+
 function setItem(key, value, callback) {
-    var self = this;
+    const self = this;
 
     key = normalizeKey(key);
 
-    var promise = self.ready().then(function() {
+    const promise = self.ready().then(function() {
         // Convert undefined values to null.
         // https://github.com/mozilla/localForage/pull/42
         if (value === undefined) {
@@ -194,25 +192,12 @@ function setItem(key, value, callback) {
         }
 
         // Save the original value to pass to the callback.
-        var originalValue = value;
+        const originalValue = value;
 
-        function serializeAsync(value) {
-            return new Promise(function(resolve, reject) {
-                self._dbInfo.serializer.serialize(value, function(
-                    value,
-                    error
-                ) {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        resolve(value);
-                    }
-                });
-            });
-        }
-
-        return serializeAsync(value).then(function(value) {
-            var db = self._dbInfo.db;
+        return serializeAsync(self._dbInfo.serializer, value).then(function(
+            value
+        ) {
+            const db = self._dbInfo._getDB();
             db[key] = value;
             return originalValue;
         });
@@ -222,7 +207,41 @@ function setItem(key, value, callback) {
     return promise;
 }
 
-var memoryStorage = {
+function dropInstance(options, callback) {
+    callback = getCallback.apply(this, arguments);
+
+    options = (typeof options !== 'function' && options) || {};
+    if (!options.name) {
+        const currentConfig = this.config();
+        options.name = options.name || currentConfig.name;
+        options.storeName = options.storeName || currentConfig.storeName;
+    }
+
+    let promise;
+    if (!options.name) {
+        promise = Promise.reject('Invalid arguments');
+    } else {
+        const database = storageRepository[options.name];
+        if (!database) {
+            return;
+        }
+
+        if (!options.storeName) {
+            delete storageRepository[options.name];
+        } else {
+            const table = database[options.storeName];
+            if (table) {
+                delete database[options.storeName];
+            }
+        }
+        promise = Promise.resolve();
+    }
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+const memoryStorage = {
     _driver: 'memoryStorage',
     _initStorage: _initStorage,
     iterate: iterate,
@@ -232,7 +251,8 @@ var memoryStorage = {
     clear: clear,
     length: length,
     key: key,
-    keys: keys
+    keys: keys,
+    dropInstance: dropInstance
 };
 
 export default memoryStorage;
