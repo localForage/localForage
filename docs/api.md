@@ -303,12 +303,14 @@ By default, localForage selects backend drivers for the datastore in this order:
 1. IndexedDB
 2. WebSQL
 3. localStorage
+4. in memory (does not persist after a page refresh)
 
 If you would like to force usage of a particular driver you can use `setDriver()` with one or more of the following arguments:
 
 * `localforage.INDEXEDDB`
 * `localforage.WEBSQL`
 * `localforage.LOCALSTORAGE`
+* `localforage.MEMORY`
 
 <aside class="notice">
   If the backend you're trying to load isn't available on the user's browser, localForage will continue to use whatever backend driver it was previously using. This means that if you try to force a Gecko browser to use WebSQL, it will fail and continue using IndexedDB.
@@ -348,7 +350,7 @@ Set and persist localForage options. This must be called *before* any other call
   <dt>driver</dt>
   <dd>
     The preferred driver(s) to use. Same format as what is passed to <a href="#settings-api-setdriver"><code>setDriver</code></a>, above.<br>
-    Default: <code>[localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE]</code>
+    Default: <code>[localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE, localforage.MEMORY]</code>
   </dd>
   <dt>name</dt>
   <dd>

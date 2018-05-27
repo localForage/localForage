@@ -2113,6 +2113,260 @@ var localStorageWrapper = {
     dropInstance: dropInstance$2
 };
 
+var storageRepository = {};
+
+function _getDB(_ref) {
+    var name = _ref.name,
+        storeName = _ref.storeName;
+
+    var database = storageRepository[name] = storageRepository[name] || {};
+    var table = database[storeName] = database[storeName] || {};
+    return table;
+}
+
+function _initStorage$3(options) {
+    var self = this;
+
+    var dbInfo = {};
+    if (options) {
+        for (var i in options) {
+            dbInfo[i] = options[i];
+        }
+    }
+
+    dbInfo._getDB = function () {
+        return _getDB(dbInfo);
+    };
+
+    self._dbInfo = dbInfo;
+    dbInfo.serializer = localforageSerializer;
+
+    return Promise$1.resolve();
+}
+
+function clear$3(callback) {
+    var _this = this;
+
+    var promise = this.ready().then(function () {
+        var _dbInfo = _this._dbInfo,
+            name = _dbInfo.name,
+            storeName = _dbInfo.storeName;
+
+        var database = storageRepository[name] = storageRepository[name] || {};
+        database[storeName] = {};
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+function getItem$3(key, callback) {
+    var self = this;
+
+    key = normalizeKey(key);
+
+    var promise = self.ready().then(function () {
+        var db = self._dbInfo._getDB();
+        var result = db[key];
+
+        if (result === undefined) {
+            return null;
+        }
+
+        if (result) {
+            result = self._dbInfo.serializer.deserialize(result);
+        }
+
+        return result;
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+function iterate$3(iterator, callback) {
+    var self = this;
+
+    var promise = self.ready().then(function () {
+        var db = self._dbInfo._getDB();
+
+        var iterationNumber = 1;
+        for (var _key in db) {
+            if (db.hasOwnProperty(_key)) {
+                var value = db[_key];
+
+                if (value) {
+                    value = self._dbInfo.serializer.deserialize(value);
+                }
+
+                value = iterator(value, _key, iterationNumber++);
+
+                if (value !== void 0) {
+                    return value;
+                }
+            }
+        }
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+function key$3(n, callback) {
+    var self = this;
+    var promise = self.ready().then(function () {
+        var db = self._dbInfo._getDB();
+        var result = null;
+        var index = 0;
+
+        for (var _key2 in db) {
+            if (db.hasOwnProperty(_key2)) {
+                if (n === index) {
+                    result = _key2;
+                    break;
+                }
+                index++;
+            }
+        }
+
+        return result;
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+function keys$3(callback) {
+    var self = this;
+    var promise = self.ready().then(function () {
+        var db = self._dbInfo._getDB();
+        var keys = [];
+
+        for (var _key3 in db) {
+            if (db.hasOwnProperty(_key3)) {
+                keys.push(_key3);
+            }
+        }
+
+        return keys;
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+function length$3(callback) {
+    var self = this;
+    var promise = self.keys().then(function (keys) {
+        return keys.length;
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+function removeItem$3(key, callback) {
+    var self = this;
+
+    key = normalizeKey(key);
+
+    var promise = self.ready().then(function () {
+        var db = self._dbInfo._getDB();
+        if (db.hasOwnProperty(key)) {
+            delete db[key];
+        }
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+function serializeAsync(serializer, value) {
+    return new Promise$1(function (resolve, reject) {
+        serializer.serialize(value, function (value, error) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(value);
+            }
+        });
+    });
+}
+
+function setItem$3(key, value, callback) {
+    var self = this;
+
+    key = normalizeKey(key);
+
+    var promise = self.ready().then(function () {
+        // Convert undefined values to null.
+        // https://github.com/mozilla/localForage/pull/42
+        if (value === undefined) {
+            value = null;
+        }
+
+        // Save the original value to pass to the callback.
+        var originalValue = value;
+
+        return serializeAsync(self._dbInfo.serializer, value).then(function (value) {
+            var db = self._dbInfo._getDB();
+            db[key] = value;
+            return originalValue;
+        });
+    });
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+function dropInstance$3(options, callback) {
+    callback = getCallback.apply(this, arguments);
+
+    options = typeof options !== 'function' && options || {};
+    if (!options.name) {
+        var currentConfig = this.config();
+        options.name = options.name || currentConfig.name;
+        options.storeName = options.storeName || currentConfig.storeName;
+    }
+
+    var promise = void 0;
+    if (!options.name) {
+        promise = Promise$1.reject('Invalid arguments');
+    } else {
+        var database = storageRepository[options.name];
+        if (!database) {
+            return;
+        }
+
+        if (!options.storeName) {
+            delete storageRepository[options.name];
+        } else {
+            var table = database[options.storeName];
+            if (table) {
+                delete database[options.storeName];
+            }
+        }
+        promise = Promise$1.resolve();
+    }
+
+    executeCallback(promise, callback);
+    return promise;
+}
+
+var memoryStorage = {
+    _driver: 'memoryStorage',
+    _initStorage: _initStorage$3,
+    iterate: iterate$3,
+    getItem: getItem$3,
+    setItem: setItem$3,
+    removeItem: removeItem$3,
+    clear: clear$3,
+    length: length$3,
+    key: key$3,
+    keys: keys$3,
+    dropInstance: dropInstance$3
+};
+
 var sameValue = function sameValue(x, y) {
     return x === y || typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y);
 };
@@ -2143,10 +2397,11 @@ var DriverSupport = {};
 var DefaultDrivers = {
     INDEXEDDB: asyncStorage,
     WEBSQL: webSQLStorage,
-    LOCALSTORAGE: localStorageWrapper
+    LOCALSTORAGE: localStorageWrapper,
+    MEMORY: memoryStorage
 };
 
-var DefaultDriverOrder = [DefaultDrivers.INDEXEDDB._driver, DefaultDrivers.WEBSQL._driver, DefaultDrivers.LOCALSTORAGE._driver];
+var DefaultDriverOrder = [DefaultDrivers.INDEXEDDB._driver, DefaultDrivers.WEBSQL._driver, DefaultDrivers.LOCALSTORAGE._driver, DefaultDrivers.MEMORY._driver];
 
 var OptionalDriverMethods = ['dropInstance'];
 
@@ -2177,12 +2432,12 @@ function extend() {
         var arg = arguments[i];
 
         if (arg) {
-            for (var _key in arg) {
-                if (arg.hasOwnProperty(_key)) {
-                    if (isArray(arg[_key])) {
-                        arguments[0][_key] = arg[_key].slice();
+            for (var _key4 in arg) {
+                if (arg.hasOwnProperty(_key4)) {
+                    if (isArray(arg[_key4])) {
+                        arguments[0][_key4] = arg[_key4].slice();
                     } else {
-                        arguments[0][_key] = arg[_key];
+                        arguments[0][_key4] = arg[_key4];
                     }
                 }
             }

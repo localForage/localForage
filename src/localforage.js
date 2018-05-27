@@ -1,6 +1,7 @@
 import idbDriver from './drivers/indexeddb';
 import websqlDriver from './drivers/websql';
 import localstorageDriver from './drivers/localstorage';
+import memoryStorageDriver from './drivers/memory';
 import serializer from './utils/serializer';
 import Promise from './utils/promise';
 import executeCallback from './utils/executeCallback';
@@ -17,13 +18,15 @@ const DriverSupport = {};
 const DefaultDrivers = {
     INDEXEDDB: idbDriver,
     WEBSQL: websqlDriver,
-    LOCALSTORAGE: localstorageDriver
+    LOCALSTORAGE: localstorageDriver,
+    MEMORY: memoryStorageDriver
 };
 
 const DefaultDriverOrder = [
     DefaultDrivers.INDEXEDDB._driver,
     DefaultDrivers.WEBSQL._driver,
-    DefaultDrivers.LOCALSTORAGE._driver
+    DefaultDrivers.LOCALSTORAGE._driver,
+    DefaultDrivers.MEMORY._driver
 ];
 
 const OptionalDriverMethods = ['dropInstance'];
