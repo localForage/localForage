@@ -781,6 +781,19 @@ function _tryReconnect(dbInfo) {
     });
 }
 
+// Safari could garbage collect transaction before oncomplete/onerror/onabord being dispatched
+// reference transaction to stop it being garbage collected and remove the reference when it finish
+var _refTransaction = {};
+var _refTransactionId = 0;
+
+function refTransaction(tx) {
+    var id = _refTransactionId++;
+    _refTransaction[id] = tx;
+    return function() {
+        delete _refTransaction[id];
+    };
+}
+
 // FF doesn't like Promises (micro-tasks) and IDDB store operations,
 // so we have to do it with callbacks
 function createTransaction(dbInfo, mode, callback, retries) {
@@ -1022,7 +1035,10 @@ function setItem(key, value, callback) {
             return value;
         }).then(function (value) {
             createTransaction(self._dbInfo, READ_WRITE, function (err, transaction) {
+                var unref = refTransaction(transaction);
+
                 if (err) {
+                    unref();
                     return reject(err);
                 }
 
@@ -1040,6 +1056,7 @@ function setItem(key, value, callback) {
                     var req = store.put(value, key);
 
                     transaction.oncomplete = function () {
+                        unref();
                         // Cast to undefined so the value passed to
                         // callback/promise is the same as what one would get out
                         // of `getItem()` later. This leads to some weirdness
@@ -1053,10 +1070,12 @@ function setItem(key, value, callback) {
                         resolve(value);
                     };
                     transaction.onabort = transaction.onerror = function () {
+                        unref();
                         var err = req.error ? req.error : req.transaction.error;
                         reject(err);
                     };
                 } catch (e) {
+                    unref();
                     reject(e);
                 }
             });
@@ -1075,7 +1094,10 @@ function removeItem(key, callback) {
     var promise = new Promise$1(function (resolve, reject) {
         self.ready().then(function () {
             createTransaction(self._dbInfo, READ_WRITE, function (err, transaction) {
+                var unref = refTransaction(transaction);
+
                 if (err) {
+                    unref();
                     return reject(err);
                 }
 
@@ -1088,20 +1110,24 @@ function removeItem(key, callback) {
                     // fixes this for us now.
                     var req = store["delete"](key);
                     transaction.oncomplete = function () {
+                        unref();
                         resolve();
                     };
 
                     transaction.onerror = function () {
+                        unref();
                         reject(req.error);
                     };
 
                     // The request will be also be aborted if we've exceeded our storage
                     // space.
                     transaction.onabort = function () {
+                        unref();
                         var err = req.error ? req.error : req.transaction.error;
                         reject(err);
                     };
                 } catch (e) {
+                    unref();
                     reject(e);
                 }
             });
@@ -1118,7 +1144,10 @@ function clear(callback) {
     var promise = new Promise$1(function (resolve, reject) {
         self.ready().then(function () {
             createTransaction(self._dbInfo, READ_WRITE, function (err, transaction) {
+                var unref = refTransaction(transaction);
+
                 if (err) {
+                    unref();
                     return reject(err);
                 }
 
@@ -1127,14 +1156,17 @@ function clear(callback) {
                     var req = store.clear();
 
                     transaction.oncomplete = function () {
+                        unref();
                         resolve();
                     };
 
                     transaction.onabort = transaction.onerror = function () {
+                        unref();
                         var err = req.error ? req.error : req.transaction.error;
                         reject(err);
                     };
                 } catch (e) {
+                    unref();
                     reject(e);
                 }
             });
