@@ -1,23 +1,23 @@
-import isIndexedDBValid from "../utils/isIndexedDBValid";
-import createBlob from "../utils/createBlob";
-import idb from "../utils/idb";
-import Promise from "../utils/promise";
-import executeCallback from "../utils/executeCallback";
-import executeTwoCallbacks from "../utils/executeTwoCallbacks";
-import normalizeKey from "../utils/normalizeKey";
-import getCallback from "../utils/getCallback";
+import isIndexedDBValid from '../utils/isIndexedDBValid';
+import createBlob from '../utils/createBlob';
+import idb from '../utils/idb';
+import Promise from '../utils/promise';
+import executeCallback from '../utils/executeCallback';
+import executeTwoCallbacks from '../utils/executeTwoCallbacks';
+import normalizeKey from '../utils/normalizeKey';
+import getCallback from '../utils/getCallback';
 
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
 
-const DETECT_BLOB_SUPPORT_STORE = "local-forage-detect-blob-support";
+const DETECT_BLOB_SUPPORT_STORE = 'local-forage-detect-blob-support';
 let supportsBlobs;
 const dbContexts = {};
 const toString = Object.prototype.toString;
 
 // Transaction Modes
-const READ_ONLY = "readonly";
-const READ_WRITE = "readwrite";
+const READ_ONLY = 'readonly';
+const READ_WRITE = 'readwrite';
 
 // Transform a binary string to an array buffer, because otherwise
 // weird stuff happens when you try to work with the binary string directly.
@@ -52,8 +52,8 @@ function _binStringToArrayBuffer(bin) {
 function _checkBlobSupportWithoutCaching(idb) {
     return new Promise(function(resolve) {
         var txn = idb.transaction(DETECT_BLOB_SUPPORT_STORE, READ_WRITE);
-        var blob = createBlob([""]);
-        txn.objectStore(DETECT_BLOB_SUPPORT_STORE).put(blob, "key");
+        var blob = createBlob(['']);
+        txn.objectStore(DETECT_BLOB_SUPPORT_STORE).put(blob, 'key');
 
         txn.onabort = function(e) {
             // If the transaction aborts now its due to not being able to
@@ -80,7 +80,7 @@ function _checkBlobSupportWithoutCaching(idb) {
 }
 
 function _checkBlobSupport(idb) {
-    if (typeof supportsBlobs === "boolean") {
+    if (typeof supportsBlobs === 'boolean') {
         return Promise.resolve(supportsBlobs);
     }
     return _checkBlobSupportWithoutCaching(idb).then(function(value) {
@@ -172,14 +172,14 @@ function _getConnection(dbInfo, upgradeNeeded) {
                         db.createObjectStore(DETECT_BLOB_SUPPORT_STORE);
                     }
                 } catch (ex) {
-                    if (ex.name === "ConstraintError") {
+                    if (ex.name === 'ConstraintError') {
                         console.warn(
                             'The database "' +
                                 dbInfo.name +
                                 '"' +
-                                " has been upgraded from version " +
+                                ' has been upgraded from version ' +
                                 e.oldVersion +
-                                " to version " +
+                                ' to version ' +
                                 e.newVersion +
                                 ', but the storage "' +
                                 dbInfo.storeName +
@@ -231,9 +231,9 @@ function _isUpgradeNeeded(dbInfo, defaultVersion) {
                     '"' +
                     " can't be downgraded from version " +
                     dbInfo.db.version +
-                    " to version " +
+                    ' to version ' +
                     dbInfo.version +
-                    "."
+                    '.'
             );
         }
         // Align the versions to prevent errors.
@@ -263,7 +263,7 @@ function _encodeBlob(blob) {
         var reader = new FileReader();
         reader.onerror = reject;
         reader.onloadend = function(e) {
-            var base64 = btoa(e.target.result || "");
+            var base64 = btoa(e.target.result || '');
             resolve({
                 __local_forage_encoded_blob: true,
                 data: base64,
@@ -372,14 +372,14 @@ function createTransaction(dbInfo, mode, callback, retries) {
         if (
             retries > 0 &&
             (!dbInfo.db ||
-                err.name === "InvalidStateError" ||
-                err.name === "NotFoundError")
+                err.name === 'InvalidStateError' ||
+                err.name === 'NotFoundError')
         ) {
             return Promise.resolve()
                 .then(() => {
                     if (
                         !dbInfo.db ||
-                        (err.name === "NotFoundError" &&
+                        (err.name === 'NotFoundError' &&
                             !dbInfo.db.objectStoreNames.contains(
                                 dbInfo.storeName
                             ) &&
@@ -625,7 +625,7 @@ function setItem(key, value, callback) {
         self.ready()
             .then(function() {
                 dbInfo = self._dbInfo;
-                if (toString.call(value) === "[object Blob]") {
+                if (toString.call(value) === '[object Blob]') {
                     return _checkBlobSupport(dbInfo.db).then(function(
                         blobSupport
                     ) {
@@ -966,7 +966,7 @@ function dropInstance(options, callback) {
     callback = getCallback.apply(this, arguments);
 
     var currentConfig = this.config();
-    options = (typeof options !== "function" && options) || {};
+    options = (typeof options !== 'function' && options) || {};
     if (!options.name) {
         options.name = options.name || currentConfig.name;
         options.storeName = options.storeName || currentConfig.storeName;
@@ -975,7 +975,7 @@ function dropInstance(options, callback) {
     var self = this;
     var promise;
     if (!options.name) {
-        promise = Promise.reject("Invalid arguments");
+        promise = Promise.reject('Invalid arguments');
     } else {
         const isCurrentDb =
             options.name === currentConfig.name && self._dbInfo.db;
@@ -1105,7 +1105,7 @@ function dropInstance(options, callback) {
 }
 
 var asyncStorage = {
-    _driver: "asyncStorage",
+    _driver: 'asyncStorage',
     _initStorage: _initStorage,
     _support: isIndexedDBValid(),
     iterate: iterate,
