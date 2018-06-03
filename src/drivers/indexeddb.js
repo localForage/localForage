@@ -620,6 +620,7 @@ function setItem(key, value, callback) {
 
     key = normalizeKey(key);
 
+    var unref = undefined;
     var promise = new Promise(function(resolve, reject) {
         var dbInfo;
         self.ready()
@@ -642,10 +643,9 @@ function setItem(key, value, callback) {
                     err,
                     transaction
                 ) {
-                    var unref = refTransaction(transaction);
+                    unref = refTransaction(transaction);
 
                     if (err) {
-                        unref();
                         return reject(err);
                     }
 
@@ -665,7 +665,6 @@ function setItem(key, value, callback) {
                         var req = store.put(value, key);
 
                         transaction.oncomplete = function() {
-                            unref();
                             // Cast to undefined so the value passed to
                             // callback/promise is the same as what one would get out
                             // of `getItem()` later. This leads to some weirdness
@@ -679,20 +678,19 @@ function setItem(key, value, callback) {
                             resolve(value);
                         };
                         transaction.onabort = transaction.onerror = function() {
-                            unref();
                             var err = req.error
                                 ? req.error
                                 : req.transaction.error;
                             reject(err);
                         };
                     } catch (e) {
-                        unref();
                         reject(e);
                     }
                 });
             })
             .catch(reject);
     });
+    promise.then(unref, unref);
 
     executeCallback(promise, callback);
     return promise;
@@ -703,6 +701,7 @@ function removeItem(key, callback) {
 
     key = normalizeKey(key);
 
+    var unref = undefined;
     var promise = new Promise(function(resolve, reject) {
         self.ready()
             .then(function() {
@@ -710,10 +709,9 @@ function removeItem(key, callback) {
                     err,
                     transaction
                 ) {
-                    var unref = refTransaction(transaction);
+                    unref = refTransaction(transaction);
 
                     if (err) {
-                        unref();
                         return reject(err);
                     }
 
@@ -728,32 +726,29 @@ function removeItem(key, callback) {
                         // fixes this for us now.
                         var req = store.delete(key);
                         transaction.oncomplete = function() {
-                            unref();
                             resolve();
                         };
 
                         transaction.onerror = function() {
-                            unref();
                             reject(req.error);
                         };
 
                         // The request will be also be aborted if we've exceeded our storage
                         // space.
                         transaction.onabort = function() {
-                            unref();
                             var err = req.error
                                 ? req.error
                                 : req.transaction.error;
                             reject(err);
                         };
                     } catch (e) {
-                        unref();
                         reject(e);
                     }
                 });
             })
             .catch(reject);
     });
+    promise.then(unref, unref);
 
     executeCallback(promise, callback);
     return promise;
@@ -762,6 +757,7 @@ function removeItem(key, callback) {
 function clear(callback) {
     var self = this;
 
+    var unref = undefined;
     var promise = new Promise(function(resolve, reject) {
         self.ready()
             .then(function() {
@@ -769,10 +765,9 @@ function clear(callback) {
                     err,
                     transaction
                 ) {
-                    var unref = refTransaction(transaction);
+                    unref = refTransaction(transaction);
 
                     if (err) {
-                        unref();
                         return reject(err);
                     }
 
@@ -783,25 +778,23 @@ function clear(callback) {
                         var req = store.clear();
 
                         transaction.oncomplete = function() {
-                            unref();
                             resolve();
                         };
 
                         transaction.onabort = transaction.onerror = function() {
-                            unref();
                             var err = req.error
                                 ? req.error
                                 : req.transaction.error;
                             reject(err);
                         };
                     } catch (e) {
-                        unref();
                         reject(e);
                     }
                 });
             })
             .catch(reject);
     });
+    promise.then(unref, unref);
 
     executeCallback(promise, callback);
     return promise;
