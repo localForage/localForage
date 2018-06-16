@@ -86,7 +86,7 @@ function tryExecuteSql(t, dbInfo, sqlStatement, args, callback, errorCallback) {
                 t.executeSql(
                     'SELECT name FROM sqlite_master ' +
                         "WHERE type='table' AND name = ?",
-                    [name],
+                    [dbInfo.storeName],
                     function(t, results) {
                         if (!results.rows.length) {
                             // if the table is missing (was deleted)
