@@ -144,6 +144,24 @@ store.setItem("key", "value");
 otherStore.setItem("key", "value2");
 ```
 
+## Auto-batching
+
+You can enable the experimental auto-batching feature, with:
+```js
+localforage.useAutoBatching = true
+```
+
+This feature only affects IndexedDB, and has not been thoroughly tested yet.
+
+In a nutshell, it automatically batches unrelated write operations
+into a single transaction, and significantly speeds up things like:
+
+```js
+for (var i = 0; i < 1000; i++) {
+  localforage.setItem('' + i, i);
+}
+```
+
 ## RequireJS
 
 You can use localForage with [RequireJS](http://requirejs.org/):

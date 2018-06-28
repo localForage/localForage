@@ -489,6 +489,147 @@ function _initStorage(options) {
         });
 }
 
+function doTask(store, task) {
+    if (task.action === 'put') {
+        return store.put(task.value, task.key);
+    }
+
+    if (task.action === 'delete') {
+        // We use a Grunt task to make this safe for IE and some
+        // versions of Android (including those used by Cordova).
+        // Normally IE won't like `.delete()` and will insist on
+        // using `['delete']()`, but we have a build step that
+        // fixes this for us now.
+        return store.delete(task.key);
+    }
+
+    if (task.action === 'clear') {
+        return store.clear();
+    }
+}
+
+function _updateDatabase(tasks) {
+    var self = this;
+    var promise = new Promise(function(resolve, reject) {
+        var dbInfo = self._dbInfo;
+        createTransaction(dbInfo, READ_WRITE, function(err, transaction) {
+            if (err) {
+                reject(err);
+            } else {
+                var store = transaction.objectStore(dbInfo.storeName);
+
+                for (var i = 0; i < tasks.length; i++) {
+                    tasks[i].req = doTask(store, tasks[i]);
+                }
+
+                transaction.oncomplete = function() {
+                    resolve();
+                };
+                transaction.onerror = function() {
+                    reject();
+                };
+
+                // The request will be aborted if we've exceeded our storage
+                // space. In this case, we will reject with a specific
+                // "QuotaExceededError".
+                transaction.onabort = function(event) {
+                    var error = event.target.error;
+                    if (error === 'QuotaExceededError') {
+                        reject(error);
+                    }
+                };
+            }
+        });
+    });
+
+    return promise;
+}
+
+function _collectBatch() {
+    var keyAlreadyAffected = {};
+
+    if (this._taskQueue.length === 0) {
+        return []; // Nothing to do
+    }
+
+    if (this._taskQueue[0].action === 'clear') {
+        return this._taskQueue.splice(0, 1); // Execute 'clear' operation alone by itself
+    }
+
+    for (var batchSize = 0; batchSize < this._taskQueue.length; batchSize++) {
+        if (keyAlreadyAffected[this._taskQueue[batchSize].key]) {
+            // Batch should end before one same key is affected again
+            break;
+        }
+        if (this._taskQueue[batchSize].action === 'clear') {
+            // Batch should end before a 'clear' operation
+            break;
+        }
+        keyAlreadyAffected[this._taskQueue[batchSize].key] = true;
+    }
+    var ret = this._taskQueue.splice(0, batchSize); // Execute tasks [0 .. batchSize-1]
+    return ret;
+}
+
+function _nextBatch() {
+    var self = this;
+    this._scheduled = false;
+    this.ready()
+        .then(function() {
+            var batch = self._collectBatch();
+            if (batch.length === 0) {
+                self._running = false;
+                return;
+            }
+            self._running = true;
+            self._updateDatabase(batch).then(
+                function() {
+                    for (var i = 0; i < batch.length; i++) {
+                        batch[i].resolve(batch[i].value);
+                    }
+                    self._nextBatch();
+                },
+                function() {
+                    for (var i = 0; i < batch.length; i++) {
+                        batch[i].reject(batch[i].req.err);
+                    }
+                    self._nextBatch();
+                }
+            );
+        })
+        .catch(function(err) {
+            //IndexedDB not ready, reject everything
+            var i;
+            for (i = 0; i < self._taskQueue.length; i++) {
+                self._taskQueue[i].reject(err);
+            }
+            self._taskQueue = [];
+        });
+}
+
+//`task` should be an object.
+//`task.action` should be one of ['put', 'delete', 'clear']
+//`task.key` should be set for 'put' and 'delete'
+//`task.value` should be set for 'put'
+//`task.resolve` should be a success handling function
+//`task.reject` should be a failure handling function
+function _queueTask(task) {
+    if (this.useAutoBatching !== true) {
+        return this._updateDatabase([task]).then(function() {
+            task.resolve(task.value);
+        }, task.reject);
+    }
+
+    var self = this;
+    this._taskQueue.push(task);
+    if (!this._running && !this._scheduled) {
+        setTimeout(function() {
+            self._nextBatch();
+        }, 0);
+        this._scheduled = true;
+    }
+}
+
 function getItem(key, callback) {
     var self = this;
 
@@ -628,51 +769,31 @@ function setItem(key, value, callback) {
                 return value;
             })
             .then(function(value) {
-                createTransaction(self._dbInfo, READ_WRITE, function(
-                    err,
-                    transaction
-                ) {
-                    if (err) {
-                        return reject(err);
-                    }
-
-                    try {
-                        var store = transaction.objectStore(
-                            self._dbInfo.storeName
-                        );
-
-                        // The reason we don't _save_ null is because IE 10 does
-                        // not support saving the `null` type in IndexedDB. How
-                        // ironic, given the bug below!
-                        // See: https://github.com/mozilla/localForage/issues/161
-                        if (value === null) {
-                            value = undefined;
+                // The reason we don't _save_ null is because IE 10 does
+                // not support saving the `null` type in IndexedDB. How
+                // ironic, given the bug below!
+                // See: https://github.com/mozilla/localForage/issues/161
+                if (value === null) {
+                    value = undefined;
+                }
+                self._queueTask({
+                    action: 'put',
+                    key: key,
+                    value: value,
+                    resolve: function(value) {
+                        // Cast to undefined so the value passed to
+                        // callback/promise is the same as what one would get out
+                        // of `getItem()` later. This leads to some weirdness
+                        // (setItem('foo', undefined) will return `null`), but
+                        // it's not my fault localStorage is our baseline and that
+                        // it's weird.
+                        if (value === undefined) {
+                            value = null;
                         }
 
-                        var req = store.put(value, key);
-
-                        transaction.oncomplete = function() {
-                            // Cast to undefined so the value passed to
-                            // callback/promise is the same as what one would get out
-                            // of `getItem()` later. This leads to some weirdness
-                            // (setItem('foo', undefined) will return `null`), but
-                            // it's not my fault localStorage is our baseline and that
-                            // it's weird.
-                            if (value === undefined) {
-                                value = null;
-                            }
-
-                            resolve(value);
-                        };
-                        transaction.onabort = transaction.onerror = function() {
-                            var err = req.error
-                                ? req.error
-                                : req.transaction.error;
-                            reject(err);
-                        };
-                    } catch (e) {
-                        reject(e);
-                    }
+                        resolve(value);
+                    },
+                    reject: reject
                 });
             })
             .catch(reject);
@@ -691,48 +812,15 @@ function removeItem(key, callback) {
         self
             .ready()
             .then(function() {
-                createTransaction(self._dbInfo, READ_WRITE, function(
-                    err,
-                    transaction
-                ) {
-                    if (err) {
-                        return reject(err);
-                    }
-
-                    try {
-                        var store = transaction.objectStore(
-                            self._dbInfo.storeName
-                        );
-                        // We use a Grunt task to make this safe for IE and some
-                        // versions of Android (including those used by Cordova).
-                        // Normally IE won't like `.delete()` and will insist on
-                        // using `['delete']()`, but we have a build step that
-                        // fixes this for us now.
-                        var req = store.delete(key);
-                        transaction.oncomplete = function() {
-                            resolve();
-                        };
-
-                        transaction.onerror = function() {
-                            reject(req.error);
-                        };
-
-                        // The request will be also be aborted if we've exceeded our storage
-                        // space.
-                        transaction.onabort = function() {
-                            var err = req.error
-                                ? req.error
-                                : req.transaction.error;
-                            reject(err);
-                        };
-                    } catch (e) {
-                        reject(e);
-                    }
+                self._queueTask({
+                    action: 'delete',
+                    key: key,
+                    resolve: resolve,
+                    reject: reject
                 });
             })
             .catch(reject);
     });
-
     executeCallback(promise, callback);
     return promise;
 }
@@ -744,33 +832,10 @@ function clear(callback) {
         self
             .ready()
             .then(function() {
-                createTransaction(self._dbInfo, READ_WRITE, function(
-                    err,
-                    transaction
-                ) {
-                    if (err) {
-                        return reject(err);
-                    }
-
-                    try {
-                        var store = transaction.objectStore(
-                            self._dbInfo.storeName
-                        );
-                        var req = store.clear();
-
-                        transaction.oncomplete = function() {
-                            resolve();
-                        };
-
-                        transaction.onabort = transaction.onerror = function() {
-                            var err = req.error
-                                ? req.error
-                                : req.transaction.error;
-                            reject(err);
-                        };
-                    } catch (e) {
-                        reject(e);
-                    }
+                self._queueTask({
+                    action: 'clear',
+                    resolve: resolve,
+                    reject: reject
                 });
             })
             .catch(reject);
@@ -1082,8 +1147,15 @@ function dropInstance(options, callback) {
 
 var asyncStorage = {
     _driver: 'asyncStorage',
+    _taskQueue: [],
+    _running: false,
     _initStorage: _initStorage,
     _support: isIndexedDBValid(),
+    _updateDatabase: _updateDatabase,
+    _collectBatch: _collectBatch,
+    _nextBatch: _nextBatch,
+    _queueTask: _queueTask,
+    useAutoBatching: false,
     iterate: iterate,
     getItem: getItem,
     setItem: setItem,

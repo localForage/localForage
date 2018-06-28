@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>localForage Browserify Tests!</title>
+    <title>localForage Tests!</title>
 
     <link rel="stylesheet" href="/bower_components/mocha/mocha.css">
 
@@ -14,11 +14,15 @@
     <!-- Modernizr  -->
     <script src="/bower_components/modernizr/modernizr.js"></script>
 
-    <!-- localForage -->
-    <script src="/test/localforage.browserify.js"></script>
-
     <!-- Test runner -->
     <script src="/test/runner.js"></script>
+
+    <!-- localForage -->
+    <script src="/dist/localforage.js"></script>
+
+    <script>
+      localforage.useAutoBatching = true
+    </script>
 
     <!-- specs -->
     <script src="/test/test.api.js"></script>
@@ -27,11 +31,7 @@
     <script src="/test/test.drivers.js"></script>
     <script src="/test/test.iframes.js"></script>
     <script src="/test/test.webworkers.js"></script>
-<!-- FIXME: in the browserify test, it's necessary to put taskbatching tests before taskqueueing tests> -->
-    <script src="/test/test.taskbatching.js"></script>
-    <script src="/test/test.taskqueueing.js"></script>
-    <script src="/test/test.taskexecution.js"></script>
-
+    <script src="/test/test.serviceworkers.js"></script>
   </head>
   <body>
     <div id="mocha"></div>
