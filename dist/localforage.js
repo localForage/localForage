@@ -976,7 +976,12 @@ function iterate(iterator, callback) {
                             if (_isEncodedBlob(value)) {
                                 value = _decodeBlob(value);
                             }
-                            var result = iterator(value, cursor.key, iterationNumber++);
+                            var result;
+                            try {
+                                result = iterator(value, cursor.key, iterationNumber++);
+                            } catch (e) {
+                                return reject(e);
+                            }
 
                             // when the iterator callback returns any
                             // (non-`undefined`) value, then we stop
@@ -1782,7 +1787,11 @@ function iterate$1(iterator, callback) {
                             result = dbInfo.serializer.deserialize(result);
                         }
 
-                        result = iterator(result, item.key, i + 1);
+                        try {
+                            result = iterator(result, item.key, i + 1);
+                        } catch (e) {
+                            return reject(e);
+                        }
 
                         // void(0) prevents problems with redefinition
                         // of `undefined`.

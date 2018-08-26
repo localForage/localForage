@@ -569,11 +569,16 @@ function iterate(iterator, callback) {
                                 if (_isEncodedBlob(value)) {
                                     value = _decodeBlob(value);
                                 }
-                                var result = iterator(
-                                    value,
-                                    cursor.key,
-                                    iterationNumber++
-                                );
+                                var result;
+                                try {
+                                    result = iterator(
+                                        value,
+                                        cursor.key,
+                                        iterationNumber++
+                                    );
+                                } catch (e) {
+                                    return reject(e);
+                                }
 
                                 // when the iterator callback returns any
                                 // (non-`undefined`) value, then we stop

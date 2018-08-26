@@ -640,6 +640,70 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
                 });
         });
 
+        it('should reject iterate() if iterator throws [callback]', function(done) {
+            var errorMessage = 'Some error!';
+
+            localforage.setItem('officeX', 'InitechX', function(err, setValue) {
+                expect(setValue).to.be('InitechX');
+
+                localforage.getItem('officeX', function(err, value) {
+                    expect(value).to.be(setValue);
+
+                    localforage.setItem('officeY', 'InitechY', function(
+                        err,
+                        setValue
+                    ) {
+                        expect(setValue).to.be('InitechY');
+
+                        localforage.getItem('officeY', function(err, value) {
+                            expect(value).to.be(setValue);
+
+                            localforage.iterate(
+                                function() {
+                                    throw new Error(errorMessage);
+                                },
+                                function(err, loopResult) {
+                                    expect(err.message).to.be(errorMessage);
+                                    expect(loopResult).to.be(undefined);
+
+                                    done();
+                                }
+                            );
+                        });
+                    });
+                });
+            });
+        });
+
+        it('should reject iterate() if iterator throws [promise]', function(done) {
+            var errorMessage = 'Some error!';
+
+            localforage
+                .setItem('officeX', 'InitechX')
+                .then(function(setValue) {
+                    expect(setValue).to.be('InitechX');
+                    return localforage.getItem('officeX');
+                })
+                .then(function(value) {
+                    expect(value).to.be('InitechX');
+                    return localforage.setItem('officeY', 'InitechY');
+                })
+                .then(function(setValue) {
+                    expect(setValue).to.be('InitechY');
+                    return localforage.getItem('officeY');
+                })
+                .then(function(value) {
+                    expect(value).to.be('InitechY');
+                    return localforage.iterate(function() {
+                        throw new Error(errorMessage);
+                    });
+                })
+                .catch(function(err) {
+                    expect(err.message).to.be(errorMessage);
+                    done();
+                });
+        });
+
         it('should iterate() through only its own keys/values', function(done) {
             localStorage.setItem('local', 'forage');
             localforage

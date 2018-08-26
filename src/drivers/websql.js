@@ -193,7 +193,11 @@ function iterate(iterator, callback) {
                                     );
                                 }
 
-                                result = iterator(result, item.key, i + 1);
+                                try {
+                                    result = iterator(result, item.key, i + 1);
+                                } catch (e) {
+                                    return reject(e);
+                                }
 
                                 // void(0) prevents problems with redefinition
                                 // of `undefined`.
