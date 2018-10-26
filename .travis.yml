@@ -10,9 +10,9 @@ env:
 deploy:
   skip_cleanup: true
   provider: npm
-  email: matt@lonelyvegan.com
+  email: hi@tofumatt.com
   api_key:
-    secure: Ep7wUn/nAejJQRRoYa3DVqJ4vdy/2N7O4/w/dkfB6jWGSnqDLVtjx9ZrYg92ms0Ttr0FaN1r7U4Qqa7Q8/0FcMOtPwSGnguqHe+3sya/2tt8MkiKiSj5TNfyYjsr6457iIitz/K6adacqsOp9XdYKtuRJudvPXkEH4aeKNeyrbY=
+    secure: UxsPVxhtshu3a7t6ExgC5f1Gbs70DyeSHiEY4OOkAXAOd8z9LALcY0uAgNzYrPssX5eEeT99ac19IAk3h2qmbrRTfYR+/fpxtblFJdsllorx1k0OnBWUktWGn2erMwF9O0T0fvC06DEzYehiXRrftN/qUfRBSbUNDZyj7ySEkF0=
   on:
     tags: true
     repo: localForage/localForage
