@@ -101,13 +101,13 @@ namespace LocalForageTest {
         var newArray: Array<string> = keys;
     });
 
-    localForage.getItem("key",(err: any, str: string) => {
+    localForage.getItem<string>("key", (err, str) => {
         let newError: any = err;
-        let newStr: string = str
+        let newStr: string | null= str
     });
 
-    localForage.getItem<string>("key").then((str: string) => {
-        let newStr: string = str;
+    localForage.getItem<string>("key").then((str) => {
+        let newStr: string | null = str;
     });
 
     localForage.setItem("key", "value",(err: any, str: string) => {

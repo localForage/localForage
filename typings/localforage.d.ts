@@ -15,7 +15,8 @@ interface LocalForageOptions extends LocalForageDbInstanceOptions {
 }
 
 interface LocalForageDbMethodsCore {
-    getItem<T>(key: string, callback?: (err: any, value: T) => void): Promise<T>;
+    /** Note, this method never resolves to undefined due to https://github.com/mozilla/localForage/pull/42 */
+    getItem<T>(key: string, callback?: (err: any, value: T | null) => void): Promise<T | null>;
 
     setItem<T>(key: string, value: T, callback?: (err: any, value: T) => void): Promise<T>;
 
