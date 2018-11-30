@@ -350,11 +350,30 @@ function _tryReconnect(dbInfo) {
 var _refTransaction = {};
 var _refTransactionId = 0;
 
-function refTransaction(tx) {
-    var id = _refTransactionId++;
-    _refTransaction[id] = tx;
-    return function() {
-        delete _refTransaction[id];
+function createReadWriteTransactionHelper() {
+    var unref = undefined;
+    return {
+        create: function(dbInfo, callback, retries) {
+            createTransaction(
+                dbInfo,
+                READ_WRITE,
+                function(err, transaction) {
+                    var id = _refTransactionId++;
+                    _refTransaction[id] = transaction;
+                    unref = function() {
+                        delete _refTransaction[id];
+                    };
+                    callback(err, transaction);
+                },
+                retries
+            );
+        },
+        done: function(promise) {
+            var lazyUnref = function() {
+                unref && unref();
+            };
+            promise.then(lazyUnref, lazyUnref);
+        }
     };
 }
 
@@ -620,7 +639,7 @@ function setItem(key, value, callback) {
 
     key = normalizeKey(key);
 
-    var unref = undefined;
+    var helper = createReadWriteTransactionHelper();
     var promise = new Promise(function(resolve, reject) {
         var dbInfo;
         self.ready()
@@ -639,12 +658,7 @@ function setItem(key, value, callback) {
                 return value;
             })
             .then(function(value) {
-                createTransaction(self._dbInfo, READ_WRITE, function(
-                    err,
-                    transaction
-                ) {
-                    unref = refTransaction(transaction);
-
+                helper.create(self._dbInfo, function(err, transaction) {
                     if (err) {
                         return reject(err);
                     }
@@ -690,8 +704,7 @@ function setItem(key, value, callback) {
             })
             .catch(reject);
     });
-    promise.then(unref, unref);
-
+    helper.done(promise);
     executeCallback(promise, callback);
     return promise;
 }
@@ -701,16 +714,11 @@ function removeItem(key, callback) {
 
     key = normalizeKey(key);
 
-    var unref = undefined;
+    var helper = createReadWriteTransactionHelper();
     var promise = new Promise(function(resolve, reject) {
         self.ready()
             .then(function() {
-                createTransaction(self._dbInfo, READ_WRITE, function(
-                    err,
-                    transaction
-                ) {
-                    unref = refTransaction(transaction);
-
+                helper.create(self._dbInfo, function(err, transaction) {
                     if (err) {
                         return reject(err);
                     }
@@ -748,7 +756,7 @@ function removeItem(key, callback) {
             })
             .catch(reject);
     });
-    promise.then(unref, unref);
+    helper.done(promise);
 
     executeCallback(promise, callback);
     return promise;
@@ -757,16 +765,11 @@ function removeItem(key, callback) {
 function clear(callback) {
     var self = this;
 
-    var unref = undefined;
+    var helper = createReadWriteTransactionHelper();
     var promise = new Promise(function(resolve, reject) {
         self.ready()
             .then(function() {
-                createTransaction(self._dbInfo, READ_WRITE, function(
-                    err,
-                    transaction
-                ) {
-                    unref = refTransaction(transaction);
-
+                helper.create(self._dbInfo, function(err, transaction) {
                     if (err) {
                         return reject(err);
                     }
@@ -794,7 +797,7 @@ function clear(callback) {
             })
             .catch(reject);
     });
-    promise.then(unref, unref);
+    helper.done(promise);
 
     executeCallback(promise, callback);
     return promise;
