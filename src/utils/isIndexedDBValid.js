@@ -15,6 +15,10 @@ function isIndexedDBValid() {
             typeof openDatabase !== 'undefined' &&
             /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) &&
             !/Chrome/.test(navigator.userAgent) &&
+            // Any version of Tizen higher than 2.3
+            !/Tizen ([2-9]\.[3-9]\d*|[2-9]\.\d\d+|[3-9](\.\d+)*|\d\d+(\.\d+)*)/.test(
+                navigator.userAgent
+            ) &&
             !/BlackBerry/.test(navigator.platform);
 
         var hasFetch =
