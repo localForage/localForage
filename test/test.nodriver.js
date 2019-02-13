@@ -1,4 +1,4 @@
-/* global describe:true, expect:true, it:true, Modernizr:true */
+/* global describe:true, expect:true, it:true, dummyStorageDriver:true, Modernizr:true */
 describe('When No Drivers Are Available', function() {
     'use strict';
 
@@ -80,5 +80,22 @@ describe('When No Drivers Are Available', function() {
             expect(err.message).to.be('No available storage method found.');
             done();
         });
+    });
+
+    it('allows a custom driver to be set immediately when no other drivers are found', function(done) {
+        var db;
+        localforage
+            .defineDriver(dummyStorageDriver)
+            .then(function() {
+                db = localforage.createInstance({ name: 'test' });
+                return db.setDriver(dummyStorageDriver._driver);
+            })
+            .then(function() {
+                return db.ready();
+            })
+            .then(function() {
+                expect(db.driver()).to.be(dummyStorageDriver._driver);
+                done();
+            });
     });
 });
