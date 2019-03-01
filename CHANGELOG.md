@@ -3,6 +3,10 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [1.7.3](https://github.com/mozilla/localForage/releases/tag/1.7.3)
+
+* Add `.npmignore` file to reduce package size when installed via npm.
+
 ### [1.6](https://github.com/mozilla/localForage/releases/tag/1.6.0)
 
 * Add `dropInstance()` method to localforage.

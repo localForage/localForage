@@ -25,5 +25,5 @@
     "assert": "~0.1.0",
     "modernizr": "~2.8.1"
   },
-  "version": "1.7.1"
+  "version": "1.7.3"
 }

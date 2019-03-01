@@ -400,6 +400,9 @@ var myCustomDriver = {
     getItem: function(key, callback) {
         // Custom implementation here...
     },
+    iterate: function(iteratorCallback, successCallback) {
+        // Custom implementation here...
+    },    
     key: function(n, callback) {
         // Custom implementation here...
     },

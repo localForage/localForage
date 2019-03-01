@@ -1,6 +1,6 @@
 /*!
     localForage -- Offline Storage, Improved
-    Version 1.7.1
+    Version 1.7.3
     https://localforage.github.io/localForage
     (c) 2013-2017 Mozilla, Apache License 2.0
 */
@@ -1734,7 +1734,7 @@ function _initStorage$1(options) {
 function tryExecuteSql(t, dbInfo, sqlStatement, args, callback, errorCallback) {
     t.executeSql(sqlStatement, args, callback, function (t, error) {
         if (error.code === error.SYNTAX_ERR) {
-            t.executeSql('SELECT name FROM sqlite_master ' + "WHERE type='table' AND name = ?", [name], function (t, results) {
+            t.executeSql('SELECT name FROM sqlite_master ' + "WHERE type='table' AND name = ?", [dbInfo.storeName], function (t, results) {
                 if (!results.rows.length) {
                     // if the table is missing (was deleted)
                     // re-create it table and retry

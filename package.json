@@ -9,7 +9,7 @@
     "storage",
     "websql"
   ],
-  "version": "1.7.1",
+  "version": "1.7.3",
   "homepage": "https://github.com/localForage/localForage",
   "repository": {
     "type": "git",
@@ -56,7 +56,7 @@
     "load-grunt-tasks": "^0.4.0",
     "mocha": "^3.4.2",
     "phantomjs": "^2.1.7",
-    "prettier": "^1.9.2",
+    "prettier": "~1.12.0",
     "rollupify": "^0.1.0",
     "script-loader": "^0.6.1",
     "typescript": "^2.0.3",

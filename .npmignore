@@ -1,0 +1,12 @@
+docs
+test
+typing-tests
+examples
+
+tsconfig.json
+Gruntfile.js
+.prettierrc
+.babelrc
+.babelrc-umd
+.travis.yml
+.eslintrc
