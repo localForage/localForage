@@ -387,8 +387,12 @@ function isIndexedDBValid() {
 
         var hasFetch = typeof fetch === 'function' && fetch.toString().indexOf('[native code') !== -1;
 
-        // Safari <10.1 does not meet our requirements for IDB support (#5572)
-        // since Safari 10.1 shipped with fetch, we can use that to detect it
+        // Safari <10.1 does not meet our requirements for IDB support
+        // (see: https://github.com/pouchdb/pouchdb/issues/5572).
+        // Safari 10.1 shipped with fetch, we can use that to detect it.
+        // Note: this creates issues with `window.fetch` polyfills and
+        // overrides; see:
+        // https://github.com/localForage/localForage/issues/856
         return (!isSafari || hasFetch) && typeof indexedDB !== 'undefined' &&
         // some outdated implementations of IDB that appear on Samsung
         // and HTC Android devices <4.4 are missing IDBKeyRange
@@ -781,16 +785,32 @@ function _tryReconnect(dbInfo) {
     });
 }
 
-// Safari could garbage collect transaction before oncomplete/onerror/onabord being dispatched
+// Safari could garbage collect transaction before oncomplete/onerror/onabort being dispatched
 // reference transaction to stop it being garbage collected and remove the reference when it finish
 var _refTransaction = {};
 var _refTransactionId = 0;
 
-function refTransaction(tx) {
-    var id = _refTransactionId++;
-    _refTransaction[id] = tx;
-    return function () {
-        delete _refTransaction[id];
+function createReadWriteTransactionHelper() {
+    var unref = undefined;
+    return {
+        create: function create(dbInfo, callback, retries) {
+            createTransaction(dbInfo, READ_WRITE, function (err, transaction) {
+                var id = _refTransactionId++ % Number.MAX_SAFE_INTEGER;
+                _refTransaction[id] = transaction;
+                unref = function unref() {
+                    delete _refTransaction[id];
+                };
+                callback(err, transaction);
+            }, retries);
+        },
+        done: function done(promise) {
+            var lazyUnref = function lazyUnref() {
+                if (unref) {
+                    unref();
+                }
+            };
+            promise.then(lazyUnref, lazyUnref);
+        }
     };
 }
 
@@ -1020,7 +1040,7 @@ function setItem(key, value, callback) {
 
     key = normalizeKey(key);
 
-    var unref = undefined;
+    var helper = createReadWriteTransactionHelper();
     var promise = new Promise$1(function (resolve, reject) {
         var dbInfo;
         self.ready().then(function () {
@@ -1035,9 +1055,7 @@ function setItem(key, value, callback) {
             }
             return value;
         }).then(function (value) {
-            createTransaction(self._dbInfo, READ_WRITE, function (err, transaction) {
-                unref = refTransaction(transaction);
-
+            helper.create(self._dbInfo, function (err, transaction) {
                 if (err) {
                     return reject(err);
                 }
@@ -1078,8 +1096,7 @@ function setItem(key, value, callback) {
             });
         })["catch"](reject);
     });
-    promise.then(unref, unref);
-
+    helper.done(promise);
     executeCallback(promise, callback);
     return promise;
 }
@@ -1089,12 +1106,10 @@ function removeItem(key, callback) {
 
     key = normalizeKey(key);
 
-    var unref = undefined;
+    var helper = createReadWriteTransactionHelper();
     var promise = new Promise$1(function (resolve, reject) {
         self.ready().then(function () {
-            createTransaction(self._dbInfo, READ_WRITE, function (err, transaction) {
-                unref = refTransaction(transaction);
-
+            helper.create(self._dbInfo, function (err, transaction) {
                 if (err) {
                     return reject(err);
                 }
@@ -1127,7 +1142,7 @@ function removeItem(key, callback) {
             });
         })["catch"](reject);
     });
-    promise.then(unref, unref);
+    helper.done(promise);
 
     executeCallback(promise, callback);
     return promise;
@@ -1136,12 +1151,10 @@ function removeItem(key, callback) {
 function clear(callback) {
     var self = this;
 
-    var unref = undefined;
+    var helper = createReadWriteTransactionHelper();
     var promise = new Promise$1(function (resolve, reject) {
         self.ready().then(function () {
-            createTransaction(self._dbInfo, READ_WRITE, function (err, transaction) {
-                unref = refTransaction(transaction);
-
+            helper.create(self._dbInfo, function (err, transaction) {
                 if (err) {
                     return reject(err);
                 }
@@ -1164,7 +1177,7 @@ function clear(callback) {
             });
         })["catch"](reject);
     });
-    promise.then(unref, unref);
+    helper.done(promise);
 
     executeCallback(promise, callback);
     return promise;

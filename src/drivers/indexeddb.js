@@ -345,7 +345,7 @@ function _tryReconnect(dbInfo) {
         });
 }
 
-// Safari could garbage collect transaction before oncomplete/onerror/onabord being dispatched
+// Safari could garbage collect transaction before oncomplete/onerror/onabort being dispatched
 // reference transaction to stop it being garbage collected and remove the reference when it finish
 var _refTransaction = {};
 var _refTransactionId = 0;
@@ -358,7 +358,7 @@ function createReadWriteTransactionHelper() {
                 dbInfo,
                 READ_WRITE,
                 function(err, transaction) {
-                    var id = _refTransactionId++;
+                    var id = _refTransactionId++ % Number.MAX_SAFE_INTEGER;
                     _refTransaction[id] = transaction;
                     unref = function() {
                         delete _refTransaction[id];
@@ -370,7 +370,9 @@ function createReadWriteTransactionHelper() {
         },
         done: function(promise) {
             var lazyUnref = function() {
-                unref && unref();
+                if (unref) {
+                    unref();
+                }
             };
             promise.then(lazyUnref, lazyUnref);
         }
@@ -527,7 +529,8 @@ function getItem(key, callback) {
     key = normalizeKey(key);
 
     var promise = new Promise(function(resolve, reject) {
-        self.ready()
+        self
+            .ready()
             .then(function() {
                 createTransaction(self._dbInfo, READ_ONLY, function(
                     err,
@@ -574,7 +577,8 @@ function iterate(iterator, callback) {
     var self = this;
 
     var promise = new Promise(function(resolve, reject) {
-        self.ready()
+        self
+            .ready()
             .then(function() {
                 createTransaction(self._dbInfo, READ_ONLY, function(
                     err,
@@ -642,7 +646,8 @@ function setItem(key, value, callback) {
     var helper = createReadWriteTransactionHelper();
     var promise = new Promise(function(resolve, reject) {
         var dbInfo;
-        self.ready()
+        self
+            .ready()
             .then(function() {
                 dbInfo = self._dbInfo;
                 if (toString.call(value) === '[object Blob]') {
@@ -716,7 +721,8 @@ function removeItem(key, callback) {
 
     var helper = createReadWriteTransactionHelper();
     var promise = new Promise(function(resolve, reject) {
-        self.ready()
+        self
+            .ready()
             .then(function() {
                 helper.create(self._dbInfo, function(err, transaction) {
                     if (err) {
@@ -767,7 +773,8 @@ function clear(callback) {
 
     var helper = createReadWriteTransactionHelper();
     var promise = new Promise(function(resolve, reject) {
-        self.ready()
+        self
+            .ready()
             .then(function() {
                 helper.create(self._dbInfo, function(err, transaction) {
                     if (err) {
@@ -807,7 +814,8 @@ function length(callback) {
     var self = this;
 
     var promise = new Promise(function(resolve, reject) {
-        self.ready()
+        self
+            .ready()
             .then(function() {
                 createTransaction(self._dbInfo, READ_ONLY, function(
                     err,
@@ -852,7 +860,8 @@ function key(n, callback) {
             return;
         }
 
-        self.ready()
+        self
+            .ready()
             .then(function() {
                 createTransaction(self._dbInfo, READ_ONLY, function(
                     err,
@@ -914,7 +923,8 @@ function keys(callback) {
     var self = this;
 
     var promise = new Promise(function(resolve, reject) {
-        self.ready()
+        self
+            .ready()
             .then(function() {
                 createTransaction(self._dbInfo, READ_ONLY, function(
                     err,
