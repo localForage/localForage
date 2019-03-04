@@ -504,7 +504,7 @@ Creates a new instance of localForage and returns it. Each object contains its o
 
 ```js
 localforage.dropInstance().then(function() {
-  console.log('Dropped the store of the current instance').
+  console.log('Dropped the store of the current instance');
 });
 
 localforage.dropInstance({
