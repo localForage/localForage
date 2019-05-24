@@ -17,7 +17,6 @@
   },
   "scripts": {
     "build": "node -e \"require('grunt').cli()\" null build",
-    "precommit": "lint-staged",
     "prettify": "prettier --write \"src/**/*.js\" \"test/**/*.js\"",
     "publish-docs": "node -e \"require('grunt').cli()\" null copy build-rules-html publish-rules",
     "serve": "node -e \"require('grunt').cli()\" null serve",
@@ -51,8 +50,8 @@
     "grunt-saucelabs": "^5.1.2",
     "grunt-ts": "^6.0.0-beta.11",
     "grunt-webpack": "^1.0.11",
-    "husky": "^0.14.3",
-    "lint-staged": "^5.0.0",
+    "husky": "^2.3.0",
+    "lint-staged": "^8.1.7",
     "load-grunt-tasks": "^0.4.0",
     "mocha": "^3.4.2",
     "phantomjs": "^2.1.7",
@@ -71,11 +70,5 @@
   },
   "dependencies": {
     "lie": "3.1.1"
-  },
-  "lint-staged": {
-    "{src,test}/**/*.js": [
-      "prettier --write",
-      "git add"
-    ]
   }
 }
