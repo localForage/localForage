@@ -636,10 +636,16 @@ DRIVERS.forEach(function(driverName) {
     describe('Throws on unhandled types : ' + driverName, function() {
         it('Throws on function', function(done) {
             var foo = function() {};
-            localforage.setItem('foo', foo).catch(function(err) {
-                expect(err.message).toBe('Received a function as a value');
-                done();
-            });
+            localforage
+                .setItem('foo', foo)
+                .then(function(r) {
+                    expect(r).toBeNull();
+                    done();
+                })
+                .catch(function(err) {
+                    expect(err.message).toBe('Received a function as a value');
+                    done();
+                });
         });
     });
 });

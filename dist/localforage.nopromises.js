@@ -1242,7 +1242,7 @@ function serialize(value, callback) {
         };
 
         fileReader.readAsArrayBuffer(value);
-    } else if (valueType === '[object Undefined]') {
+    } else if (valueType === '[object Undefined]' || valueType === '[object Function]') {
         callback(null, new Error('Received a function as a value'));
     } else {
         try {
