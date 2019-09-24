@@ -36,15 +36,7 @@ localForage is compatible with [browserify](http://browserify.org/).
 Lost? Need help? Try the
 [localForage API documentation](https://localforage.github.io/localForage). [localForage API文档也有中文版。](https://localforage.docschina.org)
 
-If you're having trouble using the library, running the tests, or want to contribute
-to localForage, you can visit
-[irc.freenode.net](https://freenode.net/) and head to the `#localforage`
-channel to ask questions about localForage.
-
-You can ask [**tofumatt**][tofumatt] about localForage in IRC, who
-is usually online from 10am-8pm GMT.
-
-[tofumatt]: http://tofumatt.com/
+If you're having trouble using the library, running the tests, or want to contribute to localForage, please look through the [existing issues](https://github.com/localForage/localForage/issues) for your problem first before creating a new one. If you still need help, [feel free to file an issue](https://github.com/localForage/localForage/issues/new).
 
 ## Safari 10.1+
 
