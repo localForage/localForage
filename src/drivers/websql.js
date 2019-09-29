@@ -1,9 +1,9 @@
-import isWebSQLValid from '../utils/isWebSQLValid';
-import serializer from '../utils/serializer';
-import Promise from '../utils/promise';
-import executeCallback from '../utils/executeCallback';
-import normalizeKey from '../utils/normalizeKey';
-import getCallback from '../utils/getCallback';
+import isWebSQLValid from 'utils/isWebSQLValid';
+import serializer from 'utils/serializer';
+import Promise from 'utils/promise';
+import executeCallback from 'utils/executeCallback';
+import normalizeKey from 'utils/normalizeKey';
+import getCallback from 'utils/getCallback';
 
 /*
  * Includes code from:

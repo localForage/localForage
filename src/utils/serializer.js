@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise */
-import createBlob from './createBlob';
+import createBlob from 'utils/createBlob';
 
 // Sadly, the best way to save binary data in WebSQL/localStorage is serializing
 // it to Base64, so this is how we store it to prevent very strange errors with less

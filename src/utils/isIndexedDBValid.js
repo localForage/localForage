@@ -1,4 +1,4 @@
-import idb from './idb';
+import idb from 'utils/idb';
 
 function isIndexedDBValid() {
     try {
