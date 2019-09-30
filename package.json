@@ -3,7 +3,12 @@
   "author": "Mozilla",
   "license": "Apache-2.0",
   "description": "Offline storage, improved.",
-  "keywords": ["indexeddb", "localstorage", "storage", "websql"],
+  "keywords": [
+    "indexeddb",
+    "localstorage",
+    "storage",
+    "websql"
+  ],
   "version": "1.7.3",
   "homepage": "https://github.com/localForage/localForage",
   "repository": {

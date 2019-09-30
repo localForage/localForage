@@ -1,3 +1,5 @@
+before_install:
+- npm install
 language: node_js
 node_js:
 - '10'
