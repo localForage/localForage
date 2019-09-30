@@ -6,9 +6,7 @@
 import isLocalStorageValid from 'utils/isLocalStorageValid';
 import serializer from 'utils/serializer';
 import Promise from 'utils/promise';
-import executeCallback from 'utils/executeCallback';
 import normalizeKey from 'utils/normalizeKey';
-import getCallback from 'utils/getCallback';
 
 function _getKeyPrefix(options, defaultConfig) {
   var keyPrefix = options.name + '/';
@@ -79,7 +77,6 @@ function clear(callback) {
     }
   });
 
-  executeCallback(promise, callback);
   return promise;
 }
 
@@ -106,7 +103,6 @@ function getItem(key, callback) {
     return result;
   });
 
-  executeCallback(promise, callback);
   return promise;
 }
 
@@ -151,7 +147,6 @@ function iterate(iterator, callback) {
     }
   });
 
-  executeCallback(promise, callback);
   return promise;
 }
 
@@ -175,7 +170,6 @@ function key(n, callback) {
     return result;
   });
 
-  executeCallback(promise, callback);
   return promise;
 }
 
@@ -196,7 +190,6 @@ function keys(callback) {
     return keys;
   });
 
-  executeCallback(promise, callback);
   return promise;
 }
 
@@ -207,7 +200,6 @@ function length(callback) {
     return keys.length;
   });
 
-  executeCallback(promise, callback);
   return promise;
 }
 
@@ -222,7 +214,6 @@ function removeItem(key, callback) {
     localStorage.removeItem(dbInfo.keyPrefix + key);
   });
 
-  executeCallback(promise, callback);
   return promise;
 }
 
@@ -267,13 +258,10 @@ function setItem(key, value, callback) {
     });
   });
 
-  executeCallback(promise, callback);
   return promise;
 }
 
 function dropInstance(options, callback) {
-  callback = getCallback.apply(this, arguments);
-
   options = (typeof options !== 'function' && options) || {};
   if (!options.name) {
     var currentConfig = this.config();
@@ -303,7 +291,6 @@ function dropInstance(options, callback) {
     });
   }
 
-  executeCallback(promise, callback);
   return promise;
 }
 

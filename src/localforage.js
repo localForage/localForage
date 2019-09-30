@@ -3,8 +3,6 @@ import websqlDriver from 'drivers/websql';
 import localstorageDriver from 'drivers/localstorage';
 import serializer from 'utils/serializer';
 import Promise from 'utils/promise';
-import executeCallback from 'utils/executeCallback';
-import executeTwoCallbacks from 'utils/executeTwoCallbacks';
 import includes from 'utils/includes';
 import isArray from 'utils/isArray';
 
@@ -189,7 +187,6 @@ class LocalForage {
                 `Method ${methodName} is not implemented by the current driver`,
               );
               const promise = Promise.reject(error);
-              executeCallback(promise, arguments[arguments.length - 1]);
               return promise;
             };
           };
@@ -232,7 +229,6 @@ class LocalForage {
       }
     });
 
-    executeTwoCallbacks(promise, callback, errorCallback);
     return promise;
   }
 
@@ -245,13 +241,11 @@ class LocalForage {
       ? Promise.resolve(DefinedDrivers[driverName])
       : Promise.reject(new Error('Driver not found.'));
 
-    executeTwoCallbacks(getDriverPromise, callback, errorCallback);
     return getDriverPromise;
   }
 
   getSerializer(callback) {
     const serializerPromise = Promise.resolve(serializer);
-    executeTwoCallbacks(serializerPromise, callback);
     return serializerPromise;
   }
 
@@ -266,7 +260,6 @@ class LocalForage {
       return self._ready;
     });
 
-    executeTwoCallbacks(promise, callback, callback);
     return promise;
   }
 
@@ -345,7 +338,6 @@ class LocalForage {
         return self._driverSet;
       });
 
-    executeTwoCallbacks(this._driverSet, callback, errorCallback);
     return this._driverSet;
   }
 

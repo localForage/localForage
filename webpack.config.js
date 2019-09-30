@@ -5,6 +5,7 @@ const webpack = require('webpack');
 
 const projectPath = path.resolve(fs.realpathSync(process.cwd()), '.');
 const srcPath = path.resolve(fs.realpathSync(process.cwd()), 'src');
+const testsPath = path.resolve(fs.realpathSync(process.cwd()), 'tests');
 
 const config = {
   entry: ['./src/localforage.js'],
@@ -14,7 +15,7 @@ const config = {
       // Transform ES6 with Babel
       {
         test: /\.(js)$/,
-        include: [srcPath],
+        include: [srcPath, testsPath],
         use: [
           {
             loader: require.resolve('babel-loader'),
@@ -57,6 +58,9 @@ const config = {
     }),
   ],
   resolve: {
+    alias: {
+      localforage: path.join(path.resolve(__dirname, 'src'), 'localforage.js'),
+    },
     // Add src/ folder for easier includes within the project.
     modules: [srcPath, projectPath, 'node_modules'],
     extensions: ['.js', '.json'],
@@ -66,8 +70,14 @@ const config = {
 if (process.env.NODE_ENV === 'production') {
   config.devtool = 'source-map';
   config.optimization.minimize = true;
-} else {
+}
+
+if (process.env.NODE_ENV === 'development') {
   config.devtool = 'eval-source-map';
+}
+
+if (process.env.NODE_ENV === 'testing') {
+  config.devtool = 'inline-source-map';
 }
 
 module.exports = config;

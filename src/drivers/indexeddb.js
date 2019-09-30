@@ -2,10 +2,7 @@ import isIndexedDBValid from 'utils/isIndexedDBValid';
 import createBlob from 'utils/createBlob';
 import idb from 'utils/idb';
 import Promise from 'utils/promise';
-import executeCallback from 'utils/executeCallback';
-import executeTwoCallbacks from 'utils/executeTwoCallbacks';
 import normalizeKey from 'utils/normalizeKey';
-import getCallback from 'utils/getCallback';
 
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
@@ -300,7 +297,6 @@ function _fullyReady(callback) {
         }
     });
 
-    executeTwoCallbacks(promise, callback, callback);
     return promise;
 }
 
@@ -534,12 +530,11 @@ function getItem(key, callback) {
             .catch(reject);
     });
 
-    executeCallback(promise, callback);
     return promise;
 }
 
 // Iterate over all items stored in database.
-function iterate(iterator, callback) {
+function iterate(iterator) {
     var self = this;
 
     var promise = new Promise(function(resolve, reject) {
@@ -598,8 +593,6 @@ function iterate(iterator, callback) {
             })
             .catch(reject);
     });
-
-    executeCallback(promise, callback);
 
     return promise;
 }
@@ -678,7 +671,6 @@ function setItem(key, value, callback) {
             .catch(reject);
     });
 
-    executeCallback(promise, callback);
     return promise;
 }
 
@@ -733,7 +725,6 @@ function removeItem(key, callback) {
             .catch(reject);
     });
 
-    executeCallback(promise, callback);
     return promise;
 }
 
@@ -776,7 +767,6 @@ function clear(callback) {
             .catch(reject);
     });
 
-    executeCallback(promise, callback);
     return promise;
 }
 
@@ -816,7 +806,6 @@ function length(callback) {
             .catch(reject);
     });
 
-    executeCallback(promise, callback);
     return promise;
 }
 
@@ -885,7 +874,6 @@ function key(n, callback) {
             .catch(reject);
     });
 
-    executeCallback(promise, callback);
     return promise;
 }
 
@@ -934,13 +922,10 @@ function keys(callback) {
             .catch(reject);
     });
 
-    executeCallback(promise, callback);
     return promise;
 }
 
 function dropInstance(options, callback) {
-    callback = getCallback.apply(this, arguments);
-
     var currentConfig = this.config();
     options = (typeof options !== 'function' && options) || {};
     if (!options.name) {
@@ -1076,7 +1061,6 @@ function dropInstance(options, callback) {
         }
     }
 
-    executeCallback(promise, callback);
     return promise;
 }
 
