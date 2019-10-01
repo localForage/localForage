@@ -9,7 +9,7 @@ const testsPath = path.resolve(fs.realpathSync(process.cwd()), 'tests');
 
 const config = {
   entry: ['./src/localforage.js'],
-  mode: process.env.NODE_ENV,
+  mode: process.env.NODE_ENV || 'production',
   module: {
     rules: [
       // Transform ES6 with Babel

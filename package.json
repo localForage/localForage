@@ -16,9 +16,8 @@
     "url": "git://github.com/localForage/localForage.git"
   },
   "scripts": {
-    "build": "npm run clean && npm run build:dev && npm run build:prod",
+    "build": "npm run clean && webpack",
     "build:dev": "NODE_ENV=development webpack",
-    "build:prod": "NODE_ENV=production webpack",
     "prepublish": "npm run build",
     "clean": "rimraf dist build",
     "lint": "eslint .",
