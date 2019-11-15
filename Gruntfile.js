@@ -138,24 +138,6 @@ module.exports = exports = function(grunt) {
         eslint: {
             target: sourceFiles
         },
-        mocha: {
-            unit: {
-                options: {
-                    urls: [
-                        'http://localhost:9999/test/test.main.html',
-                        'http://localhost:9999/test/test.min.html',
-                        'http://localhost:9999/test/test.polyfill.html',
-                        'http://localhost:9999/test/test.callwhenready.html',
-                        'http://localhost:9999/test/test.customdriver.html',
-                        'http://localhost:9999/test/test.faultydriver.html',
-                        'http://localhost:9999/test/test.nodriver.html',
-                        'http://localhost:9999/test/test.browserify.html',
-                        'http://localhost:9999/test/test.require.html',
-                        'http://localhost:9999/test/test.webpack.html'
-                    ]
-                }
-            }
-        },
         'saucelabs-mocha': {
             all: {
                 options: {
@@ -240,6 +222,77 @@ module.exports = exports = function(grunt) {
         'mocha'
     ];
     grunt.registerTask('test:local', testTasks.slice());
+    grunt.registerTask('mocha', 'custom function to run mocha tests', function() {
+        const {runner} = require('mocha-headless-chrome');
+        const fs   = require('fs');
+        const path = require('path');
+        var done = this.async();
+        var tempErrLogs = fs.createWriteStream('temp.test.log');
+        var oldStdErr = process.stderr.write;
+        var totaltestsPassed = 0;
+        var totaltestsFailed = 0;
+        var totalDuration = 0;
+        var asset = path.join.bind(null, __dirname,
+                    'node_modules/puppeteer/.local-chromium/linux-686378');
+        var urls = [
+                 'http://localhost:9999/test/test.main1.html',
+                 'http://localhost:9999/test/test.min.html',
+                 'http://localhost:9999/test/test.polyfill.html',
+                 'http://localhost:9999/test/test.customdriver.html',
+                 'http://localhost:9999/test/test.faultydriver.html',
+                 'http://localhost:9999/test/test.nodriver.html',
+                 'http://localhost:9999/test/test.browserify.html',
+                 'http://localhost:9999/test/test.callwhenready.html',
+                 'http://localhost:9999/test/test.require.html',
+                 'http://localhost:9999/test/test.webpack.html'
+                   ];
+
+        grunt.util.async.forEachSeries(urls, async function(url, next) {
+
+            const options = {
+                file: url,                                   // test page path
+                reporter: 'dot',                             // mocha reporter name
+                width: 800,                                  // viewport width
+                height: 600,                                 // viewport height
+                timeout: 60000,                              // timeout in ms
+                executablePath: asset('chrome-linux/chrome'),// chrome executable path
+                visible: false,                              // show chrome window
+                args: ['no-sandbox']                         // chrome arguments
+            };
+
+            console.log('Testing: ' + url + '\n\n');
+            process.stderr.write = tempErrLogs.write.bind(tempErrLogs);
+
+            await runner(options)
+                .then(obj => {
+                    process.stderr.write = oldStdErr;
+                    if (obj.result.stats.passes) {
+                        totaltestsPassed += obj.result.stats.passes;
+                        totalDuration += obj.result.stats.duration;
+                    }
+
+                    if (obj.result.stats.failures) {
+                        totaltestsFailed += obj.result.stats.failures;
+                    }
+                })
+                .catch(err => {
+                    process.stderr.write = oldStdErr;
+                    console.error(err);
+                    process.exit(1);
+            });
+            next();
+        },function() {
+
+            grunt.log.oklns(totaltestsPassed + ' passed! (' + totalDuration/1000 + 's)');
+
+            if (totaltestsFailed > 0) {
+                grunt.log.errorlns(totaltestsFailed + ' failed!');
+                done(false);
+            } else {
+                done(true);
+            }
+	});
+    });
 
     // Run tests using Sauce Labs if we are on Travis or have locally
     // available Sauce Labs credentials. Use `grunt test:local` to skip

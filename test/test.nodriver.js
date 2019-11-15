@@ -9,10 +9,8 @@ describe('When No Drivers Are Available', function() {
     ];
 
     it('agrees with Modernizr on storage drivers support', function() {
+        /* Used version of Modernizr doesn't support dissabling INDEXEDDB */
         expect(localforage.supports(localforage.INDEXEDDB)).to.be(false);
-        expect(localforage.supports(localforage.INDEXEDDB)).to.be(
-            Modernizr.indexeddb
-        );
 
         expect(localforage.supports(localforage.LOCALSTORAGE)).to.be(false);
         expect(localforage.supports(localforage.LOCALSTORAGE)).to.be(

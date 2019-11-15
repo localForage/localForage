@@ -5,6 +5,9 @@
     <title>localForage require.js Tests!</title>
 
     <link rel="stylesheet" href="/bower_components/mocha/mocha.css">
+  </head>
+  <body>
+    <div id="mocha"></div>
 
     <script src="/bower_components/assert/assert.js"></script>
     <script src="/bower_components/mocha/mocha.js"></script>
@@ -17,10 +20,30 @@
     <!-- Modernizr  -->
     <script src="/bower_components/modernizr/modernizr.js"></script>
 
-    <!-- Test runner -->
-    <script src="/test/runner.js"></script>
-  </head>
-  <body>
-    <div id="mocha"></div>
+    <script> mocha.setup('bdd'); </script>
+
+    <script>
+        var require = this.require;
+        if (require) {
+            requirejs.config({
+                paths: {
+                    localforage: '/dist/localforage'
+                }
+            });
+            require(['localforage'], function(localforage) {
+                window.localforage = localforage;
+                require([
+                    '/test/test.api.js',
+                    '/test/test.config.js',
+                    '/test/test.datatypes.js',
+                    '/test/test.drivers.js',
+                    '/test/test.iframes.js',
+                    '/test/test.webworkers.js'
+                ], mocha.run); // Run tests
+            });
+        }
+        // Disable warning
+        window.console.warn = function(){};
+    </script>
   </body>
 </html>
