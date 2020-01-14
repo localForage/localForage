@@ -192,6 +192,7 @@ have drivers for the following frameworks:
 * [Backbone](https://github.com/localForage/localForage-backbone)
 * [Ember](https://github.com/genkgo/ember-localforage-adapter)
 * [Vue](https://github.com/dmlzj/vlf)
+* [NuxtJS](https://github.com/nuxt-community/localforage-module)
 
 If you have a driver you'd like listed, please
 [open an issue](https://github.com/localForage/localForage/issues/new) to have it
