@@ -243,6 +243,15 @@ a browser environment. Local tests are run on a headless WebKit (using
 When you submit a pull request, tests will be run against all browsers that
 localForage supports on Travis CI using [Sauce Labs](https://saucelabs.com/).
 
+## Library Size
+As of version 1.7.3 the payload added to your app is rather small. Served using gzip compression, localForage will add less than 10k to your total bundle size:
+
+<dl>
+  <dt>minified</dt><dd>`~29kB`</dd>
+  <dt>gzipped</dt><dd>`~8.8kB`</dd>
+  <dt>brotli'd</dt><dd>`~7.8kB`</dd>
+</dl>
+
 # License
 
 This program is free software; it is distributed under an
