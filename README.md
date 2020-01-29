@@ -244,14 +244,13 @@ When you submit a pull request, tests will be run against all browsers that
 localForage supports on Travis CI using [Sauce Labs](https://saucelabs.com/).
 
 ## Library Size
-As of Version 1.7.3 the payload added to your App is rather small. 
-Shipping it right, will add less than 10k to your total Size.
+As of version 1.7.3 the payload added to your app is rather small. Served using gzip compression, localForage will add less than 10k to your total bundle size:
 
-```
-minified: ~29k
-gzipped: ~8.8k
-brotli'd: ~7.8k
-```
+<dl>
+  <dt>minified<dd>`~29kB`</dd>
+  <dt>gzipped<dd>`~8.8kB`</dd>
+  <dt>brotli'd<dd>`~7.8kB`</dd>
+</dl>
 
 # License
 
