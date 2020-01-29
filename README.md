@@ -247,9 +247,9 @@ localForage supports on Travis CI using [Sauce Labs](https://saucelabs.com/).
 As of version 1.7.3 the payload added to your app is rather small. Served using gzip compression, localForage will add less than 10k to your total bundle size:
 
 <dl>
-  <dt>minified<dd>`~29kB`</dd>
-  <dt>gzipped<dd>`~8.8kB`</dd>
-  <dt>brotli'd<dd>`~7.8kB`</dd>
+  <dt>minified</dt><dd>`~29kB`</dd>
+  <dt>gzipped</dt><dd>`~8.8kB`</dd>
+  <dt>brotli'd</dt><dd>`~7.8kB`</dd>
 </dl>
 
 # License
