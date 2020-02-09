@@ -40,9 +40,7 @@ yarn add localforage
 <script>console.log('localforage is: ', localforage);</script>
 ```
 
-To use localForage, [download the latest release](https://github.com/localForage/localForage/releases) or install with *any* of the following
- [npm](https://npmjs.org/) (`npm i localforage`), or
- [yarn](https://yarnpkg.com) (`yarn add localforage`)
+To use localForage, [download the latest release](https://github.com/localForage/localForage/releases) or install with [npm](https://npmjs.org/) (`npm i localforage`), or [yarn](https://yarnpkg.com) (`yarn add localforage`)
 
 Then simply include the JS file and start using localForage: `<script src="localforage.js"></script>`. You don't need to run any init method or wait for any `onready` events.
 
