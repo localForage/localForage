@@ -21,10 +21,13 @@ To use localForage, just drop a single JavaScript file into your page:
 Try the [live example](http://codepen.io/thgreasi/pen/ojYKeE).
 
 Download the [latest localForage from GitHub](https://github.com/localForage/localForage/releases/latest), or install with
-[npm](https://www.npmjs.com/):
+[npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
 ```bash
 npm install localforage
+
+# or, use yarn
+yarn add localforage
 ```
 
 localForage is compatible with [browserify](http://browserify.org/).
