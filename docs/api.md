@@ -60,6 +60,13 @@ localforage.getItem('somekey').then(function(value) {
     console.log(err);
 });
 
+// Async/await version:
+(async() => {
+    const value = await localforage.getItem('somekey');
+    // This code runs once the value has been loaded
+    // from the offline store.
+})()
+
 // Callback version:
 localforage.getItem('somekey', function(err, value) {
     // Run this code once the value has been
