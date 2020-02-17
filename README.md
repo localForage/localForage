@@ -76,6 +76,20 @@ localforage.setItem('key', 'value').then(function () {
 });
 ```
 
+Or, use async/await version (But make sure that it's enclosed by a `async` function):
+
+```js
+try {
+    const value = await localforage.getItem('somekey');
+    // This code runs once the value has been loaded
+    // from the offline store.
+    console.log(value);
+} catch (err) {
+    // This code runs if there were any errors.
+    console.log(err);
+}
+```
+
 For more examples, please visit [the API docs](https://localforage.github.io/localForage).
 
 ## Storing Blobs, TypedArrays, and other JS objects
