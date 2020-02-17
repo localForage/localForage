@@ -77,7 +77,7 @@ localforage.setItem('key', 'value').then(function () {
 });
 ```
 
-Or, use async/await version (But make sure that it's enclosed by a `async` function):
+Or, use `async`/`await`:
 
 ```js
 try {
