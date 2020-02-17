@@ -67,7 +67,7 @@ localforage.getItem('somekey', function(err, value) {
     console.log(value);
 });
 
-Or, async/await version (But make sure that it's enclosed by a `async` function):
+Or, use `async`/`await`:
 
 ```js
 try {
