@@ -15,10 +15,10 @@ function createBlob(parts, properties) {
             typeof BlobBuilder !== 'undefined'
                 ? BlobBuilder
                 : typeof MSBlobBuilder !== 'undefined'
-                  ? MSBlobBuilder
-                  : typeof MozBlobBuilder !== 'undefined'
-                    ? MozBlobBuilder
-                    : WebKitBlobBuilder;
+                    ? MSBlobBuilder
+                    : typeof MozBlobBuilder !== 'undefined'
+                        ? MozBlobBuilder
+                        : WebKitBlobBuilder;
         var builder = new Builder();
         for (var i = 0; i < parts.length; i += 1) {
             builder.append(parts[i]);
@@ -631,5 +631,21 @@ DRIVERS.forEach(function(driverName) {
         } else {
             it.skip("doesn't have the Float64Array type");
         }
+    });
+
+    describe('Throws on unhandled types : ' + driverName, function() {
+        it('Throws on function', function(done) {
+            var foo = function() {};
+            localforage
+                .setItem('foo', foo)
+                .then(function(r) {
+                    expect(r).toBeNull();
+                    done();
+                })
+                .catch(function(err) {
+                    expect(err.message).toBe('Received a function as a value');
+                    done();
+                });
+        });
     });
 });
