@@ -118,40 +118,44 @@ class LocalForage {
         // If the options argument is an object, we use it to set values.
         // Otherwise, we return either a specified config value or all
         // config values.
-        if (typeof options === 'object') {
-            // If localforage is ready and fully initialized, we can't set
-            // any new configuration values. Instead, we return an error.
-            if (this._ready) {
-                return new Error(
-                    "Can't call config() after localforage " + 'has been used.'
-                );
-            }
-
-            for (let i in options) {
-                if (i === 'storeName' && typeof options[i] !== 'string') {
-                    options[i] = options[i].replace(/\W/g, '_');
-                } else {
-                    return new Error('storeName must be a string');
+        try {
+            if (typeof options === 'object') {
+                // If localforage is ready and fully initialized, we can't set
+                // any new configuration values. Instead, we return an error.
+                if (this._ready) {
+                    return new Error(
+                        "Can't call config() after localforage " + 'has been used.'
+                    );
                 }
 
-                if (i === 'version' && typeof options[i] !== 'number') {
-                    return new Error('Database version must be a number.');
+                for (let i in options) {
+                    if (i === 'storeName' && typeof options[i] !== 'string') {
+                        options[i] = options[i].replace(/\W/g, '_');
+                    } else {
+                        return new Error('storeName must be a string');
+                    }
+
+                    if (i === 'version' && typeof options[i] !== 'number') {
+                        return new Error('Database version must be a number.');
+                    }
+
+                    this._config[i] = options[i];
                 }
 
-                this._config[i] = options[i];
-            }
+                // after all config options are set and
+                // the driver option is used, try setting it
+                if ('driver' in options && options.driver) {
+                    return this.setDriver(this._config.driver);
+                }
 
-            // after all config options are set and
-            // the driver option is used, try setting it
-            if ('driver' in options && options.driver) {
-                return this.setDriver(this._config.driver);
+                return true;
+            } else if (typeof options === 'string') {
+                return this._config[options];
+            } else {
+                return this._config;
             }
-
-            return true;
-        } else if (typeof options === 'string') {
-            return this._config[options];
-        } else {
-            return this._config;
+        } catch (err) {
+            return new Error(err);
         }
     }
 
