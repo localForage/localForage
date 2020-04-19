@@ -51,9 +51,9 @@ const DefaultConfig = {
 };
 
 function callWhenReady(localForageInstance, libraryMethod) {
-    localForageInstance[libraryMethod] = function () {
+    localForageInstance[libraryMethod] = function() {
         const _args = arguments;
-        return localForageInstance.ready().then(function () {
+        return localForageInstance.ready().then(function() {
             return localForageInstance[libraryMethod].apply(
                 localForageInstance,
                 _args
@@ -107,7 +107,7 @@ class LocalForage {
         this._dbInfo = null;
 
         this._wrapLibraryMethodsWithReady();
-        this.setDriver(this._config.driver).catch(() => { });
+        this.setDriver(this._config.driver).catch(() => {});
     }
 
     // Set any config values for localForage; can be called anytime before
@@ -118,58 +118,55 @@ class LocalForage {
         // If the options argument is an object, we use it to set values.
         // Otherwise, we return either a specified config value or all
         // config values.
-        try {
-            if (typeof options === 'object') {
-                // If localforage is ready and fully initialized, we can't set
-                // any new configuration values. Instead, we return an error.
-                if (this._ready) {
-                    return new Error(
-                        "Can't call config() after localforage " + 'has been used.'
-                    );
-                }
-
-                for (let i in options) {
-                    if (i === 'storeName' && typeof options[i] !== 'string') {
-                        options[i] = options[i].replace(/\W/g, '_');
-                    } else {
-                        return new Error('storeName must be a string');
-                    }
-
-                    if (i === 'version' && typeof options[i] !== 'number') {
-                        return new Error('Database version must be a number.');
-                    }
-
-                    this._config[i] = options[i];
-                }
-
-                // after all config options are set and
-                // the driver option is used, try setting it
-                if ('driver' in options && options.driver) {
-                    return this.setDriver(this._config.driver);
-                }
-
-                return true;
-            } else if (typeof options === 'string') {
-                return this._config[options];
-            } else {
-                return this._config;
+        if (typeof options === 'object') {
+            // If localforage is ready and fully initialized, we can't set
+            // any new configuration values. Instead, we return an error.
+            if (this._ready) {
+                return new Error(
+                    "Can't call config() after localforage " + 'has been used.'
+                );
             }
-        } catch (err) {
-            return new Error(err);
+
+            for (let i in options) {
+                if (i === 'storeName' && typeof options[i] === 'string') {
+                    options[i] = options[i].replace(/\W/g, '_');
+                } else if (
+                    i === 'storeName' &&
+                    typeof options[i] !== 'string'
+                ) {
+                    return new Error('storeName must be a string');
+                }
+
+                if (i === 'version' && typeof options[i] !== 'number') {
+                    return new Error('Database version must be a number.');
+                }
+
+                this._config[i] = options[i];
+            }
+
+            // after all config options are set and
+            // the driver option is used, try setting it
+            if ('driver' in options && options.driver) {
+                return this.setDriver(this._config.driver);
+            }
+
+            return true;
+        } else if (typeof options === 'string') {
+            return this._config[options];
+        } else {
+            return this._config;
         }
     }
-
-
 
     // Used to define a custom driver, shared across all instances of
     // localForage.
     defineDriver(driverObject, callback, errorCallback) {
-        const promise = new Promise(function (resolve, reject) {
+        const promise = new Promise(function(resolve, reject) {
             try {
                 const driverName = driverObject._driver;
                 const complianceError = new Error(
                     'Custom driver not compliant; see ' +
-                    'https://mozilla.github.io/localForage/#definedriver'
+                        'https://mozilla.github.io/localForage/#definedriver'
                 );
 
                 // A driver name should be defined and not overlap with the
@@ -198,9 +195,9 @@ class LocalForage {
                     }
                 }
 
-                const configureMissingMethods = function () {
-                    const methodNotImplementedFactory = function (methodName) {
-                        return function () {
+                const configureMissingMethods = function() {
+                    const methodNotImplementedFactory = function(methodName) {
+                        return function() {
                             const error = new Error(
                                 `Method ${methodName} is not implemented by the current driver`
                             );
@@ -231,7 +228,7 @@ class LocalForage {
 
                 configureMissingMethods();
 
-                const setDriverSupport = function (support) {
+                const setDriverSupport = function(support) {
                     if (DefinedDrivers[driverName]) {
                         console.info(
                             `Redefining LocalForage driver: ${driverName}`
@@ -322,7 +319,7 @@ class LocalForage {
         }
 
         function initDriver(supportedDrivers) {
-            return function () {
+            return function() {
                 let currentDriverIndex = 0;
 
                 function driverPromiseLoop() {
