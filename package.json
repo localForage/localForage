@@ -23,7 +23,6 @@
     "test": "node -e \"require('grunt').cli()\" null test"
   },
   "devDependencies": {
-    "jslint": "^0.12.1",
     "babel-core": "^6.5.1",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^6.2.2",
