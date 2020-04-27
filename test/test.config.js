@@ -270,7 +270,7 @@ describe('Config API', function() {
         done();
     });
 
-    it('should throw error on config.storeName not string', function(done) {
+    it('should throw error on config.storeName not string', function() {
         let configResult = localforage.config({
             description: 'The offline datastore for my cool app',
             driver: localforage.driver(),
@@ -279,6 +279,5 @@ describe('Config API', function() {
             version: 2.0
         });
         expect(configResult).to.be(new Error('storeName must be a string'));
-        done();
     });
 });
