@@ -387,8 +387,12 @@ function isIndexedDBValid() {
 
         var hasFetch = typeof fetch === 'function' && fetch.toString().indexOf('[native code') !== -1;
 
-        // Safari <10.1 does not meet our requirements for IDB support (#5572)
-        // since Safari 10.1 shipped with fetch, we can use that to detect it
+        // Safari <10.1 does not meet our requirements for IDB support
+        // (see: https://github.com/pouchdb/pouchdb/issues/5572).
+        // Safari 10.1 shipped with fetch, we can use that to detect it.
+        // Note: this creates issues with `window.fetch` polyfills and
+        // overrides; see:
+        // https://github.com/localForage/localForage/issues/856
         return (!isSafari || hasFetch) && typeof indexedDB !== 'undefined' &&
         // some outdated implementations of IDB that appear on Samsung
         // and HTC Android devices <4.4 are missing IDBKeyRange
@@ -2537,8 +2541,10 @@ var LocalForage = function () {
             }
 
             for (var i in options) {
-                if (i === 'storeName') {
+                if (i === 'storeName' && typeof options[i] === 'string') {
                     options[i] = options[i].replace(/\W/g, '_');
+                } else if (i === 'storeName' && typeof options[i] !== 'string') {
+                    return new Error('storeName must be a string');
                 }
 
                 if (i === 'version' && typeof options[i] !== 'number') {
