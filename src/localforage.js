@@ -43,7 +43,7 @@ const DefaultConfig = {
     description: '',
     driver: DefaultDriverOrder.slice(),
     name: 'localforage',
-    // Default DB size is _JUST UNDER_ 5MB, as it's the highest size
+    // Default DB size is _JUST UNDER_ 5MB, as it's the highest size.
     // we can use without a prompt.
     size: 4980736,
     storeName: 'keyvaluepairs',
