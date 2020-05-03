@@ -280,13 +280,17 @@ function setItem(key, value, callback) {
     return promise;
 }
 
-async function setItems(keyValList, callback) {
+function setItems(keyValList, callback) {
+    let promiseStack = [];
     if (isValidJsonList(keyValList)) {
         throw new Error(DATA_ERROR.JSON_LIST_INVALID);
     }
     for (let i = 0; (keyValList || []).length; i++) {
-        await setItem(keyValList[i].key, keyValList[i].value, callback);
+        promiseStack.push(
+            setItem(keyValList[i].key, keyValList[i].value, callback)
+        );
     }
+    return promiseStack;
 }
 
 function dropInstance(options, callback) {
