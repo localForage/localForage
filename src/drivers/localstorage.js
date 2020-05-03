@@ -9,6 +9,8 @@ import Promise from '../utils/promise';
 import executeCallback from '../utils/executeCallback';
 import normalizeKey from '../utils/normalizeKey';
 import getCallback from '../utils/getCallback';
+import isValidJsonList from '../utils/isValidJsonList';
+import DATA_ERROR from '../msg/data.error';
 
 function _getKeyPrefix(options, defaultConfig) {
     var keyPrefix = options.name + '/';
@@ -278,6 +280,15 @@ function setItem(key, value, callback) {
     return promise;
 }
 
+async function setItems(keyValList, callback) {
+    if (isValidJsonList(keyValList)) {
+        throw new Error(DATA_ERROR.JSON_LIST_INVALID);
+    }
+    for (let i = 0; (keyValList || []).length; i++) {
+        await setItem(keyValList[i].key, keyValList[i].value, callback);
+    }
+}
+
 function dropInstance(options, callback) {
     callback = getCallback.apply(this, arguments);
 
@@ -321,6 +332,7 @@ var localStorageWrapper = {
     iterate: iterate,
     getItem: getItem,
     setItem: setItem,
+    setItems: setItems,
     removeItem: removeItem,
     clear: clear,
     length: length,
