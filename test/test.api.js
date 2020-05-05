@@ -131,6 +131,7 @@ describe('localForage', function() {
                 iterate: driverDummyMethod,
                 getItem: driverDummyMethod,
                 setItem: driverDummyMethod,
+                setItems: driverDummyMethod,
                 removeItem: driverDummyMethod,
                 clear: driverDummyMethod,
                 length: driverDummyMethod,
@@ -215,6 +216,7 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
         it('has a localStorage API', function() {
             expect(localforage.getItem).to.be.a('function');
             expect(localforage.setItem).to.be.a('function');
+            expect(localforage.setItems).to.be.a('function');
             expect(localforage.clear).to.be.a('function');
             expect(localforage.length).to.be.a('function');
             expect(localforage.removeItem).to.be.a('function');
@@ -230,6 +232,7 @@ SUPPORTED_DRIVERS.forEach(function(driverName) {
             expect(localforage.iterate).to.be.a('function');
             expect(localforage.getItem).to.be.a('function');
             expect(localforage.setItem).to.be.a('function');
+            expect(localforage.setItems).to.be.a('function');
             expect(localforage.clear).to.be.a('function');
             expect(localforage.length).to.be.a('function');
             expect(localforage.removeItem).to.be.a('function');

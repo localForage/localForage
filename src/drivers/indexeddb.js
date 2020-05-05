@@ -6,6 +6,7 @@ import executeCallback from '../utils/executeCallback';
 import executeTwoCallbacks from '../utils/executeTwoCallbacks';
 import normalizeKey from '../utils/normalizeKey';
 import getCallback from '../utils/getCallback';
+import DATA_ERROR from '../msg/data.error';
 
 // Some code originally from async_storage.js in
 // [Gaia](https://github.com/mozilla-b2g/gaia).
@@ -1080,6 +1081,14 @@ function dropInstance(options, callback) {
     return promise;
 }
 
+function setItems(keyValList, callback) {
+    return [
+        new Promise((resolve, reject) => {
+            resolve(DATA_ERROR.SERVICE_NOT_SUPPORTED);
+        })
+    ];
+}
+
 var asyncStorage = {
     _driver: 'asyncStorage',
     _initStorage: _initStorage,
@@ -1087,6 +1096,7 @@ var asyncStorage = {
     iterate: iterate,
     getItem: getItem,
     setItem: setItem,
+    setItems: setItems,
     removeItem: removeItem,
     clear: clear,
     length: length,

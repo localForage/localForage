@@ -38,3 +38,4 @@ doc/
 
 # typescript cache
 .tscache
+.vscode/*
