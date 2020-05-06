@@ -6,6 +6,9 @@
 
     <link rel="stylesheet" type="text/css"
           href="/bower_components/mocha/mocha.css">
+  </head>
+  <body>
+    <div id="mocha"></div>
 
     <script>
         if (window.Promise) {
@@ -20,16 +23,18 @@
     <!-- Modernizr  -->
     <script src="/bower_components/modernizr/modernizr.js"></script>
 
-    <!-- Test runner -->
-    <script src="/test/runner.js"></script>
+    <script> mocha.setup('bdd'); </script>
 
     <!-- localForage -->
     <script src="/dist/localforage.min.js"></script>
 
     <!-- specs -->
     <script src="/test/test.api.js"></script>
-  </head>
-  <body>
-    <div id="mocha"></div>
+
+    <!-- Disable warning -->
+    <script> window.console.warn = function(){}; </script>
+
+    <!-- Run tests -->
+    <script> mocha.run(); </script>
   </body>
 </html>
