@@ -978,7 +978,7 @@ function iterate(iterator, callback) {
                             }
                             var result = iterator(value, cursor.key, iterationNumber++);
 
-                            // when the iterator callback retuns any
+                            // when the iterator callback returns any
                             // (non-`undefined`) value, then we stop
                             // the iteration immediately
                             if (result !== void 0) {
