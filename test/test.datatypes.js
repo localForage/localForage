@@ -15,10 +15,10 @@ function createBlob(parts, properties) {
             typeof BlobBuilder !== 'undefined'
                 ? BlobBuilder
                 : typeof MSBlobBuilder !== 'undefined'
-                  ? MSBlobBuilder
-                  : typeof MozBlobBuilder !== 'undefined'
-                    ? MozBlobBuilder
-                    : WebKitBlobBuilder;
+                    ? MSBlobBuilder
+                    : typeof MozBlobBuilder !== 'undefined'
+                        ? MozBlobBuilder
+                        : WebKitBlobBuilder;
         var builder = new Builder();
         for (var i = 0; i < parts.length; i += 1) {
             builder.append(parts[i]);
@@ -261,6 +261,37 @@ DRIVERS.forEach(function(driverName) {
                 });
         });
 
+        var setToSave = new Set([2, 'one', true]);
+        it('saves a set [callback]', function(done) {
+            localforage.setItem('array', setToSave, function(err, setValue) {
+                expect(setValue.length).to.be(setToSave.length);
+                expect(setValue instanceof Set).to.be(true);
+
+                localforage.getItem('array', function(err, value) {
+                    expect(value.length).to.be(setToSave.length);
+                    expect(value instanceof Set).to.be(true);
+                    expect(value[1]).to.be.a('string');
+                    done();
+                });
+            });
+        });
+        it('saves a set [promise]', function(done) {
+            localforage
+                .setItem('array', setToSave)
+                .then(function(setValue) {
+                    expect(setValue.length).to.be(setToSave.length);
+                    expect(setValue instanceof Set).to.be(true);
+
+                    return localforage.getItem('array');
+                })
+                .then(function(value) {
+                    expect(value.length).to.be(setToSave.length);
+                    expect(value instanceof Set).to.be(true);
+                    expect(value[1]).to.be.a('string');
+                    done();
+                });
+        });
+
         var objectToSave = {
             floating: 43.01,
             nested: {
@@ -308,6 +339,63 @@ DRIVERS.forEach(function(driverName) {
                 .then(function(value) {
                     expect(Object.keys(value).length).to.be(
                         Object.keys(objectToSave).length
+                    );
+                    expect(value).to.be.an('object');
+                    expect(value.nested).to.be.an('object');
+                    expect(value.nestedObjects[0].truth).to.be.a('boolean');
+                    expect(value.nestedObjects[1].theCake).to.be.a('string');
+                    expect(value.nestedObjects[3]).to.be(false);
+                    done();
+                });
+        });
+
+        var mapToSave = new Map({
+            floating: 43.01,
+            nested: {
+                array: [1, 2, 3]
+            },
+            nestedObjects: [
+                { truth: true },
+                { theCake: 'is a lie' },
+                { happiness: 'is a warm gun' },
+                false
+            ],
+            string: 'bar'
+        });
+        it('saves a nested map [callback]', function(done) {
+            localforage.setItem('obj', mapToSave, function(err, setValue) {
+                expect(Object.keys(setValue).length).to.be(
+                    Object.keys(mapToSave).length
+                );
+                expect(setValue instanceof Map).to.be(true);
+
+                localforage.getItem('obj', function(err, value) {
+                    expect(Object.keys(value).length).to.be(
+                        Object.keys(mapToSave).length
+                    );
+                    expect(value).to.be.an('object');
+                    expect(value.nested).to.be.an('object');
+                    expect(value.nestedObjects[0].truth).to.be.a('boolean');
+                    expect(value.nestedObjects[1].theCake).to.be.a('string');
+                    expect(value.nestedObjects[3]).to.be(false);
+                    done();
+                });
+            });
+        });
+        it('saves a nested map [promise]', function(done) {
+            localforage
+                .setItem('obj', mapToSave)
+                .then(function(setValue) {
+                    expect(Object.keys(setValue).length).to.be(
+                        Object.keys(mapToSave).length
+                    );
+                    expect(setValue instanceof Map).to.be(true);
+
+                    return localforage.getItem('obj');
+                })
+                .then(function(value) {
+                    expect(Object.keys(value).length).to.be(
+                        Object.keys(mapToSave).length
                     );
                     expect(value).to.be.an('object');
                     expect(value.nested).to.be.an('object');
