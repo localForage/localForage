@@ -40,7 +40,7 @@ function isIndexedDBValid() {
     try {
         // Initialize IndexedDB; fall back to vendor-prefixed versions
         // if needed.
-        if (!idb) {
+        if (!idb || !idb.open) {
             return false;
         }
         // We mimic PouchDB here;
@@ -642,7 +642,7 @@ function iterate(iterator, callback) {
                             }
                             var result = iterator(value, cursor.key, iterationNumber++);
 
-                            // when the iterator callback retuns any
+                            // when the iterator callback returns any
                             // (non-`undefined`) value, then we stop
                             // the iteration immediately
                             if (result !== void 0) {

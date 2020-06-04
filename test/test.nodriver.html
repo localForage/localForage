@@ -5,11 +5,16 @@
     <title>localForage Tests!</title>
 
     <link rel="stylesheet" href="/bower_components/mocha/mocha.css">
+  </head>
+  <body>
+    <div id="mocha"></div>
 
     <script src="/bower_components/assert/assert.js"></script>
     <script src="/bower_components/mocha/mocha.js"></script>
 
     <script src="/bower_components/expect/index.js"></script>
+
+    <script> mocha.setup('bdd'); </script>
 
     <script>
         // Virtually remove support for the drivers.
@@ -32,16 +37,18 @@
     <!-- Modernizr  -->
     <script src="/bower_components/modernizr/modernizr.js"></script>
 
-    <!-- Test runner -->
-    <script src="/test/runner.js"></script>
 
     <!-- localForage -->
     <script src="/dist/localforage.js"></script>
 
     <!-- specs -->
     <script src="/test/test.nodriver.js"></script>
-  </head>
-  <body>
-    <div id="mocha"></div>
+
+    <!-- Disable warning -->
+    <script> window.console.warn = function(){}; </script>
+
+    <!-- Run tests -->
+    <script>this.mocha.run();</script>
+
   </body>
 </html>

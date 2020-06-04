@@ -4,6 +4,7 @@
 [![Dependency Status](https://img.shields.io/david/localForage/localForage.svg)](https://david-dm.org/localForage/localForage)
 [![npm](https://img.shields.io/npm/dm/localforage.svg?maxAge=2592000)](https://npmcharts.com/compare/localforage?minimal=true)
 [![jsDelivr Hits](https://data.jsdelivr.com/v1/package/npm/localforage/badge?style=rounded)](https://www.jsdelivr.com/package/npm/localforage)
+[![minzipped size](https://badgen.net/bundlephobia/minzip/localforage)](https://bundlephobia.com/result?p=localforage@1.7.3)
 
 localForage is a fast and simple storage library for JavaScript. localForage
 improves the offline experience of your web app by using asynchronous storage
@@ -36,15 +37,7 @@ localForage is compatible with [browserify](http://browserify.org/).
 Lost? Need help? Try the
 [localForage API documentation](https://localforage.github.io/localForage). [localForage API文档也有中文版。](https://localforage.docschina.org)
 
-If you're having trouble using the library, running the tests, or want to contribute
-to localForage, you can visit
-[irc.freenode.net](https://freenode.net/) and head to the `#localforage`
-channel to ask questions about localForage.
-
-You can ask [**tofumatt**][tofumatt] about localForage in IRC, who
-is usually online from 10am-8pm GMT.
-
-[tofumatt]: http://tofumatt.com/
+If you're having trouble using the library, running the tests, or want to contribute to localForage, please look through the [existing issues](https://github.com/localForage/localForage/issues) for your problem first before creating a new one. If you still need help, [feel free to file an issue](https://github.com/localForage/localForage/issues/new).
 
 ## Safari 10.1+
 
@@ -82,6 +75,20 @@ localforage.setItem('key', 'value').then(function () {
 }).catch(function (err) {
   // we got an error
 });
+```
+
+Or, use `async`/`await`:
+
+```js
+try {
+    const value = await localforage.getItem('somekey');
+    // This code runs once the value has been loaded
+    // from the offline store.
+    console.log(value);
+} catch (err) {
+    // This code runs if there were any errors.
+    console.log(err);
+}
 ```
 
 For more examples, please visit [the API docs](https://localforage.github.io/localForage).
@@ -200,6 +207,7 @@ have drivers for the following frameworks:
 * [Backbone](https://github.com/localForage/localForage-backbone)
 * [Ember](https://github.com/genkgo/ember-localforage-adapter)
 * [Vue](https://github.com/dmlzj/vlf)
+* [NuxtJS](https://github.com/nuxt-community/localforage-module)
 
 If you have a driver you'd like listed, please
 [open an issue](https://github.com/localForage/localForage/issues/new) to have it
@@ -249,6 +257,15 @@ a browser environment. Local tests are run on a headless WebKit (using
 
 When you submit a pull request, tests will be run against all browsers that
 localForage supports on Travis CI using [Sauce Labs](https://saucelabs.com/).
+
+## Library Size
+As of version 1.7.3 the payload added to your app is rather small. Served using gzip compression, localForage will add less than 10k to your total bundle size:
+
+<dl>
+  <dt>minified</dt><dd>`~29kB`</dd>
+  <dt>gzipped</dt><dd>`~8.8kB`</dd>
+  <dt>brotli'd</dt><dd>`~7.8kB`</dd>
+</dl>
 
 # License
 

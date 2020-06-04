@@ -5,6 +5,9 @@
     <title>localForage callWhenReady Tests!</title>
 
     <link rel="stylesheet" href="/bower_components/mocha/mocha.css">
+  </head>
+  <body>
+    <div id="mocha"></div>
 
     <script src="/bower_components/assert/assert.js"></script>
     <script src="/bower_components/mocha/mocha.js"></script>
@@ -21,7 +24,6 @@
          callWhenReady API method stubs -->
     <script src="/test/test.callwhenready.js"></script>
 
-    <!-- Test runner -->
     <script>
         // Skip irrelevant config tests by mapping them to API tests so that
         // they will not be called.
@@ -32,10 +34,27 @@
                 }
             }
         });
+        var require = this.require;
+        if (require) {
+            requirejs.config({
+                paths: {
+                    localforage: '/dist/localforage'
+                }
+            });
+            require(['localforage'], function(localforage) {
+                window.localforage = localforage;
+                require([
+                    '/test/test.api.js',
+                    '/test/test.config.js',
+                    '/test/test.datatypes.js',
+                    '/test/test.drivers.js',
+                    '/test/test.iframes.js',
+                    '/test/test.webworkers.js'
+                ], mocha.run);  // Run tests
+            });
+        }
+        // Disable warning
+        window.console.warn = function(){};
     </script>
-    <script src="/test/runner.js"></script>
-  </head>
-  <body>
-    <div id="mocha"></div>
   </body>
 </html>

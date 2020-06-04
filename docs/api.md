@@ -31,8 +31,8 @@ localForage includes a localStorage-backed fallback store for browsers with no I
 # Install via npm:
 npm install localforage
 
-# Or with bower:
-bower install localforage
+# Or, with yarn:
+yarn add localforage
 ```
 
 ```html
@@ -40,7 +40,7 @@ bower install localforage
 <script>console.log('localforage is: ', localforage);</script>
 ```
 
-To use localForage, [download the latest release](https://github.com/mozilla/localForage/releases) or install with [npm](https://www.npmjs.org/) (`npm install localforage`) or [bower](http://bower.io/) (`bower install localforage`).
+To use localForage, [download the latest release](https://github.com/mozilla/localForage/releases) or install with [npm](https://www.npmjs.org/) (`npm install localforage`) or [yarn](http://yarnpkg.com/) (`yarn add localforage`).
 
 Then simply include the JS file and start using localForage: `<script src="localforage.js"></script>`. You don't need to run any init method or wait for any `onready` events.
 
@@ -66,6 +66,19 @@ localforage.getItem('somekey', function(err, value) {
     // loaded from the offline store.
     console.log(value);
 });
+
+Or, use `async`/`await`:
+
+```js
+try {
+    const value = await localforage.getItem('somekey');
+    // This code runs once the value has been loaded
+    // from the offline store.
+    console.log(value);
+} catch (err) {
+    // This code runs if there were any errors.
+    console.log(err);
+}
 ```
 
 `getItem(key, successCallback)`
@@ -504,7 +517,7 @@ Creates a new instance of localForage and returns it. Each object contains its o
 
 ```js
 localforage.dropInstance().then(function() {
-  console.log('Dropped the store of the current instance').
+  console.log('Dropped the store of the current instance');
 });
 
 localforage.dropInstance({
