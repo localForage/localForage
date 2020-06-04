@@ -846,7 +846,7 @@ function key(n, callback) {
                             self._dbInfo.storeName
                         );
                         var advanced = false;
-                        var req = store.openCursor();
+                        var req = store.openKeyCursor();
 
                         req.onsuccess = function() {
                             var cursor = req.result;
@@ -908,7 +908,7 @@ function keys(callback) {
                         var store = transaction.objectStore(
                             self._dbInfo.storeName
                         );
-                        var req = store.openCursor();
+                        var req = store.openKeyCursor();
                         var keys = [];
 
                         req.onsuccess = function() {
