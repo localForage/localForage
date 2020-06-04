@@ -72,9 +72,9 @@ module.exports = (config) => {
   };
 
   const browsers = Object.keys({} || customLaunchers).concat([
-    // 'Chrome',
-    // 'Firefox',
-    'PhantomJS',
+    'Chrome',
+    'Firefox',
+    // 'PhantomJS',
     // 'Safari'
   ]);
 
