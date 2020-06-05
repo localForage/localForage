@@ -570,7 +570,7 @@ function iterate(iterator) {
                                     iterationNumber++
                                 );
 
-                                // when the iterator callback retuns any
+                                // when the iterator callback returns any
                                 // (non-`undefined`) value, then we stop
                                 // the iteration immediately
                                 if (result !== void 0) {
@@ -835,7 +835,7 @@ function key(n, callback) {
                             self._dbInfo.storeName
                         );
                         var advanced = false;
-                        var req = store.openCursor();
+                        var req = store.openKeyCursor();
 
                         req.onsuccess = function() {
                             var cursor = req.result;
@@ -896,7 +896,7 @@ function keys(callback) {
                         var store = transaction.objectStore(
                             self._dbInfo.storeName
                         );
-                        var req = store.openCursor();
+                        var req = store.openKeyCursor();
                         var keys = [];
 
                         req.onsuccess = function() {
