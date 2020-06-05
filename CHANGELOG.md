@@ -3,6 +3,10 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [1.7.4](https://github.com/mozilla/localForage/releases/tag/1.7.4)
+
+* Use `openKeyCursor` instead of `openCursor` for `key()` retrieval. Props to @MeMark2 for the fix, and thanks to @lincolnthree and @f for additional testing!
+
 ### [1.7.3](https://github.com/mozilla/localForage/releases/tag/1.7.3)
 
 * Add `.npmignore` file to reduce package size when installed via npm.
