@@ -3,19 +3,17 @@ const path = require('path');
 
 const webpack = require('webpack');
 
-const projectPath = path.resolve(fs.realpathSync(process.cwd()), '.');
-const srcPath = path.resolve(fs.realpathSync(process.cwd()), 'src');
-const testsPath = path.resolve(fs.realpathSync(process.cwd()), 'tests');
-
 const config = {
-  entry: ['./src/localforage.js'],
-  mode: process.env.NODE_ENV || 'production',
+  // context: path.resolve(__dirname, 'src'),
+  entry: {
+    localForage: './src/index.ts',
+  },
+  mode: process.env.NODE_ENV,
   module: {
     rules: [
       // Transform ES6 with Babel
       {
-        test: /\.(js)$/,
-        include: [srcPath, testsPath],
+        test: /\.(ts|tsx|js|jsx|mjs)$/,
         use: [
           {
             loader: require.resolve('babel-loader'),
@@ -33,51 +31,22 @@ const config = {
     minimize: false,
   },
   output: {
-    auxiliaryComment: `
-/*!
-  localForage -- Offline Storage, Improved
-  Version 1.7.3
-  https://localforage.org
-  (c) 2019 Matthew Riley MacPherson and Thodoris Greasidis, Apache License 2.0
-  Previous versions (c) 2013 Mozilla, Apache License 2.0
-*/
-`,
     filename: 'localforage.js',
-    libraryTarget: 'umd',
-    library: 'localforage',
     path: path.join(__dirname, 'dist'),
   },
   plugins: [
-    // new webpack.DefinePlugin({
-    //   ENV: JSON.stringify(process.env.NODE_ENV),
-    //   USE_ANALYTICS: JSON.stringify(process.env.NODE_ENV === 'production'),
-    // }),
-    new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production'),
+      ENV: JSON.stringify(process.env.NODE_ENV),
     }),
   ],
   resolve: {
-    alias: {
-      localforage: path.join(path.resolve(__dirname, 'src'), 'localforage.js'),
-    },
-    // Add src/ folder for easier includes within the project.
-    modules: [srcPath, projectPath, 'node_modules'],
-    extensions: ['.js', '.json'],
+    extensions: ['.tsx', '.ts', '.mjs', '.jsx', '.js', '.json'],
   },
+  watch: true,
 };
 
-if (process.env.NODE_ENV === 'production') {
-  config.devtool = 'source-map';
-  config.optimization.minimize = true;
-}
-
-if (process.env.NODE_ENV === 'development') {
-  config.devtool = 'eval-source-map';
-}
-
-if (process.env.NODE_ENV === 'testing') {
-  config.devtool = 'inline-source-map';
+if (process.env.NODE_ENV === 'production' && !process.env.DISABLE_PEER_DEPS_PLUGIN) {
+  config.plugins.push(new PeerDepsExternalsPlugin());
 }
 
 module.exports = config;

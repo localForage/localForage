@@ -1,5 +1,6 @@
 const config = {
-  presets: ['@babel/preset-env'],
+  comments: true,
+  presets: ['@babel/preset-env', ['@babel/typescript', { allExtensions: true, isTSX: false }]],
   plugins: [
     '@babel/plugin-proposal-class-properties',
     ['@babel/plugin-proposal-object-rest-spread', { useBuiltIns: true }],
