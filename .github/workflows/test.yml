@@ -1,0 +1,27 @@
+---
+name: Tests
+
+on:
+  push:
+    branches:
+      - '!*'
+      - '!gh-pages'
+      - 'master'
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+      - name: Install dependencies
+        run: npm install
+      - name: Run unit tests and code coverage
+        run: npm run test
