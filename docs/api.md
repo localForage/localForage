@@ -553,7 +553,6 @@ var tableOne = localforage.createInstance({
 
 // Create table 2 in databaseName
 var tableTwo = localforage.createInstance({
-    driver      : localforage.INDEXEDDB,
     name        : dbName,
     storeName   : 'tableTwo',
     description : '...'
