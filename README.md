@@ -1,5 +1,5 @@
 # localForage
-[![Build Status](https://travis-ci.org/localForage/localForage.svg?branch=master&timestamp=1)](http://travis-ci.org/localForage/localForage)
+[![Build Status](https://travis-ci.org/localForage/localForage.svg?branch=master)](http://travis-ci.org/localForage/localForage)
 [![NPM version](https://badge.fury.io/js/localforage.svg)](http://badge.fury.io/js/localforage)
 [![Dependency Status](https://img.shields.io/david/localForage/localForage.svg)](https://david-dm.org/localForage/localForage)
 [![npm](https://img.shields.io/npm/dm/localforage.svg?maxAge=2592000)](https://npmcharts.com/compare/localforage?minimal=true)
@@ -28,8 +28,6 @@ Download the [latest localForage from GitHub](https://github.com/localForage/loc
 npm install localforage
 ```
 
-localForage is compatible with [browserify](http://browserify.org/).
-
 [supported browsers]: https://github.com/localForage/localForage/wiki/Supported-Browsers-Platforms
 
 ## Support
@@ -38,10 +36,6 @@ Lost? Need help? Try the
 [localForage API documentation](https://localforage.github.io/localForage). [localForage API文档也有中文版。](https://localforage.docschina.org)
 
 If you're having trouble using the library, running the tests, or want to contribute to localForage, please look through the [existing issues](https://github.com/localForage/localForage/issues) for your problem first before creating a new one. If you still need help, [feel free to file an issue](https://github.com/localForage/localForage/issues/new).
-
-## Safari 10.1+
-
-Since Safari 10.1 we default to IndexedDB; see the [CHANGELOG](https://github.com/localForage/localForage/blob/master/CHANGELOG.md) for more info.
 
 # How to use localForage
 
@@ -163,20 +157,6 @@ define(['localforage'], function(localforage) {
     // With a Promise:
     localforage.setItem('mykey', 'myvalue').then(console.log);
 });
-```
-
-## Browserify and Webpack
-
-localForage 1.3+ works with both Browserify and Webpack. If you're using an
-earlier version of localForage and are having issues with Browserify or
-Webpack, please upgrade to 1.3.0 or above.
-
-Webpack will emit a warning about using a prebuilt javascript file which is fine. If you want to remove the warning you should exclude `localforage` from being parsed by webpack using the following conf :
-
-```javascript
-module: {
-  noParse: /node_modules\/localforage\/dist\/localforage.js/,
-  loaders: [...],
 ```
 
 ## TypeScript
