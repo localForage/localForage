@@ -537,3 +537,25 @@ localforage.dropInstance({
 When invoked with no arguments, it drops the "store" of the current instance.
 When invoked with an object specifying both `name` and `storeName` properties, it drops the specified "store".
 When invoked with an object specifying only a `name` property, it drops the specified "database" (and all its stores).
+
+# Multiple Stores
+
+```js
+const dbName = 'databaseName';
+
+// Create table 1 in databaseName
+var tableOne = localforage.createInstance({
+    name        : dbName,
+    storeName   : 'tableOne',
+    description : '...'
+});
+
+// Create table 2 in databaseName
+var tableTwo = localforage.createInstance({
+    name        : dbName,
+    storeName   : 'tableTwo',
+    description : '...'
+});
+```
+
+You can also create multiple stores that point to the same instance.
