@@ -545,7 +545,6 @@ const dbName = 'databaseName';
 
 // Create table 1 in databaseName
 var tableOne = localforage.createInstance({
-    driver      : localforage.INDEXEDDB,
     name        : dbName,
     storeName   : 'tableOne',
     description : '...'
