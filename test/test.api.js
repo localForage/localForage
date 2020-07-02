@@ -1750,7 +1750,7 @@ DRIVERS.forEach(function(driverName) {
 
 SUPPORTED_DRIVERS.forEach(function(driverName) {
     describe(driverName + ' driver dropInstance', function() {
-        this.timeout(30000);
+        this.timeout(80000);
 
         function setCommonOpts(opts) {
             opts.driver = driverName;
