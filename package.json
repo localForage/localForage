@@ -44,7 +44,7 @@
     "grunt-contrib-watch": "^0.5.0",
     "grunt-es3-safe-recast": "^0.1.0",
     "grunt-eslint": "^20.0.0",
-    "mocha-headless-chrome": "2.0.3",
+    "mocha-headless-chrome": "3.1.0",
     "grunt-rollup": "^0.6.2",
     "grunt-run": "^0.5.2",
     "grunt-saucelabs": "^5.1.2",

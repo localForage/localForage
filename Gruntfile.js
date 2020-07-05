@@ -225,15 +225,12 @@ module.exports = exports = function(grunt) {
     grunt.registerTask('mocha', 'custom function to run mocha tests', function() {
         const {runner} = require('mocha-headless-chrome');
         const fs   = require('fs');
-        const path = require('path');
         var done = this.async();
         var tempErrLogs = fs.createWriteStream('temp.test.log');
         var oldStdErr = process.stderr.write;
         var totaltestsPassed = 0;
         var totaltestsFailed = 0;
         var totalDuration = 0;
-        var asset = path.join.bind(null, __dirname,
-                    'node_modules/puppeteer/.local-chromium/linux-686378');
         var urls = [
                  'http://localhost:9999/test/test.main1.html',
                  'http://localhost:9999/test/test.min.html',
@@ -254,8 +251,8 @@ module.exports = exports = function(grunt) {
                 reporter: 'dot',                             // mocha reporter name
                 width: 800,                                  // viewport width
                 height: 600,                                 // viewport height
-                timeout: 60000,                              // timeout in ms
-                executablePath: asset('chrome-linux/chrome'),// chrome executable path
+                timeout: 120000,                             // timeout in ms
+                executablePath: null,                        // chrome executable path
                 visible: false,                              // show chrome window
                 args: ['no-sandbox']                         // chrome arguments
             };
