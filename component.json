@@ -1,15 +1,15 @@
 {
-  "name": "localforage",
-  "version": "1.7.4",
-  "dependencies": {
-    "then/promise": "5.0.0"
-  },
-  "scripts": [
-    "build/es5src/localforage.js",
-    "build/es5src/utils/serializer.js",
-    "build/es5src/drivers/indexeddb.js",
-    "build/es5src/drivers/localstorage.js",
-    "build/es5src/drivers/websql.js"
-  ],
-  "main": "build/es5src/localforage.js"
+    "name": "localforage",
+    "version": "1.8.0",
+    "dependencies": {
+        "then/promise": "5.0.0"
+    },
+    "scripts": [
+        "build/es5src/localforage.js",
+        "build/es5src/utils/serializer.js",
+        "build/es5src/drivers/indexeddb.js",
+        "build/es5src/drivers/localstorage.js",
+        "build/es5src/drivers/websql.js"
+    ],
+    "main": "build/es5src/localforage.js"
 }

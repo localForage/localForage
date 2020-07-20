@@ -3,6 +3,10 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [1.8.0](https://github.com/mozilla/localForage/releases/tag/1.8.0)
+
+* No changes to code, but added a `module` field in `package.json` for better ESM support. See: #940.
+
 ### [1.7.4](https://github.com/mozilla/localForage/releases/tag/1.7.4)
 
 * Use `openKeyCursor` instead of `openCursor` for `key()` retrieval. Props to @MeMark2 for the fix, and thanks to @lincolnthree and @f for additional testing!

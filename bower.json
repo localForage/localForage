@@ -1,29 +1,27 @@
 {
-  "name": "localforage",
-  "main": [
-    "dist/localforage.js"
-  ],
-  "ignore": [
-    ".travis.yml",
-    "CONTRIBUTING.md",
-    "config.rb",
-    "Gemfile",
-    "Gemfile.lock",
-    "Rakefile",
-    "LICENSE",
-    "docs*",
-    "examples*",
-    "test*",
-    "site*"
-  ],
-  "dependencies": {},
-  "devDependencies": {
-    "es6-promise": "~1.0.0",
-    "requirejs": "~2.1.10",
-    "mocha": "~3.4.2",
-    "expect": "~0.3.1",
-    "assert": "~0.1.0",
-    "modernizr": "~2.8.1"
-  },
-  "version": "1.7.4"
+    "name": "localforage",
+    "main": ["dist/localforage.js"],
+    "ignore": [
+        ".travis.yml",
+        "CONTRIBUTING.md",
+        "config.rb",
+        "Gemfile",
+        "Gemfile.lock",
+        "Rakefile",
+        "LICENSE",
+        "docs*",
+        "examples*",
+        "test*",
+        "site*"
+    ],
+    "dependencies": {},
+    "devDependencies": {
+        "es6-promise": "~1.0.0",
+        "requirejs": "~2.1.10",
+        "mocha": "~3.4.2",
+        "expect": "~0.3.1",
+        "assert": "~0.1.0",
+        "modernizr": "~2.8.1"
+    },
+    "version": "1.8.0"
 }

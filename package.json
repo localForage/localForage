@@ -1,74 +1,74 @@
 {
-  "name": "localforage",
-  "author": "Mozilla",
-  "license": "Apache-2.0",
-  "description": "Offline storage, improved.",
-  "keywords": [
-    "indexeddb",
-    "localstorage",
-    "storage",
-    "websql"
-  ],
-  "version": "1.7.4",
-  "homepage": "https://github.com/localForage/localForage",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/localForage/localForage.git"
-  },
-  "scripts": {
-    "build": "node -e \"require('grunt').cli()\" null build",
-    "prettify": "prettier --write \"src/**/*.js\" \"test/**/*.js\"",
-    "publish-docs": "node -e \"require('grunt').cli()\" null copy build-rules-html publish-rules",
-    "serve": "node -e \"require('grunt').cli()\" null serve",
-    "test": "node -e \"require('grunt').cli()\" null test"
-  },
-  "devDependencies": {
-    "babel-core": "^6.5.1",
-    "babel-eslint": "^7.2.3",
-    "babel-loader": "^6.2.2",
-    "babel-plugin-add-module-exports": "^0.1.2",
-    "babel-plugin-transform-es2015-modules-umd": "^6.5.0",
-    "babel-preset-es2015": "^6.6.0",
-    "babel-preset-es2015-loose": "^7.0.0",
-    "babelify": "^7.2.0",
-    "browserify-derequire": "^0.9.4",
-    "bundle-collapser": "^1.2.1",
-    "cors": "^2.3.1",
-    "eslint-config-prettier": "^2.9.0",
-    "grunt": "^0.4.2",
-    "grunt-babel": "^6.0.0",
-    "grunt-browserify": "^3.8.0",
-    "grunt-contrib-concat": "^0.3.0",
-    "grunt-contrib-connect": "^0.8.0",
-    "grunt-contrib-uglify": "^0.4.0",
-    "grunt-contrib-watch": "^0.5.0",
-    "grunt-es3-safe-recast": "^0.1.0",
-    "grunt-eslint": "^20.0.0",
-    "mocha-headless-chrome": "3.1.0",
-    "grunt-rollup": "^0.6.2",
-    "grunt-run": "^0.5.2",
-    "grunt-saucelabs": "^5.1.2",
-    "grunt-ts": "^6.0.0-beta.11",
-    "grunt-webpack": "^1.0.11",
-    "husky": "^2.3.0",
-    "lint-staged": "^8.1.7",
-    "load-grunt-tasks": "^0.4.0",
-    "mocha": "^3.4.2",
-    "prettier": "~1.12.0",
-    "rollupify": "^0.1.0",
-    "script-loader": "^0.6.1",
-    "typescript": "^2.0.3",
-    "uglify-js": "^2.3.x",
-    "webpack": "^1.12.13",
-    "webpack-dev-server": "^1.10.1"
-  },
-  "main": "dist/localforage.js",
-  "module": "src/localforage.js",
-  "typings": "typings/localforage.d.ts",
-  "bugs": {
-    "url": "http://github.com/localForage/localForage/issues"
-  },
-  "dependencies": {
-    "lie": "3.1.1"
-  }
+    "name": "localforage",
+    "author": "Mozilla",
+    "license": "Apache-2.0",
+    "description": "Offline storage, improved.",
+    "keywords": [
+        "indexeddb",
+        "localstorage",
+        "storage",
+        "websql"
+    ],
+    "version": "1.8.0",
+    "homepage": "https://github.com/localForage/localForage",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/localForage/localForage.git"
+    },
+    "scripts": {
+        "build": "node -e \"require('grunt').cli()\" null build",
+        "prettify": "prettier --write \"src/**/*.js\" \"test/**/*.js\"",
+        "publish-docs": "node -e \"require('grunt').cli()\" null copy build-rules-html publish-rules",
+        "serve": "node -e \"require('grunt').cli()\" null serve",
+        "test": "node -e \"require('grunt').cli()\" null test"
+    },
+    "devDependencies": {
+        "babel-core": "^6.5.1",
+        "babel-eslint": "^7.2.3",
+        "babel-loader": "^6.2.2",
+        "babel-plugin-add-module-exports": "^0.1.2",
+        "babel-plugin-transform-es2015-modules-umd": "^6.5.0",
+        "babel-preset-es2015": "^6.6.0",
+        "babel-preset-es2015-loose": "^7.0.0",
+        "babelify": "^7.2.0",
+        "browserify-derequire": "^0.9.4",
+        "bundle-collapser": "^1.2.1",
+        "cors": "^2.3.1",
+        "eslint-config-prettier": "^2.9.0",
+        "grunt": "^0.4.2",
+        "grunt-babel": "^6.0.0",
+        "grunt-browserify": "^3.8.0",
+        "grunt-contrib-concat": "^0.3.0",
+        "grunt-contrib-connect": "^0.8.0",
+        "grunt-contrib-uglify": "^0.4.0",
+        "grunt-contrib-watch": "^0.5.0",
+        "grunt-es3-safe-recast": "^0.1.0",
+        "grunt-eslint": "^20.0.0",
+        "mocha-headless-chrome": "3.1.0",
+        "grunt-rollup": "^0.6.2",
+        "grunt-run": "^0.5.2",
+        "grunt-saucelabs": "^5.1.2",
+        "grunt-ts": "^6.0.0-beta.11",
+        "grunt-webpack": "^1.0.11",
+        "husky": "^2.3.0",
+        "lint-staged": "^8.1.7",
+        "load-grunt-tasks": "^0.4.0",
+        "mocha": "^3.4.2",
+        "prettier": "~1.12.0",
+        "rollupify": "^0.1.0",
+        "script-loader": "^0.6.1",
+        "typescript": "^2.0.3",
+        "uglify-js": "^2.3.x",
+        "webpack": "^1.12.13",
+        "webpack-dev-server": "^1.10.1"
+    },
+    "main": "dist/localforage.js",
+    "module": "src/localforage.js",
+    "typings": "typings/localforage.d.ts",
+    "bugs": {
+        "url": "http://github.com/localForage/localForage/issues"
+    },
+    "dependencies": {
+        "lie": "3.1.1"
+    }
 }
