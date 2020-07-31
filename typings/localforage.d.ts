@@ -15,7 +15,7 @@ interface LocalForageOptions extends LocalForageDbInstanceOptions {
 }
 
 interface LocalForageDbMethodsCore {
-    getItem<T>(key: string, callback?: (err: any, value: T) => void): Promise<T>;
+    getItem<T>(key: string, callback?: (err: any, value: T | null) => void): Promise<T | null>;
 
     setItem<T>(key: string, value: T, callback?: (err: any, value: T) => void): Promise<T>;
 
