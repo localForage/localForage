@@ -720,9 +720,15 @@ function setItem(key, value, callback) {
 
                         resolve(value);
                     };
-                    transaction.onabort = transaction.onerror = function () {
-                        var err = req.error ? req.error : req.transaction.error;
-                        reject(err);
+                    // don't mix these two handlers. Calling `req.error`
+                    // during onabort in Safari seems to trigger an error.
+                    // See more at
+                    // https://github.com/localForage/localForage/issues/910.
+                    transaction.onabort = function () {
+                        reject(req.transaction.error);
+                    };
+                    transaction.onerror = function () {
+                        reject(req.error);
                     };
                 } catch (e) {
                     reject(e);
