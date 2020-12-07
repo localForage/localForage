@@ -665,10 +665,14 @@ function setItem(key, value, callback) {
                             resolve(value);
                         };
                         transaction.onabort = transaction.onerror = function() {
-                            var err = req.error
-                                ? req.error
-                                : req.transaction.error;
-                            reject(err);
+                            try {
+                                var err = req.error
+                                    ? req.error
+                                    : req.transaction.error;
+                                reject(err);
+                            } catch (e) {
+                                reject(e);
+                            }
                         };
                     } catch (e) {
                         reject(e);
@@ -720,10 +724,14 @@ function removeItem(key, callback) {
                         // The request will be also be aborted if we've exceeded our storage
                         // space.
                         transaction.onabort = function() {
-                            var err = req.error
-                                ? req.error
-                                : req.transaction.error;
-                            reject(err);
+                            try {
+                                var err = req.error
+                                    ? req.error
+                                    : req.transaction.error;
+                                reject(err);
+                            } catch (e) {
+                                reject(e);
+                            }
                         };
                     } catch (e) {
                         reject(e);
@@ -763,10 +771,14 @@ function clear(callback) {
                         };
 
                         transaction.onabort = transaction.onerror = function() {
-                            var err = req.error
-                                ? req.error
-                                : req.transaction.error;
-                            reject(err);
+                            try {
+                                var err = req.error
+                                    ? req.error
+                                    : req.transaction.error;
+                                reject(err);
+                            } catch (e) {
+                                reject(e);
+                            }
                         };
                     } catch (e) {
                         reject(e);
