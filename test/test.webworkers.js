@@ -71,12 +71,13 @@ DRIVERS.forEach(function(driverName) {
             return Promise.all(
                 workers.map(function(webWorker) {
                     var index = workers.indexOf(webWorker);
+                    var message = 'I have been set: ' + index;
                     var promise = new Promise(function(resolve, reject) {
                         webWorker.addEventListener('message', function(e) {
                             var body = e.data.body;
 
                             window.console.log(body);
-                            expect(body).to.be('I have been set: ' + index);
+                            expect(body).to.be(message);
                             resolve();
                         });
 
@@ -87,7 +88,7 @@ DRIVERS.forEach(function(driverName) {
 
                         webWorker.postMessage({
                             driver: driverName,
-                            value: 'I have been set: ' + index
+                            value: message
                         });
                     });
                     return promise;
