@@ -63,5 +63,36 @@ DRIVERS.forEach(function(driverName) {
                 value: 'I have been set'
             });
         });
+        it('saves multiple data concurrently in workers', function() {
+            var webWorker1 = new Worker('/test/webworker-client.js');
+            var webWorker2 = new Worker('/test/webworker-client.js');
+            var webWorker3 = new Worker('/test/webworker-client.js');
+            var workers = [webWorker1, webWorker2, webWorker3];
+            return Promise.all(
+                workers.map(function(webWorker) {
+                    var index = workers.indexOf(webWorker);
+                    var promise = new Promise(function(resolve, reject) {
+                        webWorker.addEventListener('message', function(e) {
+                            var body = e.data.body;
+
+                            window.console.log(body);
+                            expect(body).to.be('I have been set: ' + index);
+                            resolve();
+                        });
+
+                        webWorker.addEventListener('error', function(e) {
+                            window.console.log(e);
+                            reject();
+                        });
+
+                        webWorker.postMessage({
+                            driver: driverName,
+                            value: 'I have been set: ' + index
+                        });
+                    });
+                    return promise;
+                })
+            );
+        });
     });
 });
