@@ -12,6 +12,8 @@ self.addEventListener(
             });
         }
         localforage.config({
+            name: e.data.name || 'test',
+            storeName: e.data.name || 'test',
             driver: e.data.driver
         });
         localforage

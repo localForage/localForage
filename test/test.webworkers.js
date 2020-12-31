@@ -95,5 +95,39 @@ DRIVERS.forEach(function(driverName) {
                 })
             );
         });
+        it('saves multiple data & databases concurrently in workers', function() {
+            var webWorker1 = new Worker('/test/webworker-client.js');
+            var webWorker2 = new Worker('/test/webworker-client.js');
+            var webWorker3 = new Worker('/test/webworker-client.js');
+            var workers = [webWorker1, webWorker2, webWorker3];
+            return Promise.all(
+                workers.map(function(webWorker) {
+                    var index = workers.indexOf(webWorker);
+                    var store = 'test-1' + index;
+                    var message = 'I have been set: ' + index;
+                    var promise = new Promise(function(resolve, reject) {
+                        webWorker.addEventListener('message', function(e) {
+                            var body = e.data.body;
+
+                            window.console.log(body);
+                            expect(body).to.be(message);
+                            resolve();
+                        });
+
+                        webWorker.addEventListener('error', function(e) {
+                            window.console.log(e);
+                            reject();
+                        });
+
+                        webWorker.postMessage({
+                            store,
+                            driver: driverName,
+                            value: message
+                        });
+                    });
+                    return promise;
+                })
+            );
+        });
     });
 });
