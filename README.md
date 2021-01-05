@@ -176,6 +176,12 @@ import * as localForage from "localforage";
 import localForage = require("localforage");
 ```
 
+For installing the types use:
+
+```bash
+npm install @types/localforage --save-dev
+```
+
 ## Framework Support
 
 If you use a framework listed, there's a localForage storage driver for the
