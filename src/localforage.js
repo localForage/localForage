@@ -63,17 +63,13 @@ function callWhenReady(localForageInstance, libraryMethod) {
 }
 
 function extend() {
-    for (let i = 1; i < arguments.length; i++) {
+    for (let i = 1, { length } = arguments; i < length; i++) {
         const arg = arguments[i];
 
-        if (arg) {
-            for (let key in arg) {
-                if (arg.hasOwnProperty(key)) {
-                    if (isArray(arg[key])) {
-                        arguments[0][key] = arg[key].slice();
-                    } else {
-                        arguments[0][key] = arg[key];
-                    }
+        if ((arg)) {
+            for (const key in arg) {
+                if (Object.prototype.hasOwnProperty.call(arg, key)) {
+                    arguments[0][key] = isArray(arg[key]) ? arg[key].slice() : arg[key];
                 }
             }
         }
