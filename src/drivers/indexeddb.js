@@ -503,10 +503,10 @@ function getItem(key, callback) {
 
     key = normalizeKey(key);
 
-    var promise = new Promise(function(resolve, reject) {
-        self
-            .ready()
-            .then(function() {
+    var promise = self
+        .ready()
+        .then(function() {
+            return new Promise(function (resolve, reject) {
                 createTransaction(self._dbInfo, READ_ONLY, function(
                     err,
                     transaction
@@ -539,9 +539,8 @@ function getItem(key, callback) {
                         reject(e);
                     }
                 });
-            })
-            .catch(reject);
-    });
+            });
+        });
 
     executeCallback(promise, callback);
     return promise;
@@ -551,10 +550,10 @@ function getItem(key, callback) {
 function iterate(iterator, callback) {
     var self = this;
 
-    var promise = new Promise(function(resolve, reject) {
-        self
-            .ready()
-            .then(function() {
+    var promise = self
+        .ready()
+        .then(function() {
+            return new Promise(function (resolve, reject) {
                 createTransaction(self._dbInfo, READ_ONLY, function(
                     err,
                     transaction
@@ -604,9 +603,8 @@ function iterate(iterator, callback) {
                         reject(e);
                     }
                 });
-            })
-            .catch(reject);
-    });
+            });
+        });
 
     executeCallback(promise, callback);
 
@@ -618,14 +616,11 @@ function setItem(key, value, callback) {
 
     key = normalizeKey(key);
 
-    var promise = new Promise(function(resolve, reject) {
-        var dbInfo;
-        self
-            .ready()
-            .then(function() {
-                dbInfo = self._dbInfo;
+    var promise = self
+        .ready()
+        .then(function() {
                 if (toString.call(value) === '[object Blob]') {
-                    return _checkBlobSupport(dbInfo.db).then(function(
+                    return _checkBlobSupport(self._dbInfo.db).then(function(
                         blobSupport
                     ) {
                         if (blobSupport) {
@@ -635,8 +630,9 @@ function setItem(key, value, callback) {
                     });
                 }
                 return value;
-            })
-            .then(function(value) {
+        })
+        .then(function(value) {
+            return new Promise(function (resolve, reject) {
                 createTransaction(self._dbInfo, READ_WRITE, function(
                     err,
                     transaction
@@ -683,9 +679,8 @@ function setItem(key, value, callback) {
                         reject(e);
                     }
                 });
-            })
-            .catch(reject);
-    });
+            });
+        });
 
     executeCallback(promise, callback);
     return promise;
@@ -696,10 +691,10 @@ function removeItem(key, callback) {
 
     key = normalizeKey(key);
 
-    var promise = new Promise(function(resolve, reject) {
-        self
-            .ready()
-            .then(function() {
+    var promise = self
+        .ready()
+        .then(function() {
+            return new Promise(function (resolve, reject) {
                 createTransaction(self._dbInfo, READ_WRITE, function(
                     err,
                     transaction
@@ -726,7 +721,7 @@ function removeItem(key, callback) {
                             reject(req.error);
                         };
 
-                        // The request will be also be aborted if we've exceeded our storage
+                        // The request will also be aborted if we've exceeded our storage
                         // space.
                         transaction.onabort = function() {
                             var err = req.error
@@ -738,9 +733,8 @@ function removeItem(key, callback) {
                         reject(e);
                     }
                 });
-            })
-            .catch(reject);
-    });
+            });
+        });
 
     executeCallback(promise, callback);
     return promise;
@@ -749,10 +743,10 @@ function removeItem(key, callback) {
 function clear(callback) {
     var self = this;
 
-    var promise = new Promise(function(resolve, reject) {
-        self
-            .ready()
-            .then(function() {
+    var promise = self
+        .ready()
+        .then(function() {
+            return new Promise(function (resolve, reject) {
                 createTransaction(self._dbInfo, READ_WRITE, function(
                     err,
                     transaction
@@ -781,9 +775,8 @@ function clear(callback) {
                         reject(e);
                     }
                 });
-            })
-            .catch(reject);
-    });
+            });
+        });
 
     executeCallback(promise, callback);
     return promise;
@@ -792,10 +785,10 @@ function clear(callback) {
 function length(callback) {
     var self = this;
 
-    var promise = new Promise(function(resolve, reject) {
-        self
-            .ready()
-            .then(function() {
+    var promise = self
+        .ready()
+        .then(function() {
+            return new Promise(function (resolve, reject) {
                 createTransaction(self._dbInfo, READ_ONLY, function(
                     err,
                     transaction
@@ -821,9 +814,8 @@ function length(callback) {
                         reject(e);
                     }
                 });
-            })
-            .catch(reject);
-    });
+            });
+        });
 
     executeCallback(promise, callback);
     return promise;
@@ -832,16 +824,14 @@ function length(callback) {
 function key(n, callback) {
     var self = this;
 
-    var promise = new Promise(function(resolve, reject) {
-        if (n < 0) {
-            resolve(null);
+    if (n < 0) {
+        return Promise.resolve(null);
+    }
 
-            return;
-        }
-
-        self
-            .ready()
-            .then(function() {
+    var promise = self
+        .ready()
+        .then(function() {
+            return new Promise(function (resolve, reject) {
                 createTransaction(self._dbInfo, READ_ONLY, function(
                     err,
                     transaction
@@ -890,9 +880,8 @@ function key(n, callback) {
                         reject(e);
                     }
                 });
-            })
-            .catch(reject);
-    });
+            });
+        });
 
     executeCallback(promise, callback);
     return promise;
@@ -901,10 +890,10 @@ function key(n, callback) {
 function keys(callback) {
     var self = this;
 
-    var promise = new Promise(function(resolve, reject) {
-        self
-            .ready()
-            .then(function() {
+    var promise = self
+        .ready()
+        .then(function() {
+            return new Promise(function (resolve, reject) {
                 createTransaction(self._dbInfo, READ_ONLY, function(
                     err,
                     transaction
@@ -939,9 +928,8 @@ function keys(callback) {
                         reject(e);
                     }
                 });
-            })
-            .catch(reject);
-    });
+            });
+        });
 
     executeCallback(promise, callback);
     return promise;
