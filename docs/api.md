@@ -51,6 +51,7 @@ These APIs deal with getting and setting data in the offline store.
 ## getItem
 
 ```js
+// Promise version
 localforage.getItem('somekey').then(function(value) {
     // This code runs once the value has been loaded
     // from the offline store.
@@ -68,8 +69,6 @@ localforage.getItem('somekey', function(err, value) {
 });
 
 Or, use `async`/`await`:
-
-```js
 try {
     const value = await localforage.getItem('somekey');
     // This code runs once the value has been loaded
