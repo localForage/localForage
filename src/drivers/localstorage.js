@@ -11,7 +11,8 @@ import normalizeKey from '../utils/normalizeKey';
 import getCallback from '../utils/getCallback';
 
 function _getKeyPrefix(options, defaultConfig) {
-    var keyPrefix = options.name + '/';
+    var keyPrefix =
+        options.name && options.name.trim() !== '' ? options.name + '/' : '';
 
     if (options.storeName !== defaultConfig.storeName) {
         keyPrefix += options.storeName + '/';
