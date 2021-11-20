@@ -67,9 +67,8 @@ localforage.getItem('somekey', function(err, value) {
     console.log(value);
 });
 
-Or, use `async`/`await`:
+// Or, use `async`/`await`:
 
-```js
 try {
     const value = await localforage.getItem('somekey');
     // This code runs once the value has been loaded
