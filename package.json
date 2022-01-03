@@ -68,6 +68,6 @@
         "url": "http://github.com/localForage/localForage/issues"
     },
     "dependencies": {
-        "lie": "3.1.1"
+        "lie": "^3.1.1"
     }
 }
