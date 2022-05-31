@@ -3,6 +3,10 @@
 This file will include all API breakage, new features, and upgrade info in
 localForage's lifetime.
 
+### [1.10.0](https://github.com/localForage/localForage/releases/tag/1.10.0)
+
+* Avoid uncaught error in `dropInstance`. You can now catch errors thrown by `dropInstance`, see #807.
+
 ### [1.9.0](https://github.com/mozilla/localForage/releases/tag/1.9.0)
 
 * Fixed TypeScript definition for `getItem`. It now notes that `getItem` can return `null`, so this change may cause TypeScript code that didn't account for `null` values to fail. See #980.
