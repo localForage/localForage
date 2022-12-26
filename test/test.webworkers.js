@@ -63,5 +63,103 @@ DRIVERS.forEach(function(driverName) {
                 value: 'I have been set'
             });
         });
+        it('saves multiple data concurrently in workers', function() {
+            var webWorker1 = new Worker('/test/webworker-client.js');
+            var webWorker2 = new Worker('/test/webworker-client.js');
+            var webWorker3 = new Worker('/test/webworker-client.js');
+            var workers = [webWorker1, webWorker2, webWorker3];
+            return Promise.all(
+                workers.map(function(webWorker, index) {
+                    var message = 'I have been set: ' + index;
+                    var promise = new Promise(function(resolve, reject) {
+                        webWorker.addEventListener('message', function(e) {
+                            var body = e.data.body;
+
+                            window.console.log(body);
+                            expect(body).to.be(message);
+                            resolve();
+                        });
+
+                        webWorker.addEventListener('error', function(e) {
+                            window.console.log(e);
+                            reject();
+                        });
+
+                        webWorker.postMessage({
+                            driver: driverName,
+                            value: message
+                        });
+                    });
+                    return promise;
+                })
+            );
+        });
+        it('saves multiple data & databases concurrently in workers', function() {
+            var webWorker1 = new Worker('/test/webworker-client.js');
+            var webWorker2 = new Worker('/test/webworker-client.js');
+            var webWorker3 = new Worker('/test/webworker-client.js');
+            var workers = [webWorker1, webWorker2, webWorker3];
+            return Promise.all(
+                workers.map(function(webWorker, index) {
+                    var store = 'test-' + index;
+                    var message = 'I have been set: ' + index;
+                    var promise = new Promise(function(resolve, reject) {
+                        webWorker.addEventListener('message', function(e) {
+                            var body = e.data.body;
+
+                            window.console.log(body);
+                            expect(body).to.be(message);
+                            resolve();
+                        });
+
+                        webWorker.addEventListener('error', function(e) {
+                            window.console.log(e);
+                            reject();
+                        });
+
+                        webWorker.postMessage({
+                            store,
+                            driver: driverName,
+                            value: message
+                        });
+                    });
+                    return promise;
+                })
+            );
+        });
+
+        it('saves multiple data, single database, multiple stores, concurrently in workers', function() {
+            var webWorker1 = new Worker('/test/webworker-client.js');
+            var webWorker2 = new Worker('/test/webworker-client.js');
+            var webWorker3 = new Worker('/test/webworker-client.js');
+            var workers = [webWorker1, webWorker2, webWorker3];
+            return Promise.all(
+                workers.map(function(webWorker, index) {
+                    var storeName = 'test-' + index;
+                    var message = 'I have been set: ' + index;
+                    var promise = new Promise(function(resolve, reject) {
+                        webWorker.addEventListener('message', function(e) {
+                            var body = e.data.body;
+
+                            window.console.log(body);
+                            expect(body).to.be(message);
+                            resolve();
+                        });
+
+                        webWorker.addEventListener('error', function(e) {
+                            window.console.log(e);
+                            reject();
+                        });
+
+                        webWorker.postMessage({
+                            storeName: storeName,
+                            driver: driverName,
+                            value: message
+                        });
+                    });
+                    return promise;
+                })
+            );
+        });
     });
 });
