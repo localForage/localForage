@@ -121,3 +121,5 @@ declare module "localforage" {
     let localforage: LocalForage;
     export = localforage;
 }
+
+declare var localforage: LocalForage

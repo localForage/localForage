@@ -174,6 +174,14 @@ import * as localForage from "localforage";
 import localForage = require("localforage");
 ```
 
+Drop `localforage.d.ts` into the working folder or use the triple slash reference to point to it:
+```javascript
+/// <reference path="./your/path/to/localforage.d.ts" />
+localforage.config({
+    name: 'Hipster PDA App'
+})
+```
+
 ## Framework Support
 
 If you use a framework listed, there's a localForage storage driver for the
