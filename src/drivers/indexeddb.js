@@ -1026,6 +1026,7 @@ function dropInstance(options, callback) {
                         for (var i = 0; i < forages.length; i++) {
                             const forage = forages[i];
                             _advanceReadiness(forage._dbInfo);
+                            break;
                         }
                     })
                     .catch(err => {
