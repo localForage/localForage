@@ -4,7 +4,7 @@ interface LocalForageDbInstanceOptions {
     storeName?: string;
 }
 
-interface LocalForageOptions extends LocalForageDbInstanceOptions {
+export interface LocalForageOptions extends LocalForageDbInstanceOptions {
     driver?: string | string[];
 
     size?: number;
@@ -14,7 +14,7 @@ interface LocalForageOptions extends LocalForageDbInstanceOptions {
     description?: string;
 }
 
-interface LocalForageDbMethodsCore {
+export interface LocalForageDbMethodsCore {
     getItem<T>(key: string, callback?: (err: any, value: T | null) => void): Promise<T | null>;
 
     setItem<T>(key: string, value: T, callback?: (err: any, value: T) => void): Promise<T>;
@@ -53,7 +53,7 @@ interface LocalForageDriverSupportFunc {
     (): Promise<boolean>;
 }
 
-interface LocalForageDriver extends LocalForageDriverDbMethods {
+export interface LocalForageDriver extends LocalForageDriverDbMethods {
     _driver: string;
 
     _initStorage(options: LocalForageOptions): void;
@@ -73,7 +73,7 @@ interface LocalForageSerializer {
 
 interface LocalForageDbMethods extends LocalForageDbMethodsCore, LocalForageDbMethodsOptional {}
 
-interface LocalForage extends LocalForageDbMethods {
+export interface LocalForage extends LocalForageDbMethods {
     LOCALSTORAGE: string;
     WEBSQL: string;
     INDEXEDDB: string;
