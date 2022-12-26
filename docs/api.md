@@ -139,6 +139,8 @@ Saves data to an offline store. You can store the following types of JavaScript 
 * **`Int8Array`**
 * **`Int16Array`**
 * **`Int32Array`**
+* **`Map`**
+* **`Set`**
 * **`Number`**
 * **`Object`**
 * **`Uint8Array`**
