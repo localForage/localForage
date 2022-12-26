@@ -266,7 +266,7 @@
 
     $content.find('h1, h2, h3').each(function() {
       var $el = $(this);
-      var level = +(this.nodeName.substr(1));
+      var level = +(this.nodeName.slice(1));
 
       var parent = mkdir_p(level-1);
 
@@ -463,7 +463,7 @@
       }
       var data = Flatdoc.parser.parse(markdown, doc.highlight);
       doc.applyData(data, doc);
-      var id = location.hash.substr(1);
+      var id = location.hash.slice(1);
       if (id) {
         var el = document.getElementById(id);
         if (el) el.scrollIntoView(true);
