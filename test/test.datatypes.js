@@ -387,20 +387,32 @@ DRIVERS.forEach(function(driverName) {
 
                 localforage
                     .setItem('blob', testBlob, function(err, blob) {
-                        expect(err).to.be(null);
+                        try {
+                            expect(err).to.be(null);
+                            expect(blob.toString()).to.be('[object Blob]');
+                            expect(blob.size).to.be(testBlob.size);
+                            expect(blob.type).to.be(testBlob.type);
+                            done();
+                        } catch (e) {
+                            // Fail immediately instead of on timeout
+                            // Note: exception in this callback does not fail the promise, see #777
+                            done(e);
+                        }
+                    })
+                    .then(function(blob) {
                         expect(blob.toString()).to.be('[object Blob]');
                         expect(blob.size).to.be(testBlob.size);
                         expect(blob.type).to.be(testBlob.type);
-                    })
-                    .then(function() {
-                        localforage.getItem('blob', function(err, blob) {
+
+                        return localforage.getItem('blob', function(err, blob) {
                             expect(err).to.be(null);
                             expect(blob.toString()).to.be('[object Blob]');
                             expect(blob.size).to.be(testBlob.size);
                             expect(blob.type).to.be(testBlob.type);
                             done();
                         });
-                    });
+                    })
+                    .catch(done);
             });
         } else {
             it.skip('saves binary (Blob) data (Blob type does not exist)');
