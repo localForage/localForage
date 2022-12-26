@@ -1209,7 +1209,7 @@ function key(n, callback) {
                 try {
                     var store = transaction.objectStore(self._dbInfo.storeName);
                     var advanced = false;
-                    var req = store.openKeyCursor();
+                    var req = (store.openKeyCursor || store.openCursor)();
 
                     req.onsuccess = function () {
                         var cursor = req.result;
@@ -1263,7 +1263,7 @@ function keys(callback) {
 
                 try {
                     var store = transaction.objectStore(self._dbInfo.storeName);
-                    var req = store.openKeyCursor();
+                    var req = (store.openKeyCursor || store.openCursor)();
                     var keys = [];
 
                     req.onsuccess = function () {
