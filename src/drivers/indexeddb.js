@@ -369,7 +369,8 @@ function createTransaction(dbInfo, mode, callback, retries) {
             retries > 0 &&
             (!dbInfo.db ||
                 err.name === 'InvalidStateError' ||
-                err.name === 'NotFoundError')
+                err.name === 'NotFoundError' ||
+                err.name === 'UnknownError')
         ) {
             return Promise.resolve()
                 .then(() => {
