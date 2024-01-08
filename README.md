@@ -242,7 +242,7 @@ As of version 1.7.3 the payload added to your app is rather small. Served using 
 <dl>
   <dt>minified</dt><dd>`~29kB`</dd>
   <dt>gzipped</dt><dd>`~8.8kB`</dd>
-  <dt>brotli'd</dt><dd>`~7.8kB`</dd>
+  <dt>brotlied</dt><dd>`~7.8kB`</dd>
 </dl>
 
 # License
