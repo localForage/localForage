@@ -36,7 +36,9 @@ const LibraryMethods = [
     'keys',
     'length',
     'removeItem',
-    'setItem'
+    'setItem',
+    'setMultipleItems',
+    'getMultipleItems'
 ].concat(OptionalDriverMethods);
 
 const DefaultConfig = {

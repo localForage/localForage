@@ -322,6 +322,8 @@ var localStorageWrapper = {
     getItem: getItem,
     setItem: setItem,
     removeItem: removeItem,
+    getMultipleItems: () => { throw "Method unsupported for driver."; },
+    setMultipleItems: () => { throw "Method unsupported for driver."; },
     clear: clear,
     length: length,
     key: key,

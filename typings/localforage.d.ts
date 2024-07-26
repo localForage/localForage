@@ -17,7 +17,11 @@ interface LocalForageOptions extends LocalForageDbInstanceOptions {
 interface LocalForageDbMethodsCore {
     getItem<T>(key: string, callback?: (err: any, value: T | null) => void): Promise<T | null>;
 
+    getMultipleItems<T>(keys: ReadonlyArray<keyof T>, synchronizationKey: string): Promise<Readonly<{...T, synchronizationValue?: string}>>;
+
     setItem<T>(key: string, value: T, callback?: (err: any, value: T) => void): Promise<T>;
+
+    setMultipleItems<T>(input: T, synchronizationKey: string, expectedSynchronizationValue?: string, newSynchronizationValue: string, forceWrite: boolean): Promise<void>;
 
     removeItem(key: string, callback?: (err: any) => void): Promise<void>;
 
