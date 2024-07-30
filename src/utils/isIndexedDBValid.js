@@ -4,7 +4,7 @@ function isIndexedDBValid() {
     try {
         // Initialize IndexedDB; fall back to vendor-prefixed versions
         // if needed.
-        if (!idb || !idb.open) {
+        if ((!idb || !idb.open) && (!indexedDB || !indexedDB.open)) {
             return false;
         }
         // We mimic PouchDB here;
