@@ -70,12 +70,16 @@ function clear(callback) {
     var promise = self.ready().then(function() {
         var keyPrefix = self._dbInfo.keyPrefix;
 
+        var keys = [];
         for (var i = localStorage.length - 1; i >= 0; i--) {
             var key = localStorage.key(i);
 
             if (key.indexOf(keyPrefix) === 0) {
-                localStorage.removeItem(key);
+                keys.push(key);
             }
+        }
+        for (var j = 0; j < keys.length; j++) {
+            localStorage.removeItem(keys[j]);
         }
     });
 
