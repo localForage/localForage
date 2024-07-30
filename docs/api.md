@@ -512,6 +512,8 @@ otherStore.setItem("key", "value2");
 
 Creates a new instance of localForage and returns it. Each object contains its own database and doesn't affect other instances of localForage.
 
+During initialization, each new LocalForage instances tries to open an existing store with the provided name and when that's not available it initializes a new one.
+
 ## dropInstance
 
 ```js
