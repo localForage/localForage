@@ -150,7 +150,8 @@ function _getConnection(dbInfo, upgradeNeeded) {
                 _deferReadiness(dbInfo);
                 dbInfo.db.close();
             } else {
-                return resolve(dbInfo.db);
+                // make sure any defferred operation promises are resolved
+                return _advanceReadiness(dbInfo).then(() => resolve(dbInfo.db));
             }
         }
 
