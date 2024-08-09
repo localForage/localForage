@@ -66,6 +66,7 @@ localforage.getItem('somekey', function(err, value) {
     // loaded from the offline store.
     console.log(value);
 });
+```
 
 // Or, use `async`/`await`:
 
