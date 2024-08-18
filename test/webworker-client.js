@@ -11,30 +11,25 @@ self.addEventListener(
                 fail: true
             });
         }
-
-        localforage.setDriver(
-            e.data.driver,
-            function() {
-                localforage
-                    .setItem(
-                        'web worker',
-                        e.data.value,
-                        function() {
-                            localforage.getItem('web worker', function(
-                                err,
-                                value
-                            ) {
-                                self.postMessage({
-                                    body: value
-                                });
-                            });
-                        },
-                        handleError
-                    )
-                    .catch(handleError);
-            },
-            handleError
-        );
+        localforage.config({
+            name: e.data.name || 'test',
+            storeName: e.data.storeName || 'test',
+            driver: e.data.driver
+        });
+        localforage
+            .setItem(
+                'web worker',
+                e.data.value,
+                function() {
+                    localforage.getItem('web worker', function(err, value) {
+                        self.postMessage({
+                            body: value
+                        });
+                    });
+                },
+                handleError
+            )
+            .catch(handleError);
     },
     false
 );
