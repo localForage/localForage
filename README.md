@@ -171,7 +171,7 @@ Otherwise you should use one of the following:
 import * as localForage from "localforage";
 // or, in case that the typescript version that you are using
 // doesn't support ES6 style imports for UMD modules like localForage
-import localForage = require("localforage");
+const localForage = require("localforage");
 ```
 
 ## Framework Support
