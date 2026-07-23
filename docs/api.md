@@ -20,6 +20,8 @@ localForage includes a localStorage-backed fallback store for browsers with no I
 
 **localForage offers a callback API as well as support for the [ES6 Promises API][]**, so you can use whichever you prefer.
 
+> **Note:** `localforage.nopromises.js` / `localforage.nopromises.min.js` still expose the Promise API. They only skip the bundled Promise polyfill for environments that already have one.
+
 [Download localforage.min.js][download]
 
 [download]: https://raw.githubusercontent.com/mozilla/localForage/master/dist/localforage.min.js
