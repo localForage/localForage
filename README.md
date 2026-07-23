@@ -85,6 +85,16 @@ try {
 
 For more examples, please visit [the API docs](https://localforage.github.io/localForage).
 
+## Builds without the Promise polyfill
+
+The `dist/` directory also ships `localforage.nopromises.js` and
+`localforage.nopromises.min.js`. Despite the name, these builds still
+include the Promise-based API. They only omit the bundled Promise
+polyfill, so use them when the environment already provides Promises
+(or you load your own polyfill). Prefer `localforage.js` /
+`localforage.min.js` when you want the built-in polyfill for older
+browsers.
+
 ## Storing Blobs, TypedArrays, and other JS objects
 
 You can store any type in localForage; you aren't limited to strings like in
