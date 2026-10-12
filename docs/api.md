@@ -291,6 +291,28 @@ Iterate over all value/key pairs in datastore.
   This means if you're using CoffeeScript, you'll need to manually `return` nothing to keep iterating through each key/value pair.
 </aside>
 
+The iterator callback is synchronous. An `async` callback always returns a
+Promise, which is a non-`undefined` value, so it stops iteration after the first
+pair. To perform asynchronous work for every pair, collect tasks without
+returning them from the iterator, then run and await them after iteration completes:
+
+```js
+var tasks = [];
+localforage.iterate(function(value, key, iterationNumber) {
+    tasks.push(function() {
+        return handleItem(value, key, iterationNumber);
+    });
+}).then(function() {
+    return Promise.all(tasks.map(function(task) {
+        return Promise.resolve().then(task);
+    }));
+}).then(function() {
+    console.log('All asynchronous work has completed');
+}).catch(function(err) {
+    console.log(err);
+});
+```
+
 # Settings API
 
 These methods allow driver selection and database configuration. These methods should generally be called before the first _data_ API call to localForage (i.e. before you call `getItem()` or `length()`, etc.)
